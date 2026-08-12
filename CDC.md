@@ -201,7 +201,7 @@ flowchart TB
 ### Lancer le projet
 
 ```bash
-cd boutique-locale   # ou dossier vitepos après renommage
+cd F:\dev_pro\vitepos
 npm install
 npm run dev
 ```
