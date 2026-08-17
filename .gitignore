@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 dev-dist
+.next
+out
 *.local
 
 # Editor
@@ -26,5 +28,6 @@ dev-dist
 
 # Secrets & runtime data
 .env
+.env*.local
 server/data/
 node_modules

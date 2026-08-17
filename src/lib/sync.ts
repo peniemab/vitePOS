@@ -1,12 +1,14 @@
 import { db } from '../db'
 import type { OutboxItem, StockMovement } from '../db/types'
 import { now } from './utils'
-import { getStoredToken } from './api'
+import { apiUrl, getStoredToken } from './api'
 
 type Listener = (state: SyncState) => void
 export type SyncState = 'online' | 'offline' | 'syncing' | 'conflict'
 
-let state: SyncState = navigator.onLine ? 'online' : 'offline'
+const canUseDom = typeof window !== 'undefined'
+
+let state: SyncState = canUseDom && navigator.onLine ? 'online' : 'offline'
 const listeners = new Set<Listener>()
 
 export function getSyncState() {
@@ -25,11 +27,13 @@ function setState(next: SyncState) {
   listeners.forEach((l) => l(next))
 }
 
-window.addEventListener('online', () => {
-  setState('online')
-  void syncNow()
-})
-window.addEventListener('offline', () => setState('offline'))
+if (canUseDom) {
+  window.addEventListener('online', () => {
+    setState('online')
+    void syncNow()
+  })
+  window.addEventListener('offline', () => setState('offline'))
+}
 
 export async function enqueueOutbox(
   item: Omit<OutboxItem, 'id' | 'createdAt' | 'syncedAt'> & { id?: string },
@@ -91,7 +95,7 @@ export async function syncNow(): Promise<{ ok: boolean; message?: string }> {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
     if (token) headers.Authorization = `Bearer ${token}`
 
-    const res = await fetch(`/api/sync/${boutique.inviteCode}`, {
+    const res = await fetch(apiUrl(`/api/sync/${boutique.inviteCode}`), {
       method: 'POST',
       headers,
       body: JSON.stringify({ entities, events }),
@@ -162,7 +166,7 @@ export async function pullBoutiqueByInvite(inviteCode: string) {
   const headers: Record<string, string> = {}
   if (token) headers.Authorization = `Bearer ${token}`
 
-  const res = await fetch(`/api/sync/${code}`, { headers })
+  const res = await fetch(apiUrl(`/api/sync/${code}`), { headers })
   if (!res.ok) throw new Error('Impossible de rejoindre la boutique')
   const remote = (await res.json()) as RemotePayload
   const boutiqueMap = remote.entities?.boutiques

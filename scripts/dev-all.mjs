@@ -5,21 +5,21 @@ const api = spawn(process.execPath, ['server/index.mjs'], {
   shell: false,
 })
 
-const vite = spawn('npx', ['vite'], {
+const web = spawn('npx', ['next', 'dev'], {
   stdio: 'inherit',
   shell: true,
 })
 
 function shutdown() {
   api.kill()
-  vite.kill()
+  web.kill()
   process.exit(0)
 }
 
 process.on('SIGINT', shutdown)
 process.on('SIGTERM', shutdown)
 
-vite.on('exit', (code) => {
+web.on('exit', (code) => {
   api.kill()
   process.exit(code ?? 0)
 })

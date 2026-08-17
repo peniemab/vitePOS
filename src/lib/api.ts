@@ -1,5 +1,14 @@
 const TOKEN_KEY = 'bl_auth_token'
 
+/** Base API. Vide = même origine (rewrite Next → Express en local, ou Route Handlers plus tard). */
+export function apiUrl(path: string): string {
+  const raw =
+    (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) || ''
+  const base = String(raw).replace(/\/$/, '')
+  const p = path.startsWith('/') ? path : `/${path}`
+  return `${base}${p}`
+}
+
 export function getStoredToken(): string | null {
   try {
     return localStorage.getItem(TOKEN_KEY)
@@ -46,7 +55,7 @@ export async function apiFetch<T>(
     if (token) headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const res = await fetch(path, { ...init, headers })
+  const res = await fetch(apiUrl(path), { ...init, headers })
   const data = await parseJson(res)
   if (!res.ok) {
     throw new ApiError(String(data.error || `HTTP ${res.status}`), res.status)
@@ -128,7 +137,7 @@ export async function fetchMe() {
 
 export async function checkApiHealth() {
   try {
-    const res = await fetch('/api/health')
+    const res = await fetch(apiUrl('/api/health'))
     return res.ok
   } catch {
     return false

@@ -1,4 +1,7 @@
+'use client'
+
 import { useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '../lib/auth'
 import { loginWithPin } from '../lib/services'
 import { syncNow } from '../lib/sync'
@@ -10,26 +13,31 @@ const AVATAR =
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'] as const
 
 export function LoginPage() {
+  const router = useRouter()
   const { boutique } = useAuth()
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [shake, setShake] = useState(false)
 
-  const submitPin = useCallback(async (value: string) => {
-    setBusy(true)
-    setError('')
-    try {
-      await loginWithPin(value)
-    } catch (err) {
-      setError(String((err as Error).message || err) || 'Code incorrect. Réessayez.')
-      setShake(true)
-      setPin('')
-      window.setTimeout(() => setShake(false), 350)
-    } finally {
-      setBusy(false)
-    }
-  }, [])
+  const submitPin = useCallback(
+    async (value: string) => {
+      setBusy(true)
+      setError('')
+      try {
+        await loginWithPin(value)
+        router.replace('/accueil')
+      } catch (err) {
+        setError(String((err as Error).message || err) || 'Code incorrect. Réessayez.')
+        setShake(true)
+        setPin('')
+        window.setTimeout(() => setShake(false), 350)
+      } finally {
+        setBusy(false)
+      }
+    },
+    [router],
+  )
 
   const pushDigit = useCallback(
     (digit: string) => {
