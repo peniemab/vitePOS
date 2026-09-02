@@ -1,6 +1,9 @@
+'use client'
+
 import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
 import { useAuth } from '../lib/auth'
@@ -38,7 +41,7 @@ function formatInputDisplay(raw: string, currency: PayCurrency) {
 export function PaiementPage() {
   const { boutique, user } = useAuth()
   const cart = useCart()
-  const navigate = useNavigate()
+  const router = useRouter()
   const clients = useLiveQuery(
     () => (boutique ? db.clients.where('boutiqueId').equals(boutique.id).toArray() : []),
     [boutique?.id],
@@ -55,8 +58,8 @@ export function PaiementPage() {
   const method = tab === 'mm' ? 'mobile_money' : 'especes'
 
   useEffect(() => {
-    if (!cart.lines.length) navigate('/caisse')
-  }, [cart.lines.length, navigate])
+    if (!cart.lines.length) router.push('/caisse')
+  }, [cart.lines.length, router])
 
   useEffect(() => {
     setDigits('')
@@ -190,7 +193,7 @@ export function PaiementPage() {
         cashSessionId: open?.id,
       })
       cart.clear()
-      navigate(`/ticket/${sale.id}`)
+      router.push(`/ticket/${sale.id}`)
     } catch (err) {
       setError(String((err as Error).message || err))
     } finally {
@@ -220,7 +223,7 @@ export function PaiementPage() {
           </div>
         ) : (
           <p className="font-label-mono text-label-mono text-error mt-1">
-            <Link to="/parametres/taux" className="underline">
+            <Link href="/parametres/taux" className="underline">
               Fixer le taux USD
             </Link>
           </p>

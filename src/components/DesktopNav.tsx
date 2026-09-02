@@ -1,9 +1,19 @@
-import { NavLink } from 'react-router-dom'
+'use client'
+
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { MAIN_NAV } from '../lib/nav'
 import { useAuth } from '../lib/auth'
 
 export function DesktopNav() {
   const { boutique, user, logout } = useAuth()
+  const pathname = usePathname()
+  const router = useRouter()
+
+  async function onLogout() {
+    await logout()
+    router.replace('/login')
+  }
 
   return (
     <aside
@@ -25,44 +35,43 @@ export function DesktopNav() {
       </div>
 
       <nav className="flex-1 overflow-y-auto py-3 px-2 flex flex-col gap-1">
-        {MAIN_NAV.map((l) => (
-          <NavLink
-            key={l.to}
-            to={l.to}
-            end={'end' in l ? l.end : false}
-            title={l.label}
-            className={({ isActive }) =>
-              [
+        {MAIN_NAV.map((l) => {
+          const isActive =
+            'end' in l && l.end
+              ? pathname === l.to
+              : pathname === l.to || pathname.startsWith(`${l.to}/`)
+          return (
+            <Link
+              key={l.to}
+              href={l.to}
+              title={l.label}
+              className={[
                 'flex items-center gap-3 rounded-lg min-h-11 px-3 transition-colors',
                 isActive
                   ? 'bg-white/15 text-white'
                   : 'text-on-primary-container hover:bg-white/10 hover:text-white',
-              ].join(' ')
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <span
-                  className="material-symbols-outlined text-[22px] shrink-0"
-                  style={{
-                    fontVariationSettings: isActive
-                      ? "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24"
-                      : "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24",
-                  }}
-                >
-                  {l.icon}
-                </span>
-                <span
-                  className={`hidden lg:block font-body-md text-body-md truncate ${
-                    isActive ? 'font-semibold' : ''
-                  }`}
-                >
-                  {l.label}
-                </span>
-              </>
-            )}
-          </NavLink>
-        ))}
+              ].join(' ')}
+            >
+              <span
+                className="material-symbols-outlined text-[22px] shrink-0"
+                style={{
+                  fontVariationSettings: isActive
+                    ? "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24"
+                    : "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24",
+                }}
+              >
+                {l.icon}
+              </span>
+              <span
+                className={`hidden lg:block font-body-md text-body-md truncate ${
+                  isActive ? 'font-semibold' : ''
+                }`}
+              >
+                {l.label}
+              </span>
+            </Link>
+          )
+        })}
       </nav>
 
       <div className="p-2 border-t border-white/10 shrink-0">
@@ -73,7 +82,7 @@ export function DesktopNav() {
         )}
         <button
           type="button"
-          onClick={() => void logout()}
+          onClick={() => void onLogout()}
           title="Changer d’utilisateur"
           className="w-full flex items-center gap-3 rounded-lg min-h-11 px-3 text-on-primary-container hover:bg-white/10 hover:text-white transition-colors"
         >

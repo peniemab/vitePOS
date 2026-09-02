@@ -32,8 +32,8 @@ Cela lance :
 | Ticket | Contenu | Statut |
 |--------|---------|--------|
 | **A** | Squelette Next + thème + welcome | fait |
-| **B** | Auth gate + onboarding réel | en cours |
-| C | Dexie + caisse offline | à faire |
+| **B** | Auth gate + onboarding réel | fait |
+| **C** | Dexie + caisse offline | en cours |
 | D | API auth sur Neon (Route Handlers) | à faire |
 | E | Sync multi-appareils | à faire |
 | F | Reste des écrans + PWA | à faire |

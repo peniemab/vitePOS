@@ -1,5 +1,7 @@
+'use client'
+
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { useAuth } from '../lib/auth'
 import { formatMoney } from '../lib/utils'
 import { activateKinshasaMode, todayStats } from '../lib/services'
@@ -115,7 +117,7 @@ export function AccueilPage() {
 
         {stats.lowStock > 0 ? (
           <Link
-            to="/stock-bas"
+            href="/stock-bas"
             className="bg-error-container border border-error rounded-xl p-stack-md flex flex-col gap-stack-sm col-span-1 md:col-span-3"
           >
             <div className="flex items-center gap-2 mb-2">
@@ -156,21 +158,21 @@ export function AccueilPage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
           <Link
-            to="/caisse"
+            href="/caisse"
             className="bg-secondary text-on-primary h-[56px] rounded-lg font-headline-md text-headline-md flex items-center justify-center gap-2 hover:bg-on-secondary-fixed-variant transition-colors shadow-sm active:scale-95"
           >
             <span className="material-symbols-outlined">point_of_sale</span>
             Nouvelle Vente
           </Link>
           <Link
-            to="/inventaire"
+            href="/inventaire"
             className="bg-primary-container text-on-primary-container h-[56px] rounded-lg font-headline-md text-headline-md flex items-center justify-center gap-2 hover:bg-surface-tint transition-colors border border-outline-variant shadow-sm"
           >
             <span className="material-symbols-outlined">inventory_2</span>
             Inventaire
           </Link>
           <Link
-            to="/produits"
+            href="/produits"
             className="bg-surface-container-high text-on-surface h-[56px] rounded-lg font-headline-md text-headline-md flex items-center justify-center gap-2 hover:bg-surface-variant transition-colors border border-outline-variant shadow-sm"
           >
             <span className="material-symbols-outlined">local_shipping</span>

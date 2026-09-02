@@ -1,25 +1,32 @@
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+'use client'
+
+import type { ReactNode } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { SyncBadge } from './SyncBadge'
 import { BottomNav } from './BottomNav'
 import { DesktopNav } from './DesktopNav'
 import { useAuth } from '../lib/auth'
 
-export function AppShell() {
+export function AppShell({ children }: { children: ReactNode }) {
   const { boutique } = useAuth()
-  const location = useLocation()
-  const navigate = useNavigate()
+  const pathname = usePathname()
+  const router = useRouter()
   const showBack =
-    location.pathname !== '/' &&
-    location.pathname !== '/plus' &&
-    location.pathname !== '/caisse'
+    pathname !== '/accueil' && pathname !== '/plus' && pathname !== '/caisse'
 
   return (
     <div className="bl-app min-h-screen flex bg-background text-on-background font-body-md">
       <div
         className={`fixed top-0 left-0 md:left-[72px] lg:left-[220px] right-0 h-[4px] z-[60] ${
-          navigator.onLine ? 'bg-on-tertiary-container' : 'bg-error'
+          typeof navigator !== 'undefined' && navigator.onLine
+            ? 'bg-on-tertiary-container'
+            : 'bg-error'
         }`}
-        title={navigator.onLine ? 'Online / Synced' : 'Hors ligne'}
+        title={
+          typeof navigator !== 'undefined' && navigator.onLine
+            ? 'Online / Synced'
+            : 'Hors ligne'
+        }
       />
 
       <DesktopNav />
@@ -31,7 +38,7 @@ export function AppShell() {
               <button
                 type="button"
                 aria-label="Retour"
-                onClick={() => navigate(-1)}
+                onClick={() => router.back()}
                 className="flex items-center justify-center w-10 h-10 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full shrink-0"
               >
                 <span className="material-symbols-outlined">arrow_back</span>
@@ -61,7 +68,7 @@ export function AppShell() {
         </header>
 
         <main className="flex-1 flex flex-col px-margin-mobile md:px-margin-desktop py-stack-md gap-stack-md max-w-7xl mx-auto w-full">
-          <Outlet />
+          {children}
         </main>
 
         <BottomNav />

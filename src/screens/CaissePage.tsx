@@ -1,5 +1,7 @@
+'use client'
+
 import { useDeferredValue, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRouter } from 'next/navigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
 import type { Product } from '../db/types'
@@ -60,7 +62,7 @@ const tdCenter = `${td} text-center tabular-nums`
 export function CaissePage() {
   const { boutique, user } = useAuth()
   const cart = useCart()
-  const navigate = useNavigate()
+  const router = useRouter()
   const [q, setQ] = useState('')
   const deferredQ = useDeferredValue(q)
   const [category, setCategory] = useState<string>('all')
@@ -481,7 +483,7 @@ export function CaissePage() {
         <button
           type="button"
           disabled={!cart.lines.length}
-          onClick={() => navigate('/caisse/paiement')}
+          onClick={() => router.push('/caisse/paiement')}
           className="w-full h-12 bg-secondary text-on-secondary text-[14px] font-semibold flex items-center justify-center gap-2 disabled:opacity-40 shrink-0"
         >
           Encaisser {formatMoney(cart.total, boutique.currency)}
@@ -507,7 +509,7 @@ export function CaissePage() {
           <button
             type="button"
             disabled={!cart.lines.length}
-            onClick={() => navigate('/caisse/paiement')}
+            onClick={() => router.push('/caisse/paiement')}
             className="bg-secondary text-on-secondary h-[56px] px-5 sm:px-6 rounded-lg font-headline-md text-headline-md font-semibold flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-sm min-w-0 sm:min-w-[160px] disabled:opacity-40"
           >
             <span className="hidden sm:inline">Encaisser</span>
@@ -548,7 +550,7 @@ export function CaissePage() {
               disabled={!cart.lines.length}
               onClick={() => {
                 setCartOpen(false)
-                navigate('/caisse/paiement')
+                router.push('/caisse/paiement')
               }}
               className="w-full h-12 bg-secondary text-on-secondary text-[14px] font-semibold flex items-center justify-center gap-2 disabled:opacity-40 shrink-0"
             >

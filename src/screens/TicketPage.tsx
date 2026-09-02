@@ -1,5 +1,7 @@
+'use client'
+
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useRouter, useParams } from 'next/navigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
 import { useAuth } from '../lib/auth'
@@ -18,9 +20,10 @@ function formatFcPlain(n: number) {
 }
 
 export function TicketPage() {
-  const { id } = useParams()
+  const params = useParams()
+  const id = typeof params.id === 'string' ? params.id : undefined
   const { boutique, user } = useAuth()
-  const navigate = useNavigate()
+  const router = useRouter()
   const sale = useLiveQuery(() => (id ? db.sales.get(id) : undefined), [id])
   const cashier = useLiveQuery(
     () => (sale?.userId ? db.users.get(sale.userId) : undefined),
@@ -304,7 +307,7 @@ export function TicketPage() {
           </button>
           <button
             type="button"
-            onClick={() => navigate('/caisse')}
+            onClick={() => router.push('/caisse')}
             className="h-12 bg-secondary text-on-secondary rounded-lg font-body-md text-body-md font-semibold"
           >
             Nouvelle vente

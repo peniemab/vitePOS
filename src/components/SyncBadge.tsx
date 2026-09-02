@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 import { getSyncState, subscribeSync, syncNow, type SyncState } from '../lib/sync'
 
