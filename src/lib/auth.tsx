@@ -16,6 +16,7 @@ import * as services from './services'
 import { setStoredToken, getStoredToken } from './api'
 
 interface AuthCtx {
+  /** DB ouverte + meta / boutique / user résolus (plus de `undefined` transitoire). */
   ready: boolean
   boutique: Boutique | null
   user: User | null
@@ -26,6 +27,7 @@ interface AuthCtx {
 const AuthContext = createContext<AuthCtx | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const [dbOpen, setDbOpen] = useState(false)
   const meta = useLiveQuery(() => db.meta.get('app'), [])
   const boutique = useLiveQuery(
     () => (meta?.boutiqueId ? db.boutiques.get(meta.boutiqueId) : undefined),
@@ -35,10 +37,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => (meta?.currentUserId ? db.users.get(meta.currentUserId) : undefined),
     [meta?.currentUserId],
   )
-  const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    void db.open().finally(() => setReady(true))
+    void db.open().finally(() => setDbOpen(true))
   }, [])
 
   // Restaure le JWT depuis IndexedDB si absent du localStorage
@@ -60,6 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await services.logoutUser()
   }, [])
+
+  /**
+   * useLiveQuery renvoie `undefined` pendant le 1er chargement.
+   * Sans attendre, AuthGate voyait « pas d’user » → /login puis user OK → /accueil (boucle).
+   */
+  const metaReady = meta !== undefined
+  const boutiqueReady = !meta?.boutiqueId || boutique !== undefined
+  const userReady = !meta?.currentUserId || user !== undefined
+  const ready = dbOpen && metaReady && boutiqueReady && userReady
 
   const value = useMemo(
     () => ({

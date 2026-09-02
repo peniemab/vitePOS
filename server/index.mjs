@@ -28,7 +28,9 @@ app.get('/api/health', async (_req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/sync', syncRoutes)
 
-if (fs.existsSync(DIST)) {
+const serveDist = process.env.SERVE_DIST !== '0' && fs.existsSync(DIST)
+
+if (serveDist) {
   app.use(express.static(DIST))
   app.get(/^(?!\/api).*/, (_req, res) => {
     res.sendFile(path.join(DIST, 'index.html'))
@@ -41,9 +43,9 @@ app.use((_req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`vitePOS API on http://0.0.0.0:${PORT}`)
-  if (fs.existsSync(DIST)) {
+  if (serveDist) {
     console.log(`Serving frontend from ${DIST}`)
   } else {
-    console.log('Frontend dist/ not found — API only (run npm run build for production)')
+    console.log('API only — front Next sur :3000 (npm run dev)')
   }
 })

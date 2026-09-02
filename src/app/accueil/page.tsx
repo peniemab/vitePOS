@@ -1,10 +1,17 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 
 /** Placeholder ticket B — tableau de bord complet au ticket C. */
 export default function AccueilPlaceholderPage() {
+  const router = useRouter()
   const { boutique, user, logout } = useAuth()
+
+  async function onLogout() {
+    await logout()
+    router.replace('/login')
+  }
 
   return (
     <main className="bl-welcome flex min-h-dvh flex-col px-margin-mobile md:px-margin-desktop py-8 max-w-md mx-auto w-full">
@@ -34,7 +41,7 @@ export default function AccueilPlaceholderPage() {
 
       <button
         type="button"
-        onClick={() => void logout()}
+        onClick={() => void onLogout()}
         className="mt-auto w-full min-h-[56px] border-2 border-outline-variant text-primary rounded-xl font-body-lg text-body-lg font-semibold hover:bg-surface-variant active:scale-95 transition-transform"
       >
         Se déconnecter (PIN)
