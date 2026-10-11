@@ -1,90 +1,75 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
-import type { ReactNode } from 'react'
-import { AuthProvider, useAuth } from './lib/auth'
-import { CartProvider } from './lib/cart'
-import { AppShell } from './components/AppShell'
-import { WelcomePage } from './pages/WelcomePage'
-import { CreateBoutiquePage } from './pages/CreateBoutiquePage'
-import { JoinBoutiquePage } from './pages/JoinBoutiquePage'
-import { LoginPage } from './pages/LoginPage'
-import { AccueilPage } from './pages/AccueilPage'
-import { CaissePage } from './pages/CaissePage'
-import { PaiementPage } from './pages/PaiementPage'
-import { TicketPage } from './pages/TicketPage'
-import { ProduitsPage } from './pages/ProduitsPage'
-import { ImportProduitsPage } from './pages/ImportProduitsPage'
-import { StockBasPage } from './pages/StockBasPage'
-import { InventairePage, InventaireSessionPage } from './pages/InventairePage'
-import { ClientsPage, ClientDetailPage } from './pages/ClientsPage'
-import { JourneePage } from './pages/JourneePage'
-import { RapportJournalierPage } from './pages/RapportJournalierPage'
-import { VentesPage } from './pages/VentesPage'
-import { ParametresPage, PlusPage } from './pages/ParametresPage'
-import { TauxChangePage } from './pages/TauxChangePage'
-import { DepensesPage } from './pages/DepensesPage'
-import { AnalyticsPage } from './pages/AnalyticsPage'
-import { EquipePage } from './pages/EquipePage'
-import { EquipeEditPage } from './pages/EquipeEditPage'
-import { EquipeCreatePage } from './pages/EquipeCreatePage'
+import { lazy } from "react";
+import { createBrowserRouter, Navigate, Route, RouterProvider, Routes } from "react-router";
+import { firebaseConfigured } from "./data/firebase";
+import { SessionProvider, useSession } from "./data/session";
+import { Layout } from "./components/Layout";
+import { ComingSoon } from "./components/ui";
+import { ForgotPasswordScreen, LoginScreen, SignupScreen } from "./screens/AuthScreens";
+import {
+  ConfigMissingScreen,
+  DisabledScreen,
+  LoadingScreen,
+  NoProfileScreen,
+  OnboardingScreen,
+  PendingScreen,
+} from "./screens/GateScreens";
+import { HomeScreen } from "./screens/HomeScreen";
+import { PlusScreen } from "./screens/PlusScreen";
+// Écrans chargés à la demande (démarrage plus rapide sur les petits téléphones ; tout reste en cache hors ligne).
+const TeamScreen = lazy(() => import("./screens/TeamScreen").then((m) => ({ default: m.TeamScreen })));
+const SettingsScreen = lazy(() => import("./screens/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
 
-function Gate({ children }: { children: ReactNode }) {
-  const { ready, boutique, user } = useAuth()
-  if (!ready) {
-    return (
-      <div className="bl-welcome flex min-h-screen items-center justify-center bg-surface text-on-surface">
-        Chargement…
-      </div>
-    )
-  }
-  if (!boutique) {
+function Gate() {
+  const s = useSession();
+
+  if (s.status === "loading") return <LoadingScreen />;
+
+  if (s.status === "signedOut")
     return (
       <Routes>
-        <Route path="/" element={<WelcomePage />} />
-        <Route path="/onboarding/create" element={<CreateBoutiquePage />} />
-        <Route path="/onboarding/join" element={<JoinBoutiquePage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/connexion" element={<LoginScreen />} />
+        <Route path="/inscription" element={<SignupScreen />} />
+        <Route path="/mot-de-passe" element={<ForgotPasswordScreen />} />
+        <Route path="*" element={<Navigate to="/connexion" replace />} />
       </Routes>
-    )
-  }
-  if (!user) return <LoginPage />
-  return children
+    );
+
+  if (s.status === "noProfile") return <NoProfileScreen error={s.error} offline={s.offline} />;
+  if (s.status === "noBoutique") return <OnboardingScreen user={s.user} profile={s.profile} />;
+  if (s.status === "pending") return <PendingScreen member={s.member} boutique={s.boutique} />;
+  if (s.status === "disabled") return <DisabledScreen member={s.member} boutique={s.boutique} />;
+
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<HomeScreen />} />
+        <Route path="caisse" element={<ComingSoon title="Caisse" />} />
+        <Route path="stock" element={<ComingSoon title="Stock" />} />
+        <Route path="ventes" element={<ComingSoon title="Ventes" />} />
+        <Route path="plus" element={<PlusScreen />} />
+        <Route path="clients" element={<ComingSoon title="Clients" />} />
+        <Route path="depenses" element={<ComingSoon title="Dépenses" />} />
+        <Route path="inventaire" element={<ComingSoon title="Inventaire" />} />
+        <Route path="rapports" element={<ComingSoon title="Rapports" />} />
+        <Route path="equipe" element={<TeamScreen />} />
+        <Route path="parametres" element={<SettingsScreen />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
 }
 
-export default function App() {
+function Root() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Gate>
-          <Routes>
-            <Route element={<AppShell />}>
-              <Route index element={<AccueilPage />} />
-              <Route path="caisse" element={<CaissePage />} />
-              <Route path="caisse/paiement" element={<PaiementPage />} />
-              <Route path="ticket/:id" element={<TicketPage />} />
-              <Route path="produits" element={<ProduitsPage />} />
-              <Route path="produits/import" element={<ImportProduitsPage />} />
-              <Route path="stock-bas" element={<StockBasPage />} />
-              <Route path="inventaire" element={<InventairePage />} />
-              <Route path="inventaire/:id" element={<InventaireSessionPage />} />
-              <Route path="clients" element={<ClientsPage />} />
-              <Route path="clients/:id" element={<ClientDetailPage />} />
-              <Route path="journee" element={<JourneePage />} />
-              <Route path="journee/rapport" element={<RapportJournalierPage />} />
-              <Route path="journee/rapport/:sessionId" element={<RapportJournalierPage />} />
-              <Route path="ventes" element={<VentesPage />} />
-              <Route path="depenses" element={<DepensesPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="equipe" element={<EquipePage />} />
-              <Route path="equipe/nouveau" element={<EquipeCreatePage />} />
-              <Route path="equipe/:userId" element={<EquipeEditPage />} />
-              <Route path="plus" element={<PlusPage />} />
-              <Route path="parametres" element={<ParametresPage />} />
-              <Route path="parametres/taux" element={<TauxChangePage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Route>
-          </Routes>
-        </Gate>
-      </CartProvider>
-    </AuthProvider>
-  )
+    <SessionProvider>
+      <Gate />
+    </SessionProvider>
+  );
+}
+
+const router = createBrowserRouter([{ path: "*", element: <Root /> }]);
+
+export function App() {
+  if (!firebaseConfigured) return <ConfigMissingScreen />;
+  return <RouterProvider router={router} />;
 }

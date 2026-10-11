@@ -1,42 +1,57 @@
 # vitePOS
 
-PWA offline-first pour boutiques de quartier (Kinshasa et au-delà) : caisse rapide, stock, inventaire, clients, journée de caisse, rôles et sync multi-appareils.
+PWA offline-first pour boutiques de quartier (Kinshasa et au-delà) : caisse rapide, stock, inventaire, clients, journée de caisse, rôles et synchronisation entre appareils.
+
+**Stack :** Vite + React + TypeScript + Mantine + Firebase (Auth, Firestore avec cache hors ligne, Hosting).
 
 ## Démarrer
 
-```bash
-npm install
-npm run dev
-```
-
-Cela lance :
-- le serveur de sync local sur `http://127.0.0.1:3789`
-- l’app Vite (proxy `/api` → sync)
-
-Ouvre l’URL Vite, crée une boutique, puis installe la PWA depuis le navigateur.
+1. Créer un projet sur la [console Firebase](https://console.firebase.google.com), puis :
+   - **Authentication** : activer « E-mail/Mot de passe » et « Google » ;
+   - **Firestore Database** : créer la base ;
+   - **Paramètres du projet → Vos applications** : ajouter une application Web.
+2. Copier `.env.example` en `.env.local` et coller la configuration de l'application Web.
+3. Mettre l'identifiant du projet dans `.firebaserc`, puis publier les règles :
+   ```bash
+   npx firebase-tools deploy --only firestore:rules
+   ```
+4. Lancer :
+   ```bash
+   npm install
+   npm run dev
+   ```
 
 ## Scripts
 
 | Commande | Rôle |
 |----------|------|
-| `npm run dev` | App + sync |
-| `npm run dev:web` | Front seul |
-| `npm run dev:api` | API seule |
-| `npm run build` | Build production |
-| `npm run preview` | Prévisualiser le build |
-| `npm run db:migrate` | Appliquer le schéma Neon |
+| `npm run dev` | Serveur de développement |
+| `npm run build` | Build de production |
+| `npm run preview` | Tester le build (et le hors ligne) |
+| `npm run test` | Tests Vitest |
 
-## Gros catalogues
+## Comptes et boutiques
 
-- **Import CSV** : Stock → Import CSV
-- **Export CSV** depuis Stock
-- **Caisse** : catégories, favoris, scan code-barres
-- Recherche fluide même avec beaucoup de produits
+- Chaque employé crée **son propre compte** (e-mail ou Google).
+- Le premier passage propose **Créer ma boutique** (vous en devenez le propriétaire) ou **Rejoindre** avec le code d'invitation à 6 caractères.
+- Un employé qui rejoint une boutique arrive comme **vendeur en attente**. Le propriétaire le valide depuis **Plus → Équipe**, et peut le passer gérant ou le désactiver.
 
-Les données vivent dans IndexedDB (Dexie). Les ventes, stocks et inventaires fonctionnent sans réseau. Au retour du réseau, synchronisez via le badge sync ou Paramètres.
+| Rôle | Droits |
+|------|--------|
+| Propriétaire | Tout, y compris l'équipe et les réglages |
+| Gérant | Caisse, stock, inventaire, clôture, taux du jour |
+| Vendeur | Caisse et consultation |
 
-## Rôles
+## Mise en ligne
 
-- **Propriétaire** : tout
-- **Gérant** : caisse, stock, inventaire, clôture
-- **Vendeur** : caisse + consultation
+Chaque push sur `main` lance les tests, le build, puis la publication sur Firebase Hosting (`.github/workflows/deploy.yml`). Secrets GitHub à créer : les six `VITE_FIREBASE_*` et `FIREBASE_SERVICE_ACCOUNT_VITEPOS`.
+
+## Migration vers Firebase
+
+| Étape | Contenu | Statut |
+|-------|---------|--------|
+| 1 | Socle : Vite + Mantine + Firebase, comptes, boutiques, équipe, règles | fait |
+| 2 | Produits et stock (`increment()`, journal des mouvements), import CSV | à faire |
+| 3 | Caisse, paiement (FC/USD, mobile money), tickets, impression thermique | à faire |
+| 4 | Ventes, clients, dépenses, journée de caisse | à faire |
+| 5 | Inventaire, rapports, tableau de bord | à faire |

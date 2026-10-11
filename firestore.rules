@@ -1,0 +1,144 @@
+rules_version = '2';
+
+// Règles de sécurité Firestore de vitePOS (plusieurs boutiques dans le même projet).
+// - Chaque compte Firebase = un employé. Ses droits viennent de boutiques/{id}/members/{uid}.
+// - Créer une boutique fait de vous le propriétaire, actif d'office.
+// - Rejoindre avec un code d'invitation crée un membre « vendeur » en attente :
+//   seul le propriétaire peut le valider, changer son rôle ou le désactiver.
+// - Rien n'est lisible en dehors de sa propre boutique.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function boutiquePath(bid) {
+      return /databases/$(database)/documents/boutiques/$(bid);
+    }
+    function memberPath(bid, uid) {
+      return /databases/$(database)/documents/boutiques/$(bid)/members/$(uid);
+    }
+    function invitationPath(code) {
+      return /databases/$(database)/documents/invitations/$(code);
+    }
+    function isMember(bid) {
+      return signedIn() && exists(memberPath(bid, request.auth.uid));
+    }
+    function me(bid) {
+      return get(memberPath(bid, request.auth.uid)).data;
+    }
+    function isActive(bid) {
+      return isMember(bid) && me(bid).status == 'active';
+    }
+    function hasRole(bid, roles) {
+      return isActive(bid) && me(bid).role in roles;
+    }
+    function validInviteCode(code) {
+      return code is string && code.matches('^[A-HJ-NP-Z2-9]{6}$');
+    }
+    function validName(n) {
+      return n is string && n.size() <= 80;
+    }
+    function changes() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ---------- Fiche du compte ----------
+
+    match /users/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      // La boutique ouverte doit être une boutique dont on est membre (ou aucune).
+      allow create, update: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && validName(request.resource.data.get('name', ''))
+        && (request.resource.data.get('boutiqueId', '') == ''
+            || existsAfter(memberPath(request.resource.data.boutiqueId, uid)));
+    }
+
+    // ---------- Codes d'invitation ----------
+
+    // Lecture d'un code précis seulement (pas de liste), création avec la boutique, jamais modifié.
+    match /invitations/{code} {
+      allow get: if signedIn();
+      allow create: if signedIn()
+        && validInviteCode(code)
+        && !exists(boutiquePath(request.resource.data.boutiqueId))
+        && getAfter(boutiquePath(request.resource.data.boutiqueId)).data.ownerUid == request.auth.uid
+        && getAfter(boutiquePath(request.resource.data.boutiqueId)).data.inviteCode == code
+        && request.resource.data.createdBy == request.auth.uid;
+    }
+
+    // ---------- Boutiques ----------
+
+    match /boutiques/{bid} {
+      // Un membre en attente peut lire le nom de la boutique qu'il a demandé à rejoindre.
+      allow get: if isMember(bid);
+
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && validInviteCode(request.resource.data.inviteCode)
+        && validName(request.resource.data.name)
+        && request.resource.data.currency in ['CDF', 'USD']
+        && getAfter(memberPath(bid, request.auth.uid)).data.role == 'proprietaire'
+        && getAfter(invitationPath(request.resource.data.inviteCode)).data.boutiqueId == bid;
+
+      // Propriétaire : tous les réglages, sauf le propriétaire et le code d'invitation.
+      allow update: if hasRole(bid, ['proprietaire'])
+        && !changes().hasAny(['ownerUid', 'inviteCode', 'createdAt'])
+        && validName(request.resource.data.name)
+        && request.resource.data.currency in ['CDF', 'USD'];
+
+      // Gérant : seulement le taux du jour.
+      allow update: if hasRole(bid, ['gerant'])
+        && changes().hasOnly(['usdRateCdf', 'usdRateUpdatedAt', 'updatedAt'])
+        && request.resource.data.usdRateCdf is number
+        && request.resource.data.usdRateCdf > 0;
+
+      // ---------- Membres ----------
+
+      match /members/{uid} {
+        allow get: if signedIn() && (request.auth.uid == uid || isActive(bid));
+        allow list: if isActive(bid);
+
+        allow create: if signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.email == request.auth.token.email
+          && validName(request.resource.data.name)
+          && (
+            // Demande d'adhésion avec un code valide pour cette boutique.
+            (request.resource.data.role == 'vendeur'
+              && request.resource.data.status == 'pending'
+              && validInviteCode(request.resource.data.inviteCode)
+              && get(invitationPath(request.resource.data.inviteCode)).data.boutiqueId == bid)
+            // Propriétaire, créé en même temps que la boutique.
+            || (request.resource.data.role == 'proprietaire'
+              && request.resource.data.status == 'active'
+              && !exists(boutiquePath(bid))
+              && getAfter(boutiquePath(bid)).data.ownerUid == uid)
+          );
+
+        // Propriétaire : valider, changer le rôle, ajuster les droits, désactiver.
+        // Il ne peut ni nommer un autre propriétaire, ni se retirer ses propres droits.
+        allow update: if hasRole(bid, ['proprietaire'])
+          && changes().hasOnly(['role', 'status', 'permissions', 'updatedAt'])
+          && request.resource.data.status in ['pending', 'active', 'disabled']
+          && (
+            (uid != request.auth.uid && request.resource.data.role in ['gerant', 'vendeur'])
+            || (uid == request.auth.uid
+                && request.resource.data.role == 'proprietaire'
+                && request.resource.data.status == 'active')
+          );
+
+        // Chacun peut changer son propre nom.
+        allow update: if signedIn()
+          && request.auth.uid == uid
+          && changes().hasOnly(['name', 'updatedAt'])
+          && validName(request.resource.data.name);
+      }
+
+      // Les collections métier (produits, ventes, stock…) arrivent à l'étape 2 :
+      // tant qu'elles n'ont pas de règle, tout accès est refusé.
+    }
+  }
+}

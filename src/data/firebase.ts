@@ -1,0 +1,50 @@
+/**
+ * Connexion à Firebase. Les données sont gardées sur l'appareil (cache persistant)
+ * pour que l'application fonctionne hors ligne ; les écritures sont mises en file
+ * d'attente et envoyées au retour du réseau.
+ */
+import { initializeApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  type Firestore,
+} from "firebase/firestore";
+
+const config = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+/** Faux si le fichier .env.local n'a pas encore été rempli. */
+export const firebaseConfigured = Boolean(config.apiKey && config.projectId && config.appId);
+
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+let db: Firestore | undefined;
+
+if (firebaseConfigured) {
+  app = initializeApp(config);
+  auth = getAuth(app);
+  auth.languageCode = "fr";
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    // Un champ facultatif absent ne doit jamais faire échouer un enregistrement.
+    ignoreUndefinedProperties: true,
+  });
+}
+
+export function getFirebaseAuth(): Auth {
+  if (!auth) throw new Error("Firebase n'est pas configuré.");
+  return auth;
+}
+
+export function getDb(): Firestore {
+  if (!db) throw new Error("Firebase n'est pas configuré.");
+  return db;
+}

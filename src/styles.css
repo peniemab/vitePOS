@@ -1,0 +1,142 @@
+/* Compléments au thème Mantine. */
+:root[data-mantine-color-scheme="light"] {
+  --mantine-color-body: #f8f9fb;
+  --app-surface: #ffffff;
+  --app-due: #b6171e;
+  --app-paid: #2e7d4f;
+}
+:root[data-mantine-color-scheme="dark"] {
+  --mantine-color-body: #0f141c;
+  --app-surface: #171e2a;
+  --app-due: #f6827a;
+  --app-paid: #7fc79a;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Chiffres : Barlow Condensed à chasse fixe */
+.n {
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* Barre du haut */
+.app-header {
+  background: var(--mantine-color-navy-6);
+  color: #f2f5fb;
+  border-bottom: 0 !important;
+}
+[data-mantine-color-scheme="dark"] .app-header {
+  background: #101a2e;
+}
+.brand {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.top-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.75;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.top-tab:hover {
+  opacity: 1;
+}
+.top-tab.active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* Barre du bas (téléphone) */
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: 100%;
+}
+.bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--mantine-color-dimmed);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.bottom-nav a.active {
+  color: var(--mantine-color-brick-6);
+}
+[data-mantine-color-scheme="dark"] .bottom-nav a.active {
+  color: var(--mantine-color-brick-3);
+}
+
+/* Lignes de liste */
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 6px;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
+.list-row:last-child {
+  border-bottom: 0;
+}
+
+.loading {
+  padding: 60px 0;
+  text-align: center;
+  color: var(--mantine-color-dimmed);
+}
+
+/* Point d'état de connexion */
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.dot.on {
+  background: #2f9e44;
+}
+.dot.sync {
+  background: #f08c00;
+}
+.dot.off {
+  background: #e03131;
+}
+
+/* Code d'invitation bien lisible */
+.invite-code {
+  font-family: "Barlow Condensed", monospace;
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: 0.25em;
+}
+
+/* iPhone : un champ dont le texte fait moins de 16 px déclenche un zoom automatique. */
+@supports (-webkit-touch-callout: none) {
+  input,
+  select,
+  textarea,
+  .mantine-Input-input {
+    font-size: max(16px, 1em) !important;
+  }
+}
