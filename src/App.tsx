@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate, Route, RouterProvider, Routes } from "re
 import { firebaseConfigured } from "./data/firebase";
 import { SessionProvider, useSession } from "./data/session";
 import { Layout } from "./components/Layout";
+import { CatalogProvider } from "./data/products";
 import { ComingSoon } from "./components/ui";
 import { ForgotPasswordScreen, LoginScreen, SignupScreen } from "./screens/AuthScreens";
 import {
@@ -17,6 +18,8 @@ import { HomeScreen } from "./screens/HomeScreen";
 import { PlusScreen } from "./screens/PlusScreen";
 // Écrans chargés à la demande (démarrage plus rapide sur les petits téléphones ; tout reste en cache hors ligne).
 const TeamScreen = lazy(() => import("./screens/TeamScreen").then((m) => ({ default: m.TeamScreen })));
+const StockScreen = lazy(() => import("./screens/StockScreen").then((m) => ({ default: m.StockScreen })));
+const ImportScreen = lazy(() => import("./screens/ImportScreen").then((m) => ({ default: m.ImportScreen })));
 const SettingsScreen = lazy(() => import("./screens/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
 
 function Gate() {
@@ -40,22 +43,25 @@ function Gate() {
   if (s.status === "disabled") return <DisabledScreen member={s.member} boutique={s.boutique} />;
 
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<HomeScreen />} />
-        <Route path="caisse" element={<ComingSoon title="Caisse" />} />
-        <Route path="stock" element={<ComingSoon title="Stock" />} />
-        <Route path="ventes" element={<ComingSoon title="Ventes" />} />
-        <Route path="plus" element={<PlusScreen />} />
-        <Route path="clients" element={<ComingSoon title="Clients" />} />
-        <Route path="depenses" element={<ComingSoon title="Dépenses" />} />
-        <Route path="inventaire" element={<ComingSoon title="Inventaire" />} />
-        <Route path="rapports" element={<ComingSoon title="Rapports" />} />
-        <Route path="equipe" element={<TeamScreen />} />
-        <Route path="parametres" element={<SettingsScreen />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-    </Routes>
+    <CatalogProvider>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<HomeScreen />} />
+          <Route path="caisse" element={<ComingSoon title="Caisse" />} />
+          <Route path="stock" element={<StockScreen />} />
+          <Route path="stock/import" element={<ImportScreen />} />
+          <Route path="ventes" element={<ComingSoon title="Ventes" />} />
+          <Route path="plus" element={<PlusScreen />} />
+          <Route path="clients" element={<ComingSoon title="Clients" />} />
+          <Route path="depenses" element={<ComingSoon title="Dépenses" />} />
+          <Route path="inventaire" element={<ComingSoon title="Inventaire" />} />
+          <Route path="rapports" element={<ComingSoon title="Rapports" />} />
+          <Route path="equipe" element={<TeamScreen />} />
+          <Route path="parametres" element={<SettingsScreen />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </CatalogProvider>
   );
 }
 

@@ -100,6 +100,16 @@ body {
   border-bottom: 0;
 }
 
+/* Recherche et filtres qui restent visibles en faisant défiler */
+.sticky-tools {
+  position: sticky;
+  top: var(--app-shell-header-offset, 56px);
+  z-index: 20;
+  margin: 0 -16px 12px;
+  padding: 8px 16px 10px;
+  background: var(--mantine-color-body);
+}
+
 .loading {
   padding: 60px 0;
   text-align: center;

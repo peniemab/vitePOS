@@ -6,6 +6,19 @@ rules_version = '2';
 // - Rejoindre avec un code d'invitation crée un membre « vendeur » en attente :
 //   seul le propriétaire peut le valider, changer son rôle ou le désactiver.
 // - Rien n'est lisible en dehors de sa propre boutique.
+//
+// Modèle de données
+// - users/{uid} : email, name, boutiqueId (boutique ouverte), createdAt, updatedAt
+// - invitations/{code} : boutiqueId, createdBy, createdAt (jamais modifié)
+// - boutiques/{bid} : name, currency (CDF|USD), inviteCode, ownerUid, usdRateCdf, usdRateUpdatedAt,
+//   paperWidthMm, autoPrintTicket, createdAt, updatedAt
+// - boutiques/{bid}/members/{uid} : email, name, role (proprietaire|gerant|vendeur),
+//   status (pending|active|disabled), permissions {viewReports, editPrices, closeCash, manageStock}, inviteCode
+// - boutiques/{bid}/products/{pid} : name, category, sellPrice, unit (u|kg|L), stock, alertThreshold,
+//   barcode, favorite, archived, lastMovementId, createdAt, createdBy, updatedAt, updatedBy
+// - boutiques/{bid}/productCosts/{pid} : buyPrice, updatedAt, updatedBy
+// - boutiques/{bid}/stockMovements/{mid} : type, productIds[], deltas {pid: quantité signée},
+//   names {pid: nom}, reason, uid, memberName, createdAt (heure serveur), clientAtMs, refId
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -137,8 +150,94 @@ service cloud.firestore {
           && validName(request.resource.data.name);
       }
 
-      // Les collections métier (produits, ventes, stock…) arrivent à l'étape 2 :
-      // tant qu'elles n'ont pas de règle, tout accès est refusé.
+      // ---------- Produits et stock ----------
+      // Le stock ne varie qu'avec un mouvement créé dans la même écriture : le produit pointe
+      // vers ce mouvement (lastMovementId) et la variation doit être égale à celle du mouvement.
+
+      match /products/{pid} {
+        allow read: if isActive(bid);
+
+        allow create: if isActive(bid)
+          && can(bid, 'editPrices')
+          && request.resource.data.keys().hasOnly(catalogFields().concat(['stock', 'lastMovementId', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy']))
+          && validProduct(request.resource.data)
+          && request.resource.data.archived == false
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.updatedBy == request.auth.uid
+          && (request.resource.data.stock == 0
+              || movementMatches(bid, pid, request.resource.data.stock));
+
+        allow update: if isActive(bid)
+          && changes().hasOnly(catalogFields().concat(['stock', 'lastMovementId', 'updatedAt', 'updatedBy']))
+          && request.resource.data.updatedBy == request.auth.uid
+          && validProduct(request.resource.data)
+          && (!changes().hasAny(catalogFields()) || can(bid, 'editPrices'))
+          && (!changes().hasAny(['stock', 'lastMovementId'])
+              || movementMatches(bid, pid, request.resource.data.stock - resource.data.stock));
+      }
+
+      // Prix d'achat : séparés des fiches pour que les vendeurs ne voient pas les marges.
+      match /productCosts/{pid} {
+        allow read: if can(bid, 'editPrices') || can(bid, 'viewReports');
+        allow create, update: if can(bid, 'editPrices')
+          && request.resource.data.keys().hasOnly(['buyPrice', 'updatedAt', 'updatedBy'])
+          && request.resource.data.buyPrice is number
+          && request.resource.data.buyPrice >= 0
+          && request.resource.data.updatedBy == request.auth.uid;
+      }
+
+      // Journal des mouvements : création seulement, jamais modifié ni supprimé.
+      match /stockMovements/{mid} {
+        allow read: if isActive(bid);
+        allow create: if isActive(bid)
+          && request.resource.data.keys().hasOnly(['type', 'productIds', 'deltas', 'names', 'reason', 'uid', 'memberName', 'createdAt', 'clientAtMs', 'refId'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.productIds is list
+          && request.resource.data.productIds.size() > 0
+          && request.resource.data.productIds.size() <= 250
+          && request.resource.data.deltas is map
+          && request.resource.data.deltas.keys().hasAll(request.resource.data.productIds)
+          && request.resource.data.reason is string
+          && request.resource.data.reason.size() <= 200
+          && request.resource.data.type in ['reappro', 'casse', 'don', 'correction']
+          && can(bid, 'manageStock');
+        // Les mouvements de vente et d'inventaire arrivent avec les étapes 3 et 5.
+      }
+    }
+
+    function catalogFields() {
+      return ['name', 'category', 'sellPrice', 'unit', 'alertThreshold', 'barcode', 'favorite', 'archived'];
+    }
+
+    function validProduct(p) {
+      return p.name is string && p.name.size() > 0 && p.name.size() <= 120
+        && p.category is string && p.category.size() <= 60
+        && p.sellPrice is number && p.sellPrice >= 0
+        && p.unit in ['u', 'kg', 'L']
+        && p.stock is number
+        && p.alertThreshold is number && p.alertThreshold >= 0
+        && p.barcode is string && p.barcode.size() <= 64
+        && p.favorite is bool
+        && p.archived is bool;
+    }
+
+    // Le mouvement cité par le produit est créé dans cette même écriture et porte la même variation.
+    function movementMatches(bid, pid, delta) {
+      let mv = getAfter(/databases/$(database)/documents/boutiques/$(bid)/stockMovements/$(request.resource.data.lastMovementId)).data;
+      return request.resource.data.lastMovementId is string
+        && request.resource.data.lastMovementId != (resource == null ? '' : resource.data.get('lastMovementId', ''))
+        && mv.createdAt == request.time
+        && pid in mv.deltas
+        && math.abs(delta - mv.deltas[pid]) < 0.0005;
+    }
+
+    // Droit effectif : le propriétaire a tout ; sinon l'ajustement du propriétaire, ou la valeur du rôle.
+    function can(bid, perm) {
+      let m = get(/databases/$(database)/documents/boutiques/$(bid)/members/$(request.auth.uid)).data;
+      return isActive(bid)
+        && (m.role == 'proprietaire'
+            || m.get('permissions', {}).get(perm, m.role == 'gerant') == true);
     }
   }
 }
