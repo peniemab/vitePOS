@@ -6,16 +6,17 @@ PWA offline-first pour boutiques de quartier (Kinshasa et au-delà) : caisse rap
 
 ## Démarrer
 
-1. Créer un projet sur la [console Firebase](https://console.firebase.google.com), puis :
-   - **Authentication** : activer « E-mail/Mot de passe » et « Google » ;
-   - **Firestore Database** : créer la base ;
-   - **Paramètres du projet → Vos applications** : ajouter une application Web.
-2. Copier `.env.example` en `.env.local` et coller la configuration de l'application Web.
-3. Mettre l'identifiant du projet dans `.firebaserc`, puis publier les règles :
+Projet Firebase : **vitepos-be79c** (Firestore Standard en `europe-west1`, connexion e-mail/mot de passe et Google).
+
+1. Récupérer la config de l'application Web dans `.env.local` (modèle : `.env.example`) :
    ```bash
-   npx firebase-tools deploy --only firestore:rules
+   npx -y firebase-tools@latest apps:sdkconfig WEB --project vitepos-be79c
    ```
-4. Lancer :
+2. Publier les règles Firestore et la config de connexion après une modification :
+   ```bash
+   npx -y firebase-tools@latest deploy --only firestore,auth
+   ```
+3. Lancer :
    ```bash
    npm install
    npm run dev
