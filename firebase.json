@@ -15,6 +15,7 @@
     }
   },
   "hosting": {
+    "site": "vitepos-rdc",
     "public": "dist",
     "ignore": [
       "firebase.json",
