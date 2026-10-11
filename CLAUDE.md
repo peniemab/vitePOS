@@ -15,6 +15,7 @@ Plusieurs boutiques dans le même projet Firebase ; chaque employé a son propre
 - Pas de suppression physique des ventes, mouvements ou dépenses : on annule.
 - Toute la logique pure (montants, devises, arrondis, totaux, rôles, codes) va dans `src/lib/`, sans React ni Firebase, couverte par des tests Vitest.
 - Modèle de données : `users/{uid}`, `invitations/{code}`, `boutiques/{id}`, `boutiques/{id}/members/{uid}`, puis les collections métier sous `boutiques/{id}/…`. Toute nouvelle collection doit avoir sa règle dans `firestore.rules` (sans règle, l'accès est refusé).
+- Logo : symbole dessiné dans Google Stitch (sources dans `design/logo-stitch/`). Favicon, logo et icônes PWA sont générés par `node scripts/gen-icons.mjs` : ne pas les modifier à la main.
 - Pas de secrets dans le dépôt : la config Firebase passe par les variables `VITE_FIREBASE_*` dans `.env.local` (ignoré par Git), avec un `.env.example` versionné.
 
 ## Commandes
