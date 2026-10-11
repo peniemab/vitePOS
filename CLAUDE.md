@@ -24,6 +24,7 @@ Plusieurs boutiques dans le même projet Firebase ; chaque employé a son propre
 - `npm run preview` : tester le build, y compris hors ligne
 - `npx -y firebase-tools@latest deploy --only firestore` : publier les règles et index (projet `vitepos-be79c`) ; l'hébergement est publié par GitHub Actions
 - Firebase : base Firestore Standard `(default)` en `europe-west1`, connexion e-mail/mot de passe et Google (bloc `auth` de `firebase.json`). Utiliser les skills du plugin Firebase pour toute tâche Firebase.
+- Domaines autorisés pour la connexion Google : `localhost`, `127.0.0.1`, `vitepos-be79c.firebaseapp.com`, `vitepos-be79c.web.app`. Le provisionnement par `deploy --only auth` avait retiré `localhost` : vérifier la liste (Authentication → Paramètres → Domaines autorisés) après chaque `deploy --only auth`.
 
 ## Avant de dire qu'une étape est terminée
 1. `npm run build` et `npm run test` passent.
