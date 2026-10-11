@@ -18,7 +18,11 @@ rules_version = '2';
 //   barcode, favorite, archived, lastMovementId, createdAt, createdBy, updatedAt, updatedBy
 // - boutiques/{bid}/productCosts/{pid} : buyPrice, updatedAt, updatedBy
 // - boutiques/{bid}/stockMovements/{mid} : type, productIds[], deltas {pid: quantité signée},
-//   names {pid: nom}, reason, uid, memberName, createdAt (heure serveur), clientAtMs, refId
+//   names {pid: nom}, reason, uid, memberName, createdAt (heure serveur), clientAtMs, refId (vente)
+// - boutiques/{bid}/sales/{sid} : uid, memberName, lines [{productId, name, unit, unitPrice, quantity, lineTotal}],
+//   subtotal, discountPercent, discount, total, currency, payment {method, currency, rate, due, received, change},
+//   status (validee|annulee), movementId, dayKey (AAAA-MM-JJ), createdAt, clientAtMs,
+//   puis à l'annulation : cancelReason, cancelledBy, cancelledByName, cancelledAt, cancelMovementId
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -200,10 +204,67 @@ service cloud.firestore {
           && request.resource.data.deltas.keys().hasAll(request.resource.data.productIds)
           && request.resource.data.reason is string
           && request.resource.data.reason.size() <= 200
-          && request.resource.data.type in ['reappro', 'casse', 'don', 'correction']
-          && can(bid, 'manageStock');
-        // Les mouvements de vente et d'inventaire arrivent avec les étapes 3 et 5.
+          && (
+            // Saisie manuelle : réservée à ceux qui gèrent le stock.
+            (request.resource.data.type in ['reappro', 'casse', 'don', 'correction'] && can(bid, 'manageStock'))
+            // Vente : la vente citée est créée dans la même écriture et pointe vers ce mouvement.
+            || (request.resource.data.type == 'vente'
+                && saleAfter(bid).movementId == mid
+                && saleAfter(bid).createdAt == request.time)
+            // Annulation : la vente citée est annulée dans la même écriture par ce mouvement.
+            || (request.resource.data.type == 'annulation'
+                && saleAfter(bid).cancelMovementId == mid
+                && saleAfter(bid).cancelledAt == request.time)
+          );
+        // Les mouvements d'inventaire arrivent avec l'étape 5.
       }
+
+      // ---------- Ventes ----------
+      // Chaque vendeur actif encaisse en son nom. Une vente n'est jamais supprimée :
+      // elle peut seulement être annulée, dans les 24 heures, par un gérant ou le propriétaire.
+
+      match /sales/{sid} {
+        allow read: if isActive(bid);
+
+        allow create: if isActive(bid)
+          && request.resource.data.keys().hasOnly(['uid', 'memberName', 'lines', 'subtotal', 'discountPercent', 'discount', 'total', 'currency', 'payment', 'status', 'movementId', 'dayKey', 'createdAt', 'clientAtMs'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.memberName is string
+          && request.resource.data.status == 'validee'
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.lines is list
+          && request.resource.data.lines.size() > 0
+          && request.resource.data.lines.size() <= 200
+          && request.resource.data.subtotal is number
+          && request.resource.data.total is number
+          && request.resource.data.total >= 0
+          && request.resource.data.total <= request.resource.data.subtotal
+          && request.resource.data.discountPercent is number
+          && request.resource.data.discountPercent >= 0
+          && request.resource.data.discountPercent <= 100
+          && (request.resource.data.discountPercent == 0 || can(bid, 'editPrices'))
+          && request.resource.data.currency in ['CDF', 'USD']
+          && request.resource.data.payment is map
+          && request.resource.data.payment.method in ['especes', 'mobile_money']
+          && request.resource.data.movementId is string
+          && request.resource.data.dayKey is string;
+
+        allow update: if can(bid, 'editPrices')
+          && resource.data.status == 'validee'
+          && changes().hasOnly(['status', 'cancelReason', 'cancelledBy', 'cancelledByName', 'cancelledAt', 'cancelMovementId'])
+          && request.resource.data.status == 'annulee'
+          && request.resource.data.cancelReason is string
+          && request.resource.data.cancelReason.size() <= 200
+          && request.resource.data.cancelledBy == request.auth.uid
+          && request.resource.data.cancelledAt == request.time
+          && request.resource.data.cancelMovementId is string
+          && request.time < resource.data.createdAt + duration.value(1, 'd');
+      }
+    }
+
+    // La vente citée par le mouvement en cours d'écriture, telle qu'elle sera après l'écriture.
+    function saleAfter(bid) {
+      return getAfter(/databases/$(database)/documents/boutiques/$(bid)/sales/$(request.resource.data.refId)).data;
     }
 
     function catalogFields() {

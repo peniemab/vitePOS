@@ -116,6 +116,98 @@ body {
   color: var(--mantine-color-dimmed);
 }
 
+/* Caisse : tuiles des articles */
+.product-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 92px;
+  padding: 10px 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 12px;
+  background: var(--app-surface);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s ease;
+}
+.product-tile:active {
+  transform: scale(0.97);
+  background: var(--mantine-color-default-hover);
+}
+.product-tile[data-empty] {
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-tile {
+    transition: none;
+  }
+}
+
+/* Caisse sur téléphone : barre du panier posée sur la barre d'onglets */
+.cart-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--app-shell-footer-offset, 62px);
+  z-index: 99;
+  padding: 8px 12px;
+  background: var(--mantine-color-body);
+  border-top: 1px solid var(--mantine-color-default-border);
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Ticket de caisse */
+.receipt {
+  width: 100%;
+  max-width: 340px;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.45;
+  background: #fff !important;
+  color: #111 !important;
+}
+.receipt-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.3em;
+}
+.receipt-pair {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.receipt-pair span:last-child {
+  white-space: nowrap;
+}
+.receipt-rule {
+  border: 0;
+  border-top: 1px dashed #999;
+  margin: 6px 0;
+}
+
+/* Impression navigateur : seul le ticket sort, à la largeur du papier thermique */
+@media print {
+  @page {
+    margin: 0;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .receipt,
+  .receipt * {
+    visibility: visible;
+  }
+  .receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    max-width: none;
+    width: 72mm;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 2mm !important;
+  }
+}
+
 /* Point d'état de connexion */
 .dot {
   display: inline-block;

@@ -53,6 +53,6 @@ Chaque push sur `main` lance les tests, le build, puis la publication sur Fireba
 |-------|---------|--------|
 | 1 | Socle : Vite + Mantine + Firebase, comptes, boutiques, équipe, règles | fait |
 | 2 | Produits et stock (`increment()`, journal des mouvements), import CSV | fait |
-| 3 | Caisse, paiement (FC/USD, mobile money), tickets, impression thermique | à faire |
+| 3 | Caisse, paiement (FC/USD, mobile money), tickets, impression thermique | fait (à tester) |
 | 4 | Ventes, clients, dépenses, journée de caisse | à faire |
 | 5 | Inventaire, rapports, tableau de bord | à faire |
