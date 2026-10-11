@@ -37,6 +37,9 @@ export interface Sale {
   /** Devise des prix de la boutique au moment de la vente. */
   currency: Currency;
   payment: SalePayment;
+  /** Client rattaché à la vente (facultatif). */
+  clientId: string;
+  clientName: string;
   status: SaleStatus;
   cancelReason: string;
   cancelledByName: string;

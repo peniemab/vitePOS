@@ -6,7 +6,7 @@
  * sur chaque produit. L'annulation fait l'inverse avec un mouvement « annulation ».
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { collection, doc, increment, onSnapshot, serverTimestamp, writeBatch, type DocumentData } from "firebase/firestore";
+import { collection, doc, increment, limit, onSnapshot, orderBy, query, serverTimestamp, where, writeBatch, type DocumentData } from "firebase/firestore";
 import { notifications } from "@mantine/notifications";
 import { getDb } from "./firebase";
 import { errorMessage } from "./errors";
@@ -21,6 +21,7 @@ import type { Sale, SaleLine, SalePayment } from "../lib/sales";
 const salesCol = (b: string) => collection(getDb(), "boutiques", b, "sales");
 const productsCol = (b: string) => collection(getDb(), "boutiques", b, "products");
 const movementsCol = (b: string) => collection(getDb(), "boutiques", b, "stockMovements");
+const clientsCol = (b: string) => collection(getDb(), "boutiques", b, "clients");
 
 function ms(v: unknown): number {
   return v && typeof v === "object" && "toMillis" in v ? (v as { toMillis(): number }).toMillis() : 0;
@@ -58,6 +59,8 @@ function toSale(id: string, d: DocumentData, synced: boolean): Sale {
       received: num(p.received),
       change: num(p.change),
     },
+    clientId: String(d.clientId ?? ""),
+    clientName: String(d.clientName ?? ""),
     status: d.status === "annulee" ? "annulee" : "validee",
     cancelReason: String(d.cancelReason ?? ""),
     cancelledByName: String(d.cancelledByName ?? ""),
@@ -72,6 +75,25 @@ export function watchSale(boutiqueId: string, saleId: string, cb: (sale: Sale | 
     doc(salesCol(boutiqueId), saleId),
     { includeMetadataChanges: true },
     (s) => cb(s.exists() ? toSale(s.id, s.data(), !s.metadata.hasPendingWrites) : null),
+    onError,
+  );
+}
+
+/** Les ventes d'une journée, les plus récentes d'abord. */
+export function watchSalesOfDay(boutiqueId: string, day: string, cb: (sales: Sale[]) => void, onError: (e: unknown) => void) {
+  return onSnapshot(
+    query(salesCol(boutiqueId), where("dayKey", "==", day)),
+    { includeMetadataChanges: true },
+    (s) => cb(s.docs.map((d) => toSale(d.id, d.data(), !d.metadata.hasPendingWrites)).sort((a, b) => b.createdAtMs - a.createdAtMs)),
+    onError,
+  );
+}
+
+/** Les 50 derniers achats d'un client. */
+export function watchClientSales(boutiqueId: string, clientId: string, cb: (sales: Sale[]) => void, onError: (e: unknown) => void) {
+  return onSnapshot(
+    query(salesCol(boutiqueId), where("clientId", "==", clientId), orderBy("createdAt", "desc"), limit(50)),
+    (s) => cb(s.docs.map((d) => toSale(d.id, d.data(), !d.metadata.hasPendingWrites))),
     onError,
   );
 }
@@ -93,6 +115,7 @@ export function createSale(
   discountPercent: number,
   input: PaymentInput,
   result: PaymentResult,
+  client?: { id: string; name: string },
 ): string {
   const db = getDb();
   const batch = writeBatch(db);
@@ -132,6 +155,8 @@ export function createSale(
     total: totals.total,
     currency,
     payment,
+    clientId: client?.id ?? "",
+    clientName: client?.name ?? "",
     status: "validee",
     movementId: movementRef.id,
     dayKey: dayKey(now),
@@ -142,6 +167,15 @@ export function createSale(
     batch.update(doc(productsCol(actor.boutiqueId), l.productId), {
       stock: increment(-l.quantity),
       lastMovementId: movementRef.id,
+      updatedAt: serverTimestamp(),
+      updatedBy: actor.uid,
+    });
+  }
+  if (client) {
+    batch.update(doc(clientsCol(actor.boutiqueId), client.id), {
+      purchaseCount: increment(1),
+      totalSpent: increment(totals.total),
+      lastPurchaseAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       updatedBy: actor.uid,
     });
@@ -182,6 +216,14 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
       updatedBy: actor.uid,
     });
   }
+  if (sale.clientId) {
+    batch.update(doc(clientsCol(actor.boutiqueId), sale.clientId), {
+      purchaseCount: increment(-1),
+      totalSpent: increment(-sale.total),
+      updatedAt: serverTimestamp(),
+      updatedBy: actor.uid,
+    });
+  }
   track(batch.commit(), (e) =>
     notifications.show({ color: "red", title: "Annulation refusée par le serveur", message: errorMessage(e), autoClose: false }),
   );
@@ -189,9 +231,16 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
 
 /* ---------- Panier (gardé sur l'appareil : il survit à un rechargement de la page) ---------- */
 
+interface CartClient {
+  id: string;
+  name: string;
+}
+
 interface Cart {
   lines: CartLine[];
   discountPercent: number;
+  client: CartClient | null;
+  setClient: (c: CartClient | null) => void;
   totals: Totals;
   add: (product: Product, qty?: number) => void;
   setQty: (productId: string, qty: number) => void;
@@ -204,6 +253,7 @@ const CartContext = createContext<Cart | null>(null);
 interface Stored {
   lines: CartLine[];
   discountPercent: number;
+  client: CartClient | null;
 }
 
 function load(key: string): Stored {
@@ -211,12 +261,13 @@ function load(key: string): Stored {
     const raw = localStorage.getItem(key);
     if (raw) {
       const v = JSON.parse(raw) as Stored;
-      if (Array.isArray(v.lines)) return { lines: v.lines, discountPercent: clampPercent(Number(v.discountPercent)) };
+      if (Array.isArray(v.lines))
+        return { lines: v.lines, discountPercent: clampPercent(Number(v.discountPercent)), client: v.client?.id ? v.client : null };
     }
   } catch {
     // Stockage indisponible (navigation privée…) : panier vide.
   }
-  return { lines: [], discountPercent: 0 };
+  return { lines: [], discountPercent: 0, client: null };
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -242,7 +293,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, lines: setQuantity(s.lines, productId, qty) }));
   }, []);
   const setDiscountPercent = useCallback((p: number) => setState((s) => ({ ...s, discountPercent: clampPercent(p) })), []);
-  const clear = useCallback(() => setState({ lines: [], discountPercent: 0 }), []);
+  const setClient = useCallback((client: CartClient | null) => setState((s) => ({ ...s, client })), []);
+  const clear = useCallback(() => setState({ lines: [], discountPercent: 0, client: null }), []);
 
   const value = useMemo<Cart>(
     () => ({
@@ -251,9 +303,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       add,
       setQty,
       setDiscountPercent,
+      setClient,
       clear,
     }),
-    [state, boutique.currency, add, setQty, setDiscountPercent, clear],
+    [state, boutique.currency, add, setQty, setDiscountPercent, setClient, clear],
   );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

@@ -21,6 +21,10 @@ import { PlusScreen } from "./screens/PlusScreen";
 const TeamScreen = lazy(() => import("./screens/TeamScreen").then((m) => ({ default: m.TeamScreen })));
 const CaisseScreen = lazy(() => import("./screens/CaisseScreen").then((m) => ({ default: m.CaisseScreen })));
 const TicketScreen = lazy(() => import("./screens/TicketScreen").then((m) => ({ default: m.TicketScreen })));
+const VentesScreen = lazy(() => import("./screens/VentesScreen").then((m) => ({ default: m.VentesScreen })));
+const ClientsScreen = lazy(() => import("./screens/ClientsScreen").then((m) => ({ default: m.ClientsScreen })));
+const DepensesScreen = lazy(() => import("./screens/DepensesScreen").then((m) => ({ default: m.DepensesScreen })));
+const JourneeScreen = lazy(() => import("./screens/JourneeScreen").then((m) => ({ default: m.JourneeScreen })));
 const StockScreen = lazy(() => import("./screens/StockScreen").then((m) => ({ default: m.StockScreen })));
 const ImportScreen = lazy(() => import("./screens/ImportScreen").then((m) => ({ default: m.ImportScreen })));
 const SettingsScreen = lazy(() => import("./screens/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
@@ -55,10 +59,11 @@ function Gate() {
             <Route path="ticket/:id" element={<TicketScreen />} />
             <Route path="stock" element={<StockScreen />} />
             <Route path="stock/import" element={<ImportScreen />} />
-            <Route path="ventes" element={<ComingSoon title="Ventes" />} />
+            <Route path="ventes" element={<VentesScreen />} />
             <Route path="plus" element={<PlusScreen />} />
-            <Route path="clients" element={<ComingSoon title="Clients" />} />
-            <Route path="depenses" element={<ComingSoon title="Dépenses" />} />
+            <Route path="clients" element={<ClientsScreen />} />
+            <Route path="depenses" element={<DepensesScreen />} />
+            <Route path="journee" element={<JourneeScreen />} />
             <Route path="inventaire" element={<ComingSoon title="Inventaire" />} />
             <Route path="rapports" element={<ComingSoon title="Rapports" />} />
             <Route path="equipe" element={<TeamScreen />} />

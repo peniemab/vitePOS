@@ -16,6 +16,8 @@ const sale: Sale = {
   total: 2767,
   currency: "CDF",
   payment: { method: "especes", currency: "USD", rate: 2850, due: 0.97, received: 1, change: 0.03 },
+  clientId: "",
+  clientName: "",
   status: "validee",
   cancelReason: "",
   cancelledByName: "",

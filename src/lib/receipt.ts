@@ -39,6 +39,7 @@ export function receiptLines(shop: ReceiptShop, sale: Sale): ReceiptLine[] {
     { kind: "text", text: `N° ${ticketNumber(sale.id)}` },
     { kind: "text", text: `Vendeur : ${sale.memberName}` },
   ];
+  if (sale.clientName) out.push({ kind: "text", text: `Client : ${sale.clientName}` });
   if (sale.status === "annulee") out.push({ kind: "center", text: "*** VENTE ANNULÉE ***" });
   out.push({ kind: "rule" });
 

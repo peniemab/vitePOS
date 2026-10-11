@@ -2,6 +2,7 @@
 import { Link } from "react-router";
 import { Paper, Text, ThemeIcon, UnstyledButton } from "@mantine/core";
 import {
+  IconCalendarCheck,
   IconChartBar,
   IconChevronRight,
   IconClipboardCheck,
@@ -17,6 +18,7 @@ import { canManageTeam } from "../lib/roles";
 export function PlusScreen() {
   const { member, permissions } = useReady();
   const items = [
+    { to: "/journee", label: "Journée de caisse", icon: IconCalendarCheck, show: permissions.closeCash || permissions.viewReports },
     { to: "/clients", label: "Clients", icon: IconUsers, show: true },
     { to: "/depenses", label: "Dépenses", icon: IconWallet, show: true },
     { to: "/inventaire", label: "Inventaire", icon: IconClipboardCheck, show: permissions.manageStock },

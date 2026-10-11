@@ -15,21 +15,25 @@ import {
   Paper,
   ScrollArea,
   SegmentedControl,
+  Select,
   SimpleGrid,
   Stack,
   Text,
   UnstyledButton,
 } from "@mantine/core";
-import { IconMinus, IconPlus, IconShoppingCart, IconStarFilled, IconTrash } from "@tabler/icons-react";
+import { IconMinus, IconPlus, IconShoppingCart, IconStarFilled, IconTrash, IconUserPlus, IconX } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useActor, useCatalog } from "../data/products";
 import { createSale, useCart } from "../data/sales";
+import { useClients } from "../data/clients";
+import { ClientModal } from "./ClientsScreen";
 import { BarcodeField } from "../components/BarcodeField";
 import { formatQty } from "../components/ProductModal";
 import { Money } from "../components/ui";
 import { computePayment, lineTotal, suggestedBills, type PaymentMethod } from "../lib/cart";
 import { convert, formatMoney, hasValidUsdRate, type Currency } from "../lib/fx";
 import { collectCategories, findByBarcode, matchProduct, sortForCheckout, stockLevel, type Product } from "../lib/products";
+import { matchClient } from "../lib/clients";
 
 const VISIBLE = 120;
 
@@ -330,6 +334,8 @@ function CartPanel({ onPay }: { onPay: () => void }) {
         })}
       </div>
 
+      <ClientPicker />
+
       {permissions.editPrices && (
         <Group justify="space-between">
           <Text size="sm">Remise</Text>
@@ -417,7 +423,7 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
   function submit(e: FormEvent) {
     e.preventDefault();
     if ("error" in result || !result.ok || !cart.lines.length) return;
-    const id = createSale(actor, boutique.currency, cart.lines, cart.discountPercent, input, result);
+    const id = createSale(actor, boutique.currency, cart.lines, cart.discountPercent, input, result, cart.client ?? undefined);
     cart.clear();
     onClose();
     navigate(`/ticket/${id}`, { state: { justSold: true } });
@@ -521,5 +527,54 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
         </Stack>
       </form>
     </Modal>
+  );
+}
+
+/* ---------- Client de la vente (facultatif) ---------- */
+
+function ClientPicker() {
+  const cart = useCart();
+  const { clients } = useClients();
+  const [creating, setCreating] = useState(false);
+
+  if (cart.client)
+    return (
+      <Group justify="space-between" wrap="nowrap">
+        <Text size="sm" truncate>
+          Client : <b>{cart.client.name}</b>
+        </Text>
+        <ActionIcon variant="subtle" color="gray" aria-label="Retirer le client" onClick={() => cart.setClient(null)}>
+          <IconX size={16} />
+        </ActionIcon>
+      </Group>
+    );
+
+  return (
+    <Group gap="xs" wrap="nowrap" align="flex-end">
+      <Select
+        size="sm"
+        placeholder="Client (facultatif)"
+        searchable
+        clearable
+        nothingFoundMessage="Aucun client"
+        style={{ flex: 1 }}
+        data={(clients ?? []).map((c) => ({ value: c.id, label: c.phone ? `${c.name} · ${c.phone}` : c.name }))}
+        filter={({ options, search }) =>
+          options.filter((o) => {
+            const c = clients?.find((x) => x.id === (o as { value: string }).value);
+            return !!c && matchClient(c, search);
+          })
+        }
+        value={null}
+        onChange={(id) => {
+          const c = clients?.find((x) => x.id === id);
+          if (c) cart.setClient({ id: c.id, name: c.name });
+        }}
+      />
+      <ActionIcon variant="default" size="lg" aria-label="Nouveau client" onClick={() => setCreating(true)}>
+        <IconUserPlus size={18} />
+      </ActionIcon>
+      <ClientModal client={null} opened={creating} onClose={() => setCreating(false)} onCreated={(c) => cart.setClient(c)} />
+    </Group>
   );
 }
