@@ -4,12 +4,16 @@
   --app-surface: #ffffff;
   --app-due: #b6171e;
   --app-paid: #2e7d4f;
+  --app-series-1: #2a78d6;
+  --app-grid: #e6e7e3;
 }
 :root[data-mantine-color-scheme="dark"] {
   --mantine-color-body: #0f141c;
   --app-surface: #171e2a;
   --app-due: #f6827a;
   --app-paid: #7fc79a;
+  --app-series-1: #3987e5;
+  --app-grid: #2b3442;
 }
 
 body {
@@ -241,4 +245,18 @@ body {
   .mantine-Input-input {
     font-size: max(16px, 1em) !important;
   }
+}
+
+/* Graphique des ventes : info-bulle au survol d'une colonne */
+.chart-tip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--mantine-color-body);
+  border: 1px solid var(--mantine-color-default-border);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  font-size: 0.82rem;
+  white-space: nowrap;
 }

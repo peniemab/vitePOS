@@ -5,7 +5,6 @@ import { SessionProvider, useSession } from "./data/session";
 import { Layout } from "./components/Layout";
 import { CatalogProvider } from "./data/products";
 import { CartProvider } from "./data/sales";
-import { ComingSoon } from "./components/ui";
 import { ForgotPasswordScreen, LoginScreen, SignupScreen } from "./screens/AuthScreens";
 import {
   ConfigMissingScreen,
@@ -25,6 +24,8 @@ const VentesScreen = lazy(() => import("./screens/VentesScreen").then((m) => ({ 
 const ClientsScreen = lazy(() => import("./screens/ClientsScreen").then((m) => ({ default: m.ClientsScreen })));
 const DepensesScreen = lazy(() => import("./screens/DepensesScreen").then((m) => ({ default: m.DepensesScreen })));
 const JourneeScreen = lazy(() => import("./screens/JourneeScreen").then((m) => ({ default: m.JourneeScreen })));
+const InventaireScreen = lazy(() => import("./screens/InventaireScreen").then((m) => ({ default: m.InventaireScreen })));
+const RapportsScreen = lazy(() => import("./screens/RapportsScreen").then((m) => ({ default: m.RapportsScreen })));
 const StockScreen = lazy(() => import("./screens/StockScreen").then((m) => ({ default: m.StockScreen })));
 const ImportScreen = lazy(() => import("./screens/ImportScreen").then((m) => ({ default: m.ImportScreen })));
 const SettingsScreen = lazy(() => import("./screens/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
@@ -64,8 +65,8 @@ function Gate() {
             <Route path="clients" element={<ClientsScreen />} />
             <Route path="depenses" element={<DepensesScreen />} />
             <Route path="journee" element={<JourneeScreen />} />
-            <Route path="inventaire" element={<ComingSoon title="Inventaire" />} />
-            <Route path="rapports" element={<ComingSoon title="Rapports" />} />
+            <Route path="inventaire" element={<InventaireScreen />} />
+            <Route path="rapports" element={<RapportsScreen />} />
             <Route path="equipe" element={<TeamScreen />} />
             <Route path="parametres" element={<SettingsScreen />} />
             <Route path="*" element={<Navigate to="/" replace />} />

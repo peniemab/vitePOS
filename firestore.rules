@@ -32,6 +32,11 @@ rules_version = '2';
 // - boutiques/{bid}/cashDays/{AAAA-MM-JJ} : status (open|closed), openingFloat {CDF, USD}, openedBy,
 //   openedByName, openedAt, puis à la clôture : closing {counted, expected, variance : {CDF, USD},
 //   salesCount, revenue, notes}, closedBy, closedByName, closedAt
+// - boutiques/{bid}/inventories/{iid} : label, status (en_cours|validee|annulee), createdBy, createdByName,
+//   createdAt, clientAtMs, puis à la fin : validatedBy, validatedByName, validatedAt, gapsCount,
+//   missingValue, surplusValue
+// - boutiques/{bid}/inventories/{iid}/lines/{pid} : name, unit, theoretical (stock au moment du comptage),
+//   counted, countedBy, countedByName, countedAt
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -215,7 +220,7 @@ service cloud.firestore {
           && request.resource.data.reason.size() <= 200
           && (
             // Saisie manuelle : réservée à ceux qui gèrent le stock.
-            (request.resource.data.type in ['reappro', 'casse', 'don', 'correction'] && can(bid, 'manageStock'))
+            (request.resource.data.type in ['reappro', 'casse', 'don', 'correction', 'inventaire'] && can(bid, 'manageStock'))
             // Vente : la vente citée est créée dans la même écriture et pointe vers ce mouvement.
             || (request.resource.data.type == 'vente'
                 && saleAfter(bid).movementId == mid
@@ -225,7 +230,6 @@ service cloud.firestore {
                 && saleAfter(bid).cancelMovementId == mid
                 && saleAfter(bid).cancelledAt == request.time)
           );
-        // Les mouvements d'inventaire arrivent avec l'étape 5.
       }
 
       // ---------- Ventes ----------
@@ -315,6 +319,46 @@ service cloud.firestore {
           && request.resource.data.status == 'annulee'
           && request.resource.data.cancelledBy == request.auth.uid
           && request.resource.data.cancelledAt == request.time;
+      }
+
+      // ---------- Inventaires ----------
+      // Compter et valider sont réservés à ceux qui gèrent le stock. Les écarts sont appliqués par des
+      // mouvements « inventaire » ; un inventaire terminé (validé ou annulé) ne change plus.
+
+      match /inventories/{iid} {
+        allow read: if isActive(bid);
+
+        allow create: if can(bid, 'manageStock')
+          && request.resource.data.keys().hasOnly(['label', 'status', 'createdBy', 'createdByName', 'createdAt', 'clientAtMs'])
+          && request.resource.data.label is string
+          && request.resource.data.label.size() <= 80
+          && request.resource.data.status == 'en_cours'
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.createdByName is string
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.clientAtMs is number;
+
+        allow update: if can(bid, 'manageStock')
+          && resource.data.status == 'en_cours'
+          && request.resource.data.status in ['validee', 'annulee']
+          && changes().hasOnly(['status', 'validatedBy', 'validatedByName', 'validatedAt', 'gapsCount', 'missingValue', 'surplusValue'])
+          && request.resource.data.validatedBy == request.auth.uid
+          && request.resource.data.validatedAt == request.time;
+
+        match /lines/{pid} {
+          allow read: if isActive(bid);
+          allow create, update: if can(bid, 'manageStock')
+            && get(/databases/$(database)/documents/boutiques/$(bid)/inventories/$(iid)).data.status == 'en_cours'
+            && request.resource.data.keys().hasOnly(['name', 'unit', 'theoretical', 'counted', 'countedBy', 'countedByName', 'countedAt'])
+            && request.resource.data.name is string
+            && request.resource.data.name.size() <= 120
+            && request.resource.data.unit in ['u', 'kg', 'L']
+            && request.resource.data.theoretical is number
+            && request.resource.data.counted is number
+            && request.resource.data.counted >= 0
+            && request.resource.data.countedBy == request.auth.uid
+            && request.resource.data.countedAt == request.time;
+        }
       }
 
       // ---------- Journées de caisse ----------

@@ -1,24 +1,60 @@
-/** Accueil : bonjour, taux du jour et raccourcis. Le tableau de bord des ventes arrive avec l'étape 2. */
+/** Accueil : ventes du jour comparées à hier, alertes de stock, taux du jour et raccourcis. */
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Button, Group, Paper, SimpleGrid, Text } from "@mantine/core";
 import { IconAlertTriangle, IconCash, IconChevronRight, IconPackage } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
+import { watchSalesBetween } from "../data/sales";
 import { needsRestock } from "../lib/products";
 import { PageTitle } from "../components/ui";
+import { dayKey } from "../lib/cart";
+import { shiftDay } from "../lib/cashday";
+import { changePercent } from "../lib/reports";
 import { formatMoney } from "../lib/fx";
 import { ROLE_LABELS } from "../lib/roles";
+import type { Sale } from "../lib/sales";
 
 export function HomeScreen() {
-  const { member, boutique } = useReady();
+  const { member, boutique, permissions } = useReady();
   const { products } = useCatalog();
   const alerts = products?.filter(needsRestock).length ?? 0;
   const firstName = member.name.split(" ")[0] || member.email;
+  const today = dayKey(Date.now());
+  const yesterday = shiftDay(today, -1);
+  const [sales, setSales] = useState<Sale[]>();
+
+  useEffect(() => watchSalesBetween(boutique.id, yesterday, today, setSales, () => setSales([])), [boutique.id, yesterday, today]);
+
+  // Un vendeur sans accès aux rapports voit seulement ses propres ventes.
+  const mine = permissions.viewReports ? sales : sales?.filter((s) => s.uid === member.uid);
+  const totalOf = (day: string) => {
+    const valid = (mine ?? []).filter((s) => s.dayKey === day && s.status === "validee");
+    return { revenue: valid.reduce((n, s) => n + s.total, 0), count: valid.length };
+  };
+  const t = totalOf(today);
+  const y = totalOf(yesterday);
+  const delta = changePercent(t.revenue, y.revenue);
 
   return (
     <>
       <PageTitle title={`Bonjour ${firstName}`} sub={`${boutique.name} · ${ROLE_LABELS[member.role]}`} />
-      <SimpleGrid cols={{ base: 1, sm: 2 }} mb="lg">
+
+      <Paper component={Link} to="/ventes" p="md" mb="md" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
+        <Text size="sm" c="dimmed">
+          {permissions.viewReports ? "Ventes d'aujourd'hui" : "Vos ventes d'aujourd'hui"}
+        </Text>
+        <Text fz={40} fw={700} className="n" lh={1.15}>
+          {mine ? formatMoney(t.revenue, boutique.currency) : "…"}
+        </Text>
+        <Text size="sm" c="dimmed">
+          {t.count} vente{t.count > 1 ? "s" : ""}
+          {delta != null && ` · ${delta > 0 ? "+" : ""}${delta} % par rapport à hier`}
+          {delta == null && y.revenue === 0 && mine ? " · aucune vente hier" : ""}
+        </Text>
+      </Paper>
+
+      <SimpleGrid cols={{ base: 1, sm: 2 }} mb="md">
         <Button component={Link} to="/caisse" size="xl" leftSection={<IconCash size={24} />}>
           Ouvrir la caisse
         </Button>
@@ -26,6 +62,7 @@ export function HomeScreen() {
           Voir le stock
         </Button>
       </SimpleGrid>
+
       {alerts > 0 && (
         <Paper component={Link} to="/stock" p="md" mb="md" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
           <Group wrap="nowrap">
@@ -42,6 +79,7 @@ export function HomeScreen() {
           </Group>
         </Paper>
       )}
+
       <Paper p="md">
         <Text size="sm" c="dimmed">
           Taux du jour

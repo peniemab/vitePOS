@@ -58,6 +58,14 @@ export function watchExpensesOfDay(boutiqueId: string, day: string, cb: (e: Expe
   );
 }
 
+export function watchExpensesBetween(boutiqueId: string, start: string, end: string, cb: (e: Expense[]) => void, onError: (e: unknown) => void) {
+  return onSnapshot(
+    query(expensesCol(boutiqueId), where("dayKey", ">=", start), where("dayKey", "<=", end)),
+    (s) => cb(s.docs.map((d) => toExpense(d.id, d.data()))),
+    onError,
+  );
+}
+
 export function createExpense(
   actor: Actor,
   input: { amount: number; currency: Currency; category: ExpenseCategory; description: string; fromTill: boolean },

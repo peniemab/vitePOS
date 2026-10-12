@@ -89,6 +89,15 @@ export function watchSalesOfDay(boutiqueId: string, day: string, cb: (sales: Sal
   );
 }
 
+/** Les ventes d'une période (jours « AAAA-MM-JJ » inclus). */
+export function watchSalesBetween(boutiqueId: string, start: string, end: string, cb: (sales: Sale[]) => void, onError: (e: unknown) => void) {
+  return onSnapshot(
+    query(salesCol(boutiqueId), where("dayKey", ">=", start), where("dayKey", "<=", end)),
+    (s) => cb(s.docs.map((d) => toSale(d.id, d.data(), !d.metadata.hasPendingWrites))),
+    onError,
+  );
+}
+
 /** Les 50 derniers achats d'un client. */
 export function watchClientSales(boutiqueId: string, clientId: string, cb: (sales: Sale[]) => void, onError: (e: unknown) => void) {
   return onSnapshot(
