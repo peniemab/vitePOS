@@ -1,13 +1,13 @@
-/** Paramètres : mon nom, taux du jour (gérant et propriétaire), réglages de la boutique (propriétaire). */
+/** Paramètres : mon nom, taux du jour et réglages de la boutique (propriétaire seulement). */
 import { useState } from "react";
 import { Button, Group, NumberInput, Paper, SegmentedControl, Stack, Switch, Text, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useReady } from "../data/session";
-import { updateBoutique, updateOwnName, updateUsdRate } from "../data/boutique";
+import { updateBoutique, updateOwnName, updateRate } from "../data/boutique";
 import { errorMessage } from "../data/errors";
 import { PageTitle } from "../components/ui";
 import { confirmLogout } from "../components/Layout";
-import type { Currency } from "../lib/fx";
+import { CURRENCIES, CURRENCY_LIST, type Currency } from "../lib/fx";
 
 function onError(e: unknown) {
   notifications.show({ color: "red", title: "Enregistrement refusé", message: errorMessage(e), autoClose: false });
@@ -20,10 +20,12 @@ function saved() {
 export function SettingsScreen() {
   const { boutique, member } = useReady();
   const isOwner = member.role === "proprietaire";
-  const canEditRate = member.role !== "vendeur";
+  // Le taux du jour est fixé par le propriétaire ; les autres le voient sans pouvoir le changer.
+  const canEditRate = isOwner;
 
   const [name, setName] = useState(member.name);
-  const [rate, setRate] = useState<number | string>(boutique.usdRateCdf || "");
+  const [usdRate, setUsdRate] = useState<number | string>(boutique.usdRateCdf || "");
+  const [eurRate, setEurRate] = useState<number | string>(boutique.eurRateCdf || "");
   const [shopName, setShopName] = useState(boutique.name);
 
   return (
@@ -52,33 +54,47 @@ export function SettingsScreen() {
         </Paper>
 
         <Paper p="md">
-          <Title order={4} mb="sm">
+          <Title order={4} mb={canEditRate ? "sm" : 4}>
             Taux du jour
           </Title>
-          <Group align="flex-end">
-            <NumberInput
-              label="FC pour 1 $"
-              min={1}
-              thousandSeparator=" "
-              hideControls
-              inputMode="decimal"
-              disabled={!canEditRate}
-              value={rate}
-              onChange={setRate}
-              style={{ flex: 1 }}
-            />
-            {canEditRate && (
-              <Button
-                disabled={!(Number(rate) > 0) || Number(rate) === boutique.usdRateCdf}
-                onClick={() => {
-                  updateUsdRate(boutique.id, Number(rate), onError);
-                  saved();
-                }}
-              >
-                Mettre à jour
-              </Button>
-            )}
-          </Group>
+          {!canEditRate && (
+            <Text size="sm" c="dimmed" mb="sm">
+              Fixé par le propriétaire de la boutique.
+            </Text>
+          )}
+          <Stack>
+            {(
+              [
+                { c: "USD", label: "FC pour 1 $", value: usdRate, set: setUsdRate, current: boutique.usdRateCdf },
+                { c: "EUR", label: "FC pour 1 € (laisser vide si vous n'utilisez pas l'euro)", value: eurRate, set: setEurRate, current: boutique.eurRateCdf },
+              ] as const
+            ).map((r) => (
+              <Group key={r.c} align="flex-end">
+                <NumberInput
+                  label={r.label}
+                  min={1}
+                  thousandSeparator=" "
+                  hideControls
+                  inputMode="decimal"
+                  disabled={!canEditRate}
+                  value={r.value}
+                  onChange={r.set}
+                  style={{ flex: 1 }}
+                />
+                {canEditRate && (
+                  <Button
+                    disabled={!(Number(r.value) > 0) || Number(r.value) === r.current}
+                    onClick={() => {
+                      updateRate(boutique.id, r.c, Number(r.value), onError);
+                      saved();
+                    }}
+                  >
+                    Mettre à jour
+                  </Button>
+                )}
+              </Group>
+            ))}
+          </Stack>
         </Paper>
 
         {isOwner && (
@@ -113,10 +129,7 @@ export function SettingsScreen() {
                   fullWidth
                   value={boutique.currency}
                   onChange={(v) => updateBoutique(boutique.id, { currency: v as Currency }, onError)}
-                  data={[
-                    { value: "CDF", label: "Franc congolais (FC)" },
-                    { value: "USD", label: "Dollar ($)" },
-                  ]}
+                  data={CURRENCY_LIST.map((c) => ({ value: c, label: `${CURRENCIES[c].short} (${CURRENCIES[c].symbol})` }))}
                 />
               </div>
               <div>

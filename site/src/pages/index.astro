@@ -1,0 +1,219 @@
+---
+import Base from "../layouts/Base.astro";
+import Shot from "../components/Shot.astro";
+import { audiences, faqs, features, SIGNUP_URL, steps, strengths } from "../data/content";
+import { icons } from "../data/icons";
+---
+
+<Base
+  title="vitePOS · La caisse des commerces congolais, même sans internet"
+  description="vitePOS : caisse, stock et ventes sur votre téléphone. Encaissez en francs, en dollars ou en mobile money, même sans internet. Gratuit pour commencer."
+>
+  <!-- Accroche -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Caisse · Stock · Ventes</p>
+        <h1>La caisse qui vend en francs et en dollars, même sans internet.</h1>
+        <p class="lead">
+          vitePOS transforme votre téléphone en caisse : vous encaissez en quelques secondes, le stock se met à jour tout seul
+          et vous suivez votre boutique, même à distance.
+        </p>
+        <div class="cta-row">
+          <a class="btn" href={SIGNUP_URL}>Commencer gratuitement</a>
+          <a class="btn btn-ghost" href="#fonctions">Voir les fonctions</a>
+        </div>
+        <ul class="ticks">
+          <li>Gratuit pour commencer</li>
+          <li>Sans matériel à acheter</li>
+          <li>Prêt en 5 minutes</li>
+        </ul>
+      </div>
+      <div class="hero-phones">
+        <div class="back"><Shot name="tel-accueil" device="tel" alt="Accueil de vitePOS : ventes du jour et alertes de stock" eager /></div>
+        <div class="front"><Shot name="tel-caisse" device="tel" alt="La caisse de vitePOS avec un panier en cours" eager /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Points forts -->
+  <section class="strip">
+    <div class="wrap strip-grid">
+      {strengths.map((s) => <div><strong>{s.title}</strong><span>{s.text}</span></div>)}
+    </div>
+  </section>
+
+  <!-- Appareils -->
+  <section id="appareils" class="section">
+    <div class="wrap">
+      <h2>Une seule caisse, sur tous vos appareils</h2>
+      <p class="section-lead">
+        Les vrais écrans de vitePOS. Téléphone, tablette, ordinateur ou terminal de caisse : il fonctionne partout où il y a
+        un navigateur récent, et tout reste synchronisé.
+      </p>
+      <div class="shots-wide">
+        <figure class="shot-cell">
+          <Shot name="tablette-caisse" device="tablette" alt="La caisse sur tablette : articles à gauche, panier à droite" />
+          <figcaption><b>Caisse sur tablette</b>Les articles à gauche, le panier à droite : idéal au comptoir.</figcaption>
+        </figure>
+        <figure class="shot-cell">
+          <Shot name="ordi-journee" device="ordi" alt="La journée de caisse : argent attendu dans le tiroir en FC, $ et €" />
+          <figcaption><b>Journée de caisse</b>L'argent attendu dans le tiroir en FC, $ et €, puis la clôture.</figcaption>
+        </figure>
+      </div>
+      <div class="shots-phones">
+        <figure class="shot-cell">
+          <Shot name="tel-ticket" device="tel" alt="Un ticket de vente avec la monnaie rendue" />
+          <figcaption><b>Le ticket</b>Imprimé, ou envoyé au client par WhatsApp.</figcaption>
+        </figure>
+        <figure class="shot-cell">
+          <Shot name="tel-stock" device="tel" alt="Le stock avec ses alertes de rupture" />
+          <figcaption><b>Le stock</b>Recherche, catégories, alertes de rupture.</figcaption>
+        </figure>
+        <figure class="shot-cell">
+          <Shot name="tel-accueil" device="tel" alt="Les ventes du jour comparées à hier" />
+          <figcaption><b>Votre boutique à distance</b>Les ventes du jour comparées à hier, où que vous soyez.</figcaption>
+        </figure>
+      </div>
+      <div class="shots-laptops">
+        <figure class="shot-cell">
+          <Shot name="ordi-ventes" device="ordi" alt="Les ventes du jour, ticket par ticket" />
+          <figcaption><b>Les ventes du jour</b>Chaque ticket, qui l'a vendu et comment il a été payé.</figcaption>
+        </figure>
+        <figure class="shot-cell">
+          <Shot name="ordi-stock" device="ordi" alt="Le stock sur ordinateur" />
+          <figcaption><b>Le stock sur ordinateur</b>Tout le catalogue, les prix et les quantités.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fonctions -->
+  <section id="fonctions" class="section">
+    <div class="wrap">
+      <h2>Tout pour tenir votre commerce</h2>
+      <p class="section-lead">Les outils d'une grande surface, simples comme une calculatrice.</p>
+      <div class="cards">
+        {
+          features.map((f) => (
+            <article class="card">
+              <div class="icon" set:html={icons[f.icon]} />
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Pour qui -->
+  <section id="pour-qui" class="section section-alt">
+    <div class="wrap">
+      <h2>Du kiosque au supermarché</h2>
+      <p class="section-lead">vitePOS grandit avec votre commerce.</p>
+      <div class="audience">
+        {
+          audiences.map((a) => (
+            <div class="aud">
+              <h3>{a.title}</h3>
+              <p>{a.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Matériel -->
+  <section id="materiel" class="section">
+    <div class="wrap">
+      <h2>Le matériel que vous avez déjà suffit</h2>
+      <p class="section-lead">Commencez avec votre téléphone, ajoutez du matériel quand votre commerce grandit.</p>
+      <div class="hardware">
+        <div class="hw">
+          <h3>Appareils</h3>
+          <ul>
+            <li>Téléphone Android ou iPhone</li>
+            <li>Tablette Android ou iPad</li>
+            <li>Ordinateur Windows ou Mac</li>
+            <li>Terminal de caisse Android avec Chrome</li>
+          </ul>
+        </div>
+        <div class="hw">
+          <h3>Tickets</h3>
+          <ul>
+            <li>Imprimante de tickets 58 ou 80 mm en USB, avec Chrome ou Edge sur ordinateur ou tablette</li>
+            <li>Impression depuis la fenêtre d'impression du téléphone</li>
+            <li>Ticket envoyé au client par WhatsApp ou SMS</li>
+          </ul>
+        </div>
+        <div class="hw">
+          <h3>Codes-barres</h3>
+          <ul>
+            <li>Douchette USB ou Bluetooth : elle tape le code toute seule</li>
+            <li>Caméra du téléphone ou de la tablette, sur les navigateurs qui le permettent</li>
+            <li>Codes EAN, UPC, Code 128 et QR</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Pas sûr de votre matériel ? Contactez-nous avant d'acheter : nous vous dirons ce qui fonctionne.</p>
+    </div>
+  </section>
+
+  <!-- Hors ligne -->
+  <section id="hors-ligne" class="section">
+    <div class="wrap split">
+      <div>
+        <h2>Le réseau coupe ? Vous continuez à vendre.</h2>
+        <p>
+          Toutes les ventes sont gardées sur l'appareil et envoyées dès que le réseau revient. Même si deux caisses vendent le
+          même article sans internet, le stock reste juste.
+        </p>
+        <p>
+          Et si un téléphone est perdu ou cassé, tout ce qui a déjà été envoyé est sauvegardé en ligne : vous vous reconnectez
+          sur un autre appareil et vous retrouvez votre boutique.
+        </p>
+      </div>
+      <div class="offline-card" aria-hidden="true">
+        <div class="oc-row"><span class="dot off"></span>Hors ligne · 3 ventes en attente</div>
+        <div class="oc-row"><span class="dot sync"></span>Réseau revenu · envoi en cours…</div>
+        <div class="oc-row"><span class="dot on"></span>En ligne, tout est envoyé</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mise en route -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <h2>Prêt en trois étapes</h2>
+      <ol class="steps">
+        {steps.map((s) => <li><b>{s.title}</b><span>{s.text}</span></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Questions -->
+  <section id="questions" class="section">
+    <div class="wrap narrow">
+      <h2>Questions fréquentes</h2>
+      {
+        faqs.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Appel final -->
+  <section class="final">
+    <div class="wrap final-inner">
+      <h2>Votre caisse est prête en 5 minutes.</h2>
+      <p>Gratuit pour commencer, sans carte bancaire.</p>
+      <a class="btn btn-light" href={SIGNUP_URL}>Créer ma boutique</a>
+    </div>
+  </section>
+</Base>

@@ -14,7 +14,7 @@ import { matchClient, validateClient, type Client } from "../lib/clients";
 import type { Sale } from "../lib/sales";
 
 export function ClientsScreen() {
-  const { boutique } = useReady();
+  const { boutique, subscription } = useReady();
   const { clients, error } = useClients();
   const [q, setQ] = useState("");
   const query = useDeferredValue(q);
@@ -30,7 +30,7 @@ export function ClientsScreen() {
         title="Clients"
         sub={clients ? `${clients.length} client${clients.length > 1 ? "s" : ""}` : undefined}
         right={
-          <Button leftSection={<IconPlus size={18} />} onClick={() => setCreating(true)}>
+          <Button leftSection={<IconPlus size={18} />} disabled={subscription.readOnly} onClick={() => setCreating(true)}>
             Ajouter
           </Button>
         }

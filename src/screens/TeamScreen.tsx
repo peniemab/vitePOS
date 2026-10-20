@@ -1,7 +1,7 @@
 /** Équipe (propriétaire) : code d'invitation, demandes à valider, rôles et désactivation. */
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router";
-import { ActionIcon, Badge, Button, CopyButton, Group, Paper, Select, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { Link, Navigate } from "react-router";
+import { ActionIcon, Alert, Anchor, Badge, Button, CopyButton, Group, Paper, Select, Stack, Text, Title, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useReady } from "../data/session";
@@ -10,13 +10,14 @@ import { errorMessage } from "../data/errors";
 import { useSyncState } from "../data/sync";
 import { PageTitle } from "../components/ui";
 import { canManageTeam, ROLE_LABELS, STATUS_LABELS, type Role } from "../lib/roles";
+import { canAddMember, PLANS } from "../lib/subscription";
 
 function save(p: Promise<void>) {
   p.catch((e) => notifications.show({ color: "red", title: "Modification refusée", message: errorMessage(e) }));
 }
 
 export function TeamScreen() {
-  const { boutique, member: me } = useReady();
+  const { boutique, member: me, subscription } = useReady();
   const { online } = useSyncState();
   const [members, setMembers] = useState<Member[]>();
   const [error, setError] = useState<string>();
@@ -27,6 +28,9 @@ export function TeamScreen() {
 
   const pending = members?.filter((m) => m.status === "pending") ?? [];
   const others = members?.filter((m) => m.status !== "pending") ?? [];
+  const activeCount = members?.filter((m) => m.status === "active").length ?? 0;
+  const roomLeft = canAddMember(boutique.plan, activeCount) && !subscription.readOnly;
+  const max = PLANS[boutique.plan].maxMembers;
 
   return (
     <>
@@ -61,6 +65,16 @@ export function TeamScreen() {
       {error && <Text c="red" mb="md">{error}</Text>}
       {!members && !error && <div className="loading">Chargement…</div>}
 
+      {members && !roomLeft && !subscription.readOnly && (
+        <Alert color="orange" mb="md">
+          La formule {PLANS[boutique.plan].name} permet {max} comptes actifs. Pour en ajouter,{" "}
+          <Anchor component={Link} to="/abonnement">
+            passez à une formule supérieure
+          </Anchor>{" "}
+          ou désactivez un compte.
+        </Alert>
+      )}
+
       {pending.length > 0 && (
         <>
           <Title order={3} mb="xs">
@@ -72,7 +86,7 @@ export function TeamScreen() {
                 <Group justify="space-between" wrap="wrap">
                   <MemberLabel member={m} />
                   <Group gap="xs">
-                    <Button size="sm" onClick={() => save(updateMember(boutique.id, m.uid, { status: "active" }))}>
+                    <Button size="sm" disabled={!roomLeft} onClick={() => save(updateMember(boutique.id, m.uid, { status: "active" }))}>
                       Valider
                     </Button>
                     <Button
@@ -117,6 +131,7 @@ export function TeamScreen() {
                       size="sm"
                       variant={m.status === "active" ? "default" : "light"}
                       color={m.status === "active" ? "red" : undefined}
+                      disabled={m.status !== "active" && !roomLeft}
                       onClick={() =>
                         save(updateMember(boutique.id, m.uid, { status: m.status === "active" ? "disabled" : "active" }))
                       }

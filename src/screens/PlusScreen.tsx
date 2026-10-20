@@ -5,6 +5,7 @@ import {
   IconCalendarCheck,
   IconChartBar,
   IconChevronRight,
+  IconCreditCard,
   IconClipboardCheck,
   IconSettings,
   IconUsers,
@@ -24,6 +25,7 @@ export function PlusScreen() {
     { to: "/inventaire", label: "Inventaire", icon: IconClipboardCheck, show: permissions.manageStock },
     { to: "/rapports", label: "Rapports", icon: IconChartBar, show: permissions.viewReports },
     { to: "/equipe", label: "Équipe", icon: IconUsersGroup, show: canManageTeam(member.role) },
+    { to: "/abonnement", label: "Mon abonnement", icon: IconCreditCard, show: member.role === "proprietaire" },
     { to: "/parametres", label: "Paramètres", icon: IconSettings, show: true },
   ].filter((i) => i.show);
 

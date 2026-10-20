@@ -16,7 +16,7 @@ import { formatQty } from "../components/ProductModal";
 import { PageTitle } from "../components/ui";
 import { gapTotals, inventoryGaps, type CountLine } from "../lib/inventory";
 import { formatMoney } from "../lib/fx";
-import { collectCategories, findByBarcode, matchProduct, sortByName, type Product } from "../lib/products";
+import { collectCategories, findByCode, matchProduct, sortByName, type Product } from "../lib/products";
 
 export function InventaireScreen() {
   const { boutique, permissions } = useReady();
@@ -118,7 +118,7 @@ function Counting({ inventory }: { inventory: Inventory }) {
   }, [active, lines, show, category, query]);
 
   function onScan(code: string) {
-    const p = findByBarcode(active, code);
+    const p = findByCode(active, code);
     if (p) {
       setEditing(p);
       setQ("");
@@ -198,7 +198,7 @@ function Counting({ inventory }: { inventory: Inventory }) {
                   {p.name}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  {p.category} · enregistré : {formatQty(line ? line.theoretical : p.stock, p.unit)}
+                  {p.sku ? `${p.sku} · ` : ""}{p.category} · enregistré : {formatQty(line ? line.theoretical : p.stock, p.unit)}
                 </Text>
               </div>
               {line ? (

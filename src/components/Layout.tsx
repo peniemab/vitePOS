@@ -15,6 +15,8 @@ import {
 import { logout, useReady } from "../data/session";
 import { getSyncState, useSyncState } from "../data/sync";
 import { ROLE_LABELS } from "../lib/roles";
+import { needsAttention } from "../lib/subscription";
+import { SubscriptionBanner } from "./SubscriptionBanner";
 
 export const TABS = [
   { to: "/", label: "Accueil", icon: IconHome, end: true },
@@ -54,7 +56,7 @@ export function confirmLogout() {
 }
 
 export function Layout() {
-  const { boutique, member } = useReady();
+  const { boutique, member, subscription } = useReady();
   const wide = useMediaQuery("(min-width: 62em)", true);
   const { online, pending } = useSyncState();
 
@@ -113,6 +115,7 @@ export function Layout() {
 
       <AppShell.Main>
         <div style={{ maxWidth: 1180, margin: "0 auto", padding: "20px 16px 40px" }}>
+          {needsAttention(subscription) && <SubscriptionBanner />}
           <Suspense fallback={<div className="loading">Chargement…</div>}>
             <Outlet />
           </Suspense>

@@ -24,15 +24,16 @@ import {
 import { IconMinus, IconPlus, IconShoppingCart, IconStarFilled, IconTrash, IconUserPlus, IconX } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useActor, useCatalog } from "../data/products";
+import { currenciesOf, ratesOf } from "../data/boutique";
 import { createSale, useCart } from "../data/sales";
 import { useClients } from "../data/clients";
 import { ClientModal } from "./ClientsScreen";
 import { BarcodeField } from "../components/BarcodeField";
 import { formatQty } from "../components/ProductModal";
 import { Money } from "../components/ui";
-import { computePayment, lineTotal, suggestedBills, type PaymentMethod } from "../lib/cart";
-import { convert, formatMoney, hasValidUsdRate, type Currency } from "../lib/fx";
-import { collectCategories, findByBarcode, matchProduct, sortForCheckout, stockLevel, type Product } from "../lib/products";
+import { computePayment, lineKey, lineTotal, stockByProduct, suggestedBills, type PaymentMethod } from "../lib/cart";
+import { convert, CURRENCIES, formatMoney, hasRate, type Currency } from "../lib/fx";
+import { collectCategories, findScan, matchProduct, packLabel, sortForCheckout, stockLevel, type Pack, type Product } from "../lib/products";
 import { matchClient } from "../lib/clients";
 
 const VISIBLE = 120;
@@ -42,11 +43,21 @@ export function CaisseScreen() {
   const cart = useCart();
   const [cartOpen, setCartOpen] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
-  const { boutique } = useReady();
+  const { boutique, subscription } = useReady();
 
   useEffect(() => {
     if (!cart.lines.length) setCartOpen(false);
   }, [cart.lines.length]);
+
+  if (subscription.readOnly)
+    return (
+      <Paper p="xl" ta="center">
+        <Text fw={700} fz="lg" mb={4}>
+          Caisse en pause
+        </Text>
+        <Text c="dimmed">L'abonnement a pris fin : les ventes reprennent dès le paiement. Vos données restent consultables.</Text>
+      </Paper>
+    );
 
   const openPayment = () => {
     setCartOpen(false);
@@ -100,6 +111,8 @@ function ProductPicker() {
   const [category, setCategory] = useState("");
   const [message, setMessage] = useState<{ text: string; ok: boolean }>();
   const [weighing, setWeighing] = useState<Product | null>(null);
+  // Produit vendu aussi en paquet ou carton : on demande comment le client l'achète.
+  const [choosing, setChoosing] = useState<Product | null>(null);
 
   const active = useMemo(() => (products ?? []).filter((p) => !p.archived), [products]);
   const categories = useMemo(() => collectCategories(active), [active]);
@@ -110,17 +123,24 @@ function ProductPicker() {
     return sortForCheckout(l.filter((p) => matchProduct(p, query)));
   }, [active, category, query]);
 
-  function pick(p: Product) {
+  /** `pack` : `undefined` = demander si le produit a des emballages, `null` = à l'unité. */
+  function pick(p: Product, pack?: Pack | null) {
     if (p.stock <= 0) return setMessage({ text: `Rupture de stock : ${p.name}`, ok: false });
+    if (pack === undefined && p.packs.length) return setChoosing(p);
+    if (pack) {
+      cart.add(p, 1, pack);
+      return setMessage({ text: `+ ${packLabel(pack, p.unit)} · ${p.name}`, ok: true });
+    }
     if (p.unit !== "u") return setWeighing(p);
     cart.add(p);
     setMessage({ text: `+ ${p.name}`, ok: true });
   }
 
   function onScan(code: string) {
-    const found = findByBarcode(active, code);
+    const found = findScan(active, code);
     if (found) {
-      pick(found);
+      // Le code dit déjà ce qui est vendu : la bouteille ou le paquet.
+      pick(found.product, found.pack);
       setQ("");
     } else if (!active.some((p) => matchProduct(p, code))) {
       setMessage({ text: `Aucun produit pour « ${code} »`, ok: false });
@@ -130,7 +150,7 @@ function ProductPicker() {
   return (
     <div>
       <div className="sticky-tools">
-        <BarcodeField value={q} onChange={setQ} onScan={onScan} autoFocus placeholder="Chercher ou scanner un article" />
+        <BarcodeField value={q} onChange={setQ} onScan={onScan} autoFocus placeholder="Nom, code article ou scan" />
         <ScrollArea type="never" mt="xs">
           <Chip.Group value={category} onChange={(v) => setCategory(v as string)}>
             <Group gap={6} wrap="nowrap">
@@ -181,6 +201,16 @@ function ProductPicker() {
         </Text>
       )}
 
+      <PackChooser
+        product={choosing}
+        currency={boutique.currency}
+        onClose={() => setChoosing(null)}
+        onChoose={(pack) => {
+          const p = choosing;
+          setChoosing(null);
+          if (p) pick(p, pack);
+        }}
+      />
       <WeighModal
         product={weighing}
         onClose={() => setWeighing(null)}
@@ -206,6 +236,11 @@ function ProductTile({ product: p, currency, onPick }: { product: Product; curre
           {p.name}
         </Text>
       </Group>
+      {p.sku && (
+        <Text size="xs" c="dimmed" mt={-4} className="n">
+          {p.sku}
+        </Text>
+      )}
       <Group justify="space-between" align="flex-end" mt="auto" gap={4} wrap="nowrap">
         <Text fw={700} size="md">
           <Money value={p.sellPrice} currency={currency} />
@@ -222,7 +257,54 @@ function ProductTile({ product: p, currency, onPick }: { product: Product; curre
           </Badge>
         )}
       </Group>
+      {p.packs.length > 0 && (
+        <Text size="xs" c="dimmed" mt={-4} truncate>
+          ou {packLabel(p.packs[0], p.unit).toLowerCase()}
+          {p.packs.length > 1 ? "…" : ""}
+        </Text>
+      )}
     </UnstyledButton>
+  );
+}
+
+/** « Le client prend une bouteille ou tout le paquet ? » */
+function PackChooser({
+  product,
+  currency,
+  onClose,
+  onChoose,
+}: {
+  product: Product | null;
+  currency: Currency;
+  onClose: () => void;
+  onChoose: (pack: Pack | null) => void;
+}) {
+  return (
+    <Modal opened={!!product} onClose={onClose} title={product?.name}>
+      {product && (
+        <Stack gap="xs">
+          <Text size="sm" c="dimmed">
+            Le client achète :
+          </Text>
+          <Button variant="default" size="lg" justify="space-between" fullWidth onClick={() => onChoose(null)} rightSection={<Money value={product.sellPrice} currency={currency} />}>
+            {product.unit === "u" ? "À l'unité" : `Au ${product.unit === "kg" ? "poids" : "volume"}`}
+          </Button>
+          {product.packs.map((k) => (
+            <Button
+              key={k.id}
+              variant="default"
+              size="lg"
+              justify="space-between"
+              fullWidth
+              onClick={() => onChoose(k)}
+              rightSection={<Money value={k.price} currency={currency} />}
+            >
+              {packLabel(k, product.unit)}
+            </Button>
+          ))}
+        </Stack>
+      )}
+    </Modal>
   );
 }
 
@@ -274,6 +356,8 @@ function CartPanel({ onPay }: { onPay: () => void }) {
   const cart = useCart();
   const c = boutique.currency;
   const stockOf = useMemo(() => new Map((products ?? []).map((p) => [p.id, p.stock])), [products]);
+  // Bouteilles et paquets du même produit puisent dans le même stock.
+  const wanted = useMemo(() => stockByProduct(cart.lines), [cart.lines]);
 
   if (!cart.lines.length)
     return (
@@ -291,17 +375,24 @@ function CartPanel({ onPay }: { onPay: () => void }) {
       <div>
         {cart.lines.map((l) => {
           const stock = stockOf.get(l.productId);
-          const over = stock != null && l.quantity > stock;
-          const step = l.unit === "u" ? 1 : 0.1;
+          const over = stock != null && (wanted.get(l.productId) ?? 0) > stock;
+          const key = lineKey(l);
+          const qtyUnit = l.packId ? "u" : l.unit;
+          const step = qtyUnit === "u" ? 1 : 0.1;
           return (
-            <div key={l.productId} className="list-row" style={{ alignItems: "flex-start" }}>
+            <div key={key} className="list-row" style={{ alignItems: "flex-start" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <Text fw={600} size="sm" truncate>
                   {l.name}
                 </Text>
+                {l.packName && (
+                  <Badge size="sm" variant="light" mb={2}>
+                    {packLabel({ name: l.packName, units: l.packUnits ?? 1 }, l.unit)}
+                  </Badge>
+                )}
                 <Text size="xs" c="dimmed">
                   <Money value={l.unitPrice} currency={c} />
-                  {l.unit !== "u" ? ` /${l.unit}` : ""}
+                  {l.packName ? ` /${l.packName.toLowerCase()}` : l.unit !== "u" ? ` /${l.unit}` : ""}
                 </Text>
                 {over && (
                   <Text size="xs" c="orange">
@@ -314,14 +405,14 @@ function CartPanel({ onPay }: { onPay: () => void }) {
                   <ActionIcon
                     variant="default"
                     aria-label={l.quantity <= step ? "Retirer" : "Moins"}
-                    onClick={() => cart.setQty(l.productId, l.quantity - step)}
+                    onClick={() => cart.setQty(key, l.quantity - step)}
                   >
                     {l.quantity <= step ? <IconTrash size={16} /> : <IconMinus size={16} />}
                   </ActionIcon>
                   <Text className="n" fw={700} w={44} ta="center">
-                    {formatQty(l.quantity, l.unit)}
+                    {formatQty(l.quantity, qtyUnit)}
                   </Text>
-                  <ActionIcon variant="default" aria-label="Plus" onClick={() => cart.setQty(l.productId, l.quantity + step)}>
+                  <ActionIcon variant="default" aria-label="Plus" onClick={() => cart.setQty(key, l.quantity + step)}>
                     <IconPlus size={16} />
                   </ActionIcon>
                 </Group>
@@ -394,31 +485,30 @@ function CartPanel({ onPay }: { onPay: () => void }) {
 
 /* ---------- Encaissement ---------- */
 
-type PayMode = "CDF" | "USD" | "mm";
-
 function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
   const { boutique } = useReady();
   const actor = useActor();
   const cart = useCart();
   const navigate = useNavigate();
   const narrow = useMediaQuery("(max-width: 36em)");
-  const [mode, setMode] = useState<PayMode>(boutique.currency);
+  const [method, setMethod] = useState<PaymentMethod>("especes");
+  const [payCurrency, setPayCurrency] = useState<Currency>(boutique.currency);
   const [received, setReceived] = useState<number | string>("");
 
   useEffect(() => {
     if (opened) {
-      setMode(boutique.currency);
+      setMethod("especes");
+      setPayCurrency(boutique.currency);
       setReceived("");
     }
   }, [opened, boutique.currency]);
 
   const total = cart.totals.total;
-  const rate = boutique.usdRateCdf;
-  const method: PaymentMethod = mode === "mm" ? "mobile_money" : "especes";
-  const payCurrency: Currency = mode === "mm" ? boutique.currency : mode;
+  const rates = ratesOf(boutique);
+  const currencies = currenciesOf(boutique);
   const input = { method, payCurrency, received: Number(received) || 0 };
-  const result = computePayment(total, boutique.currency, rate, input);
-  const other: Currency = boutique.currency === "CDF" ? "USD" : "CDF";
+  const result = computePayment(total, boutique.currency, rates, input);
+  const others = currencies.filter((c) => c !== boutique.currency && hasRate(rates, c) && hasRate(rates, boutique.currency));
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -430,6 +520,7 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
   }
 
   const due = "error" in result ? 0 : result.due;
+  const sym = CURRENCIES[payCurrency].symbol;
 
   return (
     <Modal opened={opened} onClose={onClose} title="Encaissement" fullScreen={narrow} size="md">
@@ -442,25 +533,33 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
             <Text fz={40} fw={700} className="n" lh={1.1}>
               {formatMoney(total, boutique.currency)}
             </Text>
-            {hasValidUsdRate(rate) && (
+            {others.length > 0 && (
               <Text size="sm" c="dimmed" className="n">
-                soit {formatMoney(convert(total, boutique.currency, other, rate), other)} (1 $ = {formatMoney(rate, "CDF")})
+                soit {others.map((c) => formatMoney(convert(total, boutique.currency, c, rates), c)).join(" ou ")}
               </Text>
             )}
           </div>
 
           <SegmentedControl
             fullWidth
-            value={mode}
+            value={method}
             onChange={(v) => {
-              setMode(v as PayMode);
+              setMethod(v as PaymentMethod);
               setReceived("");
             }}
             data={[
-              { value: "CDF", label: "Espèces FC" },
-              { value: "USD", label: "Espèces $" },
-              { value: "mm", label: "Mobile money" },
+              { value: "especes", label: "Espèces" },
+              { value: "mobile_money", label: "Mobile money" },
             ]}
+          />
+          <SegmentedControl
+            fullWidth
+            value={payCurrency}
+            onChange={(v) => {
+              setPayCurrency(v as Currency);
+              setReceived("");
+            }}
+            data={currencies.map((c) => ({ value: c, label: `${CURRENCIES[c].short} (${CURRENCIES[c].symbol})` }))}
           />
 
           {"error" in result ? (
@@ -473,13 +572,13 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
                 </Text>
               )}
               <NumberInput
-                label={`Montant reçu (${payCurrency === "USD" ? "$" : "FC"})`}
+                label={`Montant reçu (${sym})`}
                 size="xl"
                 autoFocus
                 min={0}
                 thousandSeparator=" "
                 decimalSeparator=","
-                decimalScale={payCurrency === "USD" ? 2 : 0}
+                decimalScale={CURRENCIES[payCurrency].decimals}
                 hideControls
                 inputMode="decimal"
                 value={received}

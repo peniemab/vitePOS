@@ -11,10 +11,11 @@ import { DayNav } from "../components/DayNav";
 import { PageTitle } from "../components/ui";
 import { dayKey } from "../lib/cart";
 import { EXPENSE_CATEGORIES, formatMoney2, type Expense, type ExpenseCategory } from "../lib/cashday";
-import { formatMoney, type Currency } from "../lib/fx";
+import { CURRENCIES, formatMoney, zeroMoney, type Currency } from "../lib/fx";
+import { currenciesOf } from "../data/boutique";
 
 export function DepensesScreen() {
-  const { boutique, permissions } = useReady();
+  const { boutique, permissions, subscription } = useReady();
   const actor = useActor();
   const today = dayKey(Date.now());
   const [day, setDay] = useState(today);
@@ -28,7 +29,7 @@ export function DepensesScreen() {
   }, [boutique.id, day]);
 
   const active = expenses?.filter((e) => e.status === "validee") ?? [];
-  const total = { CDF: 0, USD: 0 };
+  const total = zeroMoney();
   for (const e of active) total[e.currency] += e.amount;
   const time = new Intl.DateTimeFormat("fr-FR", { timeStyle: "short" });
 
@@ -47,7 +48,7 @@ export function DepensesScreen() {
       <PageTitle
         title="Dépenses"
         right={
-          <Button leftSection={<IconPlus size={18} />} onClick={() => setAdding(true)}>
+          <Button leftSection={<IconPlus size={18} />} disabled={subscription.readOnly} onClick={() => setAdding(true)}>
             Nouvelle dépense
           </Button>
         }
@@ -104,7 +105,7 @@ export function DepensesScreen() {
         </>
       )}
 
-      <ExpenseModal opened={adding} onClose={() => setAdding(false)} defaultCurrency={boutique.currency} onSaved={() => setDay(today)} />
+      <ExpenseModal opened={adding} onClose={() => setAdding(false)} defaultCurrency={boutique.currency} currencies={currenciesOf(boutique)} onSaved={() => setDay(today)} />
     </>
   );
 }
@@ -113,11 +114,13 @@ function ExpenseModal({
   opened,
   onClose,
   defaultCurrency,
+  currencies,
   onSaved,
 }: {
   opened: boolean;
   onClose: () => void;
   defaultCurrency: Currency;
+  currencies: Currency[];
   onSaved: () => void;
 }) {
   const actor = useActor();
@@ -159,7 +162,7 @@ function ExpenseModal({
               min={0}
               thousandSeparator=" "
               decimalSeparator=","
-              decimalScale={currency === "USD" ? 2 : 0}
+              decimalScale={CURRENCIES[currency].decimals}
               hideControls
               inputMode="decimal"
               value={amount}
@@ -169,10 +172,7 @@ function ExpenseModal({
             <SegmentedControl
               value={currency}
               onChange={(v) => setCurrency(v as Currency)}
-              data={[
-                { value: "CDF", label: "FC" },
-                { value: "USD", label: "$" },
-              ]}
+              data={currencies.map((c) => ({ value: c, label: CURRENCIES[c].symbol }))}
             />
           </Group>
           <Select

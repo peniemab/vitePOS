@@ -7,6 +7,8 @@ import {
   DEFAULT_CATEGORY,
   fold,
   isUnit,
+  nextSku,
+  normalizeSku,
   roundQuantity,
   type Product,
   type ProductInput,
@@ -14,6 +16,8 @@ import {
 } from "./products";
 
 export interface ImportRow {
+  /** Vide : un code est attribué à l'import. */
+  sku: string;
   name: string;
   category: string;
   sellPrice: number;
@@ -31,9 +35,13 @@ export interface ParseResult {
   errors: string[];
 }
 
-type Column = "name" | "category" | "sellPrice" | "buyPrice" | "stock" | "alertThreshold" | "unit" | "barcode" | "favorite";
+type Column = "sku" | "name" | "category" | "sellPrice" | "buyPrice" | "stock" | "alertThreshold" | "unit" | "barcode" | "favorite";
 
 const HEADER_ALIASES: Record<string, Column> = {
+  code_article: "sku",
+  reference: "sku",
+  ref: "sku",
+  sku: "sku",
   nom: "name",
   name: "name",
   produit: "name",
@@ -75,14 +83,14 @@ const HEADER_ALIASES: Record<string, Column> = {
   favorite: "favorite",
 };
 
-export const CSV_HEADER = "nom,categorie,prix_vente,prix_achat,stock,seuil,unite,code_barres,favori";
+export const CSV_HEADER = "code_article,nom,categorie,prix_vente,prix_achat,stock,seuil,unite,code_barres,favori";
 
 export const CSV_TEMPLATE = `${CSV_HEADER}
-Riz 1kg,Alimentation,700,550,40,5,u,,oui
-Huile 1L,Alimentation,1500,1200,20,5,u,,oui
-Savon,Hygiène,300,200,50,10,u,,non
-Lait 1L,Alimentation,900,750,30,5,u,,oui
-Sucre vrac,Alimentation,650,500,25,5,kg,,non
+RIZ-001,Riz 1kg,Riz,700,550,40,5,u,,oui
+HUI-001,Huile 1L,Huile,1500,1200,20,5,u,,oui
+SAV-001,Savon,Savon,300,200,50,10,u,,non
+LAI-001,Lait Nido 400g,Lait,900,750,30,5,u,,oui
+,Sucre vrac,Sucre,650,500,25,5,kg,,non
 `;
 
 function normalizeHeader(h: string): string {
@@ -181,6 +189,7 @@ export function parseProductCsv(text: string): ParseResult {
     const buyPrice = parseNumber(get("buyPrice"));
     const threshold = parseNumber(get("alertThreshold"));
     rows.push({
+      sku: normalizeSku(get("sku")),
       name: name.slice(0, 120),
       category: get("category").slice(0, 60) || DEFAULT_CATEGORY,
       sellPrice,
@@ -216,7 +225,7 @@ export interface ImportPlan {
   updates: ImportUpdate[];
 }
 
-type Existing = Pick<Product, "id" | "name" | "category" | "barcode" | "stock" | "archived">;
+type Existing = Pick<Product, "id" | "sku" | "name" | "category" | "barcode" | "stock" | "archived">;
 
 const nameKey = (name: string, category: string) => `${fold(name)}|${fold(category)}`;
 
@@ -227,6 +236,9 @@ const nameKey = (name: string, category: string) => `${fold(name)}|${fold(catego
 export function planImport(rows: ImportRow[], existing: Existing[]): ImportPlan {
   const active = existing.filter((p) => !p.archived);
   const byBarcode = new Map(active.filter((p) => p.barcode).map((p) => [p.barcode, p]));
+  const bySku = new Map(active.filter((p) => p.sku).map((p) => [p.sku, p]));
+  // Codes déjà pris (archives comprises) : un nouveau code ne doit jamais en réutiliser un.
+  const taken = new Set(existing.map((p) => p.sku).filter(Boolean));
   const byName = new Map(active.map((p) => [nameKey(p.name, p.category), p]));
   const plan: ImportPlan = { creates: [], updates: [] };
   const seen = new Set<string>();
@@ -234,11 +246,15 @@ export function planImport(rows: ImportRow[], existing: Existing[]): ImportPlan 
   for (const row of rows) {
     const key = nameKey(row.name, row.category);
     // Une même ligne en double dans le fichier : seule la première compte.
-    const dedupe = row.barcode ? `b:${row.barcode}` : `n:${key}`;
+    const dedupe = row.sku ? `s:${row.sku}` : row.barcode ? `b:${row.barcode}` : `n:${key}`;
     if (seen.has(dedupe)) continue;
     seen.add(dedupe);
 
+    const prev = (row.sku && bySku.get(row.sku)) || (row.barcode && byBarcode.get(row.barcode)) || byName.get(key);
+    const sku = row.sku || prev?.sku || nextSku(row.category, taken);
+    taken.add(sku);
     const input: ProductInput = {
+      sku,
       name: row.name,
       category: row.category,
       sellPrice: row.sellPrice,
@@ -247,7 +263,6 @@ export function planImport(rows: ImportRow[], existing: Existing[]): ImportPlan 
       barcode: row.barcode,
       favorite: row.favorite,
     };
-    const prev = (row.barcode && byBarcode.get(row.barcode)) || byName.get(key);
     if (prev) {
       const stockDelta = row.stock == null ? 0 : roundQuantity(row.stock - prev.stock, row.unit);
       plan.updates.push({ id: prev.id, input: { ...input, barcode: row.barcode || prev.barcode }, stockDelta, buyPrice: row.buyPrice });
@@ -269,6 +284,7 @@ export function exportProductsCsv(products: Product[], buyPrices?: Map<string, n
     .filter((p) => !p.archived)
     .map((p) =>
       [
+        quote(p.sku),
         quote(p.name),
         quote(p.category),
         p.sellPrice,

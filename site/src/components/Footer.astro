@@ -1,0 +1,12 @@
+---
+import Brand from "./Brand.astro";
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <Brand size="small" />
+    <p>Point de vente rapide et hors ligne, conçu à Kinshasa.</p>
+    <p class="muted">© {year} vitePOS</p>
+  </div>
+</footer>

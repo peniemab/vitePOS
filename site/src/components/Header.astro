@@ -1,0 +1,21 @@
+---
+import Brand from "./Brand.astro";
+import { LOGIN_URL, SIGNUP_URL } from "../data/content";
+---
+
+<header class="top">
+  <div class="wrap top-inner">
+    <Brand />
+    <nav class="nav" aria-label="Sections">
+      <a href="/#fonctions">Fonctions</a>
+      <a href="/#appareils">Appareils</a>
+      <a href="/#pour-qui">Pour qui</a>
+      <a href="/#hors-ligne">Hors ligne</a>
+      <a href="/#questions">Questions</a>
+    </nav>
+    <div class="top-actions">
+      <a class="link" href={LOGIN_URL}>Se connecter</a>
+      <a class="btn btn-small" href={SIGNUP_URL}>Essayer gratuitement</a>
+    </div>
+  </div>
+</header>

@@ -29,7 +29,7 @@ const brick: MantineColorsTuple = [
 
 export const theme = createTheme({
   primaryColor: "navy",
-  primaryShade: { light: 6, dark: 3 },
+  primaryShade: { light: 6, dark: 5 },
   autoContrast: true,
   colors: { navy, brick },
   fontFamily: '"Barlow", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',

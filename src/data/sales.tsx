@@ -13,9 +13,9 @@ import { errorMessage } from "./errors";
 import { track } from "./sync";
 import { useReady } from "./session";
 import type { Actor } from "./products";
-import { addToCart, clampPercent, computeTotals, dayKey, lineTotal, setQuantity, type CartLine, type PaymentInput, type PaymentResult, type Totals } from "../lib/cart";
+import { addToCart, clampPercent, computeTotals, dayKey, lineTotal, setQuantity, stockByProduct, type CartLine, type PaymentInput, type PaymentResult, type Totals } from "../lib/cart";
 import { isCurrency, type Currency } from "../lib/fx";
-import { isUnit, type Product } from "../lib/products";
+import { isUnit, type Pack, type Product } from "../lib/products";
 import type { Sale, SaleLine, SalePayment } from "../lib/sales";
 
 const salesCol = (b: string) => collection(getDb(), "boutiques", b, "sales");
@@ -45,6 +45,7 @@ function toSale(id: string, d: DocumentData, synced: boolean): Sale {
       unitPrice: num(l.unitPrice),
       quantity: num(l.quantity),
       lineTotal: num(l.lineTotal),
+      ...(l.packId ? { packId: String(l.packId), packName: String(l.packName ?? ""), packUnits: num(l.packUnits) || 1 } : {}),
     })),
     subtotal: num(d.subtotal),
     discountPercent: num(d.discountPercent),
@@ -54,7 +55,12 @@ function toSale(id: string, d: DocumentData, synced: boolean): Sale {
     payment: {
       method: p.method === "mobile_money" ? "mobile_money" : "especes",
       currency: isCurrency(p.currency) ? p.currency : "CDF",
-      rate: num(p.rate),
+      // Les anciennes ventes ne gardaient que le taux du dollar.
+      rates: p.rates && typeof p.rates === "object"
+        ? { USD: num((p.rates as Record<string, unknown>).USD), EUR: num((p.rates as Record<string, unknown>).EUR) }
+        : num(p.rate) > 0
+          ? { USD: num(p.rate), EUR: 0 }
+          : null,
       due: num(p.due),
       received: num(p.received),
       change: num(p.change),
@@ -131,11 +137,22 @@ export function createSale(
   const saleRef = doc(salesCol(actor.boutiqueId));
   const movementRef = doc(movementsCol(actor.boutiqueId));
   const totals = computeTotals(cart, discountPercent, currency);
-  const lines: SaleLine[] = cart.map((l) => ({ ...l, lineTotal: lineTotal(l, currency) }));
+  // Firestore refuse les champs `undefined` : les champs d'emballage ne sont écrits que pour un emballage.
+  const lines: SaleLine[] = cart.map((l) => ({
+    productId: l.productId,
+    name: l.name,
+    unit: l.unit,
+    unitPrice: l.unitPrice,
+    quantity: l.quantity,
+    lineTotal: lineTotal(l, currency),
+    ...(l.packId ? { packId: l.packId, packName: l.packName ?? "", packUnits: l.packUnits ?? 1 } : {}),
+  }));
+  // Stock retiré à l'unité, un seul total par produit (bouteilles et paquets additionnés).
+  const out = stockByProduct(lines);
   const payment: SalePayment = {
     method: input.method,
     currency: input.payCurrency,
-    rate: result.rateUsed,
+    rates: result.rates,
     due: result.due,
     received: input.method === "especes" ? input.received : result.due,
     change: result.change,
@@ -144,8 +161,8 @@ export function createSale(
 
   batch.set(movementRef, {
     type: "vente",
-    productIds: lines.map((l) => l.productId),
-    deltas: Object.fromEntries(lines.map((l) => [l.productId, -l.quantity])),
+    productIds: [...out.keys()],
+    deltas: Object.fromEntries([...out].map(([id, q]) => [id, -q])),
     names: Object.fromEntries(lines.map((l) => [l.productId, l.name])),
     reason: "",
     refId: saleRef.id,
@@ -172,9 +189,9 @@ export function createSale(
     createdAt: serverTimestamp(),
     clientAtMs: now,
   });
-  for (const l of lines) {
-    batch.update(doc(productsCol(actor.boutiqueId), l.productId), {
-      stock: increment(-l.quantity),
+  for (const [productId, q] of out) {
+    batch.update(doc(productsCol(actor.boutiqueId), productId), {
+      stock: increment(-q),
       lastMovementId: movementRef.id,
       updatedAt: serverTimestamp(),
       updatedBy: actor.uid,
@@ -197,10 +214,11 @@ export function createSale(
 export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
   const batch = writeBatch(getDb());
   const movementRef = doc(movementsCol(actor.boutiqueId));
+  const back = stockByProduct(sale.lines);
   batch.set(movementRef, {
     type: "annulation",
-    productIds: sale.lines.map((l) => l.productId),
-    deltas: Object.fromEntries(sale.lines.map((l) => [l.productId, l.quantity])),
+    productIds: [...back.keys()],
+    deltas: Object.fromEntries(back),
     names: Object.fromEntries(sale.lines.map((l) => [l.productId, l.name])),
     reason: reason.trim().slice(0, 200),
     refId: sale.id,
@@ -217,9 +235,9 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
     cancelledAt: serverTimestamp(),
     cancelMovementId: movementRef.id,
   });
-  for (const l of sale.lines) {
-    batch.update(doc(productsCol(actor.boutiqueId), l.productId), {
-      stock: increment(l.quantity),
+  for (const [productId, q] of back) {
+    batch.update(doc(productsCol(actor.boutiqueId), productId), {
+      stock: increment(q),
       lastMovementId: movementRef.id,
       updatedAt: serverTimestamp(),
       updatedBy: actor.uid,
@@ -251,8 +269,10 @@ interface Cart {
   client: CartClient | null;
   setClient: (c: CartClient | null) => void;
   totals: Totals;
-  add: (product: Product, qty?: number) => void;
-  setQty: (productId: string, qty: number) => void;
+  /** Ajoute le produit à l'unité, ou un de ses emballages (`pack`). */
+  add: (product: Product, qty?: number, pack?: Pack | null) => void;
+  /** `key` : `lineKey(ligne)`. */
+  setQty: (key: string, qty: number) => void;
   setDiscountPercent: (p: number) => void;
   clear: () => void;
 }
@@ -292,14 +312,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [key, state]);
 
-  const add = useCallback((p: Product, qty = 1) => {
-    setState((s) => ({
-      ...s,
-      lines: addToCart(s.lines, { productId: p.id, name: p.name, unit: p.unit, unitPrice: p.sellPrice }, qty),
-    }));
+  const add = useCallback((p: Product, qty = 1, pack?: Pack | null) => {
+    const line = pack
+      ? { productId: p.id, name: p.name, unit: p.unit, unitPrice: pack.price, packId: pack.id, packName: pack.name, packUnits: pack.units }
+      : { productId: p.id, name: p.name, unit: p.unit, unitPrice: p.sellPrice };
+    setState((s) => ({ ...s, lines: addToCart(s.lines, line, qty) }));
   }, []);
-  const setQty = useCallback((productId: string, qty: number) => {
-    setState((s) => ({ ...s, lines: setQuantity(s.lines, productId, qty) }));
+  const setQty = useCallback((key: string, qty: number) => {
+    setState((s) => ({ ...s, lines: setQuantity(s.lines, key, qty) }));
   }, []);
   const setDiscountPercent = useCallback((p: number) => setState((s) => ({ ...s, discountPercent: clampPercent(p) })), []);
   const setClient = useCallback((client: CartClient | null) => setState((s) => ({ ...s, client })), []);

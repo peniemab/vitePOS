@@ -1,5 +1,5 @@
 /** Dépenses et journée de caisse : résumé du jour, argent attendu, écart à la clôture (logique pure). */
-import { formatMoney, roundMoney, type Currency } from "./fx";
+import { CURRENCY_LIST, formatMoneyByCurrency, roundMoney, zeroMoney, type Currency, type MoneyByCurrency } from "./fx";
 import type { Sale } from "./sales";
 
 export type ExpenseCategory = "transport" | "fournitures" | "loyer" | "communication" | "salaires" | "autres";
@@ -31,12 +31,10 @@ export interface Expense {
   createdAtMs: number;
 }
 
-export interface Money2 {
-  CDF: number;
-  USD: number;
-}
+/** Un montant par devise (FC, $, €). */
+export type Money2 = MoneyByCurrency;
 
-const zero = (): Money2 => ({ CDF: 0, USD: 0 });
+const zero = (): Money2 => zeroMoney();
 
 export interface DaySummary {
   salesCount: number;
@@ -92,7 +90,7 @@ export function summarizeDay(sales: Sale[], expenses: Expense[], priceCurrency: 
     if (e.fromTill) s.tillExpenses[e.currency] += e.amount;
   }
 
-  const round = (m: Money2): Money2 => ({ CDF: roundMoney(m.CDF, "CDF"), USD: roundMoney(m.USD, "USD") });
+  const round = (m: Money2): Money2 => perCurrency((c) => roundMoney(m[c], c));
   s.revenue = roundMoney(s.revenue, priceCurrency);
   s.discounts = roundMoney(s.discounts, priceCurrency);
   s.cash = round(s.cash);
@@ -105,27 +103,24 @@ export function summarizeDay(sales: Sale[], expenses: Expense[], priceCurrency: 
   return s;
 }
 
+function perCurrency(f: (c: Currency) => number): Money2 {
+  const m = zeroMoney();
+  for (const c of CURRENCY_LIST) m[c] = f(c);
+  return m;
+}
+
 /** Argent qui devrait être dans le tiroir : fond de caisse + espèces encaissées − dépenses payées en caisse. */
 export function expectedCash(summary: DaySummary, openingFloat: Money2): Money2 {
-  return {
-    CDF: roundMoney(openingFloat.CDF + summary.cash.CDF - summary.tillExpenses.CDF, "CDF"),
-    USD: roundMoney(openingFloat.USD + summary.cash.USD - summary.tillExpenses.USD, "USD"),
-  };
+  return perCurrency((c) => roundMoney((openingFloat[c] ?? 0) + summary.cash[c] - summary.tillExpenses[c], c));
 }
 
 /** Écart compté − attendu : positif = surplus, négatif = manquant. */
 export function variance(counted: Money2, expected: Money2): Money2 {
-  return {
-    CDF: roundMoney(counted.CDF - expected.CDF, "CDF"),
-    USD: roundMoney(counted.USD - expected.USD, "USD"),
-  };
+  return perCurrency((c) => roundMoney((counted[c] ?? 0) - (expected[c] ?? 0), c));
 }
 
 /** « 12 500 FC + 5,00 $ », seulement les devises non nulles ; « — » si tout est à zéro. */
-export function formatMoney2(m: Money2): string {
-  const parts = [m.CDF ? formatMoney(m.CDF, "CDF") : "", m.USD ? formatMoney(m.USD, "USD") : ""].filter(Boolean);
-  return parts.join(" + ") || "—";
-}
+export const formatMoney2 = formatMoneyByCurrency;
 
 /** Décale un jour « AAAA-MM-JJ » de `delta` jours. */
 export function shiftDay(day: string, delta: number): string {

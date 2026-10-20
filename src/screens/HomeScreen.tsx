@@ -85,7 +85,12 @@ export function HomeScreen() {
           Taux du jour
         </Text>
         <Text fz={28} fw={700} className="n">
-          {boutique.usdRateCdf ? `1 $ = ${formatMoney(boutique.usdRateCdf, "CDF")}` : "Pas encore saisi"}
+          {[
+            boutique.usdRateCdf ? `1 $ = ${formatMoney(boutique.usdRateCdf, "CDF")}` : "",
+            boutique.eurRateCdf ? `1 € = ${formatMoney(boutique.eurRateCdf, "CDF")}` : "",
+          ]
+            .filter(Boolean)
+            .join(" · ") || "Pas encore saisi"}
         </Text>
       </Paper>
     </>

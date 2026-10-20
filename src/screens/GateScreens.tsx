@@ -20,7 +20,8 @@ import { logout } from "../data/session";
 import { createBoutique, joinBoutique, leaveBoutique, type Boutique, type Member, type Profile } from "../data/boutique";
 import { errorMessage } from "../data/errors";
 import { useSyncState } from "../data/sync";
-import type { Currency } from "../lib/fx";
+import { CURRENCIES, CURRENCY_LIST, type Currency } from "../lib/fx";
+import { PLANS, TRIAL_DAYS, type Plan } from "../lib/subscription";
 
 export function LoadingScreen({ text = "Chargement…" }: { text?: string }) {
   return (
@@ -107,7 +108,9 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
   const [name, setName] = useState("");
   const [ownerName, setOwnerName] = useState(profile.name);
   const [currency, setCurrency] = useState<Currency>("CDF");
+  const [plan, setPlan] = useState<Plan>("boutique");
   const [rate, setRate] = useState<number | string>(2850);
+  const [eurRate, setEurRate] = useState<number | string>("");
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
 
@@ -116,10 +119,12 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
     setError(undefined);
     const usdRateCdf = Number(rate);
     if (!(usdRateCdf > 0)) return setError("Entrez le taux du dollar (combien de FC pour 1 $).");
+    const eurRateCdf = Number(eurRate) || 0;
+    if (currency === "EUR" && !(eurRateCdf > 0)) return setError("Entrez le taux de l'euro (combien de FC pour 1 €).");
     setBusy(true);
     try {
       // La session bascule toute seule sur la boutique dès que l'écriture est confirmée.
-      await createBoutique(user, { name, ownerName, currency, usdRateCdf });
+      await createBoutique(user, { name, ownerName, plan, currency, usdRateCdf, eurRateCdf });
     } catch (err) {
       setError(errorMessage(err));
       setBusy(false);
@@ -139,10 +144,7 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
             fullWidth
             value={currency}
             onChange={(v) => setCurrency(v as Currency)}
-            data={[
-              { value: "CDF", label: "Franc congolais (FC)" },
-              { value: "USD", label: "Dollar ($)" },
-            ]}
+            data={CURRENCY_LIST.map((c) => ({ value: c, label: `${CURRENCIES[c].short} (${CURRENCIES[c].symbol})` }))}
           />
         </div>
         <NumberInput
@@ -156,6 +158,32 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
           value={rate}
           onChange={setRate}
         />
+        <NumberInput
+          label="Taux de l'euro"
+          description="Combien de FC pour 1 € (laisser vide si vous n'utilisez pas l'euro)"
+          required={currency === "EUR"}
+          min={1}
+          thousandSeparator=" "
+          hideControls
+          inputMode="decimal"
+          value={eurRate}
+          onChange={setEurRate}
+        />
+        <div>
+          <Text size="sm" fw={500} mb={4}>
+            Formule
+          </Text>
+          <SegmentedControl
+            fullWidth
+            value={plan}
+            onChange={(v) => setPlan(v as Plan)}
+            data={(Object.keys(PLANS) as Plan[]).map((k) => ({ value: k, label: PLANS[k].name }))}
+          />
+          <Text size="xs" c="dimmed" mt={4}>
+            {PLANS[plan].audience}. Gratuit pendant {TRIAL_DAYS} jours, puis {PLANS[plan].monthlyUsd} $ par mois
+            {plan === "supermarche" ? " et par magasin" : ""}. Vous pourrez changer de formule pendant l'essai.
+          </Text>
+        </div>
         {error && <Text c="red" size="sm">{error}</Text>}
         <Button type="submit" fullWidth loading={busy} leftSection={<IconBuildingStore size={18} />}>
           Créer la boutique

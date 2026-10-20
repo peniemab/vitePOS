@@ -10,16 +10,19 @@ rules_version = '2';
 // Modèle de données
 // - users/{uid} : email, name, boutiqueId (boutique ouverte), createdAt, updatedAt
 // - invitations/{code} : boutiqueId, createdBy, createdAt (jamais modifié)
-// - boutiques/{bid} : name, currency (CDF|USD), inviteCode, ownerUid, usdRateCdf, usdRateUpdatedAt,
-//   paperWidthMm, autoPrintTicket, createdAt, updatedAt
+// - boutiques/{bid} : name, currency (CDF|USD|EUR), inviteCode, ownerUid, usdRateCdf, usdRateUpdatedAt,
+//   eurRateCdf, eurRateUpdatedAt,
+//   paperWidthMm, autoPrintTicket, plan (boutique|pro|supermarche), billingCycle (mensuel|annuel),
+//   trialEndsAt, paidUntil (fixé par l'éditeur seulement), createdAt, updatedAt
 // - boutiques/{bid}/members/{uid} : email, name, role (proprietaire|gerant|vendeur),
 //   status (pending|active|disabled), permissions {viewReports, editPrices, closeCash, manageStock}, inviteCode
-// - boutiques/{bid}/products/{pid} : name, category, sellPrice, unit (u|kg|L), stock, alertThreshold,
+// - boutiques/{bid}/products/{pid} : sku (code article, unique dans la boutique), packs (emballages :
+//   [{id, name, barcode, units, price}], 5 au plus ; le stock reste compté à l'unité), name, category, sellPrice, unit (u|kg|L), stock, alertThreshold,
 //   barcode, favorite, archived, lastMovementId, createdAt, createdBy, updatedAt, updatedBy
 // - boutiques/{bid}/productCosts/{pid} : buyPrice, updatedAt, updatedBy
 // - boutiques/{bid}/stockMovements/{mid} : type, productIds[], deltas {pid: quantité signée},
 //   names {pid: nom}, reason, uid, memberName, createdAt (heure serveur), clientAtMs, refId (vente)
-// - boutiques/{bid}/sales/{sid} : uid, memberName, lines [{productId, name, unit, unitPrice, quantity, lineTotal}],
+// - boutiques/{bid}/sales/{sid} : uid, memberName, lines [{productId, name, unit, unitPrice, quantity, lineTotal, et pour un emballage packId, packName, packUnits}],
 //   subtotal, discountPercent, discount, total, currency, payment {method, currency, rate, due, received, change},
 //   clientId, clientName ("" sans client), status (validee|annulee), movementId, dayKey (AAAA-MM-JJ),
 //   createdAt, clientAtMs, puis à l'annulation : cancelReason, cancelledBy, cancelledByName, cancelledAt,
@@ -110,21 +113,32 @@ service cloud.firestore {
         && request.resource.data.ownerUid == request.auth.uid
         && validInviteCode(request.resource.data.inviteCode)
         && validName(request.resource.data.name)
-        && request.resource.data.currency in ['CDF', 'USD']
+        && request.resource.data.currency in ['CDF', 'USD', 'EUR']
+        && request.resource.data.plan in ['boutique', 'pro', 'supermarche']
+        && request.resource.data.billingCycle == 'mensuel'
+        && !('paidUntil' in request.resource.data)
+        && request.resource.data.trialEndsAt is timestamp
+        && request.resource.data.trialEndsAt > request.time + duration.value(29, 'd')
+        && request.resource.data.trialEndsAt < request.time + duration.value(31, 'd')
         && getAfter(memberPath(bid, request.auth.uid)).data.role == 'proprietaire'
         && getAfter(invitationPath(request.resource.data.inviteCode)).data.boutiqueId == bid;
 
-      // Propriétaire : tous les réglages, sauf le propriétaire et le code d'invitation.
+      // Propriétaire : tous les réglages, sauf le propriétaire, le code d'invitation et l'abonnement.
+      // L'abonnement (trialEndsAt, paidUntil, billingCycle) est fixé par l'éditeur de vitePOS ;
+      // le propriétaire peut seulement changer de formule pendant l'essai.
       allow update: if hasRole(bid, ['proprietaire'])
-        && !changes().hasAny(['ownerUid', 'inviteCode', 'createdAt'])
+        && !changes().hasAny(['ownerUid', 'inviteCode', 'createdAt', 'trialEndsAt', 'paidUntil', 'billingCycle'])
+        && (!changes().hasAny(['plan'])
+            || (request.resource.data.plan in ['boutique', 'pro', 'supermarche']
+                && resource.data.get('paidUntil', null) == null
+                && request.time < trialEndOf(resource.data)))
         && validName(request.resource.data.name)
-        && request.resource.data.currency in ['CDF', 'USD'];
-
-      // Gérant : seulement le taux du jour.
-      allow update: if hasRole(bid, ['gerant'])
-        && changes().hasOnly(['usdRateCdf', 'usdRateUpdatedAt', 'updatedAt'])
+        && request.resource.data.currency in ['CDF', 'USD', 'EUR']
+        // Taux du jour (fixés par le propriétaire seulement) : FC pour 1 $ et pour 1 €.
         && request.resource.data.usdRateCdf is number
-        && request.resource.data.usdRateCdf > 0;
+        && request.resource.data.usdRateCdf > 0
+        && request.resource.data.get('eurRateCdf', 0) is number
+        && request.resource.data.get('eurRateCdf', 0) >= 0;
 
       // ---------- Membres ----------
 
@@ -175,7 +189,8 @@ service cloud.firestore {
       match /products/{pid} {
         allow read: if isActive(bid);
 
-        allow create: if isActive(bid)
+        allow create: if notBlocked(bid)
+          && isActive(bid)
           && can(bid, 'editPrices')
           && request.resource.data.keys().hasOnly(catalogFields().concat(['stock', 'lastMovementId', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy']))
           && validProduct(request.resource.data)
@@ -185,7 +200,8 @@ service cloud.firestore {
           && (request.resource.data.stock == 0
               || movementMatches(bid, pid, request.resource.data.stock));
 
-        allow update: if isActive(bid)
+        allow update: if notBlocked(bid)
+          && isActive(bid)
           && changes().hasOnly(catalogFields().concat(['stock', 'lastMovementId', 'updatedAt', 'updatedBy']))
           && request.resource.data.updatedBy == request.auth.uid
           && validProduct(request.resource.data)
@@ -197,7 +213,8 @@ service cloud.firestore {
       // Prix d'achat : séparés des fiches pour que les vendeurs ne voient pas les marges.
       match /productCosts/{pid} {
         allow read: if can(bid, 'editPrices') || can(bid, 'viewReports');
-        allow create, update: if can(bid, 'editPrices')
+        allow create, update: if notBlocked(bid)
+          && can(bid, 'editPrices')
           && request.resource.data.keys().hasOnly(['buyPrice', 'updatedAt', 'updatedBy'])
           && request.resource.data.buyPrice is number
           && request.resource.data.buyPrice >= 0
@@ -207,7 +224,8 @@ service cloud.firestore {
       // Journal des mouvements : création seulement, jamais modifié ni supprimé.
       match /stockMovements/{mid} {
         allow read: if isActive(bid);
-        allow create: if isActive(bid)
+        allow create: if notBlocked(bid)
+          && isActive(bid)
           && request.resource.data.keys().hasOnly(['type', 'productIds', 'deltas', 'names', 'reason', 'uid', 'memberName', 'createdAt', 'clientAtMs', 'refId'])
           && request.resource.data.uid == request.auth.uid
           && request.resource.data.createdAt == request.time
@@ -239,7 +257,8 @@ service cloud.firestore {
       match /sales/{sid} {
         allow read: if isActive(bid);
 
-        allow create: if isActive(bid)
+        allow create: if notBlocked(bid)
+          && isActive(bid)
           && request.resource.data.keys().hasOnly(['uid', 'memberName', 'lines', 'subtotal', 'discountPercent', 'discount', 'total', 'currency', 'payment', 'clientId', 'clientName', 'status', 'movementId', 'dayKey', 'createdAt', 'clientAtMs'])
           && request.resource.data.clientId is string
           && request.resource.data.clientId.size() <= 64
@@ -260,13 +279,14 @@ service cloud.firestore {
           && request.resource.data.discountPercent >= 0
           && request.resource.data.discountPercent <= 100
           && (request.resource.data.discountPercent == 0 || can(bid, 'editPrices'))
-          && request.resource.data.currency in ['CDF', 'USD']
+          && request.resource.data.currency in ['CDF', 'USD', 'EUR']
           && request.resource.data.payment is map
           && request.resource.data.payment.method in ['especes', 'mobile_money']
           && request.resource.data.movementId is string
           && request.resource.data.dayKey is string;
 
-        allow update: if can(bid, 'editPrices')
+        allow update: if notBlocked(bid)
+          && can(bid, 'editPrices')
           && resource.data.status == 'validee'
           && changes().hasOnly(['status', 'cancelReason', 'cancelledBy', 'cancelledByName', 'cancelledAt', 'cancelMovementId'])
           && request.resource.data.status == 'annulee'
@@ -285,7 +305,8 @@ service cloud.firestore {
       match /clients/{cid} {
         allow read: if isActive(bid);
 
-        allow create: if isActive(bid)
+        allow create: if notBlocked(bid)
+          && isActive(bid)
           && request.resource.data.keys().hasOnly(['name', 'phone', 'notes', 'purchaseCount', 'totalSpent', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy'])
           && validClient(request.resource.data)
           && request.resource.data.purchaseCount == 0
@@ -294,7 +315,8 @@ service cloud.firestore {
           && request.resource.data.createdAt == request.time
           && request.resource.data.updatedBy == request.auth.uid;
 
-        allow update: if isActive(bid)
+        allow update: if notBlocked(bid)
+          && isActive(bid)
           && changes().hasOnly(['name', 'phone', 'notes', 'purchaseCount', 'totalSpent', 'lastPurchaseAt', 'updatedAt', 'updatedBy'])
           && validClient(request.resource.data)
           && request.resource.data.updatedBy == request.auth.uid;
@@ -306,14 +328,16 @@ service cloud.firestore {
       match /expenses/{eid} {
         allow read: if isActive(bid);
 
-        allow create: if isActive(bid)
+        allow create: if notBlocked(bid)
+          && isActive(bid)
           && request.resource.data.keys().hasOnly(['amount', 'currency', 'category', 'description', 'fromTill', 'status', 'uid', 'memberName', 'dayKey', 'createdAt', 'clientAtMs'])
           && validExpense(request.resource.data)
           && request.resource.data.status == 'validee'
           && request.resource.data.uid == request.auth.uid
           && request.resource.data.createdAt == request.time;
 
-        allow update: if can(bid, 'closeCash')
+        allow update: if notBlocked(bid)
+          && can(bid, 'closeCash')
           && resource.data.status == 'validee'
           && changes().hasOnly(['status', 'cancelledBy', 'cancelledByName', 'cancelledAt'])
           && request.resource.data.status == 'annulee'
@@ -328,7 +352,8 @@ service cloud.firestore {
       match /inventories/{iid} {
         allow read: if isActive(bid);
 
-        allow create: if can(bid, 'manageStock')
+        allow create: if notBlocked(bid)
+          && can(bid, 'manageStock')
           && request.resource.data.keys().hasOnly(['label', 'status', 'createdBy', 'createdByName', 'createdAt', 'clientAtMs'])
           && request.resource.data.label is string
           && request.resource.data.label.size() <= 80
@@ -338,7 +363,8 @@ service cloud.firestore {
           && request.resource.data.createdAt == request.time
           && request.resource.data.clientAtMs is number;
 
-        allow update: if can(bid, 'manageStock')
+        allow update: if notBlocked(bid)
+          && can(bid, 'manageStock')
           && resource.data.status == 'en_cours'
           && request.resource.data.status in ['validee', 'annulee']
           && changes().hasOnly(['status', 'validatedBy', 'validatedByName', 'validatedAt', 'gapsCount', 'missingValue', 'surplusValue'])
@@ -347,7 +373,8 @@ service cloud.firestore {
 
         match /lines/{pid} {
           allow read: if isActive(bid);
-          allow create, update: if can(bid, 'manageStock')
+          allow create, update: if notBlocked(bid)
+          && can(bid, 'manageStock')
             && get(/databases/$(database)/documents/boutiques/$(bid)/inventories/$(iid)).data.status == 'en_cours'
             && request.resource.data.keys().hasOnly(['name', 'unit', 'theoretical', 'counted', 'countedBy', 'countedByName', 'countedAt'])
             && request.resource.data.name is string
@@ -368,13 +395,15 @@ service cloud.firestore {
       match /cashDays/{day} {
         allow read: if isActive(bid);
 
-        allow create: if isActive(bid)
+        allow create: if notBlocked(bid)
+          && isActive(bid)
           && validDayKey(day)
           && validCashDay(request.resource.data)
           && ((request.resource.data.status == 'open' && openingSigned())
               || (request.resource.data.status == 'closed' && can(bid, 'closeCash') && closingSigned()));
 
-        allow update: if isActive(bid)
+        allow update: if notBlocked(bid)
+          && isActive(bid)
           && resource.data.status == 'open'
           && validCashDay(request.resource.data)
           && ((request.resource.data.status == 'open'
@@ -401,7 +430,7 @@ service cloud.firestore {
 
     function validExpense(e) {
       return e.amount is number && e.amount > 0
-        && e.currency in ['CDF', 'USD']
+        && e.currency in ['CDF', 'USD', 'EUR']
         && e.category in ['transport', 'fournitures', 'loyer', 'communication', 'salaires', 'autres']
         && e.description is string && e.description.size() <= 200
         && e.fromTill is bool
@@ -411,8 +440,9 @@ service cloud.firestore {
     }
 
     function validMoney2(m) {
-      return m is map && m.keys().hasOnly(['CDF', 'USD'])
-        && m.CDF is number && m.USD is number;
+      return m is map && m.keys().hasOnly(['CDF', 'USD', 'EUR'])
+        && m.CDF is number && m.USD is number
+        && m.get('EUR', 0) is number;
     }
 
     function validCashDay(d) {
@@ -441,17 +471,32 @@ service cloud.firestore {
         && request.resource.data.closedAt == request.time;
     }
 
+    // Fin de l'essai : la date enregistrée, ou 30 jours après la création pour les anciennes boutiques.
+    function trialEndOf(b) {
+      return b.get('trialEndsAt', b.createdAt + duration.value(30, 'd'));
+    }
+
+    // L'abonnement court encore, ou ses 7 jours de grâce. Après : lecture seule.
+    function notBlocked(bid) {
+      let b = get(/databases/$(database)/documents/boutiques/$(bid)).data;
+      let paid = b.get('paidUntil', null);
+      let end = (paid != null && paid > trialEndOf(b)) ? paid : trialEndOf(b);
+      return request.time < end + duration.value(7, 'd');
+    }
+
     // La vente citée par le mouvement en cours d'écriture, telle qu'elle sera après l'écriture.
     function saleAfter(bid) {
       return getAfter(/databases/$(database)/documents/boutiques/$(bid)/sales/$(request.resource.data.refId)).data;
     }
 
     function catalogFields() {
-      return ['name', 'category', 'sellPrice', 'unit', 'alertThreshold', 'barcode', 'favorite', 'archived'];
+      return ['sku', 'name', 'category', 'sellPrice', 'unit', 'alertThreshold', 'barcode', 'packs', 'favorite', 'archived'];
     }
 
     function validProduct(p) {
-      return p.name is string && p.name.size() > 0 && p.name.size() <= 120
+      return p.get('sku', '') is string && p.get('sku', '').size() <= 20
+        && p.get('packs', []) is list && p.get('packs', []).size() <= 5
+        && p.name is string && p.name.size() > 0 && p.name.size() <= 120
         && p.category is string && p.category.size() <= 60
         && p.sellPrice is number && p.sellPrice >= 0
         && p.unit in ['u', 'kg', 'L']

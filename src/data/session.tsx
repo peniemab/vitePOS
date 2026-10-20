@@ -16,6 +16,7 @@ import {
 } from "./boutique";
 import { errorMessage } from "./errors";
 import { resolvePermissions, type Permissions } from "../lib/roles";
+import { subscriptionStatus, type SubscriptionStatus } from "../lib/subscription";
 
 export type Session =
   | { status: "loading" }
@@ -26,7 +27,16 @@ export type Session =
   | { status: "noBoutique"; user: User; profile: Profile }
   | { status: "pending"; user: User; profile: Profile; member: Member; boutique: Boutique | null }
   | { status: "disabled"; user: User; profile: Profile; member: Member; boutique: Boutique | null }
-  | { status: "ready"; user: User; profile: Profile; member: Member; boutique: Boutique; permissions: Permissions };
+  | {
+      status: "ready";
+      user: User;
+      profile: Profile;
+      member: Member;
+      boutique: Boutique;
+      permissions: Permissions;
+      /** État de l'abonnement ; en lecture seule, tous les droits d'écriture sont retirés. */
+      subscription: SubscriptionStatus;
+    };
 
 export type ReadySession = Extract<Session, { status: "ready" }>;
 
@@ -114,15 +124,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   else if (member.status === "disabled") session = { status: "disabled", user, profile, member, boutique: boutique ?? null };
   else if (boutique === undefined) session = { status: "loading" };
   else if (boutique === null) session = { status: "noBoutique", user, profile };
-  else
+  else {
+    const subscription = subscriptionStatus(boutique);
+    const permissions = resolvePermissions(member.role, member.permissions);
     session = {
       status: "ready",
       user,
       profile,
       member,
       boutique,
-      permissions: resolvePermissions(member.role, member.permissions),
+      permissions: subscription.readOnly
+        ? { viewReports: permissions.viewReports, editPrices: false, closeCash: false, manageStock: false }
+        : permissions,
+      subscription,
     };
+  }
 
   return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>;
 }

@@ -2,6 +2,7 @@
 import { roundMoney, type Currency } from "./fx";
 import { shiftDay } from "./cashday";
 import type { Sale } from "./sales";
+import { stockUnits } from "./cart";
 
 export type PeriodKind = "jour" | "semaine" | "mois";
 
@@ -93,12 +94,13 @@ export function buildReport(sales: Sale[], period: Period, currency: Currency, c
     for (const l of s.lines) {
       const lineRevenue = l.lineTotal * ratio;
       const p = products.get(l.productId) ?? { productId: l.productId, name: l.name, quantity: 0, revenue: 0 };
-      p.quantity += l.quantity;
+      // Quantités et coûts toujours à l'unité : un paquet de 24 compte pour 24.
+      p.quantity += stockUnits(l);
       p.revenue += lineRevenue;
       products.set(l.productId, p);
       const unitCost = costs?.get(l.productId);
       if (unitCost != null) {
-        cost += unitCost * l.quantity;
+        cost += unitCost * stockUnits(l);
         costedRevenue += lineRevenue;
       }
     }

@@ -4,8 +4,26 @@ export type Unit = "u" | "kg" | "L";
 
 export const UNITS: Record<Unit, string> = { u: "Pièce", kg: "Kg", L: "Litre" };
 
+/**
+ * Emballage vendu ou reçu d'un bloc (« Paquet de 24 ») : il a son propre code-barres et son propre prix,
+ * mais le stock reste toujours compté à l'unité (24 bouteilles).
+ */
+export interface Pack {
+  id: string;
+  name: string;
+  barcode: string;
+  /** Nombre d'unités du produit dans l'emballage (24). */
+  units: number;
+  /** Prix de vente de l'emballage entier, fixé par la boutique (prix de gros). */
+  price: number;
+}
+
+export const MAX_PACKS = 5;
+
 export interface Product {
   id: string;
+  /** Code article unique dans la boutique (« LAI-002 ») : retrouve un produit parmi d'autres qui se ressemblent. */
+  sku: string;
   name: string;
   category: string;
   sellPrice: number;
@@ -13,16 +31,21 @@ export interface Product {
   stock: number;
   alertThreshold: number;
   barcode: string;
+  /** Emballages (paquet, carton…), du plus petit au plus grand. */
+  packs: Pack[];
   favorite: boolean;
   archived: boolean;
   updatedAtMs: number;
 }
 
-/** Champs modifiables d'une fiche produit (le stock passe toujours par un mouvement). */
+/**
+ * Champs modifiables d'une fiche produit (le stock passe toujours par un mouvement).
+ * `packs` absent : les emballages ne sont pas touchés (import CSV).
+ */
 export type ProductInput = Pick<
   Product,
-  "name" | "category" | "sellPrice" | "unit" | "alertThreshold" | "barcode" | "favorite"
->;
+  "sku" | "name" | "category" | "sellPrice" | "unit" | "alertThreshold" | "barcode" | "favorite"
+> & { packs?: Pack[] };
 
 export type StockMovementType = "reappro" | "casse" | "don" | "correction" | "vente" | "annulation" | "inventaire";
 
@@ -105,18 +128,109 @@ export function fold(s: string): string {
     .trim();
 }
 
-export function matchProduct(p: Pick<Product, "name" | "category" | "barcode">, query: string): boolean {
+type Codes = Pick<Product, "barcode"> & { sku?: string; packs?: Pick<Pack, "barcode">[] };
+
+export function matchProduct(p: Pick<Product, "name" | "category"> & Codes, query: string): boolean {
   const q = fold(query);
   if (!q) return true;
   const words = q.split(/\s+/);
-  const haystack = fold(`${p.name} ${p.category} ${p.barcode}`);
+  const packCodes = (p.packs ?? []).map((k) => k.barcode).join(" ");
+  const haystack = fold(`${p.sku ?? ""} ${p.name} ${p.category} ${p.barcode} ${packCodes}`);
   return words.every((w) => haystack.includes(w));
 }
 
-export function findByBarcode<T extends Pick<Product, "barcode" | "archived">>(products: T[], code: string): T | undefined {
+/** Produit portant ce code-barres, sur l'unité ou sur un de ses emballages. */
+export function findByBarcode<T extends Pick<Product, "archived"> & Codes>(products: T[], code: string): T | undefined {
   const c = code.trim();
   if (!c) return undefined;
-  return products.find((p) => !p.archived && p.barcode === c);
+  return products.find((p) => !p.archived && (p.barcode === c || !!p.packs?.some((k) => k.barcode === c)));
+}
+
+/**
+ * Ce que désigne un code scanné : le produit, et l'emballage s'il s'agit du code d'un paquet ou d'un carton
+ * (`pack` vaut `null` pour le code de l'unité ou le code article).
+ */
+export function findScan<T extends Pick<Product, "archived"> & Codes>(
+  products: T[],
+  code: string,
+): { product: T; pack: NonNullable<T["packs"]>[number] | null } | undefined {
+  const c = code.trim();
+  if (!c) return undefined;
+  for (const p of products) {
+    if (p.archived) continue;
+    if (p.barcode === c) return { product: p, pack: null };
+    const pack = p.packs?.find((k) => k.barcode === c);
+    if (pack) return { product: p, pack };
+  }
+  const sku = normalizeSku(c);
+  const bySku = sku ? products.find((p) => !p.archived && p.sku === sku) : undefined;
+  return bySku ? { product: bySku, pack: null } : undefined;
+}
+
+/** Produit dont un code-barres ou le code article correspond exactement (scan, ou code tapé puis Entrée). */
+export function findByCode<T extends Pick<Product, "archived"> & Codes>(products: T[], code: string): T | undefined {
+  return findScan(products, code)?.product;
+}
+
+/** Libellé d'un emballage : « Paquet de 24 », « Sac de 25 kg ». */
+export function packLabel(pack: Pick<Pack, "name" | "units">, unit: Unit): string {
+  const n = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 3 }).format(pack.units);
+  return `${pack.name} de ${n}${unit === "u" ? "" : ` ${unit}`}`;
+}
+
+/** Nettoie les emballages d'une fiche ; renvoie un message d'erreur si l'un d'eux est incomplet. */
+export function validatePacks(packs: Pack[], unit: Unit, unitBarcode: string): { value: Pack[] } | { error: string } {
+  if (packs.length > MAX_PACKS) return { error: `${MAX_PACKS} emballages au plus par produit.` };
+  const seen = new Set(unitBarcode ? [unitBarcode] : []);
+  const out: Pack[] = [];
+  for (const k of packs) {
+    const name = k.name.trim().slice(0, 40);
+    if (!name) return { error: "Donnez un nom à chaque emballage (Paquet, Carton…)." };
+    const units = roundQuantity(k.units, unit);
+    if (!Number.isFinite(units) || units <= 0 || (unit === "u" && units < 2))
+      return { error: `« ${name} » : indiquez combien d'unités il contient (au moins 2).` };
+    if (!Number.isFinite(k.price) || k.price < 0) return { error: `« ${name} » : le prix n'est pas valide.` };
+    const barcode = k.barcode.trim();
+    if (barcode.length > 64) return { error: `« ${name} » : le code-barres est trop long.` };
+    if (barcode && seen.has(barcode)) return { error: `Le code-barres ${barcode} est utilisé deux fois sur ce produit.` };
+    if (barcode) seen.add(barcode);
+    out.push({ id: k.id || Math.random().toString(36).slice(2, 10), name, barcode, units, price: k.price });
+  }
+  return { value: out.sort((a, b) => a.units - b.units) };
+}
+
+/* ---------- Codes article ---------- */
+
+export const SKU_MAX = 20;
+
+/** Code article saisi à la main : majuscules, lettres, chiffres et tirets seulement. */
+export function normalizeSku(input: string): string {
+  return fold(input)
+    .toUpperCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^A-Z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, SKU_MAX);
+}
+
+/** Préfixe tiré de la catégorie : les 3 premières lettres (« Lait » → LAI, « Téléphonie » → TEL). */
+export function skuPrefix(category: string): string {
+  const letters = fold(category).toUpperCase().replace(/[^A-Z]/g, "");
+  if (!letters) return "ART";
+  return (letters + "XX").slice(0, 3);
+}
+
+/** Prochain code libre pour cette catégorie : LAI-001, LAI-002… (après le plus grand numéro déjà pris). */
+export function nextSku(category: string, taken: Iterable<string>): string {
+  const prefix = skuPrefix(category);
+  const re = new RegExp(`^${prefix}-(\\d+)$`);
+  let max = 0;
+  for (const s of taken) {
+    const m = re.exec(s);
+    if (m) max = Math.max(max, Number(m[1]));
+  }
+  return `${prefix}-${String(max + 1).padStart(3, "0")}`;
 }
 
 export function collectCategories(products: Pick<Product, "category" | "archived">[]): string[] {
@@ -148,15 +262,26 @@ export function validateProduct(input: ProductInput): { value: ProductInput } | 
     return { error: "Le seuil d'alerte n'est pas valide." };
   const barcode = input.barcode.trim();
   if (barcode.length > 64) return { error: "Le code-barres est trop long." };
+  const sku = normalizeSku(input.sku);
+  if (!sku) return { error: "Le code article est obligatoire (par exemple LAI-001)." };
+  const unit = isUnit(input.unit) ? input.unit : "u";
+  let packs: Pack[] | undefined;
+  if (input.packs) {
+    const checked = validatePacks(input.packs, unit, barcode);
+    if ("error" in checked) return checked;
+    packs = checked.value;
+  }
   return {
     value: {
+      sku,
       name,
       category: input.category.trim().slice(0, 60) || DEFAULT_CATEGORY,
       sellPrice: input.sellPrice,
-      unit: isUnit(input.unit) ? input.unit : "u",
+      unit,
       alertThreshold: roundQuantity(input.alertThreshold, input.unit),
       barcode,
       favorite: input.favorite,
+      ...(packs ? { packs } : {}),
     },
   };
 }

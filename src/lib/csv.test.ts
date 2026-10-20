@@ -7,7 +7,8 @@ describe("lecture CSV", () => {
     const { rows, errors } = parseProductCsv(CSV_TEMPLATE);
     expect(errors).toEqual([]);
     expect(rows).toHaveLength(5);
-    expect(rows[0]).toMatchObject({ name: "Riz 1kg", sellPrice: 700, buyPrice: 550, stock: 40, favorite: true, unit: "u" });
+    expect(rows[0]).toMatchObject({ sku: "RIZ-001", name: "Riz 1kg", sellPrice: 700, buyPrice: 550, stock: 40, favorite: true, unit: "u" });
+    expect(rows[4].sku).toBe("");
     expect(rows[4]).toMatchObject({ unit: "kg", favorite: false });
   });
 
@@ -46,9 +47,9 @@ describe("lecture CSV", () => {
 
 describe("plan d'import", () => {
   const existing = [
-    { id: "p1", name: "Riz 1kg", category: "Alimentation", barcode: "", stock: 10, archived: false },
-    { id: "p2", name: "Coca", category: "Boissons", barcode: "544900", stock: 4, archived: false },
-    { id: "p3", name: "Savon", category: "Hygiène", barcode: "", stock: 9, archived: true },
+    { id: "p1", sku: "ALI-001", name: "Riz 1kg", category: "Alimentation", barcode: "", stock: 10, archived: false },
+    { id: "p2", sku: "BOI-004", name: "Coca", category: "Boissons", barcode: "544900", stock: 4, archived: false },
+    { id: "p3", sku: "HYG-001", name: "Savon", category: "Hygiène", barcode: "", stock: 9, archived: true },
   ];
 
   it("met à jour par nom ou par code-barres et calcule l'écart de stock", () => {
@@ -60,8 +61,20 @@ describe("plan d'import", () => {
       expect.objectContaining({ id: "p1", stockDelta: 30 }),
       expect.objectContaining({ id: "p2", stockDelta: 0 }),
     ]);
-    // Le produit archivé n'est pas repris : on en crée un nouveau.
+    // Le produit archivé n'est pas repris : on en crée un nouveau, avec un code qui ne réutilise pas le sien.
     expect(plan.creates).toEqual([expect.objectContaining({ stock: 5 })]);
+    expect(plan.creates[0].input.sku).toBe("HYG-002");
+    expect(plan.updates[0].input.sku).toBe("ALI-001");
+  });
+
+  it("rapproche d'abord par code article", () => {
+    const { rows } = parseProductCsv("code_article,nom,prix\nBOI-004,Coca-Cola 33 cl,600\n");
+    expect(planImport(rows, existing).updates).toEqual([expect.objectContaining({ id: "p2" })]);
+  });
+
+  it("attribue des codes qui se suivent aux nouveaux produits", () => {
+    const { rows } = parseProductCsv("nom,categorie,prix\nLait Nido 400 g,Lait,12000\nLait Nido 900 g,Lait,25000\n");
+    expect(planImport(rows, []).creates.map((c) => c.input.sku)).toEqual(["LAI-001", "LAI-002"]);
   });
 
   it("ignore les doublons du fichier", () => {
@@ -74,6 +87,7 @@ describe("export", () => {
   it("échappe les virgules et garde les archives dehors", () => {
     const p: Product = {
       id: "a",
+      sku: "RIZ-001",
       name: "Riz, 1kg",
       category: "Alimentation",
       sellPrice: 700,
@@ -81,14 +95,15 @@ describe("export", () => {
       stock: 3,
       alertThreshold: 5,
       barcode: "",
+      packs: [],
       favorite: true,
       archived: false,
       updatedAtMs: 0,
     };
     const csv = exportProductsCsv([p, { ...p, id: "b", archived: true }], new Map([["a", 550]]));
     expect(csv.trim().split("\n")).toEqual([
-      "nom,categorie,prix_vente,prix_achat,stock,seuil,unite,code_barres,favori",
-      '"Riz, 1kg",Alimentation,700,550,3,5,u,,oui',
+      "code_article,nom,categorie,prix_vente,prix_achat,stock,seuil,unite,code_barres,favori",
+      'RIZ-001,"Riz, 1kg",Alimentation,700,550,3,5,u,,oui',
     ]);
   });
 });

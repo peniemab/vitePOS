@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vitePOS · Proposition de captures pour le site</title>
+    <style>
+      :root {
+        --navy: #1a2b4c;
+        --brick: #b6171e;
+        --muted: #5b6270;
+        --line: #e1e4ea;
+        --bg: #f6f7f9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        color: #191c1e;
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: var(--navy);
+        color: #fff;
+        padding: 28px 16px;
+      }
+      .wrap {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 1.8rem;
+      }
+      h2 {
+        color: var(--navy);
+        margin: 0 0 4px;
+      }
+      section {
+        padding: 40px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .lead {
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      header .lead {
+        color: #d8e2ff;
+        margin: 0;
+      }
+
+      /* Numéro à donner pour valider une capture */
+      .num {
+        display: inline-grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--brick);
+        color: #fff;
+        font-weight: 700;
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+      figure {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+      }
+      figcaption {
+        display: flex;
+        align-items: flex-start;
+        max-width: 440px;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      figcaption b {
+        color: #191c1e;
+      }
+
+      /* Cadres d'appareils autour des vraies captures */
+      .phone {
+        width: 260px;
+        padding: 10px;
+        border-radius: 40px;
+        background: #11161f;
+        box-shadow: 0 24px 50px rgba(15, 28, 54, 0.25);
+      }
+      .phone img {
+        display: block;
+        width: 100%;
+        border-radius: 30px;
+      }
+      .tablet {
+        width: 100%;
+        max-width: 640px;
+        padding: 14px;
+        border-radius: 28px;
+        background: #1b2333;
+        box-shadow: 0 24px 50px rgba(15, 28, 54, 0.22);
+      }
+      .tablet img {
+        display: block;
+        width: 100%;
+        border-radius: 12px;
+      }
+      .laptop {
+        width: 100%;
+        max-width: 760px;
+      }
+      .laptop .lid {
+        padding: 12px 12px 14px;
+        border-radius: 16px 16px 4px 4px;
+        background: #222b3a;
+        box-shadow: 0 24px 60px rgba(15, 28, 54, 0.25);
+      }
+      .laptop img {
+        display: block;
+        width: 100%;
+        border-radius: 4px;
+      }
+      .laptop .base {
+        height: 16px;
+        margin: 0 -6%;
+        border-radius: 0 0 16px 16px;
+        background: linear-gradient(180deg, #cfd5df, #9aa3b2);
+      }
+
+      /* Composition proposée pour le haut du site */
+      .hero-combo {
+        position: relative;
+        max-width: 860px;
+        margin: 0 auto;
+        padding-bottom: 30px;
+      }
+      .hero-combo .phone {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 26%;
+        padding: 6px;
+        border-radius: 26px;
+      }
+      .hero-combo .phone img {
+        border-radius: 20px;
+      }
+      .hero-combo .laptop {
+        width: 86%;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 40px 24px;
+        align-items: end;
+      }
+      .wide {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 40px 24px;
+      }
+      @media (max-width: 520px) {
+        .wide {
+          grid-template-columns: 1fr;
+        }
+      }
+      .how {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+      }
+      .how ol {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>Proposition : les vraies captures de vitePOS</h1>
+        <p class="lead">
+          Ce sont de vrais écrans de l'application, avec une boutique d'exemple (aucun dessin). Rien n'est affiché sur le site
+          tant que vous ne validez pas.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section>
+        <div class="how">
+          <b>Comment valider</b>
+          <ol>
+            <li>Regardez chaque capture : elle porte un numéro rouge.</li>
+            <li>Dites-moi les numéros que vous validez (par exemple « 1, 2, 5 ») et ce qu'il faut changer sur les autres.</li>
+            <li>Je n'ajoute au site que les captures validées.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section>
+        <h2>Haut du site</h2>
+        <p class="lead">À la place du dessin actuel : l'ordinateur avec les rapports, et le téléphone avec la caisse.</p>
+        <figure>
+          <div class="hero-combo">
+            <div class="laptop">
+              <div class="lid"><img src="../captures/ordi-rapports.png" alt="Rapports de la semaine sur ordinateur" /></div>
+              <div class="base"></div>
+            </div>
+            <div class="phone"><img src="../captures/tel-caisse.png" alt="Caisse sur téléphone" /></div>
+          </div>
+          <figcaption><span class="num">1</span><span><b>Ordinateur + téléphone.</b> Rapports de la semaine, et la caisse avec un panier en cours.</span></figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h2>Sur téléphone</h2>
+        <p class="lead">Le téléphone du commerçant, dans la main.</p>
+        <div class="grid">
+          <figure>
+            <div class="phone"><img src="../captures/tel-accueil.png" alt="Accueil : ventes du jour" /></div>
+            <figcaption><span class="num">2</span><span><b>Accueil.</b> Les ventes du jour comparées à hier, les alertes de stock et les taux du jour.</span></figcaption>
+          </figure>
+          <figure>
+            <div class="phone"><img src="../captures/tel-caisse.png" alt="Caisse" /></div>
+            <figcaption><span class="num">3</span><span><b>Caisse.</b> Les articles en tuiles, les favoris en premier, le panier en bas.</span></figcaption>
+          </figure>
+          <figure>
+            <div class="phone"><img src="../captures/tel-ticket.png" alt="Ticket de vente" /></div>
+            <figcaption><span class="num">4</span><span><b>Ticket.</b> Imprimé ou envoyé au client par WhatsApp.</span></figcaption>
+          </figure>
+          <figure>
+            <div class="phone"><img src="../captures/tel-stock.png" alt="Stock" /></div>
+            <figcaption><span class="num">5</span><span><b>Stock.</b> Recherche, catégories, alertes de rupture.</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section>
+        <h2>Sur tablette et ordinateur</h2>
+        <p class="lead">Au comptoir, et pour le patron.</p>
+        <div class="wide">
+          <figure>
+            <div class="tablet"><img src="../captures/tablette-caisse.png" alt="Caisse sur tablette" /></div>
+            <figcaption><span class="num">6</span><span><b>Caisse sur tablette.</b> Les articles à gauche, le panier à droite.</span></figcaption>
+          </figure>
+          <figure>
+            <div class="laptop">
+              <div class="lid"><img src="../captures/ordi-journee.png" alt="Journée de caisse" /></div>
+              <div class="base"></div>
+            </div>
+            <figcaption><span class="num">7</span><span><b>Journée de caisse.</b> L'argent attendu dans le tiroir en FC, $ et €.</span></figcaption>
+          </figure>
+          <figure>
+            <div class="laptop">
+              <div class="lid"><img src="../captures/ordi-ventes.png" alt="Ventes du jour" /></div>
+              <div class="base"></div>
+            </div>
+            <figcaption><span class="num">8</span><span><b>Ventes du jour.</b> Chaque ticket, qui l'a vendu, comment il a été payé.</span></figcaption>
+          </figure>
+          <figure>
+            <div class="laptop">
+              <div class="lid"><img src="../captures/ordi-stock.png" alt="Stock sur ordinateur" /></div>
+              <div class="base"></div>
+            </div>
+            <figcaption><span class="num">9</span><span><b>Stock sur ordinateur.</b> Tout le catalogue, prix et quantités.</span></figcaption>
+          </figure>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

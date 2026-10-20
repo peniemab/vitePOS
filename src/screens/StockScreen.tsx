@@ -2,14 +2,15 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Badge, Button, Chip, Group, Menu, Paper, ScrollArea, SegmentedControl, Text, UnstyledButton } from "@mantine/core";
-import { IconAlertTriangle, IconDots, IconDownload, IconPlus, IconStarFilled, IconUpload } from "@tabler/icons-react";
+import { IconAlertTriangle, IconDots, IconDownload, IconPlus, IconStarFilled, IconTag, IconUpload } from "@tabler/icons-react";
 import { useReady } from "../data/session";
-import { useCatalog } from "../data/products";
+import { assignMissingSkus, useActor, useCatalog } from "../data/products";
 import { BarcodeField } from "../components/BarcodeField";
-import { formatQty, ProductModal } from "../components/ProductModal";
+import { formatQty, MovementModal, ProductModal } from "../components/ProductModal";
 import { Money, PageTitle } from "../components/ui";
 import { exportProductsCsv } from "../lib/csv";
-import { collectCategories, findByBarcode, matchProduct, needsRestock, sortByName, stockLevel, type Product } from "../lib/products";
+import type { Currency } from "../lib/fx";
+import { collectCategories, findScan, matchProduct, needsRestock, sortByName, stockLevel, type Product } from "../lib/products";
 
 const PAGE_SIZE = 60;
 
@@ -28,6 +29,7 @@ export function downloadText(filename: string, text: string) {
 export function StockScreen() {
   const { boutique, permissions } = useReady();
   const { products, costs, error } = useCatalog();
+  const actor = useActor();
   const [q, setQ] = useState("");
   const query = useDeferredValue(q);
   const [filter, setFilter] = useState<Filter>("all");
@@ -35,10 +37,13 @@ export function StockScreen() {
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [openId, setOpenId] = useState<string | null>(null);
   const [creating, setCreating] = useState<{ barcode?: string } | null>(null);
+  // Paquet ou carton scanné : on ouvre directement la réception, comptée en paquets.
+  const [receiving, setReceiving] = useState<{ productId: string; packId: string } | null>(null);
 
   const all = products ?? [];
   const active = useMemo(() => all.filter((p) => !p.archived), [all]);
   const alerts = useMemo(() => active.filter(needsRestock).length, [active]);
+  const missingSkus = useMemo(() => all.filter((p) => !p.sku).length, [all]);
   const categories = useMemo(() => collectCategories(active), [active]);
 
   const list = useMemo(() => {
@@ -50,11 +55,15 @@ export function StockScreen() {
   }, [all, active, filter, category, query]);
 
   const opened = openId ? all.find((p) => p.id === openId) ?? null : null;
+  const receivingProduct = receiving ? all.find((p) => p.id === receiving.productId) : undefined;
 
   function onScan(code: string) {
-    const found = findByBarcode(all, code);
-    if (found) {
-      setOpenId(found.id);
+    const found = findScan(active, code);
+    if (found?.pack && permissions.manageStock) {
+      setReceiving({ productId: found.product.id, packId: found.pack.id });
+      setQ("");
+    } else if (found) {
+      setOpenId(found.product.id);
       setQ("");
     } else if (permissions.editPrices && /^\d{6,}$/.test(code)) {
       // Code inconnu : on propose de créer le produit avec ce code.
@@ -89,6 +98,11 @@ export function StockScreen() {
                 {permissions.editPrices && (
                   <Menu.Item component={Link} to="/stock/import" leftSection={<IconUpload size={16} />}>
                     Importer un fichier CSV
+                  </Menu.Item>
+                )}
+                {permissions.editPrices && missingSkus > 0 && (
+                  <Menu.Item leftSection={<IconTag size={16} />} onClick={() => assignMissingSkus(actor, all)}>
+                    Donner un code aux {missingSkus} produit{missingSkus > 1 ? "s" : ""} sans code
                   </Menu.Item>
                 )}
                 <Menu.Item leftSection={<IconDownload size={16} />} onClick={exportCsv} disabled={!active.length}>
@@ -160,6 +174,15 @@ export function StockScreen() {
       )}
 
       <ProductModal product={opened} opened={!!opened} onClose={() => setOpenId(null)} />
+      {receivingProduct && (
+        <MovementModal
+          product={receivingProduct}
+          opened
+          initialPackId={receiving?.packId}
+          onClose={() => setReceiving(null)}
+          onDone={() => setReceiving(null)}
+        />
+      )}
       <ProductModal
         product={null}
         opened={!!creating}
@@ -171,7 +194,7 @@ export function StockScreen() {
   );
 }
 
-function ProductRow({ product: p, currency, onOpen }: { product: Product; currency: "CDF" | "USD"; onOpen: () => void }) {
+function ProductRow({ product: p, currency, onOpen }: { product: Product; currency: Currency; onOpen: () => void }) {
   const level = stockLevel(p);
   return (
     <UnstyledButton className="list-row" px="md" onClick={onOpen} style={{ opacity: p.archived ? 0.6 : 1 }}>
@@ -183,6 +206,8 @@ function ProductRow({ product: p, currency, onOpen }: { product: Product; curren
           </Text>
         </Group>
         <Text size="xs" c="dimmed" truncate>
+          {p.sku ? <b>{p.sku}</b> : null}
+          {p.sku ? " · " : ""}
           {p.category}
           {p.barcode ? ` · ${p.barcode}` : ""}
         </Text>

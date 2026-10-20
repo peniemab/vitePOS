@@ -19,15 +19,17 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
+  Timestamp,
   writeBatch,
   type DocumentData,
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { getDb } from "./firebase";
 import { track } from "./sync";
-import { hasValidUsdRate, isCurrency, type Currency } from "../lib/fx";
+import { CURRENCY_LIST, isCurrency, isValidRate, type Currency, type Rates } from "../lib/fx";
 import { generateInviteCode, normalizeInviteCode } from "../lib/invite";
 import { isRole, isStatus, type MemberStatus, type Permissions, type Role } from "../lib/roles";
+import { isPlan, trialEnd, type BillingCycle, type Plan } from "../lib/subscription";
 
 export interface Profile {
   uid: string;
@@ -43,11 +45,19 @@ export interface Boutique {
   currency: Currency;
   inviteCode: string;
   ownerUid: string;
-  /** Taux du jour : combien de FC pour 1 USD (0 si pas encore saisi). */
+  /** Taux du jour : combien de FC pour 1 $ et pour 1 € (0 si pas encore saisi). */
   usdRateCdf: number;
   usdRateUpdatedAtMs: number;
+  eurRateCdf: number;
+  eurRateUpdatedAtMs: number;
   paperWidthMm: 58 | 80;
   autoPrintTicket: boolean;
+  /** Abonnement : fixé par l'éditeur de vitePOS (le propriétaire peut changer de formule pendant l'essai). */
+  plan: Plan;
+  billingCycle: BillingCycle;
+  trialEndsAtMs: number;
+  paidUntilMs: number;
+  createdAtMs: number;
 }
 
 export interface Member {
@@ -77,10 +87,17 @@ function toBoutique(id: string, d: DocumentData): Boutique {
     currency: isCurrency(d.currency) ? d.currency : "CDF",
     inviteCode: String(d.inviteCode ?? ""),
     ownerUid: String(d.ownerUid ?? ""),
-    usdRateCdf: hasValidUsdRate(d.usdRateCdf) ? d.usdRateCdf : 0,
+    usdRateCdf: isValidRate(d.usdRateCdf) ? d.usdRateCdf : 0,
     usdRateUpdatedAtMs: ms(d.usdRateUpdatedAt),
+    eurRateCdf: isValidRate(d.eurRateCdf) ? d.eurRateCdf : 0,
+    eurRateUpdatedAtMs: ms(d.eurRateUpdatedAt),
     paperWidthMm: d.paperWidthMm === 80 ? 80 : 58,
     autoPrintTicket: d.autoPrintTicket === true,
+    plan: isPlan(d.plan) ? d.plan : "boutique",
+    billingCycle: d.billingCycle === "annuel" ? "annuel" : "mensuel",
+    trialEndsAtMs: ms(d.trialEndsAt),
+    paidUntilMs: ms(d.paidUntil),
+    createdAtMs: ms(d.createdAt),
   };
 }
 
@@ -166,8 +183,11 @@ export function leaveBoutique(uid: string): Promise<void> {
 export interface NewBoutique {
   name: string;
   ownerName: string;
+  plan: Plan;
   currency: Currency;
   usdRateCdf: number;
+  /** 0 si la boutique n'utilise pas l'euro. */
+  eurRateCdf: number;
 }
 
 /**
@@ -188,8 +208,14 @@ export async function createBoutique(user: User, input: NewBoutique): Promise<st
       ownerUid: user.uid,
       usdRateCdf: input.usdRateCdf,
       usdRateUpdatedAt: serverTimestamp(),
+      eurRateCdf: input.eurRateCdf,
+      eurRateUpdatedAt: serverTimestamp(),
       paperWidthMm: 58,
       autoPrintTicket: false,
+      plan: input.plan,
+      billingCycle: "mensuel",
+      // Les règles vérifient que l'essai dure bien 30 jours à partir de maintenant.
+      trialEndsAt: Timestamp.fromMillis(trialEnd(Date.now())),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -285,9 +311,23 @@ export function updateBoutique(
   track(updateDoc(boutiqueRef(id), { ...patch, updatedAt: serverTimestamp() }), onError);
 }
 
-export function updateUsdRate(id: string, usdRateCdf: number, onError?: (e: unknown) => void): void {
-  track(
-    updateDoc(boutiqueRef(id), { usdRateCdf, usdRateUpdatedAt: serverTimestamp(), updatedAt: serverTimestamp() }),
-    onError,
-  );
+/** Pendant l'essai seulement : le propriétaire choisit une autre formule (fonctionne hors ligne). */
+export function changePlan(id: string, plan: Plan, onError?: (e: unknown) => void): void {
+  track(updateDoc(boutiqueRef(id), { plan, updatedAt: serverTimestamp() }), onError);
+}
+
+/** Taux du jour d'une devise (FC pour 1 $ ou pour 1 €). */
+export function updateRate(id: string, currency: "USD" | "EUR", value: number, onError?: (e: unknown) => void): void {
+  const fields = currency === "USD" ? { usdRateCdf: value, usdRateUpdatedAt: serverTimestamp() } : { eurRateCdf: value, eurRateUpdatedAt: serverTimestamp() };
+  track(updateDoc(boutiqueRef(id), { ...fields, updatedAt: serverTimestamp() }), onError);
+}
+
+/** Les taux du jour de la boutique, pour les conversions. */
+export function ratesOf(b: Pick<Boutique, "usdRateCdf" | "eurRateCdf">): Rates {
+  return { USD: b.usdRateCdf, EUR: b.eurRateCdf };
+}
+
+/** Devises proposées dans cette boutique : FC et $ toujours, € si son taux est saisi ou si les prix sont en euros. */
+export function currenciesOf(b: Pick<Boutique, "currency" | "eurRateCdf">): Currency[] {
+  return CURRENCY_LIST.filter((c) => c !== "EUR" || b.currency === "EUR" || b.eurRateCdf > 0);
 }

@@ -1,7 +1,61 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "vitepos-dev", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "--port", "5180", "--strictPort"], "port": 5180 },
-    { "name": "vitepos-preview", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "preview", "--port", "4180", "--strictPort"], "port": 4180 }
+    {
+      "name": "vitepos-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "--port",
+        "5180",
+        "--strictPort"
+      ],
+      "port": 5180
+    },
+    {
+      "name": "vitepos-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "preview",
+        "--port",
+        "4180",
+        "--strictPort"
+      ],
+      "port": 4180
+    },
+    {
+      "name": "vitepos-site",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--prefix",
+        "site"
+      ],
+      "port": 5181
+    },
+    {
+      "name": "vitepos-apercu",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "--config",
+        "preview/vite.config.ts"
+      ],
+      "port": 5183
+    },
+    {
+      "name": "vitepos-proposition",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "design",
+        "--port",
+        "5182",
+        "--strictPort"
+      ],
+      "port": 5182
+    }
   ]
 }

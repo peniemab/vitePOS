@@ -1,10 +1,11 @@
 /**
- * Chiffre d'affaires par jour : une colonne par jour, une seule série (pas de légende, le titre la nomme),
- * info-bulle au survol ou au toucher, et une vue tableau pour qui préfère les chiffres.
+ * Chiffre d'affaires par jour : une courbe avec une zone colorée dessous, une seule série (pas de légende,
+ * le titre la nomme), le meilleur jour étiqueté, info-bulle au survol ou au toucher, et une vue tableau.
  */
 import { useState } from "react";
 import { Button, Table, Text } from "@mantine/core";
 import { formatMoney, type Currency } from "../lib/fx";
+import { dayKey } from "../lib/cart";
 
 interface Point {
   day: string;
@@ -39,7 +40,6 @@ export function RevenueChart({ data, currency }: { data: Point[]; currency: Curr
   const plotW = W - left - 8;
   const plotH = H - top - bottom;
   const slot = plotW / data.length;
-  const barW = Math.min(24, Math.max(2, slot - 2));
   const y = (v: number) => top + plotH - (v / max) * plotH;
   const ticks = [0, max / 2, max];
   const labelEvery = data.length > 10 ? Math.ceil(data.length / 8) : 1;
@@ -82,39 +82,64 @@ export function RevenueChart({ data, currency }: { data: Point[]; currency: Curr
                 </text>
               </g>
             ))}
-            {data.map((d, i) => {
-              const cx = left + slot * i + slot / 2;
-              const yy = y(d.revenue);
-              const hgt = top + plotH - yy;
-              const r = Math.min(4, barW / 2, hgt);
-              const x0 = cx - barW / 2;
+            {(() => {
               const base = top + plotH;
-              // Coins arrondis en haut seulement, base carrée sur la ligne zéro.
-              const path =
-                hgt > 0
-                  ? `M${x0} ${base}V${yy + r}Q${x0} ${yy} ${x0 + r} ${yy}H${x0 + barW - r}Q${x0 + barW} ${yy} ${x0 + barW} ${yy + r}V${base}Z`
-                  : "";
+              // Les jours à venir restent sur l'axe mais sans point : la courbe s'arrête à aujourd'hui.
+              const today = dayKey(Date.now());
+              const shown = Math.max(1, data.filter((d) => d.day <= today).length);
+              const all = data.map((d, i) => ({ x: left + slot * i + slot / 2, y: y(d.revenue) }));
+              const pts = all.slice(0, shown);
+              const line = pts.map((p, i) => `${i ? "L" : "M"}${p.x} ${p.y}`).join("");
+              const area = `${line}L${pts[pts.length - 1].x} ${base}L${pts[0].x} ${base}Z`;
+              const peak = data.slice(0, shown).reduce((best, d, i) => (d.revenue > data[best].revenue ? i : best), 0);
+              const showDots = data.length <= 14;
               return (
-                <g key={d.day}>
-                  {path && <path d={path} fill="var(--app-series-1)" opacity={hover == null || hover === i ? 1 : 0.45} />}
-                  {i % labelEvery === 0 && (
-                    <text x={cx} y={H - 6} textAnchor="middle" fontSize="11" fill="var(--mantine-color-dimmed)">
-                      {data.length <= 7 ? date(d.day).split(" ")[0] : dayLabel(d.day)}
+                <>
+                  <path d={area} fill="var(--app-series-1)" fillOpacity="0.12" />
+                  <path d={line} fill="none" stroke="var(--app-series-1)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+                  {hover != null && hover < shown && (
+                    <line x1={pts[hover].x} x2={pts[hover].x} y1={top} y2={base} stroke="var(--app-grid)" strokeWidth="1" />
+                  )}
+                  {pts.map((p, i) =>
+                    showDots || i === hover || i === peak ? (
+                      <circle
+                        key={data[i].day}
+                        cx={p.x}
+                        cy={p.y}
+                        r={i === hover ? 5.5 : 4}
+                        fill="var(--app-series-1)"
+                        stroke="var(--mantine-color-body)"
+                        strokeWidth="2"
+                      />
+                    ) : null,
+                  )}
+                  {data[peak].revenue > 0 && hover !== peak && (
+                    <text x={pts[peak].x} y={pts[peak].y - 12} textAnchor="middle" fontSize="11" fontWeight="600" fill="var(--mantine-color-text)">
+                      {compact(data[peak].revenue)}
                     </text>
                   )}
-                  {/* Zone de survol plus large que la colonne. */}
-                  <rect
-                    x={left + slot * i}
-                    y={top}
-                    width={slot}
-                    height={plotH}
-                    fill="transparent"
-                    onMouseEnter={() => setHover(i)}
-                    onClick={() => setHover(i)}
-                  />
-                </g>
+                  {data.map((d, i) => (
+                    <g key={d.day}>
+                      {i % labelEvery === 0 && (
+                        <text x={all[i].x} y={H - 6} textAnchor="middle" fontSize="11" fill="var(--mantine-color-dimmed)">
+                          {data.length <= 7 ? date(d.day).split(" ")[0] : dayLabel(d.day)}
+                        </text>
+                      )}
+                      {/* Zone de survol : toute la largeur du jour, pas seulement le point. */}
+                      <rect
+                        x={left + slot * i}
+                        y={top}
+                        width={slot}
+                        height={plotH}
+                        fill="transparent"
+                        onMouseEnter={() => setHover(i < shown ? i : null)}
+                        onClick={() => setHover(i < shown ? i : null)}
+                      />
+                    </g>
+                  ))}
+                </>
               );
-            })}
+            })()}
           </svg>
           {h && hover != null && (
             <div

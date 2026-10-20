@@ -1,5 +1,5 @@
 /** Ventes : forme d'une vente enregistrée et règles d'annulation (logique pure). */
-import type { Currency } from "./fx";
+import type { Currency, Rates } from "./fx";
 import type { PaymentMethod } from "./cart";
 import type { Unit } from "./products";
 
@@ -10,13 +10,17 @@ export interface SaleLine {
   unitPrice: number;
   quantity: number;
   lineTotal: number;
+  /** Emballage vendu (« Paquet ») ; absent pour la vente à l'unité. */
+  packId?: string;
+  packName?: string;
+  packUnits?: number;
 }
 
 export interface SalePayment {
   method: PaymentMethod;
   currency: Currency;
-  /** FC pour 1 $ si le client a payé dans une autre devise que celle des prix, sinon 0. */
-  rate: number;
+  /** Taux du jour (FC pour 1 $ et 1 €) si le client a payé dans une autre devise que celle des prix, sinon `null`. */
+  rates: Rates | null;
   /** Montant dû dans la devise de paiement. */
   due: number;
   received: number;

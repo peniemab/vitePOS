@@ -20,6 +20,7 @@
     "@mantine/modals": "^9.6.3",
     "@mantine/notifications": "^9.6.3",
     "@tabler/icons-react": "^3.48.0",
+    "barcode-detector": "3.2.2",
     "dayjs": "^1.11.23",
     "firebase": "^12.19.0",
     "react": "^19.3.0",

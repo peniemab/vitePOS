@@ -49,8 +49,8 @@ Application web progressive (**PWA**) responsive, utilisable sur téléphone, ta
 
 ### 4.1 Caisse (POS)
 - Liste produits dense (style supermarché / PDF), pas de cards.
-- Recherche nom / catégorie / code-barres.
-- Scan code-barres (USB wedge Entrée + caméra si BarcodeDetector).
+- Recherche nom / code article / catégorie / code-barres.
+- Scan code-barres : douchette USB (tape le code puis Entrée) ou caméra sur tous les appareils (lecteur du navigateur s'il existe, sinon lecteur ZXing servi par l'app et gardé hors ligne).
 - Filtres catégories + favoris.
 - Panier : quantité saisie directe (− / champ / +), plafonnée au stock.
 - Remise en **%** avec calcul automatique du montant (raccourcis 5 / 10 / 15 / 20 %).
@@ -63,8 +63,9 @@ Application web progressive (**PWA**) responsive, utilisable sur téléphone, ta
 
 ### 4.2 Stock & catalogue
 - Fiche produit en **modale** (focus ajout/édition) :
-  - nom, catégorie, prix vente, prix achat (selon rôle),
-  - stock initial / actuel, seuil d’alerte, unité, code-barres, favori caisse.
+  - **code article** (LAI-001 : 3 lettres de la catégorie + numéro, proposé automatiquement, modifiable, unique dans la boutique), nom, catégorie, prix vente, prix achat (selon rôle),
+  - stock initial / actuel, seuil d’alerte, unité, code-barres (scanné à la caméra ou tapé), favori caisse,
+  - **emballages** (paquet, carton… 5 au plus) : nom, nombre d’unités, code-barres propre, prix propre. Le stock reste compté à l’unité.
 - Mouvements manuels : réappro, casse, don, correction.
 - Alertes stock bas.
 - **Import CSV** massif + **export CSV**.
@@ -123,6 +124,7 @@ Application web progressive (**PWA**) responsive, utilisable sur téléphone, ta
 - Comptabilité fiscale complète / TVA avancée / export expert-comptable
 - Crédit client / carnet de dettes
 - Fournisseurs & bons de commande
+- Étiquettes internes à préfixe 2 (produits sans code), étiquettes de balance (prix ou poids dans le code)
 - E-commerce / livraison
 - Biométrie, SSO, gestion d’entreprise avancée
 
@@ -247,12 +249,29 @@ npm run dev
 
 | Décision | Choix |
 |----------|--------|
-| Cible | Boutiques de quartier, gros catalogues prioritaires |
+| Cible | SaaS en trois formules : Boutique, Pro (quincailleries, grossistes), Supermarché |
 | Front | Vite (pas Next.js) |
-| Offline | Dexie |
-| Devises Kinshasa | CDF + USD + taux du jour |
+| Offline | Cache hors ligne Firestore (Dexie et l'API Express abandonnés) |
+| Comptes | Un compte Firebase par employé, plusieurs boutiques par projet, adhésion par code validée par le propriétaire |
+| Essai gratuit | 30 jours, toutes les fonctions de la formule choisie |
+| Non-paiement | 7 jours de grâce avec rappel, puis lecture seule (consultation et export, aucune suppression) |
+| Prix des formules | Boutique 10 $, Pro 25 $, Supermarché 80 $ par magasin, par mois (à revoir après les pilotes) |
+| Paiement | Mensuel par défaut ; annuel = 12 mois pour le prix de 10 (100 $, 250 $, 800 $) |
+| Comptes par formule | Boutique 3, Pro 10, Supermarché illimité (propriétaire compris) |
+| Formule pendant l'essai | Choisie à la création de la boutique, modifiable par le propriétaire tant que dure l'essai |
+| Prolonger un abonnement | À la main au début : l'éditeur renseigne `paidUntil` (et `plan`, `billingCycle`) dans la console Firebase |
+| Lecture seule | Bloquée aussi côté serveur (règles Firestore) : ventes, stock, dépenses, clients, inventaires, journée |
+| Changement de formule | Réservé à l'éditeur de vitePOS (jamais au client), en attendant le paiement mobile money |
+| Restaurant | Écarté pour l'instant |
+| Version gratuite | Oui, en plus des formules payantes (limites à définir : comptes, produits, magasins) |
+| Site de présentation | Astro dans `site/` (pages statiques, aucun JavaScript envoyé, rapide sur réseau faible), séparé de l'app ; textes dans `site/src/data/content.ts` ; inspiration Toposfy |
+| Prix sur le site | Non affichés : « Gratuit pour commencer », formules sur demande |
+| Devises | Franc (CDF), dollar (USD) et euro (EUR) ; taux du jour du $ et de l'€ en FC, conversions via le franc ; l'euro n'apparaît que si son taux est saisi ; **le taux du jour est fixé par le propriétaire seul**, dans les Paramètres |
 | Caisse UI | Liste dense type supermarché |
 | Fiche produit | Modale |
+| Code article | Identifiant interne de chaque produit : préfixe de catégorie + numéro (LAI-001, LAI-002…), proposé automatiquement et modifiable ; jamais réutilisé à l'import. Le code-barres GS1 (EAN-13…) reste celui du fabricant et est facultatif |
+| Emballages | Un produit garde un seul stock, compté à l'unité (bouteilles). Ses emballages (Paquet de 24, Carton de 48…) ont leur code-barres et **leur propre prix, fixé par la boutique** (prix de gros, option A). En caisse : scanner la bouteille vend 1 bouteille, scanner le paquet vend le paquet et retire 24 du stock ; toucher l'article demande « à l'unité ou en paquet ». En réception : scanner le paquet ouvre l'entrée de stock comptée en paquets (3 paquets = +72). Pas encore dans l'import CSV |
+| Scan caméra | Partout (caisse, stock, inventaire, fiche produit) et sur tous les appareils, hors ligne compris ; codes lus : EAN-13, EAN-8, UPC-A/E, ITF-14, Code 128, Code 39, QR, DataMatrix |
 | Remise | Pourcentage |
 | Impression | Navigateur + thermique ESC/POS |
 | Look | Bleu marine + rouge caisse |
@@ -266,6 +285,8 @@ npm run dev
 |---------|---------|
 | **1.0** | CDC initial : offline, caisse, stock, inventaire, clients, rôles, sync |
 | **1.1** | + Vite confirmé, import CSV, liste caisse, remise %, quantité saisie, CDF/USD Kinshasa, ticket thermique, modale produit, UI supermarché |
+| **1.2** | Migration Firebase, positionnement SaaS en trois formules, essai 30 jours, lecture seule après 7 jours de non-paiement |
+| **1.3** | Euro, taux fixé par le propriétaire, codes article, scan caméra sur tous les appareils, emballages (paquet, carton) |
 
 ---
 

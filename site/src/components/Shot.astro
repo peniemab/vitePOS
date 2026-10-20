@@ -1,0 +1,31 @@
+---
+/**
+ * Une vraie capture de l'application, dans un cadre de téléphone, de tablette ou d'ordinateur.
+ * Les images viennent de `node preview/capture.mjs` (dossier public/captures).
+ */
+interface Props {
+  name: string;
+  device: "tel" | "tablette" | "ordi";
+  alt: string;
+  /** Image prioritaire (haut de page) : chargée tout de suite plutôt qu'au défilement. */
+  eager?: boolean;
+}
+const { name, device, alt, eager = false } = Astro.props;
+const size = { tel: [1170, 2532], tablette: [2360, 1640], ordi: [2880, 1800] }[device];
+const src = `/captures/${name}.webp`;
+---
+
+{
+  device === "ordi" ? (
+    <div class="frame-laptop">
+      <div class="lid">
+        <img src={src} alt={alt} width={size[0]} height={size[1]} loading={eager ? "eager" : "lazy"} decoding="async" />
+      </div>
+      <div class="base" />
+    </div>
+  ) : (
+    <div class={device === "tel" ? "frame-phone" : "frame-tablet"}>
+      <img src={src} alt={alt} width={size[0]} height={size[1]} loading={eager ? "eager" : "lazy"} decoding="async" />
+    </div>
+  )
+}

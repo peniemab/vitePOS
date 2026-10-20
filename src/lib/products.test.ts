@@ -2,6 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   collectCategories,
   findByBarcode,
+  findByCode,
+  findScan,
+  packLabel,
+  nextSku,
+  normalizeSku,
+  skuPrefix,
   matchProduct,
   needsRestock,
   roundQuantity,
@@ -13,6 +19,7 @@ import {
 } from "./products";
 
 const base: ProductInput = {
+  sku: "RIZ-001",
   name: "Riz 1kg",
   category: "Alimentation",
   sellPrice: 700,
@@ -99,9 +106,89 @@ describe("validation", () => {
     expect(r).toEqual({ value: { ...base, name: "Riz", category: "Divers", barcode: "123" } });
   });
 
+  it("exige un code article", () => {
+    expect(validateProduct({ ...base, sku: "  " })).toHaveProperty("error");
+  });
+
   it("refuse un nom vide ou un prix négatif", () => {
     expect(validateProduct({ ...base, name: " " })).toHaveProperty("error");
     expect(validateProduct({ ...base, sellPrice: -1 })).toHaveProperty("error");
     expect(validateProduct({ ...base, sellPrice: Number.NaN })).toHaveProperty("error");
+  });
+});
+
+describe("codes article", () => {
+  it("prend les 3 premières lettres de la catégorie", () => {
+    expect(skuPrefix("Lait")).toBe("LAI");
+    expect(skuPrefix("Téléphonie")).toBe("TEL");
+    expect(skuPrefix("Œufs")).toBe("UFS");
+    expect(skuPrefix("Gaz")).toBe("GAZ");
+    expect(skuPrefix("Té")).toBe("TEX");
+    expect(skuPrefix("")).toBe("ART");
+  });
+
+  it("donne le numéro suivant de la catégorie", () => {
+    expect(nextSku("Lait", [])).toBe("LAI-001");
+    expect(nextSku("Lait", ["LAI-001", "LAI-007", "RIZ-020", "LAIT-9"])).toBe("LAI-008");
+  });
+
+  it("nettoie un code saisi à la main", () => {
+    expect(normalizeSku(" lai 002 ")).toBe("LAI-002");
+    expect(normalizeSku("café#1")).toBe("CAFE1");
+    expect(normalizeSku("---")).toBe("");
+  });
+
+  it("retrouve un produit par code-barres ou par code article", () => {
+    const list = [
+      { id: "a", sku: "LAI-001", barcode: "6001", archived: false },
+      { id: "b", sku: "LAI-002", barcode: "", archived: false },
+    ];
+    expect(findByCode(list, "6001")?.id).toBe("a");
+    expect(findByCode(list, "lai-002")?.id).toBe("b");
+    expect(findByCode(list, "LAI-009")).toBeUndefined();
+  });
+
+  it("cherche aussi dans le code article", () => {
+    expect(matchProduct({ sku: "LAI-002", name: "Lait Nido 900 g", category: "Lait", barcode: "" }, "lai-002")).toBe(true);
+  });
+});
+
+describe("emballages", () => {
+  const coca = {
+    id: "coca",
+    sku: "BOI-001",
+    barcode: "5449000000996",
+    archived: false,
+    packs: [{ id: "pq", name: "Paquet", barcode: "15449000000993", units: 24, price: 22000 }],
+  };
+
+  it("un scan dit si c'est la bouteille ou le paquet", () => {
+    expect(findScan([coca], "5449000000996")).toEqual({ product: coca, pack: null });
+    expect(findScan([coca], "15449000000993")?.pack?.units).toBe(24);
+    expect(findScan([coca], "boi-001")).toEqual({ product: coca, pack: null });
+    expect(findScan([{ ...coca, archived: true }], "15449000000993")).toBeUndefined();
+    expect(findByBarcode([coca], "15449000000993")).toBe(coca);
+  });
+
+  it("vérifie les emballages de la fiche", () => {
+    const ok = validateProduct({ ...base, barcode: "111", packs: [{ id: "", name: " Carton ", barcode: "", units: 48, price: 40000 }, { id: "a", name: "Paquet", barcode: "222", units: 24, price: 21000 }] });
+    expect(ok).toHaveProperty("value");
+    if ("value" in ok) {
+      expect(ok.value.packs?.map((k) => k.name)).toEqual(["Paquet", "Carton"]);
+      expect(ok.value.packs?.[1].id).not.toBe("");
+    }
+    expect(validateProduct({ ...base, packs: [{ id: "a", name: "", barcode: "", units: 24, price: 1 }] })).toHaveProperty("error");
+    expect(validateProduct({ ...base, packs: [{ id: "a", name: "Paquet", barcode: "", units: 1, price: 1 }] })).toHaveProperty("error");
+    expect(validateProduct({ ...base, barcode: "111", packs: [{ id: "a", name: "Paquet", barcode: "111", units: 24, price: 1 }] })).toHaveProperty("error");
+  });
+
+  it("sans emballages fournis (import CSV), la fiche ne les touche pas", () => {
+    const r = validateProduct(base);
+    expect("value" in r && "packs" in r.value).toBe(false);
+  });
+
+  it("nomme l'emballage", () => {
+    expect(packLabel({ name: "Paquet", units: 24 }, "u")).toBe("Paquet de 24");
+    expect(packLabel({ name: "Sac", units: 25 }, "kg")).toBe("Sac de 25 kg");
   });
 });

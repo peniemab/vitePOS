@@ -1,41 +1,62 @@
-/** Devises RDC : franc congolais (CDF) et dollar (USD). Le taux = combien de FC pour 1 USD. */
+/**
+ * Devises : franc congolais (CDF), dollar (USD) et euro (EUR).
+ * Les taux du jour disent combien de FC valent 1 $ et 1 € ; toute conversion passe par le franc.
+ */
 
-export type Currency = "CDF" | "USD";
+export type Currency = "CDF" | "USD" | "EUR";
 
-export const CURRENCIES: Record<Currency, { label: string; symbol: string; decimals: number }> = {
-  CDF: { label: "Franc congolais", symbol: "FC", decimals: 0 },
-  USD: { label: "Dollar américain", symbol: "$", decimals: 2 },
+export const CURRENCY_LIST: Currency[] = ["CDF", "USD", "EUR"];
+
+export const CURRENCIES: Record<Currency, { label: string; short: string; symbol: string; decimals: number }> = {
+  CDF: { label: "Franc congolais", short: "Francs", symbol: "FC", decimals: 0 },
+  USD: { label: "Dollar américain", short: "Dollars", symbol: "$", decimals: 2 },
+  EUR: { label: "Euro", short: "Euros", symbol: "€", decimals: 2 },
 };
 
-export function isCurrency(v: unknown): v is Currency {
-  return v === "CDF" || v === "USD";
+/** Taux du jour : combien de FC pour 1 $ et pour 1 € (0 = pas encore saisi). */
+export interface Rates {
+  USD: number;
+  EUR: number;
 }
 
-export function hasValidUsdRate(rate?: number | null): rate is number {
+/** Montant dans chaque devise (argent du tiroir, dépenses, écarts…). */
+export type MoneyByCurrency = Record<Currency, number>;
+
+export function zeroMoney(): MoneyByCurrency {
+  return { CDF: 0, USD: 0, EUR: 0 };
+}
+
+export function isCurrency(v: unknown): v is Currency {
+  return v === "CDF" || v === "USD" || v === "EUR";
+}
+
+export function isValidRate(rate?: number | null): rate is number {
   return typeof rate === "number" && Number.isFinite(rate) && rate > 0;
 }
 
-/** Arrondi selon la devise : FC sans décimales, USD au centime. */
+/** Le taux nécessaire pour cette devise est-il connu ? (le franc n'en a pas besoin) */
+export function hasRate(rates: Rates, c: Currency): boolean {
+  return c === "CDF" || isValidRate(rates[c]);
+}
+
+/** Arrondi selon la devise : FC sans décimales, $ et € au centime. */
 export function roundMoney(n: number, currency: Currency): number {
   const f = 10 ** CURRENCIES[currency].decimals;
   return Math.round((n + Number.EPSILON) * f) / f;
 }
 
-export function cdfToUsd(cdf: number, rate: number): number {
-  return hasValidUsdRate(rate) ? roundMoney(cdf / rate, "USD") : 0;
-}
-
-export function usdToCdf(usd: number, rate: number): number {
-  return hasValidUsdRate(rate) ? roundMoney(usd * rate, "CDF") : 0;
-}
-
-/** Convertit un montant d'une devise vers une autre au taux du jour. */
-export function convert(amount: number, from: Currency, to: Currency, rate: number): number {
+/**
+ * Convertit un montant au taux du jour, en passant par le franc.
+ * Renvoie 0 si un taux nécessaire manque (à vérifier avec `hasRate` avant d'encaisser).
+ */
+export function convert(amount: number, from: Currency, to: Currency, rates: Rates): number {
   if (from === to) return roundMoney(amount, to);
-  return from === "USD" ? usdToCdf(amount, rate) : cdfToUsd(amount, rate);
+  if (!hasRate(rates, from) || !hasRate(rates, to)) return 0;
+  const cdf = from === "CDF" ? amount : amount * rates[from];
+  return roundMoney(to === "CDF" ? cdf : cdf / rates[to], to);
 }
 
-/** « 12 500 FC », « 4,50 $ » : espace pour les milliers, virgule décimale. */
+/** « 12 500 FC », « 4,50 $ », « 3,20 € » : espace pour les milliers, virgule décimale. */
 export function formatMoney(n: number, currency: Currency): string {
   const { decimals, symbol } = CURRENCIES[currency];
   const s = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
@@ -44,5 +65,15 @@ export function formatMoney(n: number, currency: Currency): string {
   return `${s} ${symbol}`;
 }
 
-export const USD_BILLS = [1, 5, 10, 20, 50, 100];
-export const CDF_BILLS = [500, 1000, 5000, 10000, 20000, 50000];
+/** « 12 500 FC + 5,00 $ », seulement les devises non nulles ; « — » si tout est à zéro. */
+export function formatMoneyByCurrency(m: MoneyByCurrency): string {
+  const parts = CURRENCY_LIST.filter((c) => m[c]).map((c) => formatMoney(m[c], c));
+  return parts.join(" + ") || "—";
+}
+
+/** Billets courants, pour les boutons « montant reçu » de la caisse. */
+export const BILLS: Record<Currency, number[]> = {
+  CDF: [500, 1000, 5000, 10000, 20000, 50000],
+  USD: [1, 5, 10, 20, 50, 100],
+  EUR: [5, 10, 20, 50, 100],
+};

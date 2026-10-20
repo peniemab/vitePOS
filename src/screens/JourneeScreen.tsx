@@ -1,6 +1,6 @@
 /**
  * Journée de caisse : fond de caisse du matin, résumé du jour, et clôture du soir
- * (argent compté comparé à l'argent attendu, en FC et en $).
+ * (argent compté comparé à l'argent attendu, dans chaque devise utilisée).
  */
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
@@ -17,13 +17,14 @@ import { PageTitle } from "../components/ui";
 import { Stat } from "./VentesScreen";
 import { dayKey } from "../lib/cart";
 import { expectedCash, formatMoney2, summarizeDay, variance, type Expense, type Money2 } from "../lib/cashday";
-import { formatMoney } from "../lib/fx";
+import { CURRENCIES, formatMoney, zeroMoney, type Currency } from "../lib/fx";
+import { currenciesOf } from "../data/boutique";
 import type { Sale } from "../lib/sales";
 
 const num = (v: number | string) => Number(v) || 0;
 
 export function JourneeScreen() {
-  const { boutique, permissions } = useReady();
+  const { boutique, permissions, subscription } = useReady();
   const actor = useActor();
   const [day, setDay] = useState(() => dayKey(Date.now()));
   const [sales, setSales] = useState<Sale[]>();
@@ -50,7 +51,10 @@ export function JourneeScreen() {
 
   const loading = !sales || !expenses || cashDay === undefined;
   const summary = !loading ? summarizeDay(sales, expenses, boutique.currency) : undefined;
-  const float: Money2 = cashDay?.openingFloat ?? { CDF: 0, USD: 0 };
+  const float: Money2 = cashDay?.openingFloat ?? zeroMoney();
+  // Colonnes affichées : les devises de la boutique, plus l'euro s'il apparaît dans les montants du jour.
+  const shown: Currency[] = currenciesOf(boutique);
+  if (!shown.includes("EUR") && summary && (summary.cash.EUR || summary.tillExpenses.EUR || float.EUR)) shown.push("EUR");
   const expected = summary ? expectedCash(summary, float) : undefined;
   const closed = cashDay?.status === "closed";
 
@@ -76,29 +80,26 @@ export function JourneeScreen() {
             </Title>
             <Table fz="sm" withRowBorders={false}>
               <Table.Thead>
-                <Table.Tr>
-                  <Table.Th />
-                  <Table.Th ta="right">FC</Table.Th>
-                  <Table.Th ta="right">$</Table.Th>
-                </Table.Tr>
+                <HeadRow shown={shown} />
               </Table.Thead>
               <Table.Tbody>
-                <Row label="Fond de caisse" m={float} />
-                <Row label="+ Espèces encaissées" m={summary.cash} />
-                <Row label="− Dépenses payées en caisse" m={summary.tillExpenses} />
-                <Row label="= Attendu" m={expected} strong />
+                <Row shown={shown} label="Fond de caisse" m={float} />
+                <Row shown={shown} label="+ Espèces encaissées" m={summary.cash} />
+                <Row shown={shown} label="− Dépenses payées en caisse" m={summary.tillExpenses} />
+                <Row shown={shown} label="= Attendu" m={expected} strong />
               </Table.Tbody>
             </Table>
           </Paper>
 
           {closed && cashDay?.closing ? (
-            <ClosedRecap cashDay={cashDay} />
+            <ClosedRecap cashDay={cashDay} shown={shown} />
           ) : (
             <>
-              <FloatForm key={`float-${day}`} float={float} disabled={closed} onSave={(m) => setOpeningFloat(actor, day, m)} />
+              <FloatForm key={`float-${day}`} shown={shown} float={float} disabled={closed || subscription.readOnly} onSave={(m) => setOpeningFloat(actor, day, m)} />
               {permissions.closeCash ? (
                 <CloseForm
                   key={`close-${day}`}
+                  shown={shown}
                   expected={expected}
                   onClose={(counted, notes) =>
                     closeDay(
@@ -140,24 +141,73 @@ export function JourneeScreen() {
   );
 }
 
-function Row({ label, m, strong }: { label: string; m: Money2; strong?: boolean }) {
+function HeadRow({ shown }: { shown: Currency[] }) {
   return (
-    <Table.Tr fw={strong ? 700 : undefined}>
-      <Table.Td>{label}</Table.Td>
-      <Table.Td ta="right" className="n">
-        {formatMoney(m.CDF, "CDF")}
-      </Table.Td>
-      <Table.Td ta="right" className="n">
-        {formatMoney(m.USD, "USD")}
-      </Table.Td>
+    <Table.Tr>
+      <Table.Th />
+      {shown.map((c) => (
+        <Table.Th key={c} ta="right">
+          {CURRENCIES[c].symbol}
+        </Table.Th>
+      ))}
     </Table.Tr>
   );
 }
 
-function FloatForm({ float, disabled, onSave }: { float: Money2; disabled: boolean; onSave: (m: Money2) => void }) {
-  const [cdf, setCdf] = useState<number | string>(float.CDF || "");
-  const [usd, setUsd] = useState<number | string>(float.USD || "");
-  const changed = num(cdf) !== float.CDF || num(usd) !== float.USD;
+function Row({ shown, label, m, strong }: { shown: Currency[]; label: string; m: Money2; strong?: boolean }) {
+  return (
+    <Table.Tr fw={strong ? 700 : undefined}>
+      <Table.Td>{label}</Table.Td>
+      {shown.map((c) => (
+        <Table.Td key={c} ta="right" className="n">
+          {formatMoney(m[c] ?? 0, c)}
+        </Table.Td>
+      ))}
+    </Table.Tr>
+  );
+}
+
+/** Un champ de montant par devise affichée. */
+function MoneyInputs({
+  shown,
+  values,
+  onChange,
+  disabled,
+  prefix,
+}: {
+  shown: Currency[];
+  values: Record<Currency, number | string>;
+  onChange: (c: Currency, v: number | string) => void;
+  disabled?: boolean;
+  prefix: string;
+}) {
+  return (
+    <Group grow align="flex-end">
+      {shown.map((c) => (
+        <NumberInput
+          key={c}
+          label={`${prefix}${CURRENCIES[c].symbol}`}
+          min={0}
+          thousandSeparator=" "
+          decimalSeparator=","
+          decimalScale={CURRENCIES[c].decimals}
+          hideControls
+          inputMode="decimal"
+          disabled={disabled}
+          value={values[c]}
+          onChange={(v) => onChange(c, v)}
+        />
+      ))}
+    </Group>
+  );
+}
+
+const toMoney = (v: Record<Currency, number | string>): Money2 => ({ CDF: num(v.CDF), USD: num(v.USD), EUR: num(v.EUR) });
+
+function FloatForm({ shown, float, disabled, onSave }: { shown: Currency[]; float: Money2; disabled: boolean; onSave: (m: Money2) => void }) {
+  const [values, setValues] = useState<Record<Currency, number | string>>({ CDF: float.CDF || "", USD: float.USD || "", EUR: float.EUR || "" });
+  const next = toMoney(values);
+  const changed = shown.some((c) => next[c] !== (float[c] ?? 0));
   return (
     <Paper p="md">
       <Title order={4} mb={4}>
@@ -166,31 +216,31 @@ function FloatForm({ float, disabled, onSave }: { float: Money2; disabled: boole
       <Text size="sm" c="dimmed" mb="sm">
         L'argent mis dans le tiroir le matin, pour rendre la monnaie.
       </Text>
-      <Group align="flex-end">
-        <NumberInput label="FC" min={0} thousandSeparator=" " hideControls inputMode="decimal" disabled={disabled} value={cdf} onChange={setCdf} style={{ flex: 1 }} />
-        <NumberInput label="$" min={0} decimalSeparator="," decimalScale={2} hideControls inputMode="decimal" disabled={disabled} value={usd} onChange={setUsd} style={{ flex: 1 }} />
-        <Button variant="default" disabled={disabled || !changed} onClick={() => onSave({ CDF: num(cdf), USD: num(usd) })}>
-          Enregistrer
+      <Stack>
+        <MoneyInputs shown={shown} values={values} disabled={disabled} prefix="" onChange={(c, v) => setValues((s) => ({ ...s, [c]: v }))} />
+        <Button variant="default" disabled={disabled || !changed} onClick={() => onSave(next)}>
+          Enregistrer le fond de caisse
         </Button>
-      </Group>
+      </Stack>
     </Paper>
   );
 }
 
-function CloseForm({ expected, onClose }: { expected: Money2; onClose: (counted: Money2, notes: string) => void }) {
-  const [cdf, setCdf] = useState<number | string>("");
-  const [usd, setUsd] = useState<number | string>("");
+function CloseForm({ shown, expected, onClose }: { shown: Currency[]; expected: Money2; onClose: (counted: Money2, notes: string) => void }) {
+  const [values, setValues] = useState<Record<Currency, number | string>>({ CDF: "", USD: "", EUR: "" });
   const [notes, setNotes] = useState("");
-  const counted = { CDF: num(cdf), USD: num(usd) };
+  const counted = toMoney(values);
   const gap = variance(counted, expected);
-  const ready = cdf !== "" || usd !== "";
+  const ready = shown.some((c) => values[c] !== "");
+  const short = shown.some((c) => gap[c] < 0);
+  const even = shown.every((c) => gap[c] === 0);
 
   function confirm() {
     modals.openConfirmModal({
       title: "Clôturer la journée ?",
       children: (
         <Text size="sm">
-          Les montants seront figés. Écart : <b>{formatGap(gap)}</b>.
+          Les montants seront figés. Écart : <b>{formatGap(gap, shown)}</b>.
         </Text>
       ),
       labels: { confirm: "Clôturer", cancel: "Revenir" },
@@ -207,13 +257,10 @@ function CloseForm({ expected, onClose }: { expected: Money2; onClose: (counted:
         Comptez l'argent du tiroir, puis saisissez les montants.
       </Text>
       <Stack>
-        <Group grow>
-          <NumberInput label="Compté en FC" min={0} thousandSeparator=" " hideControls inputMode="decimal" value={cdf} onChange={setCdf} />
-          <NumberInput label="Compté en $" min={0} decimalSeparator="," decimalScale={2} hideControls inputMode="decimal" value={usd} onChange={setUsd} />
-        </Group>
+        <MoneyInputs shown={shown} values={values} prefix="Compté en " onChange={(c, v) => setValues((s) => ({ ...s, [c]: v }))} />
         {ready && (
-          <Alert color={gap.CDF === 0 && gap.USD === 0 ? "teal" : gap.CDF < 0 || gap.USD < 0 ? "red" : "orange"}>
-            Écart : <b className="n">{formatGap(gap)}</b>
+          <Alert color={even ? "teal" : short ? "red" : "orange"}>
+            Écart : <b className="n">{formatGap(gap, shown)}</b>
           </Alert>
         )}
         <Textarea label="Remarque (facultatif)" maxLength={500} value={notes} onChange={(e) => setNotes(e.currentTarget.value)} />
@@ -225,13 +272,13 @@ function CloseForm({ expected, onClose }: { expected: Money2; onClose: (counted:
   );
 }
 
-function formatGap(g: Money2): string {
-  const one = (v: number, c: "CDF" | "USD") => (v > 0 ? "+" : "") + formatMoney(v, c);
-  if (g.CDF === 0 && g.USD === 0) return "aucun, la caisse est juste";
-  return [g.CDF ? one(g.CDF, "CDF") : "", g.USD ? one(g.USD, "USD") : ""].filter(Boolean).join(" et ") + (g.CDF < 0 || g.USD < 0 ? " (manquant)" : " (surplus)");
+function formatGap(g: Money2, shown: Currency[]): string {
+  const parts = shown.filter((c) => g[c]).map((c) => (g[c] > 0 ? "+" : "") + formatMoney(g[c], c));
+  if (!parts.length) return "aucun, la caisse est juste";
+  return parts.join(" et ") + (shown.some((c) => g[c] < 0) ? " (manquant)" : " (surplus)");
 }
 
-function ClosedRecap({ cashDay }: { cashDay: CashDay }) {
+function ClosedRecap({ cashDay, shown }: { cashDay: CashDay; shown: Currency[] }) {
   const c = cashDay.closing!;
   return (
     <Paper p="md">
@@ -245,16 +292,12 @@ function ClosedRecap({ cashDay }: { cashDay: CashDay }) {
       </Text>
       <Table fz="sm" withRowBorders={false}>
         <Table.Thead>
-          <Table.Tr>
-            <Table.Th />
-            <Table.Th ta="right">FC</Table.Th>
-            <Table.Th ta="right">$</Table.Th>
-          </Table.Tr>
+          <HeadRow shown={shown} />
         </Table.Thead>
         <Table.Tbody>
-          <Row label="Attendu" m={c.expected} />
-          <Row label="Compté" m={c.counted} />
-          <Row label="Écart" m={c.variance} strong />
+          <Row shown={shown} label="Attendu" m={c.expected} />
+          <Row shown={shown} label="Compté" m={c.counted} />
+          <Row shown={shown} label="Écart" m={c.variance} strong />
         </Table.Tbody>
       </Table>
       {c.notes && (

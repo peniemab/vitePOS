@@ -1,0 +1,13 @@
+---
+/** Logo + nom, en haut et en bas de page. */
+interface Props {
+  size?: "normal" | "small";
+}
+const { size = "normal" } = Astro.props;
+const w = size === "small" ? 24 : 30;
+---
+
+<a class="brand" href="/">
+  <img src="/logo.svg" alt="" width={w} height={Math.round(w * 1.1)} />
+  <span>vite<b>POS</b></span>
+</a>

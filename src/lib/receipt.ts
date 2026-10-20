@@ -2,9 +2,10 @@
  * Ticket de caisse : une seule description des lignes, utilisée pour l'affichage à l'écran,
  * le partage en texte et l'impression thermique (ESC/POS).
  */
-import { formatMoney } from "./fx";
+import { CURRENCIES, formatMoney } from "./fx";
 import { PAYMENT_LABELS, type Sale } from "./sales";
 import { ticketNumber } from "./cart";
+import { packLabel } from "./products";
 
 export type PaperWidth = 58 | 80;
 
@@ -45,7 +46,8 @@ export function receiptLines(shop: ReceiptShop, sale: Sale): ReceiptLine[] {
 
   for (const l of sale.lines) {
     out.push({ kind: "text", text: l.name });
-    out.push({ kind: "pair", left: `  ${qty(l.quantity, l.unit)} × ${formatMoney(l.unitPrice, c)}`, right: formatMoney(l.lineTotal, c) });
+    if (l.packName) out.push({ kind: "text", text: `  ${packLabel({ name: l.packName, units: l.packUnits ?? 1 }, l.unit)}` });
+    out.push({ kind: "pair", left: `  ${qty(l.quantity, l.packName ? "u" : l.unit)} × ${formatMoney(l.unitPrice, c)}`, right: formatMoney(l.lineTotal, c) });
   }
   out.push({ kind: "rule" });
   if (sale.discount > 0) {
@@ -54,11 +56,14 @@ export function receiptLines(shop: ReceiptShop, sale: Sale): ReceiptLine[] {
   }
   out.push({ kind: "pair", left: "TOTAL", right: formatMoney(sale.total, c), strong: true });
 
-  const label = p.method === "especes" ? `${PAYMENT_LABELS.especes} ${p.currency === "USD" ? "$" : "FC"}` : PAYMENT_LABELS.mobile_money;
+  const label = p.method === "especes" ? `${PAYMENT_LABELS.especes} ${CURRENCIES[p.currency].symbol}` : PAYMENT_LABELS.mobile_money;
   out.push({ kind: "pair", left: "Paiement", right: label });
-  if (p.rate > 0) {
+  if (p.rates) {
     out.push({ kind: "pair", left: "À payer", right: formatMoney(p.due, p.currency) });
-    out.push({ kind: "text", text: `Taux : 1 $ = ${formatMoney(p.rate, "CDF")}` });
+    for (const cur of [sale.currency, p.currency]) {
+      if (cur !== "CDF" && p.rates[cur] > 0)
+        out.push({ kind: "text", text: `Taux : 1 ${CURRENCIES[cur].symbol} = ${formatMoney(p.rates[cur], "CDF")}` });
+    }
   }
   if (p.method === "especes") {
     out.push({ kind: "pair", left: "Reçu", right: formatMoney(p.received, p.currency) });

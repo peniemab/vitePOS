@@ -25,7 +25,7 @@ function sale(over: Partial<Sale> & Pick<Sale, "total" | "payment">): Sale {
   };
 }
 
-const cashFc = (due: number) => ({ method: "especes" as const, currency: "CDF" as const, rate: 0, due, received: due, change: 0 });
+const cashFc = (due: number) => ({ method: "especes" as const, currency: "CDF" as const, rates: null, due, received: due, change: 0 });
 
 function expense(over: Partial<Expense>): Expense {
   return {
@@ -46,8 +46,8 @@ function expense(over: Partial<Expense>): Expense {
 describe("journée de caisse", () => {
   const sales: Sale[] = [
     sale({ total: 5000, payment: cashFc(5000) }),
-    sale({ total: 14250, payment: { method: "especes", currency: "USD", rate: 2850, due: 5, received: 10, change: 5 } }),
-    sale({ total: 3000, payment: { method: "mobile_money", currency: "CDF", rate: 0, due: 3000, received: 3000, change: 0 }, uid: "u2", memberName: "Joël" }),
+    sale({ total: 14250, payment: { method: "especes", currency: "USD", rates: { USD: 2850, EUR: 0 }, due: 5, received: 10, change: 5 } }),
+    sale({ total: 3000, payment: { method: "mobile_money", currency: "CDF", rates: null, due: 3000, received: 3000, change: 0 }, uid: "u2", memberName: "Joël" }),
     sale({ total: 9999, payment: cashFc(9999), status: "annulee" }),
   ];
   const expenses = [
@@ -65,19 +65,19 @@ describe("journée de caisse", () => {
   });
 
   it("sépare espèces FC, espèces $ et mobile money", () => {
-    expect(s.cash).toEqual({ CDF: 5000, USD: 5 });
-    expect(s.mobileMoney).toEqual({ CDF: 3000, USD: 0 });
+    expect(s.cash).toEqual({ CDF: 5000, USD: 5, EUR: 0 });
+    expect(s.mobileMoney).toEqual({ CDF: 3000, USD: 0, EUR: 0 });
   });
 
   it("distingue les dépenses payées en caisse", () => {
-    expect(s.tillExpenses).toEqual({ CDF: 1500, USD: 2 });
-    expect(s.allExpenses).toEqual({ CDF: 51500, USD: 2 });
+    expect(s.tillExpenses).toEqual({ CDF: 1500, USD: 2, EUR: 0 });
+    expect(s.allExpenses).toEqual({ CDF: 51500, USD: 2, EUR: 0 });
   });
 
   it("calcule l'argent attendu et l'écart", () => {
-    const exp = expectedCash(s, { CDF: 10000, USD: 20 });
-    expect(exp).toEqual({ CDF: 13500, USD: 23 });
-    expect(variance({ CDF: 13000, USD: 23 }, exp)).toEqual({ CDF: -500, USD: 0 });
+    const exp = expectedCash(s, { CDF: 10000, USD: 20, EUR: 5 });
+    expect(exp).toEqual({ CDF: 13500, USD: 23, EUR: 5 });
+    expect(variance({ CDF: 13000, USD: 23, EUR: 5 }, exp)).toEqual({ CDF: -500, USD: 0, EUR: 0 });
   });
 
   it("classe les vendeurs par chiffre d'affaires", () => {

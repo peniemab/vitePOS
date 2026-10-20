@@ -31,12 +31,21 @@ import {
 } from "../data/products";
 import { errorMessage } from "../data/errors";
 import { Money } from "./ui";
+import { ScanButton } from "./BarcodeField";
+import { ScanVideo } from "./ScanVideo";
+import { canUseCamera, useCameraScan } from "./useCameraScan";
+import { PacksEditor, type PackDraft } from "./PacksEditor";
+import { CURRENCIES } from "../lib/fx";
 import {
   collectCategories,
   DEFAULT_ALERT_THRESHOLD,
   DEFAULT_CATEGORY,
   findByBarcode,
+  nextSku,
+  normalizeSku,
+  SKU_MAX,
   MOVEMENT_LABELS,
+  packLabel,
   roundQuantity,
   signedDelta,
   SUGGESTED_CATEGORIES,
@@ -114,6 +123,9 @@ function ProductForm({
 
   const [name, setName] = useState(product?.name ?? "");
   const [category, setCategory] = useState(product?.category ?? defaultCategory ?? DEFAULT_CATEGORY);
+  // Code article : proposé à partir de la catégorie tant qu'on ne l'a pas tapé soi-même.
+  const [sku, setSku] = useState(product?.sku ?? "");
+  const [skuTouched, setSkuTouched] = useState(!!product?.sku);
   const [sellPrice, setSellPrice] = useState<number | string>(product?.sellPrice ?? "");
   const initialCost = product ? costs?.get(product.id) : undefined;
   const [buyPrice, setBuyPrice] = useState<number | string>(initialCost ?? "");
@@ -121,6 +133,8 @@ function ProductForm({
   const [stock, setStock] = useState<number | string>(product?.stock ?? 0);
   const [alertThreshold, setAlertThreshold] = useState<number | string>(product?.alertThreshold ?? DEFAULT_ALERT_THRESHOLD);
   const [barcode, setBarcode] = useState(product?.barcode ?? defaultBarcode ?? "");
+  const cam = useCameraScan(setBarcode);
+  const [packs, setPacks] = useState<PackDraft[]>(product?.packs ?? []);
   const [favorite, setFavorite] = useState(product?.favorite ?? false);
   const [error, setError] = useState<string>();
   const [moveOpen, setMoveOpen] = useState(false);
@@ -130,13 +144,20 @@ function ProductForm({
     [products],
   );
 
-  const duplicate = barcode.trim() ? findByBarcode(products ?? [], barcode) : undefined;
-  const barcodeTaken = duplicate && duplicate.id !== product?.id ? duplicate : undefined;
+  const takenSkus = useMemo(() => (products ?? []).filter((p) => p.id !== product?.id).map((p) => p.sku), [products, product?.id]);
+  const suggestedSku = useMemo(() => nextSku(category, takenSkus), [category, takenSkus]);
+  const effectiveSku = skuTouched ? normalizeSku(sku) : suggestedSku;
+  const skuTaken = effectiveSku ? (products ?? []).find((p) => p.id !== product?.id && p.sku === effectiveSku) : undefined;
+
+  const others = useMemo(() => (products ?? []).filter((p) => p.id !== product?.id), [products, product?.id]);
+  const barcodeTaken = barcode.trim() ? findByBarcode(others, barcode) : undefined;
+  const packTakenBy = (code: string) => findByBarcode(others, code)?.name;
 
   function submit(e: FormEvent) {
     e.preventDefault();
     setError(undefined);
     const checked = validateProduct({
+      sku: effectiveSku,
       name,
       category,
       sellPrice: asNumber(sellPrice),
@@ -144,9 +165,15 @@ function ProductForm({
       alertThreshold: asNumber(alertThreshold),
       barcode,
       favorite,
+      packs: packs.map((k) => ({ id: k.id, name: k.name, barcode: k.barcode, units: asNumber(k.units), price: asNumber(k.price) })),
     });
     if ("error" in checked) return setError(checked.error);
     if (barcodeTaken) return setError(`Ce code-barres est déjà utilisé par « ${barcodeTaken.name} ».`);
+    for (const k of checked.value.packs ?? []) {
+      const owner = k.barcode && packTakenBy(k.barcode);
+      if (owner) return setError(`Le code-barres de « ${k.name} » est déjà utilisé par « ${owner} ».`);
+    }
+    if (skuTaken) return setError(`Le code ${effectiveSku} est déjà utilisé par « ${skuTaken.name} ».`);
 
     const cost = buyPrice === "" ? undefined : asNumber(buyPrice);
     const newCost = canEdit && cost != null && cost !== initialCost ? cost : undefined;
@@ -199,27 +226,49 @@ function ProductForm({
             Produit archivé
           </Badge>
         )}
-        <TextInput label="Nom" required maxLength={120} readOnly={readOnly} value={name} onChange={(e) => setName(e.currentTarget.value)} />
         <SimpleGrid cols={{ base: 1, xs: 2 }}>
           <Autocomplete label="Catégorie" readOnly={readOnly} data={categories} value={category} onChange={setCategory} maxLength={60} />
           <TextInput
-            label="Code-barres"
+            label="Code article"
+            description={skuTouched ? "Unique dans la boutique" : "Proposé automatiquement, modifiable"}
+            required
             readOnly={readOnly}
-            maxLength={64}
-            value={barcode}
-            error={barcodeTaken ? `Déjà utilisé par « ${barcodeTaken.name} »` : undefined}
-            onChange={(e) => setBarcode(e.currentTarget.value)}
+            maxLength={SKU_MAX}
+            value={skuTouched ? sku : suggestedSku}
+            error={skuTaken ? `Déjà utilisé par « ${skuTaken.name} »` : undefined}
+            onChange={(e) => {
+              setSkuTouched(true);
+              setSku(e.currentTarget.value.toUpperCase());
+            }}
           />
         </SimpleGrid>
+        <TextInput label="Nom" required maxLength={120} readOnly={readOnly} value={name} onChange={(e) => setName(e.currentTarget.value)} />
+        <div>
+          <TextInput
+            label="Code-barres"
+            description="Celui d'une seule unité (la bouteille, le savon…) : scannez-le ou tapez-le. Facultatif."
+            readOnly={readOnly}
+            maxLength={64}
+            inputMode="numeric"
+            autoComplete="off"
+            value={barcode}
+            error={barcodeTaken ? `Déjà utilisé par « ${barcodeTaken.name} »` : undefined}
+            rightSection={!readOnly && canUseCamera() ? <ScanButton scanning={cam.scanning} onClick={() => (cam.scanning ? cam.stop() : void cam.start())} /> : undefined}
+            onChange={(e) => setBarcode(e.currentTarget.value)}
+            // La douchette tape le code puis Entrée : on ne valide pas la fiche pour autant.
+            onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+          />
+          <ScanVideo videoRef={cam.videoRef} scanning={cam.scanning} error={cam.error} />
+        </div>
         <SimpleGrid cols={{ base: 1, xs: 2 }}>
           <NumberInput
-            label={`Prix de vente (${boutique.currency === "CDF" ? "FC" : "$"})`}
+            label={`Prix de vente (${CURRENCIES[boutique.currency].symbol})`}
             required
             readOnly={readOnly}
             min={0}
             thousandSeparator=" "
             decimalSeparator=","
-            decimalScale={boutique.currency === "USD" ? 2 : 0}
+            decimalScale={CURRENCIES[boutique.currency].decimals}
             hideControls
             inputMode="decimal"
             value={sellPrice}
@@ -233,7 +282,7 @@ function ProductForm({
               min={0}
               thousandSeparator=" "
               decimalSeparator=","
-              decimalScale={boutique.currency === "USD" ? 2 : 0}
+              decimalScale={CURRENCIES[boutique.currency].decimals}
               hideControls
               inputMode="decimal"
               value={buyPrice}
@@ -253,6 +302,7 @@ function ProductForm({
             data={(Object.keys(UNITS) as Unit[]).map((u) => ({ value: u, label: UNITS[u] }))}
           />
         </div>
+        <PacksEditor packs={packs} onChange={setPacks} unit={unit} currency={boutique.currency} readOnly={readOnly} takenBy={packTakenBy} />
         <SimpleGrid cols={{ base: 1, xs: 2 }}>
           <NumberInput
             label={product ? "Stock réel" : "Stock de départ"}
@@ -344,33 +394,43 @@ export function MovementModal({
   opened,
   onClose,
   onDone,
+  initialPackId = "",
 }: {
   product: Product;
   opened: boolean;
   onClose: () => void;
   onDone: () => void;
+  /** Emballage déjà choisi (paquet scanné à la réception). */
+  initialPackId?: string;
 }) {
   const actor = useActor();
   const [type, setType] = useState<ManualMovementType>("reappro");
   const [qty, setQty] = useState<number | string>("");
   const [reason, setReason] = useState("");
+  // Compter en unités ("") ou en emballages (identifiant du paquet).
+  const [packId, setPackId] = useState(initialPackId);
 
   useEffect(() => {
     if (opened) {
       setType("reappro");
       setQty("");
       setReason("");
+      setPackId(initialPackId);
     }
-  }, [opened]);
+  }, [opened, initialPackId]);
 
-  const delta = signedDelta(type, asNumber(qty), product.unit);
+  const pack = product.packs.find((k) => k.id === packId) ?? null;
+  const count = pack ? Math.trunc(asNumber(qty)) : asNumber(qty);
+  const delta = signedDelta(type, pack ? count * pack.units : count, product.unit);
   const after = roundQuantity(product.stock + delta, product.unit);
 
   function submit(e: FormEvent) {
     e.preventDefault();
     e.stopPropagation();
     if (!delta) return;
-    adjustStock(actor, product, type, delta, reason);
+    // On garde la trace de ce qui a été compté : « 5 × Paquet de 24 ».
+    const what = pack ? `${Math.abs(count)} × ${packLabel(pack, product.unit)}` : "";
+    adjustStock(actor, product, type, delta, [what, reason.trim()].filter(Boolean).join(" · "));
     onDone();
   }
 
@@ -384,19 +444,44 @@ export function MovementModal({
             onChange={(v) => setType(v as ManualMovementType)}
             data={MOVE_TYPES.map((t) => ({ value: t, label: t === "reappro" ? "Réappro" : MOVEMENT_LABELS[t] }))}
           />
+          {product.packs.length > 0 && (
+            <div>
+              <Text size="sm" fw={500} mb={4}>
+                Compter en
+              </Text>
+              <SegmentedControl
+                fullWidth
+                value={packId}
+                onChange={setPackId}
+                data={[
+                  { value: "", label: product.unit === "u" ? "Unités" : product.unit },
+                  ...product.packs.map((k) => ({ value: k.id, label: packLabel(k, product.unit) })),
+                ]}
+              />
+            </div>
+          )}
           <NumberInput
-            label={type === "correction" ? "Quantité (négative pour retirer)" : "Quantité"}
+            label={
+              (pack ? `Nombre de ${pack.name.toLowerCase()}s` : "Quantité") +
+              (type === "correction" ? " (négatif pour retirer)" : "")
+            }
             required
             autoFocus
             allowNegative={type === "correction"}
             decimalSeparator=","
-            decimalScale={product.unit === "u" ? 0 : 3}
+            decimalScale={product.unit === "u" || pack ? 0 : 3}
             hideControls
             inputMode="decimal"
             value={qty}
             onChange={setQty}
           />
           <TextInput label="Motif (facultatif)" maxLength={200} value={reason} onChange={(e) => setReason(e.currentTarget.value)} />
+          {pack && count !== 0 && (
+            <Text size="sm">
+              {Math.abs(count)} × {pack.units} = <b className="n">{formatQty(Math.abs(delta), product.unit)}</b>{" "}
+              {product.unit === "u" ? "unités" : ""}
+            </Text>
+          )}
           <Text size="sm" c="dimmed">
             Stock : <span className="n">{formatQty(product.stock, product.unit)}</span> →{" "}
             <b className="n" style={{ color: after < 0 ? "var(--app-due)" : undefined }}>

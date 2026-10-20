@@ -26,7 +26,7 @@ function ms(v: unknown): number {
 
 function money2(v: unknown): Money2 {
   const m = (v ?? {}) as Record<string, unknown>;
-  return { CDF: num(m.CDF), USD: num(m.USD) };
+  return { CDF: num(m.CDF), USD: num(m.USD), EUR: num(m.EUR) };
 }
 
 function onWriteError(e: unknown) {

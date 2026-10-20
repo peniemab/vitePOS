@@ -35,7 +35,9 @@ import {
   DEFAULT_CATEGORY,
   isUnit,
   MOVEMENT_LABELS,
+  nextSku,
   type ManualMovementType,
+  type Pack,
   type Product,
   type ProductInput,
   type StockMovementType,
@@ -72,9 +74,18 @@ function num(v: unknown, fallback = 0): number {
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
 
+function toPacks(v: unknown): Pack[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .filter((k): k is Record<string, unknown> => !!k && typeof k === "object")
+    .map((k) => ({ id: String(k.id ?? ""), name: String(k.name ?? ""), barcode: String(k.barcode ?? ""), units: num(k.units), price: num(k.price) }))
+    .filter((k) => k.id && k.units > 0);
+}
+
 function toProduct(id: string, d: DocumentData): Product {
   return {
     id,
+    sku: String(d.sku ?? ""),
     name: String(d.name ?? ""),
     category: String(d.category ?? DEFAULT_CATEGORY),
     sellPrice: num(d.sellPrice),
@@ -82,6 +93,7 @@ function toProduct(id: string, d: DocumentData): Product {
     stock: num(d.stock),
     alertThreshold: num(d.alertThreshold, DEFAULT_ALERT_THRESHOLD),
     barcode: String(d.barcode ?? ""),
+    packs: toPacks(d.packs),
     favorite: d.favorite === true,
     archived: d.archived === true,
     updatedAtMs: ms(d.updatedAt),
@@ -262,6 +274,22 @@ export function updateProduct(
   batch.update(doc(productsCol(actor.boutiqueId), product.id), patch);
   if (opts.buyPrice != null) setCost(batch, actor, product.id, opts.buyPrice);
   track(batch.commit(), onWriteError);
+}
+
+/** Donne un code article aux produits qui n'en ont pas encore (produits créés avant les codes). */
+export function assignMissingSkus(actor: Actor, products: Product[]): number {
+  const taken = new Set(products.map((p) => p.sku).filter(Boolean));
+  const missing = [...products].filter((p) => !p.sku).sort((a, b) => a.name.localeCompare(b.name, "fr"));
+  for (let i = 0; i < missing.length; i += 400) {
+    const batch = writeBatch(getDb());
+    for (const p of missing.slice(i, i + 400)) {
+      const sku = nextSku(p.category, taken);
+      taken.add(sku);
+      batch.update(doc(productsCol(actor.boutiqueId), p.id), { sku, ...signed(actor) });
+    }
+    track(batch.commit(), onWriteError);
+  }
+  return missing.length;
 }
 
 export function setArchived(actor: Actor, productId: string, archived: boolean): void {

@@ -14,7 +14,7 @@ import { formatQty } from "../components/ProductModal";
 import { Stat } from "./VentesScreen";
 import { dayKey } from "../lib/cart";
 import { formatDay, formatMoney2, type Expense } from "../lib/cashday";
-import { formatMoney } from "../lib/fx";
+import { formatMoney, zeroMoney } from "../lib/fx";
 import { buildReport, changePercent, periodOf, shiftPeriod, type Period, type PeriodKind } from "../lib/reports";
 import type { Sale } from "../lib/sales";
 
@@ -61,7 +61,7 @@ export function RapportsScreen() {
   if (!permissions.viewReports) return <Navigate to="/plus" replace />;
 
   const c = boutique.currency;
-  const expenseTotal = { CDF: 0, USD: 0 };
+  const expenseTotal = zeroMoney();
   for (const e of expenses ?? []) if (e.status === "validee") expenseTotal[e.currency] += e.amount;
   const delta = report && prev ? changePercent(report.revenue, prev.revenue) : undefined;
   const unitOf = new Map((products ?? []).map((p) => [p.id, p.unit]));
@@ -85,8 +85,8 @@ export function RapportsScreen() {
         <ActionIcon variant="default" size="lg" aria-label="Période précédente" onClick={() => setPeriod(shiftPeriod(period, -1))}>
           <IconChevronLeft size={18} />
         </ActionIcon>
-        <Text fw={600} style={{ flex: 1, textAlign: "center" }} tt="capitalize">
-          {periodLabel(period)}
+        <Text fw={600} style={{ flex: 1, textAlign: "center" }}>
+          {periodLabel(period).replace(/^./, (c) => c.toUpperCase())}
         </Text>
         <ActionIcon variant="default" size="lg" aria-label="Période suivante" disabled={!canGoNext} onClick={() => setPeriod(shiftPeriod(period, 1))}>
           <IconChevronRight size={18} />

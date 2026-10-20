@@ -1,12 +1,14 @@
 /**
  * Champ de recherche pensé pour la boutique :
  * - douchette USB : elle tape le code puis Entrée → `onScan` ;
- * - saisie au clavier ;
- * - caméra du téléphone quand le navigateur sait lire les codes-barres (BarcodeDetector).
+ * - saisie au clavier (nom, code article ou code-barres) ;
+ * - caméra du téléphone, de la tablette ou de l'ordinateur.
  */
-import { useEffect, useRef, useState } from "react";
-import { ActionIcon, Text, TextInput, Tooltip } from "@mantine/core";
+import { useRef } from "react";
+import { ActionIcon, TextInput, Tooltip } from "@mantine/core";
 import { IconBarcode, IconSearch, IconX } from "@tabler/icons-react";
+import { ScanVideo } from "./ScanVideo";
+import { canUseCamera, useCameraScan } from "./useCameraScan";
 
 interface Props {
   value: string;
@@ -16,72 +18,13 @@ interface Props {
   autoFocus?: boolean;
 }
 
-interface Detector {
-  detect: (source: HTMLVideoElement) => Promise<Array<{ rawValue: string }>>;
-}
-
-declare global {
-  interface Window {
-    BarcodeDetector?: new (opts?: { formats?: string[] }) => Detector;
-  }
-}
-
-const canUseCamera = () => typeof window !== "undefined" && !!window.BarcodeDetector && !!navigator.mediaDevices?.getUserMedia;
-
-export function BarcodeField({ value, onChange, onScan, placeholder = "Nom, catégorie ou code-barres", autoFocus }: Props) {
+export function BarcodeField({ value, onChange, onScan, placeholder = "Nom, code article ou code-barres", autoFocus }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const frameRef = useRef(0);
-  const [scanning, setScanning] = useState(false);
-  const [camError, setCamError] = useState("");
-
-  function stopCamera() {
-    cancelAnimationFrame(frameRef.current);
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    setScanning(false);
-  }
-
-  useEffect(() => stopCamera, []);
-
-  async function startCamera() {
-    setCamError("");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
-      streamRef.current = stream;
-      setScanning(true);
-      const detector = new window.BarcodeDetector!({
-        formats: ["ean_13", "ean_8", "code_128", "code_39", "upc_a", "upc_e", "qr_code"],
-      });
-      const tick = async () => {
-        const video = videoRef.current;
-        if (video && !video.srcObject) {
-          video.srcObject = stream;
-          void video.play();
-        }
-        if (video && video.readyState >= 2) {
-          try {
-            const [code] = await detector.detect(video);
-            if (code?.rawValue) {
-              onChange(code.rawValue);
-              onScan(code.rawValue);
-              stopCamera();
-              inputRef.current?.focus();
-              return;
-            }
-          } catch {
-            // Image illisible : on passe à la suivante.
-          }
-        }
-        frameRef.current = requestAnimationFrame(() => void tick());
-      };
-      frameRef.current = requestAnimationFrame(() => void tick());
-    } catch {
-      setCamError("Impossible d'ouvrir la caméra. Vérifiez l'autorisation dans le navigateur.");
-      stopCamera();
-    }
-  }
+  const cam = useCameraScan((code) => {
+    onChange(code);
+    onScan(code);
+    inputRef.current?.focus();
+  });
 
   return (
     <div>
@@ -102,17 +45,7 @@ export function BarcodeField({ value, onChange, onScan, placeholder = "Nom, cat�
                 <IconX size={16} />
               </ActionIcon>
             )}
-            {canUseCamera() && (
-              <Tooltip label={scanning ? "Arrêter la caméra" : "Scanner avec la caméra"}>
-                <ActionIcon
-                  variant={scanning ? "filled" : "subtle"}
-                  aria-label={scanning ? "Arrêter la caméra" : "Scanner un code-barres"}
-                  onClick={() => (scanning ? stopCamera() : void startCamera())}
-                >
-                  <IconBarcode size={18} />
-                </ActionIcon>
-              </Tooltip>
-            )}
+            {canUseCamera() && <ScanButton scanning={cam.scanning} onClick={() => (cam.scanning ? cam.stop() : void cam.start())} />}
           </>
         }
         onChange={(e) => onChange(e.currentTarget.value)}
@@ -123,19 +56,17 @@ export function BarcodeField({ value, onChange, onScan, placeholder = "Nom, cat�
           }
         }}
       />
-      {scanning && (
-        <video
-          ref={videoRef}
-          muted
-          playsInline
-          style={{ marginTop: 8, width: "100%", maxHeight: 200, objectFit: "cover", borderRadius: 8, background: "#000" }}
-        />
-      )}
-      {camError && (
-        <Text c="red" size="sm" mt={4}>
-          {camError}
-        </Text>
-      )}
+      <ScanVideo videoRef={cam.videoRef} scanning={cam.scanning} error={cam.error} />
     </div>
+  );
+}
+
+export function ScanButton({ scanning, onClick }: { scanning: boolean; onClick: () => void }) {
+  return (
+    <Tooltip label={scanning ? "Arrêter la caméra" : "Scanner avec la caméra"}>
+      <ActionIcon variant={scanning ? "filled" : "subtle"} aria-label={scanning ? "Arrêter la caméra" : "Scanner un code-barres"} onClick={onClick}>
+        <IconBarcode size={18} />
+      </ActionIcon>
+    </Tooltip>
   );
 }
