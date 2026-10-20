@@ -2,15 +2,17 @@
 import { Suspense } from "react";
 import { NavLink, Outlet } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
-import { AppShell, Avatar, Group, Menu, Text, UnstyledButton } from "@mantine/core";
+import { AppShell, Avatar, Group, Menu, Text, UnstyledButton, useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import {
   IconCash,
   IconDots,
   IconHome,
   IconLogout,
+  IconMoon,
   IconPackage,
   IconReceipt,
+  IconSun,
 } from "@tabler/icons-react";
 import { logout, useReady } from "../data/session";
 import { getSyncState, useSyncState } from "../data/sync";
@@ -104,6 +106,7 @@ export function Layout() {
                   </Group>
                 </Menu.Label>
                 <Menu.Divider />
+                <DarkModeItem />
                 <Menu.Item leftSection={<IconLogout size={16} />} color="red" onClick={confirmLogout}>
                   Se déconnecter
                 </Menu.Item>
@@ -133,5 +136,16 @@ export function Layout() {
         </nav>
       </AppShell.Footer>
     </AppShell>
+  );
+}
+
+/** Raccourci du menu du compte : passe en clair ou en sombre (le choix « Automatique » est dans les Paramètres). */
+function DarkModeItem() {
+  const { setColorScheme } = useMantineColorScheme();
+  const dark = useComputedColorScheme("light") === "dark";
+  return (
+    <Menu.Item leftSection={dark ? <IconSun size={16} /> : <IconMoon size={16} />} onClick={() => setColorScheme(dark ? "light" : "dark")}>
+      {dark ? "Mode clair" : "Mode sombre"}
+    </Menu.Item>
   );
 }

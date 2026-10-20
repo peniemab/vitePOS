@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "deploy": "npm run test && npm run build && npx -y firebase-tools@latest deploy --only hosting"
+    "deploy": "npm run test && npm run build && npx -y firebase-tools@latest deploy --only hosting:vitepos-rdc,hosting:vitepos-be79c,hosting:vitepos-app",
+    "deploy:site": "npm run build --prefix site && npx -y firebase-tools@latest deploy --only hosting:getvitepos"
   },
   "dependencies": {
     "@fontsource/barlow": "^5.3.0",

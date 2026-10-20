@@ -9,8 +9,23 @@ export const LOGIN_URL = `${APP_URL}/connexion`;
 export const strengths = [
   { title: "FC, $ et €", text: "au taux du jour, monnaie rendue juste" },
   { title: "Hors ligne", text: "vous vendez même quand le réseau coupe" },
-  { title: "Mobile money", text: "paiements M-Pesa, Orange Money et Airtel Money suivis à part" },
   { title: "Plusieurs caisses", text: "vos employés vendent en même temps" },
+];
+
+/** Les trois promesses, juste sous l'accroche. */
+export const promises = [
+  {
+    title: "Fini le cahier.",
+    text: "vitePOS remplace le cahier de caisse : plus rapide pour vendre, impossible à « oublier », et lisible depuis votre téléphone.",
+  },
+  {
+    title: "Plus un seul franc perdu.",
+    text: "Chaque vente est notée, le stock se compte tout seul, et le soir vous savez exactement ce qui doit être dans la caisse.",
+  },
+  {
+    title: "Votre boutique dans votre poche.",
+    text: "Vos vendeurs encaissent, vous voyez chaque vente et chaque article manquant en direct, même quand vous n'êtes pas là.",
+  },
 ];
 
 export const features: { icon: IconName; title: string; text: string }[] = [

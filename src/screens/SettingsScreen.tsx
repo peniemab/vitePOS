@@ -7,6 +7,7 @@ import { updateBoutique, updateOwnName, updateRate } from "../data/boutique";
 import { errorMessage } from "../data/errors";
 import { PageTitle } from "../components/ui";
 import { confirmLogout } from "../components/Layout";
+import { ThemeSwitch } from "../components/ThemeSwitch";
 import { CURRENCIES, CURRENCY_LIST, type Currency } from "../lib/fx";
 
 function onError(e: unknown) {
@@ -32,6 +33,15 @@ export function SettingsScreen() {
     <>
       <PageTitle title="Paramètres" />
       <Stack>
+        <Paper p="md">
+          <Title order={4} mb={4}>
+            Apparence
+          </Title>
+          <Text size="sm" c="dimmed" mb="sm">
+            « Automatique » suit le réglage du téléphone. Le mode sombre repose les yeux le soir et économise la batterie.
+          </Text>
+          <ThemeSwitch />
+        </Paper>
         <Paper p="md">
           <Title order={4} mb="sm">
             Mon compte

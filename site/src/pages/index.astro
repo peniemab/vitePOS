@@ -1,23 +1,22 @@
 ---
 import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
-import { audiences, faqs, features, SIGNUP_URL, steps, strengths } from "../data/content";
+import { audiences, faqs, features, promises, SIGNUP_URL, steps, strengths } from "../data/content";
 import { icons } from "../data/icons";
 ---
 
 <Base
-  title="vitePOS · La caisse des commerces congolais, même sans internet"
-  description="vitePOS : caisse, stock et ventes sur votre téléphone. Encaissez en francs, en dollars ou en mobile money, même sans internet. Gratuit pour commencer."
+  title="vitePOS · Vendez plus vite. Perdez moins. Même sans réseau."
+  description="vitePOS : la caisse sur votre téléphone. Encaissez en FC, $ ou €, le stock et le bénéfice se calculent pendant que vous vendez, même sans réseau. Gratuit pour commencer."
 >
   <!-- Accroche -->
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
         <p class="eyebrow">Caisse · Stock · Ventes</p>
-        <h1>La caisse qui vend en francs et en dollars, même sans internet.</h1>
+        <h1 class="h1-lines"><span>Vendez plus vite.</span> <span>Perdez moins.</span> <span class="accent">Même sans réseau.</span></h1>
         <p class="lead">
-          vitePOS transforme votre téléphone en caisse : vous encaissez en quelques secondes, le stock se met à jour tout seul
-          et vous suivez votre boutique, même à distance.
+          Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez. Fini les comptes de tête à la fermeture.
         </p>
         <div class="cta-row">
           <a class="btn" href={SIGNUP_URL}>Commencer gratuitement</a>
@@ -40,6 +39,23 @@ import { icons } from "../data/icons";
   <section class="strip">
     <div class="wrap strip-grid">
       {strengths.map((s) => <div><strong>{s.title}</strong><span>{s.text}</span></div>)}
+    </div>
+  </section>
+
+  <!-- Promesses -->
+  <section class="section promises-section">
+    <div class="wrap">
+      <ol class="promises">
+        {
+          promises.map((p, i) => (
+            <li>
+              <span class="promise-num">0{i + 1}</span>
+              <h2>{p.title}</h2>
+              <p>{p.text}</p>
+            </li>
+          ))
+        }
+      </ol>
     </div>
   </section>
 
@@ -91,8 +107,11 @@ import { icons } from "../data/icons";
   <!-- Fonctions -->
   <section id="fonctions" class="section">
     <div class="wrap">
-      <h2>Tout pour tenir votre commerce</h2>
-      <p class="section-lead">Les outils d'une grande surface, simples comme une calculatrice.</p>
+      <h2>Gérez votre boutique comme un supermarché</h2>
+      <p class="section-lead">
+        La caisse qui encaisse en quelques secondes, en FC, $ ou €, et compte votre stock pour vous. Les outils d'une grande
+        surface, simples comme une calculatrice.
+      </p>
       <div class="cards">
         {
           features.map((f) => (
