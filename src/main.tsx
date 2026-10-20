@@ -19,9 +19,12 @@ import "@mantine/dates/styles.css";
 import "./styles.css";
 import { theme } from "./theme";
 import { App } from "./App";
+import { listenForInstall } from "./data/install";
 
 // Met l'application en cache pour qu'elle s'ouvre sans internet, et l'actualise automatiquement.
 registerSW({ immediate: true });
+// Garde la proposition d'installation du navigateur pour le bouton « Installer ».
+listenForInstall();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

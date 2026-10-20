@@ -23,17 +23,30 @@ function icon({ rounded = true, scale = 1 } = {}) {
 /** Symbole seul, sur fond transparent, pour les fonds clairs. */
 const logo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-140 -140 280 305">${symbol(NAVY)}</svg>\n`;
 
-function png(svg, size, file) {
-  const out = new Resvg(svg, { fitTo: { mode: "width", value: size } }).render().asPng();
-  writeFileSync(new URL(`../public/${file}`, import.meta.url), out);
+// Les mêmes fichiers servent à l'app (public/) et au site de présentation (site/public/).
+const DIRS = ["../public/", "../site/public/"];
+
+function write(file, data) {
+  for (const dir of DIRS) writeFileSync(new URL(dir + file, import.meta.url), data);
 }
 
-writeFileSync(new URL("../public/favicon.svg", import.meta.url), icon());
-writeFileSync(new URL("../public/logo.svg", import.meta.url), logo);
-png(icon(), 192, "pwa-192.png");
-png(icon(), 512, "pwa-512.png");
+/** `appOnly` : icônes d'installation, inutiles au site. */
+function png(svg, size, file, appOnly = false) {
+  const out = new Resvg(svg, { fitTo: { mode: "width", value: size } }).render().asPng();
+  if (appOnly) writeFileSync(new URL(`../public/${file}`, import.meta.url), out);
+  else write(file, out);
+}
+
+write("favicon.svg", icon());
+write("logo.svg", logo);
+// Chrome sur Android n'utilise pas le favicon SVG pour l'onglet ni pour un raccourci sur l'écran d'accueil :
+// sans ces PNG, il dessine un simple « V » sur fond de couleur, sans le rouge du logo.
+png(icon(), 48, "favicon-48.png");
+png(icon(), 192, "icon-192.png");
+png(icon(), 192, "pwa-192.png", true);
+png(icon(), 512, "pwa-512.png", true);
 // « Maskable » : Android découpe l'icône en cercle ou en goutte ; le symbole reste dans les 80 % du centre.
-png(icon({ rounded: false, scale: 0.8 }), 512, "pwa-maskable-512.png");
+png(icon({ rounded: false, scale: 0.8 }), 512, "pwa-maskable-512.png", true);
 // iPhone : fond plein, iOS arrondit lui-même les coins.
 png(icon({ rounded: false, scale: 0.9 }), 180, "apple-touch-icon.png");
-console.log("Icônes générées dans public/.");
+console.log("Icônes générées dans public/ et site/public/.");

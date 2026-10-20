@@ -8,6 +8,7 @@ import { useCatalog } from "../data/products";
 import { watchSalesBetween } from "../data/sales";
 import { needsRestock } from "../lib/products";
 import { PageTitle } from "../components/ui";
+import { InstallCard } from "../components/InstallCard";
 import { dayKey } from "../lib/cart";
 import { shiftDay } from "../lib/cashday";
 import { changePercent } from "../lib/reports";
@@ -39,6 +40,7 @@ export function HomeScreen() {
   return (
     <>
       <PageTitle title={`Bonjour ${firstName}`} sub={`${boutique.name} · ${ROLE_LABELS[member.role]}`} />
+      <InstallCard dismissible mb="md" />
 
       <Paper component={Link} to="/ventes" p="md" mb="md" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
         <Text size="sm" c="dimmed">

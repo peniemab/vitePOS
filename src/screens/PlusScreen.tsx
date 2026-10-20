@@ -14,6 +14,7 @@ import {
 } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { PageTitle } from "../components/ui";
+import { InstallCard } from "../components/InstallCard";
 import { canManageTeam } from "../lib/roles";
 
 export function PlusScreen() {
@@ -43,6 +44,7 @@ export function PlusScreen() {
           </UnstyledButton>
         ))}
       </Paper>
+      <InstallCard mt="md" />
     </>
   );
 }

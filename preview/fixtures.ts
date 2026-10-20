@@ -28,6 +28,9 @@ if (typeof window !== "undefined" && !(globalThis as { __apercuDate?: boolean })
   (globalThis as { __apercuDate?: boolean }).__apercuDate = true;
   if (!new URLSearchParams(window.location.search).has("sombre")) localStorage.setItem("mantine-color-scheme-value", "light");
   else localStorage.setItem("mantine-color-scheme-value", "dark");
+  // Pas d'invitation à installer l'app sur les captures, sauf avec ?installer.
+  if (!new URLSearchParams(window.location.search).has("installer")) localStorage.setItem("vitepos.install.dismissed", String(Date.now()));
+  else localStorage.removeItem("vitepos.install.dismissed");
 }
 
 const DAY = 86_400_000;

@@ -111,7 +111,7 @@ export const faqs = [
   },
   {
     q: "Comment l'installer ?",
-    a: "Ouvrez vitePOS dans le navigateur de votre téléphone, puis choisissez « Ajouter à l'écran d'accueil ». L'app s'ouvre ensuite comme une application normale.",
+    a: "Rien à télécharger dans un store. Ouvrez getvitepos.web.app sur votre téléphone. Sur Android (Chrome) : touchez « Installer » dans l'app, ou le menu ⋮ puis « Installer l'application ». Sur iPhone (Safari) : touchez Partager, puis « Sur l'écran d'accueil ». vitePOS s'ouvre ensuite depuis son icône, en plein écran, même sans internet.",
   },
   {
     q: "Je peux vendre en francs, en dollars et en euros ?",
