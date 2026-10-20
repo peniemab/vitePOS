@@ -276,7 +276,7 @@ npm run dev
 | Remise | Pourcentage |
 | Impression | Navigateur + thermique ESC/POS |
 | Look | Bleu marine + rouge caisse ; **mode clair et mode sombre** : « Automatique » (suit le téléphone, par défaut), « Clair » ou « Sombre », choisi dans Paramètres → Apparence ou par le menu du compte, gardé sur chaque appareil |
-| Adresses | App : https://vitepos-rdc.web.app ; site de présentation : https://getvitepos.web.app (`vitepos.web.app` est pris par un autre projet) ; `vitepos-be79c.web.app` et `vitepos-app.web.app` redirigent vers l'app ; en attendant un nom de domaine |
+| Adresses | App : https://getvitepos.web.app ; site de présentation : https://vitepos-rdc.web.app (`vitepos.web.app` est pris par un autre projet) ; `vitepos-be79c.web.app` et `vitepos-app.web.app` redirigent vers l'app ; en attendant un nom de domaine |
 | Accroche du site | « Vendez plus vite. Perdez moins. Même sans réseau. » + « Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez. Fini les comptes de tête à la fermeture. » ; trois promesses dessous (Fini le cahier / Plus un seul franc perdu / Votre boutique dans votre poche) ; mobile money et logos d'opérateurs retirés tant qu'il n'y a pas d'intégration réelle (FlexPay envisagé, d'abord pour payer les abonnements) |
 | Crédit client / multi-boutiques | V2 |
 

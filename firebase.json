@@ -16,7 +16,7 @@
   },
   "hosting": [
     {
-      "site": "vitepos-rdc",
+      "site": "getvitepos",
       "public": "dist",
       "ignore": [
         "firebase.json",
@@ -61,7 +61,7 @@
       ]
     },
     {
-      "site": "getvitepos",
+      "site": "vitepos-rdc",
       "public": "site/dist",
       "ignore": [
         "firebase.json",
@@ -105,7 +105,7 @@
       "redirects": [
         {
           "regex": "^/(.*)$",
-          "destination": "https://vitepos-rdc.web.app/:1",
+          "destination": "https://getvitepos.web.app/:1",
           "type": 301
         }
       ]
@@ -116,7 +116,7 @@
       "redirects": [
         {
           "regex": "^/(.*)$",
-          "destination": "https://vitepos-rdc.web.app/:1",
+          "destination": "https://getvitepos.web.app/:1",
           "type": 301
         }
       ]

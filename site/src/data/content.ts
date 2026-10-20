@@ -2,7 +2,7 @@
 import type { IconName } from "./icons";
 
 /** Adresse de l'application : un seul endroit à changer quand le nom de domaine sera choisi. */
-export const APP_URL = "https://vitepos-rdc.web.app";
+export const APP_URL = "https://getvitepos.web.app";
 export const SIGNUP_URL = `${APP_URL}/inscription`;
 export const LOGIN_URL = `${APP_URL}/connexion`;
 
