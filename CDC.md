@@ -269,6 +269,7 @@ npm run dev
 | Prix sur le site | Non affichés : « Gratuit pour commencer », formules sur demande |
 | Devises | Franc (CDF), dollar (USD) et euro (EUR) ; taux du jour du $ et de l'€ en FC, conversions via le franc ; l'euro n'apparaît que si son taux est saisi ; **le taux du jour est fixé par le propriétaire seul**, dans les Paramètres |
 | Caisse UI | Liste dense type supermarché |
+| Navigation | Ordinateur : barre du haut Accueil, Caisse, Stock, Ventes, Dépenses, Rapports (si autorisé), Plus ; téléphone : barre du bas Accueil, Caisse, Stock, Ventes, Plus. « Plus » contient le reste (liste unique dans `src/components/sections.ts`) |
 | Fiche produit | Modale |
 | Code article | Identifiant interne de chaque produit : préfixe de catégorie + numéro (LAI-001, LAI-002…), proposé automatiquement et modifiable ; jamais réutilisé à l'import. Le code-barres GS1 (EAN-13…) reste celui du fabricant et est facultatif |
 | Emballages | Un produit garde un seul stock, compté à l'unité (bouteilles). Ses emballages (Paquet de 24, Carton de 48…) ont leur code-barres et **leur propre prix, fixé par la boutique** (prix de gros, option A). En caisse : scanner la bouteille vend 1 bouteille, scanner le paquet vend le paquet et retire 24 du stock ; toucher l'article demande « à l'unité ou en paquet ». En réception : scanner le paquet ouvre l'entrée de stock comptée en paquets (3 paquets = +72). Pas encore dans l'import CSV |

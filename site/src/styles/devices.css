@@ -48,7 +48,8 @@
 }
 .frame-laptop .base {
   height: 14px;
-  margin: 0 -5%;
+  /* Le socle déborde de l'écran comme un vrai ordinateur, mais jamais au-delà de la page sur téléphone. */
+  margin: 0 clamp(-5%, calc((100% - 100vw) / 2 + 16px), 0px);
   border-radius: 0 0 14px 14px;
   background: linear-gradient(180deg, #cfd5df, #9aa3b2);
 }

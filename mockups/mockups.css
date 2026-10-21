@@ -1,0 +1,78 @@
+/* Maquettes du portfolio : planches « écrans mobiles », capturées en 2000 px de large.
+   Couleurs de vitePOS : bleu nuit #1a2b4c, rouge caisse #b6171e, fond #f8f9fb. */
+@import url("/node_modules/@fontsource/barlow/latin-400.css");
+@import url("/node_modules/@fontsource/barlow/latin-500.css");
+@import url("/node_modules/@fontsource/barlow/latin-600.css");
+@import url("/node_modules/@fontsource/barlow-condensed/latin-700.css");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+html,
+body {
+  overflow: hidden;
+  font-family: "Barlow", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+iframe {
+  border: 0;
+  display: block;
+  background: #f8f9fb;
+}
+
+/* Planche mobile : trois téléphones */
+.phones-page {
+  background: linear-gradient(180deg, #f3f6fc 0%, #e2e8f4 100%);
+  text-align: center;
+}
+.phones-page h2 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  color: #1a2b4c;
+  letter-spacing: -0.005em;
+}
+.phones-page h2 em {
+  font-style: normal;
+  color: #b6171e;
+}
+.phones-page p {
+  color: #4e5e82;
+}
+.phones {
+  display: flex;
+  justify-content: center;
+}
+.phone {
+  background: #0d1424;
+}
+.phone .glass {
+  position: relative;
+  overflow: hidden;
+  background: #f8f9fb;
+}
+.phone .glass::after {
+  /* encoche */
+  content: "";
+  position: absolute;
+  left: 50%;
+  background: #0d1424;
+  z-index: 2;
+}
+.caption {
+  font-weight: 600;
+  color: #1a2b4c;
+}
+
+/* Barre d'état du téléphone, couleur de la barre de l'application */
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1a2b4c;
+  color: #f2f5fb;
+  font-weight: 600;
+}
+.statusbar .icons {
+  letter-spacing: 1px;
+}

@@ -16,8 +16,22 @@
   --app-grid: #2b3442;
 }
 
+/* Sur téléphone, l'écran ne glisse jamais sur le côté (les listes qui défilent, comme les catégories de la
+   caisse, défilent seules). « clip » plutôt que « hidden » : iPhone le respecte et rien ne casse le défilement. */
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   -webkit-font-smoothing: antialiased;
+}
+
+/* iPhone agrandit la page quand on touche un champ écrit en moins de 16 px : sur écran tactile, jamais moins. */
+@media (pointer: coarse) {
+  .mantine-Input-input {
+    font-size: max(16px, var(--input-fz, 16px));
+  }
 }
 
 /* Chiffres : Barlow Condensed à chasse fixe */
@@ -64,6 +78,18 @@ body {
 .top-tab.active {
   opacity: 1;
   background: rgba(255, 255, 255, 0.14);
+}
+/* Ordinateur à l'écran étroit ou zoomé : les 7 onglets tiennent, sans icônes, et le nom de la boutique s'abrège. */
+@media (max-width: 75em) {
+  .top-tab {
+    padding: 7px 9px;
+  }
+  .top-tab svg {
+    display: none;
+  }
+  .app-header .brand {
+    max-width: 200px;
+  }
 }
 
 /* Barre du bas (téléphone) */

@@ -6,6 +6,7 @@ import { AppShell, Avatar, Group, Menu, Text, UnstyledButton, useComputedColorSc
 import { modals } from "@mantine/modals";
 import {
   IconCash,
+  IconChartBar,
   IconDots,
   IconHome,
   IconLogout,
@@ -13,6 +14,7 @@ import {
   IconPackage,
   IconReceipt,
   IconSun,
+  IconWallet,
 } from "@tabler/icons-react";
 import { logout, useReady } from "../data/session";
 import { getSyncState, useSyncState } from "../data/sync";
@@ -20,6 +22,7 @@ import { ROLE_LABELS } from "../lib/roles";
 import { needsAttention } from "../lib/subscription";
 import { SubscriptionBanner } from "./SubscriptionBanner";
 
+/** Barre du bas (téléphone). */
 export const TABS = [
   { to: "/", label: "Accueil", icon: IconHome, end: true },
   { to: "/caisse", label: "Caisse", icon: IconCash },
@@ -27,6 +30,17 @@ export const TABS = [
   { to: "/ventes", label: "Ventes", icon: IconReceipt },
   { to: "/plus", label: "Plus", icon: IconDots },
 ];
+
+/** Barre du haut (ordinateur) : il y a de la place pour les dépenses et les rapports. */
+export function useTopTabs() {
+  const { permissions } = useReady();
+  return [
+    ...TABS.slice(0, 4),
+    { to: "/depenses", label: "Dépenses", icon: IconWallet },
+    ...(permissions.viewReports ? [{ to: "/rapports", label: "Rapports", icon: IconChartBar }] : []),
+    TABS[4]!,
+  ];
+}
 
 export function connectionLabel(online: boolean, pending: number): string {
   if (!online) return pending > 0 ? `Hors ligne · ${pending} en attente` : "Hors ligne";
@@ -61,6 +75,7 @@ export function Layout() {
   const { boutique, member, subscription } = useReady();
   const wide = useMediaQuery("(min-width: 62em)", true);
   const { online, pending } = useSyncState();
+  const topTabs = useTopTabs();
 
   return (
     <AppShell header={{ height: 56 }} footer={{ height: 62, collapsed: wide }} padding={0}>
@@ -71,7 +86,7 @@ export function Layout() {
             <div className="brand">{boutique.name || "vitePOS"}</div>
           </Group>
           <Group gap={2} visibleFrom="md" wrap="nowrap" style={{ flex: 1, overflowX: "auto" }}>
-            {TABS.map((t) => (
+            {topTabs.map((t) => (
               <NavLink key={t.to} to={t.to} end={t.end} className="top-tab">
                 <t.icon size={18} stroke={1.8} aria-hidden="true" />
                 {t.label}

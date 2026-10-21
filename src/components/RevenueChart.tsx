@@ -2,7 +2,7 @@
  * Chiffre d'affaires par jour : une courbe avec une zone colorée dessous, une seule série (pas de légende,
  * le titre la nomme), le meilleur jour étiqueté, info-bulle au survol ou au toucher, et une vue tableau.
  */
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Button, Table, Text } from "@mantine/core";
 import { formatMoney, type Currency } from "../lib/fx";
 import { dayKey } from "../lib/cart";
@@ -27,8 +27,6 @@ function compact(n: number): string {
   return n.toLocaleString("fr-FR");
 }
 
-const W = 640;
-const H = 200;
 const left = 44;
 const bottom = 24;
 const top = 8;
@@ -36,13 +34,28 @@ const top = 8;
 export function RevenueChart({ data, currency }: { data: Point[]; currency: Currency }) {
   const [hover, setHover] = useState<number | null>(null);
   const [asTable, setAsTable] = useState(false);
+  // Dessiné à la largeur réelle : les textes gardent leur taille, sur téléphone comme sur ordinateur.
+  // Mesure directe (sans attendre une image d'animation, qui n'arrive pas dans un onglet en arrière-plan).
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setWidth(el.getBoundingClientRect().width);
+    const ro = new ResizeObserver(([e]) => setWidth(e.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [asTable]);
+  const W = Math.max(260, Math.round(width) || 640);
+  const H = W < 500 ? 190 : 220;
   const max = niceMax(Math.max(...data.map((d) => d.revenue)));
   const plotW = W - left - 8;
   const plotH = H - top - bottom;
   const slot = plotW / data.length;
   const y = (v: number) => top + plotH - (v / max) * plotH;
   const ticks = [0, max / 2, max];
-  const labelEvery = data.length > 10 ? Math.ceil(data.length / 8) : 1;
+  // Pas plus d'une étiquette de jour tous les 40 px, pour qu'elles ne se chevauchent pas.
+  const labelEvery = Math.max(1, Math.ceil(data.length / Math.max(1, Math.floor(plotW / 40))));
   const dayLabel = (d: string) => String(Number(d.slice(8)));
   const fmt = new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short" });
   const date = (d: string) => fmt.format(new Date(Number(d.slice(0, 4)), Number(d.slice(5, 7)) - 1, Number(d.slice(8))));
@@ -72,12 +85,12 @@ export function RevenueChart({ data, currency }: { data: Point[]; currency: Curr
           </Table.Tbody>
         </Table>
       ) : (
-        <div style={{ position: "relative" }}>
+        <div ref={ref} style={{ position: "relative" }}>
           <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Chiffre d'affaires par jour" onMouseLeave={() => setHover(null)}>
             {ticks.map((t) => (
               <g key={t}>
                 <line x1={left} x2={W - 8} y1={y(t)} y2={y(t)} stroke="var(--app-grid)" strokeWidth="1" />
-                <text x={left - 6} y={y(t) + 4} textAnchor="end" fontSize="11" fill="var(--mantine-color-dimmed)">
+                <text x={left - 6} y={y(t) + 4} textAnchor="end" fontSize="12" fill="var(--mantine-color-dimmed)">
                   {compact(t)}
                 </text>
               </g>
@@ -114,14 +127,14 @@ export function RevenueChart({ data, currency }: { data: Point[]; currency: Curr
                     ) : null,
                   )}
                   {data[peak].revenue > 0 && hover !== peak && (
-                    <text x={pts[peak].x} y={pts[peak].y - 12} textAnchor="middle" fontSize="11" fontWeight="600" fill="var(--mantine-color-text)">
+                    <text x={pts[peak].x} y={pts[peak].y - 12} textAnchor="middle" fontSize="12" fontWeight="600" fill="var(--mantine-color-text)">
                       {compact(data[peak].revenue)}
                     </text>
                   )}
                   {data.map((d, i) => (
                     <g key={d.day}>
                       {i % labelEvery === 0 && (
-                        <text x={all[i].x} y={H - 6} textAnchor="middle" fontSize="11" fill="var(--mantine-color-dimmed)">
+                        <text x={all[i].x} y={H - 6} textAnchor="middle" fontSize="12" fill="var(--mantine-color-dimmed)">
                           {data.length <= 7 ? date(d.day).split(" ")[0] : dayLabel(d.day)}
                         </text>
                       )}

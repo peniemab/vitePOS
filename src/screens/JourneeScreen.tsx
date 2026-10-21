@@ -78,17 +78,20 @@ export function JourneeScreen() {
             <Title order={4} mb="xs">
               Argent dans le tiroir
             </Title>
-            <Table fz="sm" withRowBorders={false}>
-              <Table.Thead>
-                <HeadRow shown={shown} />
-              </Table.Thead>
-              <Table.Tbody>
-                <Row shown={shown} label="Fond de caisse" m={float} />
-                <Row shown={shown} label="+ Espèces encaissées" m={summary.cash} />
-                <Row shown={shown} label="− Dépenses payées en caisse" m={summary.tillExpenses} />
-                <Row shown={shown} label="= Attendu" m={expected} strong />
-              </Table.Tbody>
-            </Table>
+            {/* Écran très étroit (fort zoom) : le tableau défile sur place au lieu d'élargir la page. */}
+            <Table.ScrollContainer minWidth={300} type="native">
+              <Table fz="sm" withRowBorders={false}>
+                <Table.Thead>
+                  <HeadRow shown={shown} />
+                </Table.Thead>
+                <Table.Tbody>
+                  <Row shown={shown} label="Fond de caisse" m={float} />
+                  <Row shown={shown} label="+ Espèces encaissées" m={summary.cash} />
+                  <Row shown={shown} label="− Dépenses payées en caisse" m={summary.tillExpenses} />
+                  <Row shown={shown} label="= Attendu" m={expected} strong />
+                </Table.Tbody>
+              </Table>
+            </Table.ScrollContainer>
           </Paper>
 
           {closed && cashDay?.closing ? (
@@ -290,16 +293,18 @@ function ClosedRecap({ cashDay, shown }: { cashDay: CashDay; shown: Currency[] }
         Par {cashDay.closedByName}
         {cashDay.closedAtMs ? ` à ${new Intl.DateTimeFormat("fr-FR", { timeStyle: "short" }).format(cashDay.closedAtMs)}` : ""}
       </Text>
-      <Table fz="sm" withRowBorders={false}>
-        <Table.Thead>
-          <HeadRow shown={shown} />
-        </Table.Thead>
-        <Table.Tbody>
-          <Row shown={shown} label="Attendu" m={c.expected} />
-          <Row shown={shown} label="Compté" m={c.counted} />
-          <Row shown={shown} label="Écart" m={c.variance} strong />
-        </Table.Tbody>
-      </Table>
+      <Table.ScrollContainer minWidth={300} type="native">
+        <Table fz="sm" withRowBorders={false}>
+          <Table.Thead>
+            <HeadRow shown={shown} />
+          </Table.Thead>
+          <Table.Tbody>
+            <Row shown={shown} label="Attendu" m={c.expected} />
+            <Row shown={shown} label="Compté" m={c.counted} />
+            <Row shown={shown} label="Écart" m={c.variance} strong />
+          </Table.Tbody>
+        </Table>
+      </Table.ScrollContainer>
       {c.notes && (
         <Text size="sm" mt="sm">
           {c.notes}

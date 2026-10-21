@@ -55,6 +55,12 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
+/* Sur téléphone, la page ne glisse jamais sur le côté. « clip » (et non « hidden ») sur html et body :
+   iPhone respecte le blocage, et la barre du haut reste collée en haut en défilant. */
+html,
+body {
+  overflow-x: clip;
+}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -68,7 +74,6 @@ body {
   color: var(--ink);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 img {
   max-width: 100%;
@@ -156,9 +161,9 @@ p {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(255, 255, 255, 0.94);
+  /* Même bleu clair que le haut de la section d'accueil : barre et accroche forment un seul bloc. */
+  background: rgba(238, 242, 251, 0.96);
   backdrop-filter: saturate(1.4) blur(8px);
-  border-bottom: 1px solid var(--line);
 }
 .top-inner {
   display: flex;

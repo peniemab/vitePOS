@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Écrans mobiles</title>
+    <link rel="stylesheet" href="/mockups/mockups.css" />
+    <!-- Planche à l'échelle 1,585 : les téléphones affichent l'application à sa taille réelle (390 px),
+         car la mise à l'échelle d'une page imbriquée fausse le rendu des éléments fixes. Capture : 1585 × 1200, échelle 1,2618. -->
+    <style>
+      html, body { width: 1585px; }
+      .phones-page { height: 1200px; padding-top: 82px; }
+      .phones-page h2 { font-size: 62px; line-height: 1.05; }
+      .phones-page p { margin-top: 13px; font-size: 24px; }
+      .phones { gap: 73px; margin-top: 57px; }
+      .phone { width: 422px; height: 891px; padding: 16px; border-radius: 73px; box-shadow: 0 48px 95px rgba(26, 43, 76, 0.28), inset 0 0 0 3px #2a3550; }
+      .phone .glass { width: 390px; height: 859px; border-radius: 59px; }
+      .phone .glass::after { top: 13px; width: 124px; height: 35px; margin-left: -62px; border-radius: 19px; }
+      .statusbar { height: 44px; padding: 0 35px 0 41px; font-size: 17px; }
+      .statusbar .icons { font-size: 13px; }
+      .caption { margin-top: 22px; font-size: 22px; }
+      /* Bande du bas (barre d'accueil iPhone), couleur de la barre de navigation de l'app. */
+      .homebar { height: 25px; background: #fff; position: relative; }
+      .homebar::after { content: ""; position: absolute; left: 50%; top: 10px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #0d1424; }
+    </style>
+  </head>
+  <body>
+    <!-- mobile.html?set=2 : deuxième planche. Chaque téléphone affiche l'application de démonstration
+         (preview/, données fictives, aucune connexion à Firebase) à 390 × 790 px. -->
+    <div class="phones-page">
+      <h2 id="title"></h2>
+      <p id="sub"></p>
+      <div class="phones" id="phones"></div>
+    </div>
+    <script>
+      // [adresse dans l'app, légende, action facultative une fois l'écran chargé]
+      const sets = {
+        1: {
+          title: "La caisse dans la poche, <em>même sans réseau</em>",
+          sub: "Scanner ou toucher l'article, encaisser en francs, en dollars ou en euros, envoyer le ticket.",
+          phones: [
+            ["/caisse?panier=1", "Caisse"],
+            ["/caisse?panier=1", "Encaissement en FC, $ ou €", "encaisser"],
+            ["/ticket/demoK7Q9M4", "Ticket à imprimer ou partager"],
+          ],
+        },
+        2: {
+          title: "Toute la boutique, <em>suivie au franc près</em>",
+          sub: "Ventes du jour, stock et alertes, chiffres de la semaine : tout sur le téléphone du patron.",
+          phones: [
+            ["/", "Accueil"],
+            ["/stock", "Stock et codes article"],
+            ["/rapports", "Rapports"],
+          ],
+        },
+      };
+
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const s = sets[new URLSearchParams(location.search).get("set") || "1"];
+      document.getElementById("title").innerHTML = s.title;
+      document.getElementById("sub").textContent = s.sub;
+      const box = document.getElementById("phones");
+
+      // Mise en scène seulement : pas de barre de défilement, pas de barre d'outils de l'app hors cadre.
+      const STAGE = "html{scrollbar-width:none}::-webkit-scrollbar{display:none}";
+
+      /** Ouvre le panier, puis l'encaissement : le client donne 25 000 FC, l'app calcule la monnaie. */
+      async function encaisser(doc) {
+        const click = (re) => [...doc.querySelectorAll("button")].find((b) => re.test(b.textContent.trim()))?.click();
+        click(/^Panier/);
+        await wait(700);
+        click(/^Encaisser$/);
+        await wait(700);
+        click(/^25\s000\sFC$/);
+        await wait(500);
+      }
+
+      async function load(frame, src) {
+        await new Promise((resolve) => {
+          frame.addEventListener("load", resolve, { once: true });
+          frame.src = src;
+        });
+        const st = frame.contentDocument.createElement("style");
+        st.textContent = STAGE;
+        frame.contentDocument.head.appendChild(st);
+        await wait(1500);
+      }
+
+      (async () => {
+        // Les écrans se chargent l'un après l'autre : le panier de démonstration est rangé dans le
+        // stockage du navigateur, partagé par les trois téléphones.
+        for (const [route, caption, action] of s.phones) {
+          const wrap = document.createElement("div");
+          wrap.innerHTML =
+            '<div class="phone"><div class="glass"><div class="statusbar"><span>9:41</span><span class="icons">▂▄▆█ ◔ ▮</span></div><iframe width="390" height="790"></iframe><div class="homebar"></div></div></div><div class="caption"></div>';
+          wrap.querySelector(".caption").textContent = caption;
+          box.appendChild(wrap);
+          const frame = wrap.querySelector("iframe");
+          await load(frame, route);
+          if (action === "encaisser") await encaisser(frame.contentDocument);
+        }
+        document.body.dataset.ready = "1";
+      })();
+    </script>
+  </body>
+</html>
