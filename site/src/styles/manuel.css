@@ -1,0 +1,429 @@
+/* Manuel façon journal : une pleine page bleu nuit, gros titres serrés, numéros de chapitre géants,
+   encadrés « Astuce » et « Attention ». S'imprime en A4 (voir @media print en bas). */
+
+/* Une */
+.mag-cover {
+  background: radial-gradient(120% 90% at 85% 10%, #263c66 0%, var(--navy) 50%, var(--navy-deep) 100%);
+  color: #f2f5fb;
+  padding: 64px 0 72px;
+  overflow: clip;
+}
+.mag-cover-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.mag-masthead {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ffb3ac;
+  border-top: 2px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  padding: 6px 0;
+  display: inline-block;
+}
+.mag-masthead span {
+  color: #b6c6f0;
+  letter-spacing: 0.12em;
+}
+.mag-cover h1 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: clamp(3.2rem, 9vw, 6.4rem);
+  line-height: 0.92;
+  margin: 22px 0 18px;
+  letter-spacing: -0.01em;
+}
+.mag-cover h1 em {
+  font-style: normal;
+  color: #f6827a;
+}
+.mag-cover-lead {
+  font-size: 1.2rem;
+  color: #d8e2ff;
+  max-width: 34em;
+}
+.mag-cover-teasers {
+  list-style: none;
+  padding: 0;
+  margin: 26px 0 30px;
+  display: grid;
+  gap: 10px;
+}
+.mag-cover-teasers li {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  padding-top: 10px;
+  font-weight: 600;
+}
+.mag-cover-teasers b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.6rem;
+  color: #f6827a;
+  min-width: 2ch;
+}
+.mag-cover-shot {
+  justify-self: center;
+  width: min(300px, 80%);
+  transform: rotate(4deg);
+}
+
+/* Sommaire */
+.mag-toc {
+  padding-top: 56px;
+  padding-bottom: 24px;
+}
+.mag-toc h2 {
+  font-size: 2.2rem;
+  color: var(--navy);
+  border-bottom: 3px solid var(--navy);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+.mag-toc ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 32px;
+}
+.mag-toc a {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.25;
+}
+.mag-toc a:hover {
+  color: var(--brick);
+}
+.mag-toc small {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mag-toc-num {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--brick);
+  min-width: 2ch;
+}
+
+/* Chapitres */
+.mag-chapter {
+  padding: 64px 0;
+}
+.mag-alt {
+  background: var(--bg-alt);
+}
+.mag-head {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  border-bottom: 3px solid var(--navy);
+  padding-bottom: 12px;
+}
+.mag-num {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: clamp(4.5rem, 12vw, 8rem);
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--brick);
+}
+.mag-kicker {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brick);
+  margin: 0;
+}
+.mag-head h2 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1;
+  color: var(--navy);
+  margin: 4px 0 0;
+}
+.mag-lead {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--ink);
+  max-width: 40em;
+  margin: 20px 0 28px;
+}
+.mag-lead::first-letter {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 3.2em;
+  float: left;
+  line-height: 0.85;
+  margin: 4px 8px 0 0;
+  color: var(--navy);
+}
+.mag-body {
+  display: grid;
+  /* minmax(0, …) : un contenu large (le tableau des rôles) défile sur place au lieu d'élargir la colonne. */
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 56px;
+  align-items: start;
+}
+.mag-body.mag-noshot {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 760px;
+}
+.mag-steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+}
+.mag-steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 18px 52px;
+}
+.mag-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -2px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--navy);
+  color: #fff;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+.mag-shot figcaption {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+}
+
+/* Grand chiffre, façon une de journal */
+.mag-figure {
+  margin: 12px 0 20px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+.mag-figure b {
+  display: block;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: clamp(2.6rem, 7vw, 4rem);
+  line-height: 1;
+  color: var(--brick);
+}
+
+/* Encadrés */
+.mag-box {
+  margin: 14px 0;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border-left: 5px solid;
+}
+.mag-box b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.15rem;
+}
+.mag-box p {
+  margin: 4px 0 0;
+}
+.mag-tip {
+  background: var(--navy-soft);
+  border-color: var(--navy);
+  color: var(--navy);
+}
+.mag-warn {
+  background: #fff0ee;
+  border-color: var(--brick);
+  color: #6e000b;
+}
+
+/* Tableau des rôles */
+.mag-table {
+  overflow-x: auto;
+  margin: 8px 0 18px;
+}
+.mag-table table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 480px;
+  font-size: 0.95rem;
+}
+.mag-table th,
+.mag-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+.mag-table th:first-child {
+  text-align: left;
+}
+.mag-table thead th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.mag-table td.no {
+  color: var(--muted);
+}
+
+/* Dernière page */
+.mag-back {
+  background: var(--navy);
+  color: #f2f5fb;
+  padding: 64px 0;
+  text-align: center;
+}
+.mag-back h2 {
+  font-size: clamp(2.6rem, 7vw, 4.4rem);
+  margin: 16px 0 10px;
+}
+.mag-back p {
+  color: #d8e2ff;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 860px) {
+  .mag-cover-grid,
+  .mag-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .mag-cover-shot {
+    width: min(240px, 70%);
+  }
+  .mag-shot {
+    justify-self: center;
+    width: min(280px, 85%);
+  }
+  .mag-toc ol {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .mag-head {
+    gap: 12px;
+  }
+  .mag-lead {
+    font-size: 1.1rem;
+  }
+}
+
+/* PDF A4 : couverture et dernière page en pleine page (sans marge), un chapitre par page,
+   sans l'en-tête ni le pied du site. */
+@page {
+  size: A4;
+  margin: 14mm 14mm 16mm;
+}
+@page plein {
+  size: A4;
+  margin: 0;
+}
+@media print {
+  body > header,
+  body > footer,
+  .mag-noprint {
+    display: none !important;
+  }
+  html,
+  body {
+    font-size: 16.5px;
+    background: #fff;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .wrap {
+    max-width: none;
+    padding: 0;
+  }
+  .mag-cover,
+  .mag-back {
+    page: plein;
+    height: 296mm;
+    padding: 0 16mm;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .mag-cover {
+    break-after: page;
+  }
+  .mag-cover-grid {
+    grid-template-columns: 1.25fr 1fr;
+    width: 100%;
+  }
+  .mag-cover h1 {
+    font-size: 6.2rem;
+  }
+  .mag-cover-shot {
+    width: 74mm;
+  }
+  .mag-toc {
+    padding: 0;
+    break-after: page;
+  }
+  .mag-toc ol {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mag-chapter {
+    padding: 0;
+    background: none;
+    break-before: page;
+  }
+  .mag-lead {
+    margin: 6mm 0 7mm;
+  }
+  .mag-body {
+    grid-template-columns: minmax(0, 1fr) 76mm;
+    gap: 10mm;
+  }
+  .mag-box,
+  .mag-figure,
+  .mag-table,
+  .mag-steps li,
+  .mag-shot {
+    break-inside: avoid;
+  }
+  .mag-table {
+    overflow: visible;
+  }
+  .mag-table table {
+    min-width: 0;
+    font-size: 0.78rem;
+  }
+  .mag-table th,
+  .mag-table td {
+    padding: 6px 4px;
+  }
+  .mag-back {
+    break-before: page;
+    justify-content: center;
+  }
+}

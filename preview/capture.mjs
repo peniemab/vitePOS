@@ -1,6 +1,7 @@
 // Captures d'écran de l'aperçu, avec la vraie taille d'un téléphone, d'une tablette ou d'un ordinateur.
 // Pilote Chrome par son protocole de développement (comme l'outil « appareil mobile » du navigateur).
-// Usage : node preview/capture.mjs   (l'aperçu doit tourner : npx vite --config preview/vite.config.ts)
+// Usage : node preview/capture.mjs [préfixe]   (l'aperçu doit tourner : npx vite --config preview/vite.config.ts)
+//   node preview/capture.mjs man-   → seulement les captures du manuel
 import { spawn } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -19,6 +20,26 @@ const DEVICES = {
   ordi: { width: 1440, height: 900, deviceScaleFactor: 2, mobile: false },
 };
 
+/** Petites actions jouées dans la page avant la photo (mêmes gestes qu'un utilisateur). */
+const HELPERS = `
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const btn = (re) => [...document.querySelectorAll("button, a, label")].find((b) => re.test(b.textContent.trim()));
+  const tap = async (re, ms = 700) => { btn(re)?.click(); await wait(ms); };
+  const type = async (sel, value, ms = 400) => {
+    const el = document.querySelector(sel);
+    const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+    el.focus(); set.call(el, value); el.dispatchEvent(new Event("input", { bubbles: true })); await wait(ms);
+  };
+  const enter = async (sel, ms = 900) => {
+    document.querySelector(sel).dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })); await wait(ms);
+  };
+  const reveal = async (re, ms = 500) => {
+    [...document.querySelectorAll("h1,h2,h3,h4,label,p,div")].reverse().find((e) => re.test(e.textContent.trim()))?.scrollIntoView({ block: "start" });
+    await wait(ms);
+  };
+`;
+
+// [nom, appareil, adresse, action facultative (code joué dans la page avant la capture)]
 const SHOTS = [
   ["tel-accueil", "tel", "/"],
   ["tel-caisse", "tel", "/caisse?panier=1"],
@@ -29,7 +50,22 @@ const SHOTS = [
   ["ordi-journee", "ordi", "/journee"],
   ["ordi-ventes", "ordi", "/ventes"],
   ["ordi-stock", "ordi", "/stock"],
+
+  // Manuel de l'utilisateur (site/src/pages/manuel.astro)
+  ["man-installer", "tel", "/?installer=1"],
+  ["man-parametres", "tel", "/parametres"],
+  ["man-equipe", "tel", "/equipe"],
+  ["man-fiche", "tel", "/stock", `await tap(/^Coca-Cola 33 cl/, 900); await reveal(/^Emballages/);`],
+  ["man-reception", "tel", "/stock", `await type("input[placeholder^='Nom, code article']", "15449000000993"); await enter("input[placeholder^='Nom, code article']"); await type("[role=dialog] input[inputmode=decimal]", "3");`],
+  ["man-journee", "tel", "/journee"],
+  ["man-encaisser", "tel", "/caisse?panier=1", `await tap(/^Panier/); await tap(/^Encaisser$/); await tap(/^25\\s000\\sFC$/, 500);`],
+  ["man-depense", "tel", "/depenses", `await tap(/^Nouvelle dépense$/, 900);`],
+  ["man-cloture", "tel", "/journee", `await reveal(/^Clôture$/);`],
+  ["man-inventaire", "tel", "/inventaire"],
+  ["man-rapports", "tel", "/rapports"],
 ];
+
+const ONLY = process.argv[2] || "";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -51,7 +87,7 @@ async function main() {
     }
     if (!version) throw new Error("Chrome ne répond pas.");
 
-    for (const [name, device, path] of SHOTS) {
+    for (const [name, device, path, run] of SHOTS.filter(([n]) => n.startsWith(ONLY))) {
       const target = await (await fetch(`http://127.0.0.1:${PORT}/json/new?about:blank`, { method: "PUT" })).json();
       const ws = new WebSocket(target.webSocketDebuggerUrl);
       await new Promise((r) => ws.addEventListener("open", r, { once: true }));
@@ -77,6 +113,10 @@ async function main() {
       await send("Page.enable");
       await send("Page.navigate", { url: BASE + path });
       await sleep(3500);
+      if (run) {
+        await send("Runtime.evaluate", { expression: `(async () => { ${HELPERS} ${run} })()`, awaitPromise: true });
+        await sleep(400);
+      }
       const shot = await send("Page.captureScreenshot", { format: "png" });
       writeFileSync(new URL(`${name}.png`, OUT), Buffer.from(shot.result.data, "base64"));
       const light = await send("Page.captureScreenshot", { format: "webp", quality: 82 });

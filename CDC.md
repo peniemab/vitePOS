@@ -265,7 +265,7 @@ npm run dev
 | Restaurant | Écarté pour l'instant |
 | Version gratuite | Oui, en plus des formules payantes (limites à définir : comptes, produits, magasins) |
 | Site de présentation | Astro dans `site/` (pages statiques, aucun JavaScript envoyé, rapide sur réseau faible), séparé de l'app ; textes dans `site/src/data/content.ts` ; inspiration Toposfy |
-| Manuel de l'utilisateur | Prévu : un manuel attrayant façon magazine / journal (comme le rapport d'impact de BEPAS : couverture pleine page, gros titres condensés, sommaire numéroté, grands chiffres, encadrés « astuce »), illustré avec les vraies captures de l'app ; à lire sur le site et à télécharger en PDF A4 (partage WhatsApp, impression) |
+| Manuel de l'utilisateur | Fait : page `/manuel` du site de présentation, façon journal (une bleu nuit, sommaire numéroté, 13 chapitres du matin au soir, encadrés Astuce / Attention, grands chiffres), illustrée par les vraies captures de l'app de démonstration (`node preview/capture.mjs man-`) ; PDF A4 de 16 pages `manuel-vitepos.pdf` imprimé par Chrome depuis le site construit. Textes dans `site/src/data/manuel.ts`, à mettre à jour quand un écran change |
 | Prix sur le site | Non affichés : « Gratuit pour commencer », formules sur demande |
 | Devises | Franc (CDF), dollar (USD) et euro (EUR) ; taux du jour du $ et de l'€ en FC, conversions via le franc ; l'euro n'apparaît que si son taux est saisi ; **le taux du jour est fixé par le propriétaire seul**, dans les Paramètres |
 | Caisse UI | Liste dense type supermarché |
