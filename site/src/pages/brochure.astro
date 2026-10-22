@@ -1,0 +1,104 @@
+---
+/**
+ * Brochure commerciale : une feuille A4 recto-verso, à laisser au comptoir ou à envoyer par WhatsApp.
+ * Recto : l'accroche et les trois promesses. Verso : les fonctions, pour qui, comment démarrer.
+ * Mêmes textes que le site (data/content.ts). PDF : imprimer cette page (voir CLAUDE.md, comme le manuel).
+ */
+import Base from "../layouts/Base.astro";
+import Shot from "../components/Shot.astro";
+import { audiences, features, promises, steps, strengths } from "../data/content";
+import { icons } from "../data/icons";
+import "../styles/brochure.css";
+
+const site = "vitepos-rdc.web.app";
+const app = "getvitepos.web.app";
+---
+
+<Base title="Brochure vitePOS" description="La brochure de vitePOS, à imprimer ou à partager : la caisse qui vend plus vite, perd moins et marche même sans réseau.">
+  <div class="sheets">
+    <!-- Recto -->
+    <section class="sheet recto">
+      <header class="b-top">
+        <img src="/logo.svg" alt="" width="34" height="37" />
+        <span class="b-brand">vite<b>POS</b></span>
+        <span class="b-tag">Caisse · Stock · Ventes</span>
+      </header>
+
+      <div class="b-hero">
+        <div>
+          <h1><span>Vendez plus vite.</span> <span>Perdez moins.</span> <span class="accent">Même sans réseau.</span></h1>
+          <p class="b-lead">
+            La caisse de votre boutique, sur votre téléphone. Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.
+          </p>
+          <ul class="b-strengths">
+            {strengths.map((s) => <li><b>{s.title}</b> {s.text}</li>)}
+          </ul>
+        </div>
+        <div class="b-phones">
+          <div class="back"><Shot name="tel-accueil" device="tel" alt="Accueil de vitePOS" eager /></div>
+          <div class="front"><Shot name="tel-caisse" device="tel" alt="La caisse de vitePOS" eager /></div>
+        </div>
+      </div>
+
+      <ol class="b-promises">
+        {
+          promises.map((p, i) => (
+            <li>
+              <span class="num">0{i + 1}</span>
+              <h2>{p.title}</h2>
+              <p>{p.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+
+      <footer class="b-cta">
+        <div>
+          <p class="b-cta-title">Gratuit pour commencer</p>
+          <p>Sans matériel à acheter · prêt en 5 minutes · en français</p>
+          <p class="b-url">{app}</p>
+        </div>
+        <img class="b-qr" src="/qr-site.svg" alt={`QR code vers ${site}`} width="110" height="110" />
+      </footer>
+    </section>
+
+    <!-- Verso -->
+    <section class="sheet verso">
+      <h2 class="b-title">Tout pour tenir votre commerce</h2>
+      <div class="b-features">
+        {
+          features.map((f) => (
+            <article>
+              <div class="b-icon" set:html={icons[f.icon]} />
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="b-split">
+        <div>
+          <h2 class="b-title small">Du kiosque au supermarché</h2>
+          <ul class="b-audiences">
+            {audiences.map((a) => <li><b>{a.title}</b> {a.text}</li>)}
+          </ul>
+        </div>
+        <div>
+          <h2 class="b-title small">Prêt en trois étapes</h2>
+          <ol class="b-steps">
+            {steps.map((s) => <li><b>{s.title}</b> {s.text}</li>)}
+          </ol>
+        </div>
+      </div>
+
+      <footer class="b-contact">
+        <div>
+          <b>Essayez vitePOS dès aujourd'hui</b>
+          <p>Le site et le manuel : <b>{site}</b> · L'app : <b>{app}</b></p>
+        </div>
+        <img class="b-qr" src="/qr-site.svg" alt="" width="84" height="84" />
+      </footer>
+    </section>
+  </div>
+</Base>

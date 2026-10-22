@@ -1,0 +1,326 @@
+/* Brochure A4 recto-verso. À l'écran : deux feuilles posées sur un fond gris ; à l'impression : deux pages
+   pleines, sans marge (les fonds de couleur vont jusqu'au bord). */
+
+.sheets {
+  background: #dfe3ea;
+  padding: 32px 16px;
+  display: grid;
+  gap: 32px;
+  justify-content: center;
+  /* Sur téléphone, la feuille A4 défile sur place au lieu d'élargir la page. */
+  overflow-x: auto;
+}
+.sheet {
+  width: 210mm;
+  height: 297mm;
+  background: #fff;
+  box-shadow: 0 10px 40px rgba(26, 43, 76, 0.18);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+/* ---------- Recto ---------- */
+.recto {
+  background: linear-gradient(180deg, var(--navy-soft) 0%, #fff 46%);
+  padding: 12mm 14mm 0;
+}
+.b-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.b-brand {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.b-brand b {
+  font-weight: 700;
+}
+.b-tag {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brick);
+}
+.b-hero {
+  display: grid;
+  grid-template-columns: 1fr 72mm;
+  gap: 6mm;
+  align-items: center;
+  margin-top: 8mm;
+}
+.recto h1 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 3.2rem;
+  line-height: 0.98;
+  color: var(--navy);
+  margin: 0;
+}
+.recto h1 span {
+  display: block;
+}
+.recto h1 .accent {
+  color: var(--brick);
+}
+.b-lead {
+  font-size: 1.2rem;
+  color: var(--muted);
+  margin: 5mm 0 6mm;
+}
+.b-strengths {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 2.5mm;
+}
+.b-strengths li {
+  padding-left: 7mm;
+  position: relative;
+}
+.b-strengths li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--ok);
+  font-weight: 700;
+}
+.b-strengths b {
+  color: var(--navy);
+}
+.b-phones {
+  position: relative;
+  height: 118mm;
+}
+.b-phones .frame-phone {
+  max-width: none;
+}
+.b-phones .back,
+.b-phones .front {
+  position: absolute;
+  width: 46mm;
+}
+.b-phones .back {
+  left: 0;
+  top: 0;
+  transform: rotate(-5deg);
+}
+.b-phones .front {
+  right: 0;
+  top: 14mm;
+  transform: rotate(4deg);
+}
+.b-promises {
+  list-style: none;
+  padding: 0;
+  margin: 9mm 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6mm;
+}
+.b-promises li {
+  border-top: 2.5px solid var(--navy);
+  padding-top: 3mm;
+}
+.b-promises .num {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  color: var(--brick);
+}
+.b-promises h2 {
+  font-size: 1.45rem;
+  line-height: 1.05;
+  color: var(--navy);
+  margin: 1mm 0 2mm;
+}
+.b-promises p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.b-cta {
+  margin: auto -14mm 0;
+  padding: 8mm 14mm;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8mm;
+}
+.b-cta div {
+  flex: 1;
+}
+.b-cta p {
+  margin: 0;
+  color: #d8e2ff;
+}
+.b-cta .b-cta-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+.b-cta .b-url {
+  margin-top: 2mm;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f6827a;
+}
+.b-qr {
+  background: #fff;
+  padding: 2mm;
+  border-radius: 3mm;
+}
+
+/* ---------- Verso ---------- */
+.verso {
+  padding: 13mm 14mm 0;
+}
+.b-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 2.2rem;
+  color: var(--navy);
+  border-bottom: 2.5px solid var(--navy);
+  padding-bottom: 2mm;
+  margin: 0 0 5mm;
+}
+.b-title.small {
+  font-size: 1.6rem;
+}
+.b-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4mm 8mm;
+}
+.b-features article {
+  display: grid;
+  grid-template-columns: 9mm 1fr;
+  column-gap: 3mm;
+}
+.b-icon {
+  grid-row: span 2;
+  width: 9mm;
+  height: 9mm;
+  border-radius: 2.5mm;
+  background: var(--navy-soft);
+  color: var(--navy);
+  display: grid;
+  place-items: center;
+}
+.b-icon svg {
+  width: 5mm;
+  height: 5mm;
+}
+.b-features h3 {
+  font-size: 1.05rem;
+  color: var(--navy);
+  margin: 0;
+}
+.b-features p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.b-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8mm;
+  margin-top: 8mm;
+}
+.b-audiences,
+.b-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 3mm;
+}
+.b-audiences b,
+.b-steps b {
+  display: block;
+  color: var(--navy);
+}
+.b-audiences li,
+.b-steps li {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.b-steps {
+  counter-reset: s;
+}
+.b-steps li {
+  counter-increment: s;
+  padding-left: 9mm;
+  position: relative;
+}
+.b-steps li::before {
+  content: counter(s);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6.5mm;
+  height: 6.5mm;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+}
+.b-contact {
+  margin: auto -14mm 0;
+  padding: 6mm 14mm;
+  background: var(--navy-soft);
+  display: flex;
+  align-items: center;
+  gap: 6mm;
+  color: var(--navy);
+}
+.b-contact div {
+  flex: 1;
+}
+.b-contact b:first-child {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.5rem;
+}
+.b-contact p {
+  margin: 1mm 0 0;
+}
+
+/* ---------- Impression : deux pages A4 pleines ---------- */
+@page {
+  size: A4;
+  margin: 0;
+}
+@media print {
+  body > header,
+  body > footer {
+    display: none !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .sheets {
+    background: none;
+    padding: 0;
+    gap: 0;
+    display: block;
+    overflow: visible;
+  }
+  .sheet {
+    box-shadow: none;
+    break-after: page;
+  }
+}

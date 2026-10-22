@@ -34,6 +34,7 @@ Plusieurs boutiques dans le même projet Firebase ; chaque employé a son propre
 - Les textes sont dans `site/src/data/content.ts`, l'adresse de l'app dans `APP_URL` du même fichier. En ligne sur https://vitepos-rdc.web.app.
 - Pages statiques, pas de JavaScript envoyé au visiteur : n'ajouter un composant interactif que si c'est indispensable.
 - Manuel de l'utilisateur : `site/src/pages/manuel.astro`, textes dans `site/src/data/manuel.ts`, captures `node preview/capture.mjs man-` (aperçu lancé). Après un changement, regénérer le PDF : `npm run build --prefix site`, servir `site/dist` (par ex. `python -m http.server 5199` dans ce dossier), puis Chrome sans interface `--print-to-pdf=site/public/manuel-vitepos.pdf --no-pdf-header-footer` sur `http://localhost:5199/manuel/`, et reconstruire le site.
+- Brochure commerciale A4 recto-verso : `site/src/pages/brochure.astro` (styles `brochure.css`, mêmes textes que `content.ts`), PDF `site/public/brochure-vitepos.pdf` regénéré de la même façon que le manuel, sur `http://localhost:5199/brochure/`. QR code vers le site : `site/public/qr-site.svg` (`npx -y qrcode@1.5.4 -t svg …`).
 
 ## Avant de dire qu'une étape est terminée
 1. `npm run build` et `npm run test` passent.
