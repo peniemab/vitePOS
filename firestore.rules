@@ -259,7 +259,8 @@ service cloud.firestore {
 
         allow create: if notBlocked(bid)
           && isActive(bid)
-          && request.resource.data.keys().hasOnly(['uid', 'memberName', 'lines', 'subtotal', 'discountPercent', 'discount', 'total', 'currency', 'payment', 'clientId', 'clientName', 'status', 'movementId', 'dayKey', 'createdAt', 'clientAtMs'])
+          && request.resource.data.keys().hasOnly(['uid', 'memberName', 'lines', 'subtotal', 'discountPercent', 'discount', 'total', 'currency', 'payment', 'clientId', 'clientName', 'inStats', 'status', 'movementId', 'dayKey', 'createdAt', 'clientAtMs'])
+          && request.resource.data.get('inStats', true) is bool
           && request.resource.data.clientId is string
           && request.resource.data.clientId.size() <= 64
           && request.resource.data.clientName is string
@@ -330,7 +331,8 @@ service cloud.firestore {
 
         allow create: if notBlocked(bid)
           && isActive(bid)
-          && request.resource.data.keys().hasOnly(['amount', 'currency', 'category', 'description', 'fromTill', 'status', 'uid', 'memberName', 'dayKey', 'createdAt', 'clientAtMs'])
+          && request.resource.data.keys().hasOnly(['amount', 'currency', 'category', 'description', 'fromTill', 'status', 'inStats', 'uid', 'memberName', 'dayKey', 'createdAt', 'clientAtMs'])
+          && request.resource.data.get('inStats', true) is bool
           && validExpense(request.resource.data)
           && request.resource.data.status == 'validee'
           && request.resource.data.uid == request.auth.uid
@@ -343,6 +345,22 @@ service cloud.firestore {
           && request.resource.data.status == 'annulee'
           && request.resource.data.cancelledBy == request.auth.uid
           && request.resource.data.cancelledAt == request.time;
+      }
+
+      // ---------- Compteurs mensuels ----------
+      // Ventes et dépenses de chaque mois, par devise, pour le graphique des six derniers mois.
+      // Mis à jour par increment() avec chaque vente, annulation ou dépense (donc par tout membre actif) ;
+      // lus seulement par ceux qui voient les rapports.
+      match /monthStats/{month} {
+        allow read: if can(bid, 'viewReports');
+
+        allow create, update: if notBlocked(bid)
+          && isActive(bid)
+          && month.matches('^[0-9]{4}-[0-9]{2}$')
+          && request.resource.data.keys().hasOnly(['sales', 'saleCount', 'expenses'])
+          && validMonthMoney(request.resource.data.get('sales', {}))
+          && validMonthMoney(request.resource.data.get('expenses', {}))
+          && request.resource.data.get('saleCount', 0) is number;
       }
 
       // ---------- Inventaires ----------
@@ -491,6 +509,13 @@ service cloud.firestore {
 
     function catalogFields() {
       return ['sku', 'name', 'category', 'sellPrice', 'unit', 'alertThreshold', 'barcode', 'packs', 'favorite', 'archived'];
+    }
+
+    /** Montants d'un compteur mensuel : FC, $ et € seulement, des nombres (négatifs possibles un instant, pendant une annulation hors ligne). */
+    function validMonthMoney(m) {
+      return m is map
+        && m.keys().hasOnly(['CDF', 'USD', 'EUR'])
+        && m.get('CDF', 0) is number && m.get('USD', 0) is number && m.get('EUR', 0) is number;
     }
 
     function validProduct(p) {

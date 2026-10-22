@@ -129,14 +129,23 @@ const INC = Symbol("increment");
 export const serverTimestamp = () => Timestamp.now();
 export const increment = (n: number) => ({ [INC]: n });
 
-function apply(path: string, patch: DocumentData, merge: boolean) {
-  const prev = merge ? (store.get(path) ?? {}) : {};
+const isPlain = (v: unknown): v is DocumentData =>
+  !!v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype && !(INC in v);
+
+/** Comme Firestore : `increment()` s'ajoute à l'ancienne valeur, et en fusion les sous-objets se fusionnent aussi. */
+function mergeFields(prev: DocumentData, patch: DocumentData, merge: boolean): DocumentData {
   const next: DocumentData = { ...prev };
   for (const [k, v] of Object.entries(patch)) {
     const inc = v && typeof v === "object" && INC in v ? (v as Record<symbol, number>)[INC] : undefined;
-    next[k] = inc !== undefined ? ((prev[k] as number) ?? 0) + inc : v;
+    if (inc !== undefined) next[k] = ((prev[k] as number) ?? 0) + inc;
+    else if (merge && isPlain(v)) next[k] = mergeFields(isPlain(prev[k]) ? prev[k] : {}, v, true);
+    else next[k] = v;
   }
-  store.set(path, next);
+  return next;
+}
+
+function apply(path: string, patch: DocumentData, merge: boolean) {
+  store.set(path, mergeFields(merge ? (store.get(path) ?? {}) : {}, patch, merge));
 }
 
 const notify = () => setTimeout(() => listeners.forEach((l) => l()), 0);

@@ -3,9 +3,11 @@
  * La journée suit la date : toutes les ventes du jour en font partie. Le matin on peut noter le fond
  * de caisse ; le soir, la clôture compare l'argent compté à l'argent attendu.
  */
-import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where, type DocumentData } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, where, writeBatch, type DocumentData } from "firebase/firestore";
 import { notifications } from "@mantine/notifications";
 import { getDb } from "./firebase";
+import { countExpense } from "./monthStats";
+import { monthOf } from "../lib/monthStats";
 import { errorMessage } from "./errors";
 import { track } from "./sync";
 import type { Actor } from "./products";
@@ -44,6 +46,7 @@ function toExpense(id: string, d: DocumentData): Expense {
     description: String(d.description ?? ""),
     fromTill: d.fromTill !== false,
     status: d.status === "annulee" ? "annulee" : "validee",
+    inStats: d.inStats === true,
     memberName: String(d.memberName ?? ""),
     dayKey: String(d.dayKey ?? ""),
     createdAtMs: ms(d.createdAt) || num(d.clientAtMs),
@@ -71,31 +74,34 @@ export function createExpense(
   input: { amount: number; currency: Currency; category: ExpenseCategory; description: string; fromTill: boolean },
 ): void {
   const now = Date.now();
-  track(
-    setDoc(doc(expensesCol(actor.boutiqueId)), {
-      ...input,
-      description: input.description.trim().slice(0, 200),
-      status: "validee",
-      uid: actor.uid,
-      memberName: actor.memberName,
-      dayKey: dayKey(now),
-      createdAt: serverTimestamp(),
-      clientAtMs: now,
-    }),
-    onWriteError,
-  );
+  const day = dayKey(now);
+  const batch = writeBatch(getDb());
+  batch.set(doc(expensesCol(actor.boutiqueId)), {
+    ...input,
+    description: input.description.trim().slice(0, 200),
+    status: "validee",
+    inStats: true,
+    uid: actor.uid,
+    memberName: actor.memberName,
+    dayKey: day,
+    createdAt: serverTimestamp(),
+    clientAtMs: now,
+  });
+  countExpense(batch, actor.boutiqueId, monthOf(day), input.currency, input.amount, 1);
+  track(batch.commit(), onWriteError);
 }
 
-export function cancelExpense(actor: Actor, id: string): void {
-  track(
-    updateDoc(doc(expensesCol(actor.boutiqueId), id), {
-      status: "annulee",
-      cancelledBy: actor.uid,
-      cancelledByName: actor.memberName,
-      cancelledAt: serverTimestamp(),
-    }),
-    onWriteError,
-  );
+export function cancelExpense(actor: Actor, expense: Expense): void {
+  const batch = writeBatch(getDb());
+  batch.update(doc(expensesCol(actor.boutiqueId), expense.id), {
+    status: "annulee",
+    cancelledBy: actor.uid,
+    cancelledByName: actor.memberName,
+    cancelledAt: serverTimestamp(),
+  });
+  // Une dépense saisie avant les compteurs mensuels n'y figure pas : rien à retirer.
+  if (expense.inStats) countExpense(batch, actor.boutiqueId, monthOf(expense.dayKey), expense.currency, expense.amount, -1);
+  track(batch.commit(), onWriteError);
 }
 
 /* ---------- Journées de caisse ---------- */

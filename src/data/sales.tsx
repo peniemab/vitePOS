@@ -9,6 +9,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { collection, doc, increment, limit, onSnapshot, orderBy, query, serverTimestamp, where, writeBatch, type DocumentData } from "firebase/firestore";
 import { notifications } from "@mantine/notifications";
 import { getDb } from "./firebase";
+import { countSale } from "./monthStats";
+import { monthOf } from "../lib/monthStats";
 import { errorMessage } from "./errors";
 import { track } from "./sync";
 import { useReady } from "./session";
@@ -67,6 +69,7 @@ function toSale(id: string, d: DocumentData, synced: boolean): Sale {
     },
     clientId: String(d.clientId ?? ""),
     clientName: String(d.clientName ?? ""),
+    inStats: d.inStats === true,
     status: d.status === "annulee" ? "annulee" : "validee",
     cancelReason: String(d.cancelReason ?? ""),
     cancelledByName: String(d.cancelledByName ?? ""),
@@ -183,6 +186,7 @@ export function createSale(
     payment,
     clientId: client?.id ?? "",
     clientName: client?.name ?? "",
+    inStats: true,
     status: "validee",
     movementId: movementRef.id,
     dayKey: dayKey(now),
@@ -197,6 +201,7 @@ export function createSale(
       updatedBy: actor.uid,
     });
   }
+  countSale(batch, actor.boutiqueId, monthOf(dayKey(now)), currency, totals.total, 1);
   if (client) {
     batch.update(doc(clientsCol(actor.boutiqueId), client.id), {
       purchaseCount: increment(1),
@@ -243,6 +248,8 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
       updatedBy: actor.uid,
     });
   }
+  // Une vente faite avant les compteurs mensuels n'y figure pas : rien à retirer.
+  if (sale.inStats) countSale(batch, actor.boutiqueId, monthOf(sale.dayKey), sale.currency, sale.total, -1);
   if (sale.clientId) {
     batch.update(doc(clientsCol(actor.boutiqueId), sale.clientId), {
       purchaseCount: increment(-1),

@@ -29,6 +29,8 @@ export interface Expense {
   memberName: string;
   dayKey: string;
   createdAtMs: number;
+  /** Comptée dans les compteurs mensuels (dépenses créées depuis leur ajout). */
+  inStats: boolean;
 }
 
 /** Un montant par devise (FC, $, €). */

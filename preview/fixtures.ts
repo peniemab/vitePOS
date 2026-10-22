@@ -269,6 +269,19 @@ export function seed(): [string, Data][] {
   exp("e2", 5000, "communication", "Unités Vodacom", 140);
   out.push([`${B}/cashDays/${todayKey}`, { status: "open", openingFloat: { CDF: 50000, USD: 20, EUR: 0 }, openedByName: "Mama Ngalula" }]);
 
+  // Compteurs des six derniers mois (graphique « Ventes et dépenses » des rapports). Octobre est en cours.
+  const months: [string, number, number, number, number][] = [
+    // [mois, ventes FC, nombre de ventes, dépenses FC, dépenses $]
+    ["2026-05", 14_200_000, 612, 1_450_000, 0],
+    ["2026-06", 15_850_000, 671, 1_720_000, 60],
+    ["2026-07", 13_100_000, 588, 2_050_000, 120],
+    ["2026-08", 16_900_000, 702, 1_600_000, 0],
+    ["2026-09", 18_350_000, 751, 1_940_000, 40],
+    ["2026-10", 11_420_000, 468, 860_000, 0],
+  ];
+  for (const [month, sales, saleCount, spent, spentUsd] of months)
+    out.push([`${B}/monthStats/${month}`, { sales: { CDF: sales }, saleCount, expenses: { CDF: spent, USD: spentUsd } }]);
+
   return out;
 }
 

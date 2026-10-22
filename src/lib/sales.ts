@@ -44,6 +44,8 @@ export interface Sale {
   /** Client rattaché à la vente (facultatif). */
   clientId: string;
   clientName: string;
+  /** Comptée dans les compteurs mensuels (ventes créées depuis leur ajout). */
+  inStats: boolean;
   status: SaleStatus;
   cancelReason: string;
   cancelledByName: string;

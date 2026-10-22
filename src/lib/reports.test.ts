@@ -17,6 +17,7 @@ function sale(over: Partial<Sale>): Sale {
     payment: { method: "especes", currency: "CDF", rates: null, due: 0, received: 0, change: 0 },
     clientId: "",
     clientName: "",
+    inStats: true,
     status: "validee",
     cancelReason: "",
     cancelledByName: "",

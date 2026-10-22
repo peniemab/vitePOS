@@ -5,6 +5,8 @@
   --app-due: #b6171e;
   --app-paid: #2e7d4f;
   --app-series-1: #2a78d6;
+  /* Deuxième série (dépenses) : paire bleu / orange validée, lisible aussi par les daltoniens. */
+  --app-series-2: #eb6834;
   --app-grid: #e6e7e3;
 }
 :root[data-mantine-color-scheme="dark"] {
@@ -13,6 +15,7 @@
   --app-due: #f6827a;
   --app-paid: #7fc79a;
   --app-series-1: #3987e5;
+  --app-series-2: #d95926;
   --app-grid: #2b3442;
 }
 
@@ -274,6 +277,14 @@ body {
 }
 
 /* Graphique des ventes : info-bulle au survol d'une colonne */
+/* Pastille de légende d'un graphique */
+.legend-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
 .chart-tip {
   position: absolute;
   transform: translate(-50%, -100%);

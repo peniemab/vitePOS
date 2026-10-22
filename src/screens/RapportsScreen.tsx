@@ -10,6 +10,10 @@ import { watchExpensesBetween } from "../data/cashday";
 import { errorMessage } from "../data/errors";
 import { PageTitle } from "../components/ui";
 import { RevenueChart } from "../components/RevenueChart";
+import { MonthsChart } from "../components/MonthsChart";
+import { watchMonthStats } from "../data/monthStats";
+import { ratesOf } from "../data/boutique";
+import { lastMonths, type MonthTotals } from "../lib/monthStats";
 import { formatQty } from "../components/ProductModal";
 import { Stat } from "./VentesScreen";
 import { dayKey } from "../lib/cart";
@@ -39,6 +43,13 @@ export function RapportsScreen() {
   const [prevSales, setPrevSales] = useState<Sale[]>();
   const [expenses, setExpenses] = useState<Expense[]>();
   const [error, setError] = useState<string>();
+  const [months, setMonths] = useState<MonthTotals[]>();
+
+  // Six derniers mois : six petits compteurs, indépendants de la période choisie plus bas.
+  useEffect(
+    () => watchMonthStats(boutique.id, lastMonths(today), setMonths, (e) => setError(errorMessage(e))),
+    [boutique.id, today],
+  );
 
   useEffect(() => {
     setSales(undefined);
@@ -70,6 +81,12 @@ export function RapportsScreen() {
   return (
     <>
       <PageTitle title="Rapports" />
+      <Paper p="md" mb="lg">
+        <Title order={4} mb="xs">
+          Ventes et dépenses, six derniers mois
+        </Title>
+        {months ? <MonthsChart months={months} currency={boutique.currency} rates={ratesOf(boutique)} /> : <div className="loading">Chargement…</div>}
+      </Paper>
       <SegmentedControl
         fullWidth
         mb="sm"

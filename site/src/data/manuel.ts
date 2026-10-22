@@ -203,9 +203,9 @@ export const chapters: Chapter[] = [
     steps: [
       "<b>Accueil</b> : les ventes du jour comparées à hier, les produits à réapprovisionner, le taux du jour.",
       "<b>Ventes</b> : chaque vente de la journée, avec son ticket.",
-      "<b>Rapports</b> : jour, semaine ou mois. Chiffre d'affaires, panier moyen, dépenses, marge brute, meilleurs produits.",
+      "<b>Rapports</b> : en haut, <b>Ventes et dépenses, six derniers mois</b> : une barre bleue pour les ventes, une orange pour les dépenses, mois par mois. Dessous, le détail du jour, de la semaine ou du mois : chiffre d'affaires, panier moyen, marge brute, meilleurs produits.",
     ],
-    shot: { name: "man-rapports", alt: "Rapports de la semaine", caption: "Touchez un point de la courbe pour voir le détail du jour." },
+    shot: { name: "man-rapports", alt: "Rapports : ventes et dépenses des six derniers mois", caption: "Touchez un mois pour voir ses ventes et ses dépenses." },
     figure: { value: "+1 %", text: "Chaque chiffre est comparé à la période d'avant : vous voyez tout de suite si ça monte ou si ça baisse." },
   },
   {

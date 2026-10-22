@@ -18,6 +18,7 @@ const sale: Sale = {
   payment: { method: "especes", currency: "USD", rates: { USD: 2850, EUR: 3100 }, due: 0.97, received: 1, change: 0.03 },
   clientId: "",
   clientName: "",
+  inStats: true,
   status: "validee",
   cancelReason: "",
   cancelledByName: "",

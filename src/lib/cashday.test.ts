@@ -21,6 +21,7 @@ function sale(over: Partial<Sale> & Pick<Sale, "total" | "payment">): Sale {
     synced: true,
     clientId: "",
     clientName: "",
+    inStats: true,
     ...over,
   };
 }
@@ -30,6 +31,7 @@ const cashFc = (due: number) => ({ method: "especes" as const, currency: "CDF" a
 function expense(over: Partial<Expense>): Expense {
   return {
     id: "e",
+    inStats: true,
     amount: 0,
     currency: "CDF",
     category: "transport",

@@ -269,6 +269,7 @@ npm run dev
 | Prix sur le site | Non affichés : « Gratuit pour commencer », formules sur demande |
 | Devises | Franc (CDF), dollar (USD) et euro (EUR) ; taux du jour du $ et de l'€ en FC, conversions via le franc ; l'euro n'apparaît que si son taux est saisi ; **le taux du jour est fixé par le propriétaire seul**, dans les Paramètres |
 | Caisse UI | Liste dense type supermarché |
+| Ventes et dépenses sur six mois | En haut des Rapports : deux barres par mois (bleu = ventes, orange = dépenses, paire validée daltoniens et mode sombre), infobulle, vue tableau, montants convertis au taux du jour. Données : compteurs `boutiques/{id}/monthStats/{AAAA-MM}` mis à jour par `increment()` avec chaque vente, annulation et dépense (6 petites lectures au lieu de toutes les ventes, marche hors ligne). Ne comptent que les ventes et dépenses créées depuis (champ `inStats`) : pas de rattrapage de l'historique, l'app n'a pas encore de vrais clients |
 | Navigation | Ordinateur : barre du haut Accueil, Caisse, Stock, Ventes, Dépenses, Rapports (si autorisé), Plus ; téléphone : barre du bas Accueil, Caisse, Stock, Ventes, Plus. « Plus » contient le reste (liste unique dans `src/components/sections.ts`) |
 | Fiche produit | Modale |
 | Code article | Identifiant interne de chaque produit : préfixe de catégorie + numéro (LAI-001, LAI-002…), proposé automatiquement et modifiable ; jamais réutilisé à l'import. Le code-barres GS1 (EAN-13…) reste celui du fabricant et est facultatif |

@@ -39,7 +39,7 @@ export function DepensesScreen() {
       children: <Text size="sm">Elle restera visible comme annulée et ne comptera plus dans la caisse.</Text>,
       labels: { confirm: "Annuler la dépense", cancel: "Garder" },
       confirmProps: { color: "red" },
-      onConfirm: () => cancelExpense(actor, e.id),
+      onConfirm: () => cancelExpense(actor, e),
     });
   }
 
