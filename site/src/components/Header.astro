@@ -1,22 +1,28 @@
 ---
 import Brand from "./Brand.astro";
 import { LOGIN_URL, SIGNUP_URL } from "../data/content";
+import { dicts, otherLang, route, type Lang, type PageKey } from "../i18n";
+
+interface Props {
+  lang: Lang;
+  page: PageKey;
+}
+const { lang, page } = Astro.props;
+const t = dicts[lang];
+const home = route(lang, "home");
 ---
 
 <header class="top">
   <div class="wrap top-inner">
-    <Brand />
+    <Brand lang={lang} />
     <nav class="nav" aria-label="Sections">
-      <a href="/#fonctions">Fonctions</a>
-      <a href="/#appareils">Appareils</a>
-      <a href="/#pour-qui">Pour qui</a>
-      <a href="/#hors-ligne">Hors ligne</a>
-      <a href="/#questions">Questions</a>
-      <a href="/manuel">Manuel</a>
+      {t.header.nav.map((n) => <a href={`${home}#${t.home.ids[n.id]}`}>{n.label}</a>)}
+      <a href={route(lang, "manual")}>{t.header.manual}</a>
     </nav>
     <div class="top-actions">
-      <a class="link" href={LOGIN_URL}>Se connecter</a>
-      <a class="btn btn-small" href={SIGNUP_URL}>Essayer gratuitement</a>
+      <a class="lang-switch" href={route(otherLang(lang), page)} hreflang={otherLang(lang)} title={t.switchTitle}>{t.switchLabel}</a>
+      <a class="link" href={LOGIN_URL}>{t.header.login}</a>
+      <a class="btn btn-small" href={SIGNUP_URL}>{t.header.signup}</a>
     </div>
   </div>
 </header>

@@ -1,0 +1,215 @@
+---
+/** Page d'accueil du site, dans la langue demandée (pages/index.astro en français, pages/en/index.astro en anglais). */
+import Base from "../layouts/Base.astro";
+import Shot from "../components/Shot.astro";
+import { SIGNUP_URL } from "../data/content";
+import { icons } from "../data/icons";
+import { dicts, PDF, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = dicts[lang];
+const h = t.home;
+const ids = h.ids;
+---
+
+<Base title={h.title} description={h.description} lang={lang} page="home">
+  <!-- Accroche -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">{h.eyebrow}</p>
+        <h1 class="h1-lines"><span>{h.h1[0]}</span> <span>{h.h1[1]}</span> <span class="accent">{h.h1[2]}</span></h1>
+        <p class="lead">{h.lead}</p>
+        <div class="cta-row">
+          <a class="btn" href={SIGNUP_URL}>{h.ctaStart}</a>
+          <a class="btn btn-ghost" href={PDF[lang].brochure} download>{h.ctaBrochure}</a>
+        </div>
+        <ul class="ticks">
+          {h.ticks.map((tick) => <li>{tick}</li>)}
+        </ul>
+      </div>
+      <div class="hero-phones">
+        <div class="back"><Shot name="tel-accueil" device="tel" alt={h.altHome} eager /></div>
+        <div class="front"><Shot name="tel-caisse" device="tel" alt={h.altCaisse} eager /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Points forts -->
+  <section class="strip">
+    <div class="wrap strip-grid">
+      {t.strengths.map((s) => <div><strong>{s.title}</strong><span>{s.text}</span></div>)}
+    </div>
+  </section>
+
+  <!-- Promesses -->
+  <section class="section promises-section">
+    <div class="wrap">
+      <ol class="promises">
+        {
+          t.promises.map((p, i) => (
+            <li>
+              <span class="promise-num">0{i + 1}</span>
+              <h2>{p.title}</h2>
+              <p>{p.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Appareils -->
+  <section id={ids.devices} class="section">
+    <div class="wrap">
+      <h2>{h.devicesTitle}</h2>
+      <p class="section-lead">{h.devicesLead}</p>
+      <div class="shots-wide">
+        <figure class="shot-cell">
+          <Shot name="tablette-caisse" device="tablette" alt={h.shots.tabletteCaisse.alt} />
+          <figcaption><b>{h.shots.tabletteCaisse.title}</b>{h.shots.tabletteCaisse.text}</figcaption>
+        </figure>
+        <figure class="shot-cell">
+          <Shot name="ordi-journee" device="ordi" alt={h.shots.ordiJournee.alt} />
+          <figcaption><b>{h.shots.ordiJournee.title}</b>{h.shots.ordiJournee.text}</figcaption>
+        </figure>
+      </div>
+      <div class="shots-phones">
+        <figure class="shot-cell">
+          <Shot name="tel-ticket" device="tel" alt={h.shots.telTicket.alt} />
+          <figcaption><b>{h.shots.telTicket.title}</b>{h.shots.telTicket.text}</figcaption>
+        </figure>
+        <figure class="shot-cell">
+          <Shot name="tel-stock" device="tel" alt={h.shots.telStock.alt} />
+          <figcaption><b>{h.shots.telStock.title}</b>{h.shots.telStock.text}</figcaption>
+        </figure>
+        <figure class="shot-cell">
+          <Shot name="tel-accueil" device="tel" alt={h.shots.telAccueil.alt} />
+          <figcaption><b>{h.shots.telAccueil.title}</b>{h.shots.telAccueil.text}</figcaption>
+        </figure>
+      </div>
+      <div class="shots-laptops">
+        <figure class="shot-cell">
+          <Shot name="ordi-ventes" device="ordi" alt={h.shots.ordiVentes.alt} />
+          <figcaption><b>{h.shots.ordiVentes.title}</b>{h.shots.ordiVentes.text}</figcaption>
+        </figure>
+        <figure class="shot-cell">
+          <Shot name="ordi-stock" device="ordi" alt={h.shots.ordiStock.alt} />
+          <figcaption><b>{h.shots.ordiStock.title}</b>{h.shots.ordiStock.text}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fonctions -->
+  <section id={ids.features} class="section">
+    <div class="wrap">
+      <h2>{h.featuresTitle}</h2>
+      <p class="section-lead">{h.featuresLead}</p>
+      <div class="cards">
+        {
+          t.features.map((f) => (
+            <article class="card">
+              <div class="icon" set:html={icons[f.icon]} />
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Pour qui -->
+  <section id={ids.audiences} class="section section-alt">
+    <div class="wrap">
+      <h2>{h.audiencesTitle}</h2>
+      <p class="section-lead">{h.audiencesLead}</p>
+      <div class="audience">
+        {
+          t.audiences.map((a) => (
+            <div class="aud">
+              <h3>{a.title}</h3>
+              <p>{a.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Matériel -->
+  <section class="section">
+    <div class="wrap">
+      <h2>{h.hardwareTitle}</h2>
+      <p class="section-lead">{h.hardwareLead}</p>
+      <div class="hardware">
+        {
+          h.hardware.map((hw) => (
+            <div class="hw">
+              <h3>{hw.title}</h3>
+              <ul>
+                {hw.items.map((i) => (
+                  <li>{i}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+      <p class="note">{h.hardwareNote}</p>
+    </div>
+  </section>
+
+  <!-- Hors ligne -->
+  <section id={ids.offline} class="section">
+    <div class="wrap split">
+      <div>
+        <h2>{h.offlineTitle}</h2>
+        {h.offlineText.map((p) => <p>{p}</p>)}
+      </div>
+      <div class="offline-card" aria-hidden="true">
+        <div class="oc-row"><span class="dot off"></span>{h.offlineStates[0]}</div>
+        <div class="oc-row"><span class="dot sync"></span>{h.offlineStates[1]}</div>
+        <div class="oc-row"><span class="dot on"></span>{h.offlineStates[2]}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mise en route -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <h2>{h.stepsTitle}</h2>
+      <ol class="steps">
+        {t.steps.map((s) => <li><b>{s.title}</b><span>{s.text}</span></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Questions -->
+  <section id={ids.faq} class="section">
+    <div class="wrap narrow">
+      <h2>{h.faqTitle}</h2>
+      {
+        t.faqs.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Appel final -->
+  <section class="final">
+    <div class="wrap final-inner">
+      <h2>{h.finalTitle}</h2>
+      <p>{h.finalText}</p>
+      <a class="btn btn-light" href={SIGNUP_URL}>{h.finalCta}</a>
+    </div>
+  </section>
+</Base>

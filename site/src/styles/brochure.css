@@ -24,6 +24,24 @@
   color: var(--ink);
 }
 
+/* Écran plus étroit qu'une feuille A4 : alignée à gauche, sinon son bord gauche serait hors d'atteinte. */
+@media (max-width: 860px) {
+  .sheets {
+    justify-content: start;
+  }
+}
+
+/* Bouton de téléchargement, au-dessus des feuilles (pas imprimé). */
+.b-download {
+  text-align: center;
+  padding: 28px 16px 0;
+  background: #dfe3ea;
+}
+.b-download p {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
 /* ---------- Recto ---------- */
 .recto {
   background: linear-gradient(180deg, var(--navy-soft) 0%, #fff 46%);
@@ -177,9 +195,19 @@
   color: #f6827a;
 }
 .b-qr {
+  display: block;
   background: #fff;
   padding: 2mm;
   border-radius: 3mm;
+}
+.b-qr-box {
+  margin: 0;
+  text-align: center;
+}
+.b-qr-box figcaption {
+  margin-top: 1.5mm;
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 /* ---------- Verso ---------- */
@@ -237,6 +265,21 @@
   gap: 8mm;
   margin-top: 8mm;
 }
+.b-sectors {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5mm;
+}
+.b-sectors li {
+  padding: 1.5mm 3.5mm;
+  border-radius: 99px;
+  background: var(--navy-soft);
+  color: var(--navy);
+  font-weight: 600;
+}
 .b-audiences,
 .b-steps {
   margin: 0;
@@ -290,7 +333,7 @@
 .b-contact div {
   flex: 1;
 }
-.b-contact b:first-child {
+.b-contact .b-contact-title {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.5rem;
 }
@@ -305,7 +348,8 @@
 }
 @media print {
   body > header,
-  body > footer {
+  body > footer,
+  .b-noprint {
     display: none !important;
   }
   * {

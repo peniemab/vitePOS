@@ -26,7 +26,6 @@ export interface Chapter {
   table?: string[][];
 }
 
-export const edition = "Édition 2026";
 
 export const chapters: Chapter[] = [
   {

@@ -1,13 +1,20 @@
 ---
 import Brand from "./Brand.astro";
+import { dicts, PDF, route, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = dicts[lang];
 const year = new Date().getFullYear();
 ---
 
 <footer class="foot">
   <div class="wrap foot-inner">
-    <Brand size="small" />
-    <p>Point de vente rapide et hors ligne, conçu à Kinshasa.</p>
-    <p><a href="/manuel">Manuel de l'utilisateur</a> · <a href="/brochure-vitepos.pdf">Brochure (PDF)</a></p>
+    <Brand size="small" lang={lang} />
+    <p>{t.footer.tagline}</p>
+    <p><a href={route(lang, "manual")}>{t.footer.manual}</a> · <a href={PDF[lang].brochure} download>{t.footer.brochure}</a></p>
     <p class="muted">© {year} vitePOS</p>
   </div>
 </footer>

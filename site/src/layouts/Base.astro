@@ -1,19 +1,25 @@
 ---
-/** Squelette commun à toutes les pages : en-tête HTML, métadonnées de partage, polices, styles. */
+/** Squelette commun à toutes les pages : en-tête HTML, langue, métadonnées de partage, polices, styles. */
 import "../styles/global.css";
 import "../styles/devices.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import { dicts, otherLang, route, type Lang, type PageKey } from "../i18n";
 
 interface Props {
   title: string;
   description: string;
+  lang: Lang;
+  /** Page courante : sert au bouton FR / EN et aux liens vers l'autre langue. */
+  page: PageKey;
 }
-const { title, description } = Astro.props;
+const { title, description, lang, page } = Astro.props;
+const t = dicts[lang];
+const abs = (p: string) => new URL(p, Astro.site).href;
 ---
 
 <!doctype html>
-<html lang="fr">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -24,19 +30,22 @@ const { title, description } = Astro.props;
     <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="canonical" href={abs(Astro.url.pathname)} />
+    <link rel="alternate" hreflang={lang} href={abs(route(lang, page))} />
+    <link rel="alternate" hreflang={otherLang(lang)} href={abs(route(otherLang(lang), page))} />
+    <link rel="alternate" hreflang="x-default" href={abs(route("fr", page))} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:locale" content="fr_CD" />
+    <meta property="og:locale" content={t.locale} />
     <link rel="preload" href="/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
-    <Header />
+    <Header lang={lang} page={page} />
     <main>
       <slot />
     </main>
-    <Footer />
+    <Footer lang={lang} />
   </body>
 </html>

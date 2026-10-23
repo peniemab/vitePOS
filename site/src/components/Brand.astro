@@ -1,13 +1,16 @@
 ---
 /** Logo + nom, en haut et en bas de page. */
+import { route, type Lang } from "../i18n";
+
 interface Props {
   size?: "normal" | "small";
+  lang: Lang;
 }
-const { size = "normal" } = Astro.props;
+const { size = "normal", lang } = Astro.props;
 const w = size === "small" ? 24 : 30;
 ---
 
-<a class="brand" href="/">
+<a class="brand" href={route(lang, "home")}>
   <img src="/logo.svg" alt="" width={w} height={Math.round(w * 1.1)} />
   <span>vite<b>POS</b></span>
 </a>

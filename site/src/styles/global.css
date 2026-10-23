@@ -203,6 +203,20 @@ p {
   align-items: center;
   gap: 16px;
 }
+/* Bouton de langue FR / EN */
+.lang-switch {
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--navy);
+  text-decoration: none;
+  border: 1.5px solid currentColor;
+  border-radius: 99px;
+  padding: 3px 10px;
+}
+.lang-switch:hover {
+  color: var(--brick);
+}
 @media (max-width: 860px) {
   .nav {
     display: none;

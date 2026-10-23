@@ -427,3 +427,11 @@
     justify-content: center;
   }
 }
+
+/* Note sous le sommaire (version anglaise : l'app est en français). */
+.mag-note {
+  margin: 14px 0 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-style: italic;
+}

@@ -1,0 +1,156 @@
+---
+/**
+ * Manuel de l'utilisateur façon journal, dans la langue demandée : une de couverture, sommaire numéroté,
+ * un chapitre par moment de la journée. Se lit sur le site et s'imprime en PDF A4 (styles @media print de manuel.css).
+ */
+import Base from "../layouts/Base.astro";
+import Shot from "../components/Shot.astro";
+import { APP_HOST, APP_URL } from "../data/content";
+import { dicts, PDF, type Lang } from "../i18n";
+import "../styles/manuel.css";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const m = dicts[lang].manual;
+const chapters = m.chapters;
+const num = (i: number) => String(i + 1).padStart(2, "0");
+const isNo = (cell: string) => cell === "Non" || cell === "No";
+---
+
+<Base title={m.title} description={m.description} lang={lang} page="manual">
+  <article class="mag">
+    <!-- Une -->
+    <header class="mag-cover">
+      <div class="wrap mag-cover-grid">
+        <div>
+          <p class="mag-masthead">{m.masthead} <span>· {m.edition}</span></p>
+          <h1>{m.h1[0]}<br /><em>{m.h1[1]}</em></h1>
+          <p class="mag-cover-lead">{m.lead}</p>
+          <ul class="mag-cover-teasers">
+            {m.teasers.map(([i, text]) => <li><b>{num(i)}</b> {text}</li>)}
+          </ul>
+          <a class="btn mag-noprint" href={PDF[lang].manual} download>{m.download}</a>
+        </div>
+        <div class="mag-cover-shot">
+          <Shot name="tel-caisse" device="tel" alt={m.altCover} eager />
+        </div>
+      </div>
+    </header>
+
+    <!-- Sommaire -->
+    <nav class="mag-toc wrap" aria-label={m.toc}>
+      <h2>{m.toc}</h2>
+      <ol>
+        {
+          chapters.map((c, i) => (
+            <li>
+              <a href={`#${c.id}`}>
+                <span class="mag-toc-num">{num(i)}</span>
+                <span>
+                  <small>{c.kicker}</small>
+                  {c.title}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+      {m.note && <p class="mag-note">{m.note}</p>}
+    </nav>
+
+    <!-- Chapitres -->
+    {
+      chapters.map((c, i) => (
+        <section id={c.id} class:list={["mag-chapter", { "mag-alt": i % 2 === 1 }]}>
+          <div class="wrap">
+            <header class="mag-head">
+              <span class="mag-num" aria-hidden="true">
+                {num(i)}
+              </span>
+              <div>
+                <p class="mag-kicker">{c.kicker}</p>
+                <h2>{c.title}</h2>
+              </div>
+            </header>
+            <p class="mag-lead">{c.lead}</p>
+
+            <div class:list={["mag-body", { "mag-noshot": !c.shot }]}>
+              <div>
+                <ol class="mag-steps">
+                  {c.steps.map((s) => (
+                    <li set:html={s} />
+                  ))}
+                </ol>
+
+                {c.table && (
+                  <div class="mag-table">
+                    <table>
+                      <thead>
+                        <tr>
+                          {c.table[0].map((h) => (
+                            <th>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {c.table.slice(1).map((row) => (
+                          <tr>
+                            {row.map((cell, j) => (j === 0 ? <th>{cell}</th> : <td class:list={{ no: isNo(cell) }}>{cell}</td>))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {c.figure && (
+                  <p class="mag-figure">
+                    <b>{c.figure.value}</b>
+                    {c.figure.text}
+                  </p>
+                )}
+                {c.tip && (
+                  <aside class="mag-box mag-tip">
+                    <b>
+                      {m.tip} · {c.tip.title}
+                    </b>
+                    <p>{c.tip.text}</p>
+                  </aside>
+                )}
+                {c.warn && (
+                  <aside class="mag-box mag-warn">
+                    <b>
+                      {m.warn} · {c.warn.title}
+                    </b>
+                    <p>{c.warn.text}</p>
+                  </aside>
+                )}
+              </div>
+
+              {c.shot && (
+                <figure class="mag-shot">
+                  <Shot name={c.shot.name} device="tel" alt={c.shot.alt} />
+                  <figcaption>{c.shot.caption}</figcaption>
+                </figure>
+              )}
+            </div>
+          </div>
+        </section>
+      ))
+    }
+
+    <!-- Dernière page -->
+    <footer class="mag-back">
+      <div class="wrap">
+        <p class="mag-masthead">{m.backMasthead}</p>
+        <h2>{m.backTitle}</h2>
+        <p>
+          {m.backOpen} <b>{APP_HOST}</b> {m.backOpenEnd} {m.backText}
+        </p>
+        <a class="btn btn-light mag-noprint" href={APP_URL}>{m.backCta}</a>
+      </div>
+    </footer>
+  </article>
+</Base>

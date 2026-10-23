@@ -30,11 +30,13 @@ Plusieurs boutiques dans le même projet Firebase ; chaque employé a son propre
 - Domaines autorisés pour la connexion Google : `localhost`, `127.0.0.1`, `vitepos-be79c.firebaseapp.com`, `vitepos-be79c.web.app`, `getvitepos.web.app`, `getvitepos.firebaseapp.com`. Le provisionnement par `deploy --only auth` avait retiré `localhost` : vérifier la liste (Authentication → Paramètres → Domaines autorisés) après chaque `deploy --only auth`.
 
 ## Site de présentation (`site/`)
-- Astro, projet séparé de l'app (son propre `package.json`) : `npm run dev --prefix site`, `npm run build --prefix site` (sortie dans `site/dist`).
-- Les textes sont dans `site/src/data/content.ts`, l'adresse de l'app dans `APP_URL` du même fichier. En ligne sur https://vitepos-rdc.web.app.
+- Astro, projet séparé de l'app (son propre `package.json`) : `npm run dev --prefix site`, `npm run build --prefix site` (sortie dans `site/dist`). En ligne sur https://vitepos-rdc.web.app.
+- **Bilingue** : français à la racine (`/`, `/manuel`, `/brochure`), anglais sous `/en/` (`/en/`, `/en/manual`, `/en/brochure`), bouton FR / EN en haut. Les pages (`src/pages/…`) ne font qu'appeler les vues communes `src/views/Home.astro`, `Manual.astro`, `Brochure.astro` avec la langue.
+- Textes : `src/i18n/fr.ts` et `src/i18n/en.ts` (même forme, type `Dict` : un texte ajouté en français doit l'être en anglais). Chapitres du manuel : `src/data/manuel.ts` (fr) et `src/data/manual.en.ts` (en ; l'app est en français, les noms de boutons restent en français avec leur sens entre parenthèses). Adresses : `src/data/content.ts` (`APP_URL`, `APP_HOST`, `SITE_HOST`).
 - Pages statiques, pas de JavaScript envoyé au visiteur : n'ajouter un composant interactif que si c'est indispensable.
-- Manuel de l'utilisateur : `site/src/pages/manuel.astro`, textes dans `site/src/data/manuel.ts`, captures `node preview/capture.mjs man-` (aperçu lancé). Après un changement, regénérer le PDF : `npm run build --prefix site`, servir `site/dist` (par ex. `python -m http.server 5199` dans ce dossier), puis Chrome sans interface `--print-to-pdf=site/public/manuel-vitepos.pdf --no-pdf-header-footer` sur `http://localhost:5199/manuel/`, et reconstruire le site.
-- Brochure commerciale A4 recto-verso : `site/src/pages/brochure.astro` (styles `brochure.css`, mêmes textes que `content.ts`), PDF `site/public/brochure-vitepos.pdf` regénéré de la même façon que le manuel, sur `http://localhost:5199/brochure/`. QR code vers le site : `site/public/qr-site.svg` (`npx -y qrcode@1.5.4 -t svg …`).
+- Captures du manuel : `node preview/capture.mjs man-` (aperçu lancé).
+- PDF (manuel 16 pages et brochure A4 recto-verso, dans chaque langue) : `npm run build --prefix site`, servir `site/dist` (par ex. `python -m http.server 5199` dans ce dossier), puis Chrome sans interface `--no-pdf-header-footer --print-to-pdf=site/public/<fichier>` sur `http://localhost:5199/<page>/` : `manuel/` → `manuel-vitepos.pdf`, `brochure/` → `brochure-vitepos.pdf`, `en/manual/` → `vitepos-manual-en.pdf`, `en/brochure/` → `vitepos-brochure-en.pdf`. Reconstruire le site ensuite.
+- QR code de la brochure : il ouvre l'app (`site/public/qr-app.svg`, `npx -y qrcode@1.5.4 -t svg -d "#1a2b4c" -l "#ffffff" -q 1 -e M -o site/public/qr-app.svg "https://getvitepos.web.app"`).
 
 ## Avant de dire qu'une étape est terminée
 1. `npm run build` et `npm run test` passent.
