@@ -398,7 +398,10 @@
     break-before: page;
   }
   .mag-lead {
-    margin: 6mm 0 7mm;
+    margin: 5mm 0 6mm;
+  }
+  .mag-steps li {
+    padding-bottom: 3mm;
   }
   .mag-body {
     grid-template-columns: minmax(0, 1fr) 76mm;

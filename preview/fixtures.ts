@@ -149,6 +149,8 @@ export function seed(): [string, Data][] {
         // Le Coca porte son vrai code EAN-13, et son paquet de 24 a le sien.
         barcode: name.startsWith("Coca") ? "5449000000996" : `61${String(100000000 + i * 7919).slice(0, 9)}`,
         packs: name.startsWith("Coca") ? [{ id: "pq24", name: "Paquet", barcode: "15449000000993", units: 24, price: 22000 }] : [],
+        // Le lait suit ses dates de péremption (lots ci-dessous).
+        tracksExpiry: name.startsWith("Lait Nido"),
         favorite,
         archived: false,
         updatedAt: ts(now - DAY),
@@ -156,6 +158,33 @@ export function seed(): [string, Data][] {
     ]);
     out.push([`${B}/productCosts/${id}`, { buyPrice }]);
   });
+
+  // Péremption : Lait Nido 400 g (18 en stock), un lot ancien qui périme bientôt et un lot récent.
+  out.push([`${B}/lots/l1`, { productId: "p07", expiry: "2026-11-02", quantity: 12, movementId: "", uid: "u-mama", memberName: "Mama Ngalula", createdAt: ts(now - 40 * DAY) }]);
+  out.push([`${B}/lots/l2`, { productId: "p07", expiry: "2027-03-15", quantity: 12, movementId: "", uid: "u-mama", memberName: "Mama Ngalula", createdAt: ts(now - 5 * DAY) }]);
+  // IMEI : un téléphone suivi appareil par appareil, avec 12 mois de garantie.
+  out.push([
+    `${B}/products/p90`,
+    {
+      sku: "TEL-090",
+      name: "Samsung Galaxy A15 128 Go",
+      category: "Téléphonie",
+      sellPrice: 420000,
+      unit: "u",
+      stock: 3,
+      alertThreshold: 1,
+      barcode: "8806095467641",
+      packs: [],
+      serialTracked: true,
+      warrantyMonths: 12,
+      favorite: false,
+      archived: false,
+      updatedAt: ts(now - DAY),
+    },
+  ]);
+  out.push([`${B}/productCosts/p90`, { buyPrice: 360000 }]);
+  for (const serial of ["352099001761481", "356938035643809", "490154203237518"])
+    out.push([`${B}/serials/${serial}`, { productId: "p90", productName: "Samsung Galaxy A15 128 Go", status: "en_stock", movementId: "", saleId: "", soldDay: "", warrantyUntil: "", receivedAt: ts(now - 3 * DAY) }]);
 
   CLIENTS.forEach(([name, phone], i) =>
     out.push([`${B}/clients/c${i + 1}`, { name, phone, notes: "", purchaseCount: 0, totalSpent: 0, lastPurchaseAt: ts(now - i * DAY) }]),

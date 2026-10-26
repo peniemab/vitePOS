@@ -347,6 +347,45 @@ service cloud.firestore {
           && request.resource.data.cancelledAt == request.time;
       }
 
+      // ---------- Lots (dates de péremption) ----------
+      // Créés avec l'arrivage par ceux qui gèrent le stock ; ne changent plus ensuite.
+      match /lots/{lid} {
+        allow read: if isActive(bid);
+        allow create: if notBlocked(bid)
+          && can(bid, 'manageStock')
+          && request.resource.data.keys().hasOnly(['productId', 'expiry', 'quantity', 'movementId', 'uid', 'memberName', 'createdAt', 'clientAtMs'])
+          && request.resource.data.productId is string && request.resource.data.productId.size() <= 64
+          && request.resource.data.expiry is string && request.resource.data.expiry.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && request.resource.data.quantity is number && request.resource.data.quantity > 0
+          && request.resource.data.movementId is string
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.createdAt == request.time;
+      }
+
+      // ---------- Numéros de série / IMEI ----------
+      // L'identifiant est le numéro lui-même (unique par boutique). Arrivage et sortie (casse, don) par ceux
+      // qui gèrent le stock ; vente par tout membre actif ; retour en stock (annulation) par qui annule les ventes.
+      match /serials/{serial} {
+        allow read: if isActive(bid);
+        allow create: if notBlocked(bid)
+          && can(bid, 'manageStock')
+          && serial.matches('^[A-Z0-9]{4,30}$')
+          && request.resource.data.keys().hasOnly(['productId', 'productName', 'status', 'movementId', 'saleId', 'soldDay', 'warrantyUntil', 'receivedAt', 'updatedAt', 'updatedBy'])
+          && request.resource.data.status == 'en_stock'
+          && request.resource.data.productId is string
+          && request.resource.data.productName is string && request.resource.data.productName.size() <= 120
+          && request.resource.data.updatedBy == request.auth.uid;
+        allow update: if notBlocked(bid)
+          && isActive(bid)
+          && changes().hasOnly(['status', 'saleId', 'soldDay', 'warrantyUntil', 'updatedAt', 'updatedBy'])
+          && request.resource.data.updatedBy == request.auth.uid
+          && (
+            (resource.data.status == 'en_stock' && request.resource.data.status == 'vendu' && request.resource.data.saleId is string && request.resource.data.saleId.size() > 0)
+            || (resource.data.status == 'vendu' && request.resource.data.status == 'en_stock' && can(bid, 'editPrices'))
+            || (resource.data.status == 'en_stock' && request.resource.data.status == 'retire' && can(bid, 'manageStock'))
+          );
+      }
+
       // ---------- Compteurs mensuels ----------
       // Ventes et dépenses de chaque mois, par devise, pour le graphique des six derniers mois.
       // Mis à jour par increment() avec chaque vente, annulation ou dépense (donc par tout membre actif) ;
@@ -508,7 +547,7 @@ service cloud.firestore {
     }
 
     function catalogFields() {
-      return ['sku', 'name', 'category', 'sellPrice', 'unit', 'alertThreshold', 'barcode', 'packs', 'favorite', 'archived'];
+      return ['sku', 'name', 'category', 'sellPrice', 'unit', 'alertThreshold', 'barcode', 'packs', 'tracksExpiry', 'serialTracked', 'warrantyMonths', 'favorite', 'archived'];
     }
 
     /** Montants d'un compteur mensuel : FC, $ et € seulement, des nombres (négatifs possibles un instant, pendant une annulation hors ligne). */
@@ -521,6 +560,9 @@ service cloud.firestore {
     function validProduct(p) {
       return p.get('sku', '') is string && p.get('sku', '').size() <= 20
         && p.get('packs', []) is list && p.get('packs', []).size() <= 5
+        && p.get('tracksExpiry', false) is bool
+        && p.get('serialTracked', false) is bool
+        && p.get('warrantyMonths', 0) is number && p.get('warrantyMonths', 0) >= 0 && p.get('warrantyMonths', 0) <= 60
         && p.name is string && p.name.size() > 0 && p.name.size() <= 120
         && p.category is string && p.category.size() <= 60
         && p.sellPrice is number && p.sellPrice >= 0

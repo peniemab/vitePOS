@@ -192,3 +192,15 @@ describe("emballages", () => {
     expect(packLabel({ name: "Sac", units: 25 }, "kg")).toBe("Sac de 25 kg");
   });
 });
+
+describe("suivi par IMEI et péremption", () => {
+  it("réserve l'IMEI aux articles vendus à la pièce, sans paquet", () => {
+    expect(validateProduct({ ...base, unit: "kg", serialTracked: true })).toHaveProperty("error");
+    expect(
+      validateProduct({ ...base, serialTracked: true, packs: [{ id: "a", name: "Paquet", barcode: "", units: 2, price: 1 }] }),
+    ).toHaveProperty("error");
+    const ok = validateProduct({ ...base, serialTracked: true, warrantyMonths: 12, tracksExpiry: true });
+    expect("value" in ok && ok.value).toMatchObject({ serialTracked: true, warrantyMonths: 12, tracksExpiry: true });
+    expect(validateProduct({ ...base, serialTracked: true, warrantyMonths: 99 })).toHaveProperty("error");
+  });
+});

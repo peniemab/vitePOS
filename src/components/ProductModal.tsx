@@ -6,6 +6,7 @@ import {
   Button,
   Group,
   Modal,
+  MultiSelect,
   NumberInput,
   SegmentedControl,
   SimpleGrid,
@@ -13,6 +14,7 @@ import {
   Switch,
   Tabs,
   Text,
+  Textarea,
   TextInput,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
@@ -35,6 +37,12 @@ import { ScanButton } from "./BarcodeField";
 import { ScanVideo } from "./ScanVideo";
 import { canUseCamera, useCameraScan } from "./useCameraScan";
 import { PacksEditor, type PackDraft } from "./PacksEditor";
+import { DateInput } from "@mantine/dates";
+import { useLots } from "../data/lots";
+import { useSerialsInStock } from "../data/serials";
+import { daysBetween, expiryLabel, lotsLeft, type Lot } from "../lib/lots";
+import { dayKey } from "../lib/cart";
+import { formatDayShort, parseSerialList } from "../lib/serials";
 import { CURRENCIES } from "../lib/fx";
 import {
   collectCategories,
@@ -136,6 +144,12 @@ function ProductForm({
   const cam = useCameraScan(setBarcode);
   const [packs, setPacks] = useState<PackDraft[]>(product?.packs ?? []);
   const [favorite, setFavorite] = useState(product?.favorite ?? false);
+  const [tracksExpiry, setTracksExpiry] = useState(product?.tracksExpiry ?? false);
+  const [serialTracked, setSerialTracked] = useState(product?.serialTracked ?? false);
+  const [warrantyMonths, setWarrantyMonths] = useState<number | string>(product?.warrantyMonths ?? 12);
+  // Date de péremption du stock de départ (nouveau produit suivi).
+  const [expiry, setExpiry] = useState<string | null>(null);
+  const lots = useLots(boutique.id);
   const [error, setError] = useState<string>();
   const [moveOpen, setMoveOpen] = useState(false);
 
@@ -166,6 +180,9 @@ function ProductForm({
       barcode,
       favorite,
       packs: packs.map((k) => ({ id: k.id, name: k.name, barcode: k.barcode, units: asNumber(k.units), price: asNumber(k.price) })),
+      tracksExpiry,
+      serialTracked,
+      warrantyMonths: asNumber(warrantyMonths),
     });
     if ("error" in checked) return setError(checked.error);
     if (barcodeTaken) return setError(`Ce code-barres est déjà utilisé par « ${barcodeTaken.name} ».`);
@@ -177,7 +194,9 @@ function ProductForm({
 
     const cost = buyPrice === "" ? undefined : asNumber(buyPrice);
     const newCost = canEdit && cost != null && cost !== initialCost ? cost : undefined;
-    const qty = roundQuantity(asNumber(stock), checked.value.unit);
+    // Un produit suivi par IMEI : le stock ne bouge qu'avec ses appareils (arrivage, vente, casse).
+    const qty = serialTracked ? (product?.stock ?? 0) : roundQuantity(asNumber(stock), checked.value.unit);
+    if (!product && tracksExpiry && canStock && qty > 0 && !expiry) return setError("Indiquez la date de péremption du stock de départ.");
     try {
       if (product) {
         updateProduct(actor, product, checked.value, {
@@ -185,7 +204,7 @@ function ProductForm({
           stockTarget: canStock && qty !== product.stock ? qty : undefined,
         });
       } else {
-        createProduct(actor, checked.value, { stock: canStock ? qty : 0, buyPrice: newCost });
+        createProduct(actor, checked.value, { stock: canStock ? qty : 0, buyPrice: newCost, expiry: expiry ?? undefined });
       }
       onDone();
     } catch (err) {
@@ -302,18 +321,60 @@ function ProductForm({
             data={(Object.keys(UNITS) as Unit[]).map((u) => ({ value: u, label: UNITS[u] }))}
           />
         </div>
-        <PacksEditor packs={packs} onChange={setPacks} unit={unit} currency={boutique.currency} readOnly={readOnly} takenBy={packTakenBy} />
+        {!serialTracked && (
+          <PacksEditor packs={packs} onChange={setPacks} unit={unit} currency={boutique.currency} readOnly={readOnly} takenBy={packTakenBy} />
+        )}
+        <Stack gap="xs">
+          <Switch
+            label="Suivre les dates de péremption"
+            description="Une date à chaque arrivage ; alerte 30 jours avant (pharmacie, alimentation…)."
+            disabled={readOnly}
+            checked={tracksExpiry}
+            onChange={(e) => setTracksExpiry(e.currentTarget.checked)}
+          />
+          <Switch
+            label="Numéro de série / IMEI"
+            description={
+              unit !== "u" || packs.length
+                ? "Pour les articles vendus à la pièce, sans paquet ni carton."
+                : "Un numéro par appareil, noté à l'arrivage et obligatoire à la vente (téléphones…)."
+            }
+            disabled={readOnly || unit !== "u" || packs.length > 0}
+            checked={serialTracked}
+            onChange={(e) => setSerialTracked(e.currentTarget.checked)}
+          />
+          {serialTracked && (
+            <NumberInput
+              label="Garantie (mois)"
+              description="Imprimée sur le ticket : « Garantie jusqu'au … ». 0 : pas de garantie."
+              readOnly={readOnly}
+              min={0}
+              max={60}
+              allowDecimal={false}
+              hideControls
+              inputMode="numeric"
+              w={200}
+              value={warrantyMonths}
+              onChange={setWarrantyMonths}
+            />
+          )}
+        </Stack>
+        {product && tracksExpiry && <LotsInStock product={product} lots={lots} />}
         <SimpleGrid cols={{ base: 1, xs: 2 }}>
           <NumberInput
             label={product ? "Stock réel" : "Stock de départ"}
             description={
-              !canStock
-                ? "Seuls les gérants peuvent modifier le stock"
-                : product
-                  ? "Si vous le changez, l'écart est noté comme correction"
-                  : undefined
+              serialTracked
+                ? product
+                  ? "Le stock suit les IMEI : ajoutez des appareils avec « Mouvement »."
+                  : "Après l'enregistrement, ajoutez les appareils et leurs IMEI avec « Mouvement »."
+                : !canStock
+                  ? "Seuls les gérants peuvent modifier le stock"
+                  : product
+                    ? "Si vous le changez, l'écart est noté comme correction"
+                    : undefined
             }
-            readOnly={!canStock}
+            readOnly={!canStock || serialTracked}
             decimalSeparator=","
             decimalScale={unit === "u" ? 0 : 3}
             hideControls
@@ -333,6 +394,17 @@ function ProductForm({
             onChange={setAlertThreshold}
           />
         </SimpleGrid>
+        {!product && tracksExpiry && canStock && asNumber(stock) > 0 && (
+          <DateInput
+            label="Péremption du stock de départ"
+            required
+            valueFormat="DD/MM/YYYY"
+            placeholder="jj/mm/aaaa"
+            value={expiry}
+            onChange={setExpiry}
+            w={220}
+          />
+        )}
         <Switch label="Favori (affiché en premier à la caisse)" disabled={readOnly} checked={favorite} onChange={(e) => setFavorite(e.currentTarget.checked)} />
 
         {error && (
@@ -404,11 +476,19 @@ export function MovementModal({
   initialPackId?: string;
 }) {
   const actor = useActor();
+  const { boutique } = useReady();
   const [type, setType] = useState<ManualMovementType>("reappro");
   const [qty, setQty] = useState<number | string>("");
   const [reason, setReason] = useState("");
   // Compter en unités ("") ou en emballages (identifiant du paquet).
   const [packId, setPackId] = useState(initialPackId);
+  // Produit suivi : date de péremption de l'arrivage.
+  const [expiry, setExpiry] = useState<string | null>(null);
+  // Produit suivi par IMEI : numéros reçus (texte) ou sortis (choisis dans le stock).
+  const [serialText, setSerialText] = useState("");
+  const [removed, setRemoved] = useState<string[]>([]);
+  const inStock = useSerialsInStock(boutique.id);
+  const scan = useCameraScan((code) => setSerialText((t) => (t.trim() ? `${t.trim()}\n${code}` : code)));
 
   useEffect(() => {
     if (opened) {
@@ -416,21 +496,42 @@ export function MovementModal({
       setQty("");
       setReason("");
       setPackId(initialPackId);
+      setExpiry(null);
+      setSerialText("");
+      setRemoved([]);
     }
   }, [opened, initialPackId]);
 
+  const serialMode = product.serialTracked;
+  const types = serialMode ? MOVE_TYPES.filter((t) => t !== "correction") : MOVE_TYPES;
+  const mine = (inStock ?? []).filter((s) => s.productId === product.id);
+  const parsed = parseSerialList(serialText);
+  // Un numéro déjà en stock dans la boutique ne peut pas être reçu une seconde fois.
+  const known = new Set((inStock ?? []).map((s) => s.serial));
+  const duplicates = parsed.values.filter((v) => known.has(v));
+
   const pack = product.packs.find((k) => k.id === packId) ?? null;
   const count = pack ? Math.trunc(asNumber(qty)) : asNumber(qty);
-  const delta = signedDelta(type, pack ? count * pack.units : count, product.unit);
+  const delta = serialMode
+    ? type === "reappro"
+      ? parsed.values.length
+      : -removed.length
+    : signedDelta(type, pack ? count * pack.units : count, product.unit);
   const after = roundQuantity(product.stock + delta, product.unit);
+  const needsExpiry = product.tracksExpiry && type === "reappro" && delta > 0;
+  const blocked =
+    !delta || (needsExpiry && !expiry) || (serialMode && type === "reappro" && (parsed.errors.length > 0 || duplicates.length > 0));
 
   function submit(e: FormEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (!delta) return;
+    if (blocked) return;
     // On garde la trace de ce qui a été compté : « 5 × Paquet de 24 ».
     const what = pack ? `${Math.abs(count)} × ${packLabel(pack, product.unit)}` : "";
-    adjustStock(actor, product, type, delta, [what, reason.trim()].filter(Boolean).join(" · "));
+    adjustStock(actor, product, type, delta, [what, reason.trim()].filter(Boolean).join(" · "), {
+      expiry: needsExpiry ? (expiry ?? undefined) : undefined,
+      serials: serialMode ? (type === "reappro" ? parsed.values : removed) : undefined,
+    });
     onDone();
   }
 
@@ -442,9 +543,9 @@ export function MovementModal({
             fullWidth
             value={type}
             onChange={(v) => setType(v as ManualMovementType)}
-            data={MOVE_TYPES.map((t) => ({ value: t, label: t === "reappro" ? "Réappro" : MOVEMENT_LABELS[t] }))}
+            data={types.map((t) => ({ value: t, label: t === "reappro" ? "Réappro" : MOVEMENT_LABELS[t] }))}
           />
-          {product.packs.length > 0 && (
+          {!serialMode && product.packs.length > 0 && (
             <div>
               <Text size="sm" fw={500} mb={4}>
                 Compter en
@@ -460,21 +561,78 @@ export function MovementModal({
               />
             </div>
           )}
-          <NumberInput
-            label={
-              (pack ? `Nombre de ${pack.name.toLowerCase()}s` : "Quantité") +
-              (type === "correction" ? " (négatif pour retirer)" : "")
-            }
-            required
-            autoFocus
-            allowNegative={type === "correction"}
-            decimalSeparator=","
-            decimalScale={product.unit === "u" || pack ? 0 : 3}
-            hideControls
-            inputMode="decimal"
-            value={qty}
-            onChange={setQty}
-          />
+
+          {serialMode && type === "reappro" && (
+            <div>
+              <Textarea
+                label="IMEI ou numéros de série des appareils reçus"
+                description="Un par ligne : scannez-les à la suite ou tapez-les. Un IMEI a 15 chiffres."
+                autosize
+                minRows={3}
+                maxRows={8}
+                autoFocus
+                value={serialText}
+                onChange={(e) => setSerialText(e.currentTarget.value)}
+                rightSection={canUseCamera() ? <ScanButton scanning={scan.scanning} onClick={() => (scan.scanning ? scan.stop() : void scan.start())} /> : undefined}
+              />
+              <ScanVideo videoRef={scan.videoRef} scanning={scan.scanning} error={scan.error} />
+              {parsed.errors.map((err) => (
+                <Text key={err} size="sm" c="red">
+                  {err}
+                </Text>
+              ))}
+              {duplicates.length > 0 && (
+                <Text size="sm" c="red">
+                  Déjà en stock : {duplicates.join(", ")}
+                </Text>
+              )}
+              {parsed.values.length > 0 && (
+                <Text size="sm" mt={4}>
+                  <b className="n">{parsed.values.length}</b> appareil{parsed.values.length > 1 ? "s" : ""} reçu{parsed.values.length > 1 ? "s" : ""}
+                </Text>
+              )}
+            </div>
+          )}
+
+          {serialMode && type !== "reappro" && (
+            <MultiSelect
+              label="Appareils qui sortent du stock"
+              placeholder={mine.length ? "Choisir les IMEI" : "Aucun appareil en stock"}
+              searchable
+              data={mine.map((s) => s.serial)}
+              value={removed}
+              onChange={setRemoved}
+            />
+          )}
+
+          {!serialMode && (
+            <NumberInput
+              label={
+                (pack ? `Nombre de ${pack.name.toLowerCase()}s` : "Quantité") +
+                (type === "correction" ? " (négatif pour retirer)" : "")
+              }
+              required
+              autoFocus
+              allowNegative={type === "correction"}
+              decimalSeparator=","
+              decimalScale={product.unit === "u" || pack ? 0 : 3}
+              hideControls
+              inputMode="decimal"
+              value={qty}
+              onChange={setQty}
+            />
+          )}
+
+          {needsExpiry && (
+            <DateInput
+              label="Date de péremption de cet arrivage"
+              required
+              valueFormat="DD/MM/YYYY"
+              placeholder="jj/mm/aaaa"
+              value={expiry}
+              onChange={setExpiry}
+            />
+          )}
           <TextInput label="Motif (facultatif)" maxLength={200} value={reason} onChange={(e) => setReason(e.currentTarget.value)} />
           {pack && count !== 0 && (
             <Text size="sm">
@@ -488,7 +646,7 @@ export function MovementModal({
               {formatQty(after, product.unit)}
             </b>
           </Text>
-          <Button type="submit" disabled={!delta}>
+          <Button type="submit" disabled={blocked}>
             Enregistrer le mouvement
           </Button>
         </Stack>
@@ -545,5 +703,42 @@ function History({ product }: { product: Product }) {
         Prix de vente actuel : <Money value={product.sellPrice} currency={boutique.currency} />
       </Text>
     </Stack>
+  );
+}
+
+/* ---------- Lots en rayon (péremption) ---------- */
+
+function LotsInStock({ product, lots }: { product: Product; lots: Lot[] | undefined }) {
+  if (!lots) return null;
+  const left = lotsLeft(
+    lots.filter((l) => l.productId === product.id),
+    product.stock,
+  );
+  const today = dayKey(Date.now());
+  return (
+    <div>
+      <Text size="sm" fw={500}>
+        Lots en rayon
+      </Text>
+      {left.length === 0 ? (
+        <Text size="sm" c="dimmed">
+          Aucun lot noté : la date se saisit à chaque réapprovisionnement (« Mouvement »).
+        </Text>
+      ) : (
+        left.map((l) => {
+          const days = daysBetween(today, l.expiry);
+          return (
+            <Group key={l.id} justify="space-between" gap="xs" py={2}>
+              <Text size="sm">
+                <span className="n">{formatQty(l.left, product.unit)}</span> · périme le {formatDayShort(l.expiry)}
+              </Text>
+              <Badge size="sm" variant="light" color={days < 0 ? "red" : days <= 30 ? "orange" : "gray"}>
+                {expiryLabel(days)}
+              </Badge>
+            </Group>
+          );
+        })
+      )}
+    </div>
   );
 }

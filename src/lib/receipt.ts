@@ -6,6 +6,7 @@ import { CURRENCIES, formatMoney } from "./fx";
 import { PAYMENT_LABELS, type Sale } from "./sales";
 import { ticketNumber } from "./cart";
 import { packLabel } from "./products";
+import { formatDayShort } from "./serials";
 
 export type PaperWidth = 58 | 80;
 
@@ -48,6 +49,8 @@ export function receiptLines(shop: ReceiptShop, sale: Sale): ReceiptLine[] {
     out.push({ kind: "text", text: l.name });
     if (l.packName) out.push({ kind: "text", text: `  ${packLabel({ name: l.packName, units: l.packUnits ?? 1 }, l.unit)}` });
     out.push({ kind: "pair", left: `  ${qty(l.quantity, l.packName ? "u" : l.unit)} × ${formatMoney(l.unitPrice, c)}`, right: formatMoney(l.lineTotal, c) });
+    if (l.serial) out.push({ kind: "text", text: `  IMEI / N° série : ${l.serial}` });
+    if (l.warrantyUntil) out.push({ kind: "text", text: `  Garantie jusqu'au ${formatDayShort(l.warrantyUntil)}` });
   }
   out.push({ kind: "rule" });
   if (sale.discount > 0) {

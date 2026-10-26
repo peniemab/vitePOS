@@ -66,7 +66,7 @@ export const fr = {
       "La caisse qui encaisse en quelques secondes, en FC, $ ou €, et compte votre stock pour vous. Les outils d'une grande surface, simples comme une calculatrice.",
 
     audiencesTitle: "Pour tous les secteurs d'activité",
-    audiencesLead: "vitePOS grandit avec votre commerce.",
+    audiencesLead: "vitePOS grandit avec votre commerce, à Kinshasa, Lubumbashi, Kolwezi, Matadi et partout en RDC.",
 
     hardwareTitle: "Le matériel que vous avez déjà suffit",
     hardwareLead: "Commencez avec votre téléphone, ajoutez du matériel quand votre commerce grandit.",
@@ -141,26 +141,28 @@ export const fr = {
   ] as { icon: IconName; title: string; text: string }[],
 
   audiences: [
-    { title: "Boutiques", text: "Alimentation, cosmétiques, téléphonie, habillement. Une caisse simple sur le téléphone du patron ou du vendeur." },
-    { title: "Quincailleries et grossistes", text: "Gros catalogues, ventes à la pièce, au kilo, au litre ou au carton, plusieurs vendeurs, suivi précis du stock." },
-    { title: "Pharmacies et dépôts", text: "Recherche rapide par nom ou code-barres, alertes de rupture, inventaires réguliers." },
+    { title: "Boutiques", text: "Alimentation, cosmétiques, téléphonie, boulangeries. Une caisse simple sur le téléphone du patron ou du vendeur." },
+    { title: "Quincailleries, grossistes et pièces de rechange", text: "Gros catalogues, recherche par code article, ventes à la pièce, au kilo, au litre ou au carton, plusieurs vendeurs." },
+    { title: "Pharmacies et dépôts de boissons", text: "Recherche rapide par nom ou code-barres, vente au casier ou au carton, alertes de rupture, inventaires réguliers." },
     { title: "Supérettes et supermarchés", text: "Plusieurs caisses qui vendent en même temps, clôture par jour, rapports pour le gérant et le propriétaire." },
   ],
 
   /** Liste courte des secteurs, pour la brochure. */
   sectors: [
-    "Alimentation",
-    "Boissons",
-    "Quincaillerie",
-    "Pharmacie",
-    "Cosmétiques",
-    "Téléphonie",
-    "Habillement",
-    "Librairie",
-    "Grossistes",
-    "Supérettes",
+    "Alimentation et supérettes",
     "Supermarchés",
+    "Quincailleries et matériaux",
+    "Pharmacies et parapharmacies",
+    "Dépôts de boissons",
+    "Grossistes et demi-gros",
+    "Boulangeries et pâtisseries",
+    "Cosmétiques",
+    "Pièces de rechange auto et moto",
+    "Téléphonie et accessoires",
   ],
+
+  /** Villes citées sur le site et la brochure. */
+  cities: "À Kinshasa, Lubumbashi, Kolwezi, Matadi et partout en RDC.",
 
   steps: [
     { title: "Créez votre compte", text: "Avec votre e-mail ou votre compte Google, depuis le navigateur de votre téléphone." },

@@ -10,6 +10,8 @@ import { collection, doc, increment, limit, onSnapshot, orderBy, query, serverTi
 import { notifications } from "@mantine/notifications";
 import { getDb } from "./firebase";
 import { countSale } from "./monthStats";
+import { markReturned, markSold } from "./serials";
+import { warrantyUntil } from "../lib/serials";
 import { monthOf } from "../lib/monthStats";
 import { errorMessage } from "./errors";
 import { track } from "./sync";
@@ -48,6 +50,7 @@ function toSale(id: string, d: DocumentData, synced: boolean): Sale {
       quantity: num(l.quantity),
       lineTotal: num(l.lineTotal),
       ...(l.packId ? { packId: String(l.packId), packName: String(l.packName ?? ""), packUnits: num(l.packUnits) || 1 } : {}),
+      ...(l.serial ? { serial: String(l.serial), warrantyUntil: String(l.warrantyUntil ?? "") } : {}),
     })),
     subtotal: num(d.subtotal),
     discountPercent: num(d.discountPercent),
@@ -137,6 +140,7 @@ export function createSale(
 ): string {
   const db = getDb();
   const batch = writeBatch(db);
+  const now = Date.now();
   const saleRef = doc(salesCol(actor.boutiqueId));
   const movementRef = doc(movementsCol(actor.boutiqueId));
   const totals = computeTotals(cart, discountPercent, currency);
@@ -149,6 +153,7 @@ export function createSale(
     quantity: l.quantity,
     lineTotal: lineTotal(l, currency),
     ...(l.packId ? { packId: l.packId, packName: l.packName ?? "", packUnits: l.packUnits ?? 1 } : {}),
+    ...(l.serial ? { serial: l.serial, warrantyUntil: warrantyUntil(dayKey(now), l.warrantyMonths ?? 0) } : {}),
   }));
   // Stock retiré à l'unité, un seul total par produit (bouteilles et paquets additionnés).
   const out = stockByProduct(lines);
@@ -160,7 +165,6 @@ export function createSale(
     received: input.method === "especes" ? input.received : result.due,
     change: result.change,
   };
-  const now = Date.now();
 
   batch.set(movementRef, {
     type: "vente",
@@ -202,6 +206,7 @@ export function createSale(
     });
   }
   countSale(batch, actor.boutiqueId, monthOf(dayKey(now)), currency, totals.total, 1);
+  for (const l of lines) if (l.serial) markSold(batch, actor, l.serial, saleRef.id, dayKey(now), l.warrantyUntil ?? "");
   if (client) {
     batch.update(doc(clientsCol(actor.boutiqueId), client.id), {
       purchaseCount: increment(1),
@@ -250,6 +255,7 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
   }
   // Une vente faite avant les compteurs mensuels n'y figure pas : rien à retirer.
   if (sale.inStats) countSale(batch, actor.boutiqueId, monthOf(sale.dayKey), sale.currency, sale.total, -1);
+  for (const l of sale.lines) if (l.serial) markReturned(batch, actor, l.serial);
   if (sale.clientId) {
     batch.update(doc(clientsCol(actor.boutiqueId), sale.clientId), {
       purchaseCount: increment(-1),
@@ -277,7 +283,7 @@ interface Cart {
   setClient: (c: CartClient | null) => void;
   totals: Totals;
   /** Ajoute le produit à l'unité, ou un de ses emballages (`pack`). */
-  add: (product: Product, qty?: number, pack?: Pack | null) => void;
+  add: (product: Product, qty?: number, pack?: Pack | null, serial?: string) => void;
   /** `key` : `lineKey(ligne)`. */
   setQty: (key: string, qty: number) => void;
   setDiscountPercent: (p: number) => void;
@@ -319,10 +325,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [key, state]);
 
-  const add = useCallback((p: Product, qty = 1, pack?: Pack | null) => {
+  const add = useCallback((p: Product, qty = 1, pack?: Pack | null, serial?: string) => {
     const line = pack
       ? { productId: p.id, name: p.name, unit: p.unit, unitPrice: pack.price, packId: pack.id, packName: pack.name, packUnits: pack.units }
-      : { productId: p.id, name: p.name, unit: p.unit, unitPrice: p.sellPrice };
+      : serial
+        ? { productId: p.id, name: p.name, unit: p.unit, unitPrice: p.sellPrice, serial, warrantyMonths: p.warrantyMonths }
+        : { productId: p.id, name: p.name, unit: p.unit, unitPrice: p.sellPrice };
     setState((s) => ({ ...s, lines: addToCart(s.lines, line, qty) }));
   }, []);
   const setQty = useCallback((key: string, qty: number) => {

@@ -280,6 +280,11 @@
   color: var(--navy);
   font-weight: 600;
 }
+.b-cities {
+  margin: 4mm 0 0;
+  font-weight: 600;
+  color: var(--navy);
+}
 .b-audiences,
 .b-steps {
   margin: 0;

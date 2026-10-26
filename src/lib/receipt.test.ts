@@ -76,3 +76,13 @@ describe("annulation", () => {
     expect(canCancelSale({ ...sale, status: "annulee" }, now)).toBe(false);
   });
 });
+
+describe("ticket d'un appareil", () => {
+  it("imprime l'IMEI et la fin de garantie", () => {
+    const line = { productId: "tel", name: "Galaxy A15", unit: "u" as const, unitPrice: 350000, quantity: 1, lineTotal: 350000 };
+    const tel: Sale = { ...sale, lines: [{ ...line, serial: "352099001761481", warrantyUntil: "2027-10-11" }] };
+    const text = receiptText(receiptLines({ name: "Boutique" }, tel));
+    expect(text).toContain("IMEI / N° série : 352099001761481");
+    expect(text).toContain("Garantie jusqu'au 11/10/2027");
+  });
+});

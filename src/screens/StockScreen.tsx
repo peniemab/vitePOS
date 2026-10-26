@@ -1,11 +1,15 @@
 /** Stock : catalogue, recherche et scan, catégories, alertes, archives, export CSV. */
 import { useDeferredValue, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { Badge, Button, Chip, Group, Menu, Paper, ScrollArea, SegmentedControl, Text, UnstyledButton } from "@mantine/core";
 import { IconAlertTriangle, IconDots, IconDownload, IconPlus, IconStarFilled, IconTag, IconUpload } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { assignMissingSkus, useActor, useCatalog } from "../data/products";
 import { BarcodeField } from "../components/BarcodeField";
+import { useLots } from "../data/lots";
+import { expiringLots, expiryLabel } from "../lib/lots";
+import { formatDayShort } from "../lib/serials";
+import { dayKey } from "../lib/cart";
 import { formatQty, MovementModal, ProductModal } from "../components/ProductModal";
 import { Money, PageTitle } from "../components/ui";
 import { exportProductsCsv } from "../lib/csv";
@@ -14,7 +18,7 @@ import { collectCategories, findScan, matchProduct, needsRestock, sortByName, st
 
 const PAGE_SIZE = 60;
 
-type Filter = "all" | "alerts" | "archived";
+type Filter = "all" | "alerts" | "expiry" | "archived";
 
 export function downloadText(filename: string, text: string) {
   const blob = new Blob(["﻿" + text], { type: "text/csv;charset=utf-8" });
@@ -32,7 +36,8 @@ export function StockScreen() {
   const actor = useActor();
   const [q, setQ] = useState("");
   const query = useDeferredValue(q);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [params] = useSearchParams();
+  const [filter, setFilter] = useState<Filter>(params.get("filtre") === "peremption" ? "expiry" : "all");
   const [category, setCategory] = useState<string>("");
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -43,6 +48,10 @@ export function StockScreen() {
   const all = products ?? [];
   const active = useMemo(() => all.filter((p) => !p.archived), [all]);
   const alerts = useMemo(() => active.filter(needsRestock).length, [active]);
+  // Péremption : lots encore en rayon qui expirent dans 30 jours ou sont déjà périmés.
+  const lots = useLots(boutique.id);
+  const tracked = useMemo(() => active.some((p) => p.tracksExpiry), [active]);
+  const expiring = useMemo(() => expiringLots(active, lots ?? [], dayKey(Date.now())), [active, lots]);
   const missingSkus = useMemo(() => all.filter((p) => !p.sku).length, [all]);
   const categories = useMemo(() => collectCategories(active), [active]);
 
@@ -124,6 +133,7 @@ export function StockScreen() {
             data={[
               { value: "all", label: "Tous" },
               { value: "alerts", label: `Alertes${alerts ? ` (${alerts})` : ""}` },
+              ...(tracked || filter === "expiry" ? [{ value: "expiry", label: `Péremption${expiring.length ? ` (${expiring.length})` : ""}` }] : []),
               { value: "archived", label: "Archivés" },
             ]}
           />
@@ -149,7 +159,36 @@ export function StockScreen() {
       {error && <Text c="red" mb="md">{error}</Text>}
       {!products && !error && <div className="loading">Chargement…</div>}
 
-      {products && (
+      {products && filter === "expiry" && (
+        <Paper p={0} style={{ overflow: "hidden" }}>
+          {expiring
+            .filter((l) => !query || matchProduct(active.find((p) => p.id === l.productId) ?? { name: l.productName, category: "", barcode: "" }, query))
+            .map((l) => (
+              <UnstyledButton key={l.id} className="list-row" px="md" onClick={() => setOpenId(l.productId)}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Text fw={600} truncate>
+                    {l.productName}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    <span className="n">{l.left}</span> en rayon · périme le {formatDayShort(l.expiry)}
+                  </Text>
+                </div>
+                <Badge size="sm" variant="light" color={l.daysLeft < 0 ? "red" : "orange"}>
+                  {expiryLabel(l.daysLeft)}
+                </Badge>
+              </UnstyledButton>
+            ))}
+          {!expiring.length && (
+            <Text c="dimmed" ta="center" p="xl">
+              {tracked
+                ? "Rien ne périme dans les 30 prochains jours."
+                : "Aucun produit suivi : activez « Suivre les dates de péremption » dans la fiche d'un produit."}
+            </Text>
+          )}
+        </Paper>
+      )}
+
+      {products && filter !== "expiry" && (
         <Paper p={0} style={{ overflow: "hidden" }}>
           {list.slice(0, visible).map((p) => (
             <ProductRow key={p.id} product={p} currency={boutique.currency} onOpen={() => setOpenId(p.id)} />

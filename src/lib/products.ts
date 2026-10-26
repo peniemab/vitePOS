@@ -1,4 +1,5 @@
 /** Produits et mouvements de stock : logique pure (recherche, tri, alertes, sens des mouvements). */
+import { MAX_WARRANTY_MONTHS } from "./serials";
 
 export type Unit = "u" | "kg" | "L";
 
@@ -33,6 +34,12 @@ export interface Product {
   barcode: string;
   /** Emballages (paquet, carton…), du plus petit au plus grand. */
   packs: Pack[];
+  /** Une date de péremption est notée à chaque arrivage (pharmacies, alimentation…). */
+  tracksExpiry: boolean;
+  /** Chaque appareil a son numéro de série ou IMEI, noté à l'arrivage et obligatoire à la vente. */
+  serialTracked: boolean;
+  /** Garantie donnée au client, en mois à partir du jour de la vente (0 : aucune). */
+  warrantyMonths: number;
   favorite: boolean;
   archived: boolean;
   updatedAtMs: number;
@@ -45,7 +52,7 @@ export interface Product {
 export type ProductInput = Pick<
   Product,
   "sku" | "name" | "category" | "sellPrice" | "unit" | "alertThreshold" | "barcode" | "favorite"
-> & { packs?: Pack[] };
+> & { packs?: Pack[]; tracksExpiry?: boolean; serialTracked?: boolean; warrantyMonths?: number };
 
 export type StockMovementType = "reappro" | "casse" | "don" | "correction" | "vente" | "annulation" | "inventaire";
 
@@ -271,6 +278,13 @@ export function validateProduct(input: ProductInput): { value: ProductInput } | 
     if ("error" in checked) return checked;
     packs = checked.value;
   }
+  const serialTracked = input.serialTracked === true;
+  if (serialTracked && unit !== "u") return { error: "Le suivi par IMEI ne marche que pour les articles vendus à la pièce." };
+  if (serialTracked && (packs ?? input.packs ?? []).length)
+    return { error: "Un article suivi par IMEI se vend à l'unité : retirez ses paquets ou cartons." };
+  const warrantyMonths = Math.trunc(input.warrantyMonths ?? 0);
+  if (!Number.isFinite(warrantyMonths) || warrantyMonths < 0 || warrantyMonths > MAX_WARRANTY_MONTHS)
+    return { error: `La garantie doit être comprise entre 0 et ${MAX_WARRANTY_MONTHS} mois.` };
   return {
     value: {
       sku,
@@ -282,6 +296,8 @@ export function validateProduct(input: ProductInput): { value: ProductInput } | 
       barcode,
       favorite: input.favorite,
       ...(packs ? { packs } : {}),
+      ...(input.tracksExpiry !== undefined ? { tracksExpiry: input.tracksExpiry === true } : {}),
+      ...(input.serialTracked !== undefined ? { serialTracked, warrantyMonths: serialTracked ? warrantyMonths : 0 } : {}),
     },
   };
 }

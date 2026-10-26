@@ -14,6 +14,9 @@ export interface SaleLine {
   packId?: string;
   packName?: string;
   packUnits?: number;
+  /** Appareil vendu (IMEI ou numéro de série) et fin de sa garantie « AAAA-MM-JJ » (vide : aucune). */
+  serial?: string;
+  warrantyUntil?: string;
 }
 
 export interface SalePayment {

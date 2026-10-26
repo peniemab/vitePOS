@@ -2,11 +2,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Button, Group, Paper, SimpleGrid, Text } from "@mantine/core";
-import { IconAlertTriangle, IconCash, IconChevronRight, IconPackage } from "@tabler/icons-react";
+import { IconAlertTriangle, IconCalendarExclamation, IconCash, IconChevronRight, IconPackage } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
 import { watchSalesBetween } from "../data/sales";
 import { needsRestock } from "../lib/products";
+import { useLots } from "../data/lots";
+import { expiringLots } from "../lib/lots";
 import { PageTitle } from "../components/ui";
 import { InstallCard } from "../components/InstallCard";
 import { dayKey } from "../lib/cart";
@@ -20,6 +22,9 @@ export function HomeScreen() {
   const { member, boutique, permissions } = useReady();
   const { products } = useCatalog();
   const alerts = products?.filter(needsRestock).length ?? 0;
+  const lots = useLots(boutique.id);
+  const expiring = expiringLots((products ?? []).filter((p) => !p.archived), lots ?? [], dayKey(Date.now()));
+  const expired = expiring.filter((l) => l.daysLeft < 0).length;
   const firstName = member.name.split(" ")[0] || member.email;
   const today = dayKey(Date.now());
   const yesterday = shiftDay(today, -1);
@@ -75,6 +80,23 @@ export function HomeScreen() {
               </Text>
               <Text size="sm" c="dimmed">
                 En rupture ou sous le seuil d'alerte
+              </Text>
+            </div>
+            <IconChevronRight size={18} opacity={0.5} />
+          </Group>
+        </Paper>
+      )}
+
+      {expiring.length > 0 && (
+        <Paper component={Link} to="/stock?filtre=peremption" p="md" mb="md" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
+          <Group wrap="nowrap">
+            <IconCalendarExclamation size={24} color={`var(--mantine-color-${expired ? "red" : "orange"}-6)`} />
+            <div style={{ flex: 1 }}>
+              <Text fw={600}>
+                {expiring.length} lot{expiring.length > 1 ? "s" : ""} bientôt périmé{expiring.length > 1 ? "s" : ""}
+              </Text>
+              <Text size="sm" c="dimmed">
+                {expired ? `Dont ${expired} déjà périmé${expired > 1 ? "s" : ""} · ` : ""}dans les 30 prochains jours
               </Text>
             </div>
             <IconChevronRight size={18} opacity={0.5} />

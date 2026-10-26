@@ -26,6 +26,8 @@ import {
 } from "firebase/firestore";
 import { notifications } from "@mantine/notifications";
 import { getDb } from "./firebase";
+import { addLot } from "./lots";
+import { addSerials, markRemoved } from "./serials";
 import { errorMessage } from "./errors";
 import { track } from "./sync";
 import { useReady } from "./session";
@@ -94,6 +96,9 @@ function toProduct(id: string, d: DocumentData): Product {
     alertThreshold: num(d.alertThreshold, DEFAULT_ALERT_THRESHOLD),
     barcode: String(d.barcode ?? ""),
     packs: toPacks(d.packs),
+    tracksExpiry: d.tracksExpiry === true,
+    serialTracked: d.serialTracked === true,
+    warrantyMonths: num(d.warrantyMonths),
     favorite: d.favorite === true,
     archived: d.archived === true,
     updatedAtMs: ms(d.updatedAt),
@@ -227,7 +232,8 @@ function setCost(batch: WriteBatch, actor: Actor, productId: string, buyPrice: n
   batch.set(doc(costsCol(actor.boutiqueId), productId), { buyPrice, ...signed(actor) });
 }
 
-export function createProduct(actor: Actor, input: ProductInput, opts: { stock: number; buyPrice?: number }): string {
+/** `expiry` : date de péremption du stock de départ, pour un produit suivi. */
+export function createProduct(actor: Actor, input: ProductInput, opts: { stock: number; buyPrice?: number; expiry?: string }): string {
   const batch = writeBatch(getDb());
   const id = newId(productsCol(actor.boutiqueId));
   const movementId =
@@ -244,6 +250,7 @@ export function createProduct(actor: Actor, input: ProductInput, opts: { stock: 
     ...signed(actor),
   });
   if (opts.buyPrice != null) setCost(batch, actor, id, opts.buyPrice);
+  if (input.tracksExpiry && opts.expiry && opts.stock > 0) addLot(batch, actor, id, opts.expiry, opts.stock, movementId);
   track(batch.commit(), onWriteError);
   return id;
 }
@@ -298,8 +305,19 @@ export function setArchived(actor: Actor, productId: string, archived: boolean):
   track(batch.commit(), onWriteError);
 }
 
-/** Réapprovisionnement, casse, don ou correction saisis à la main (`delta` déjà signé). */
-export function adjustStock(actor: Actor, product: Product, type: ManualMovementType, delta: number, reason: string): void {
+/**
+ * Réapprovisionnement, casse, don ou correction saisis à la main (`delta` déjà signé).
+ * `expiry` : date de péremption de l'arrivage (produit suivi). `serials` : appareils reçus (réappro)
+ * ou sortis (casse, don) d'un produit suivi par IMEI ; leur nombre doit être égal à la variation.
+ */
+export function adjustStock(
+  actor: Actor,
+  product: Product,
+  type: ManualMovementType,
+  delta: number,
+  reason: string,
+  opts: { expiry?: string; serials?: string[] } = {},
+): void {
   if (delta === 0) return;
   const batch = writeBatch(getDb());
   const movementId = addMovement(batch, actor, type, [{ productId: product.id, name: product.name, delta }], reason);
@@ -308,6 +326,11 @@ export function adjustStock(actor: Actor, product: Product, type: ManualMovement
     lastMovementId: movementId,
     ...signed(actor),
   });
+  if (type === "reappro" && product.tracksExpiry && opts.expiry) addLot(batch, actor, product.id, opts.expiry, delta, movementId);
+  if (product.serialTracked && opts.serials?.length) {
+    if (delta > 0) addSerials(batch, actor, product, opts.serials, movementId);
+    else for (const s of opts.serials) markRemoved(batch, actor, s);
+  }
   track(batch.commit(), onWriteError);
 }
 

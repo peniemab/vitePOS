@@ -15,10 +15,15 @@ export interface CartLine {
   packName?: string;
   /** Unités du produit dans l'emballage (24) ; absent pour la vente à l'unité. */
   packUnits?: number;
+  /** Numéro de série ou IMEI de l'appareil vendu (une ligne par appareil, quantité 1). */
+  serial?: string;
+  /** Garantie de l'appareil, en mois. */
+  warrantyMonths?: number;
 }
 
 /** Une même bouteille peut être dans le panier à l'unité et en paquet : deux lignes distinctes. */
-export function lineKey(l: Pick<CartLine, "productId" | "packId">): string {
+export function lineKey(l: Pick<CartLine, "productId" | "packId" | "serial">): string {
+  if (l.serial) return `${l.productId}#${l.serial}`;
   return l.packId ? `${l.productId}:${l.packId}` : l.productId;
 }
 
@@ -68,14 +73,17 @@ export function computeTotals(lines: CartLine[], discountPercent: number, curren
 export function addToCart(lines: CartLine[], product: Omit<CartLine, "quantity">, qty = 1): CartLine[] {
   const key = lineKey(product);
   const existing = lines.find((l) => lineKey(l) === key);
+  // Un appareil (IMEI) ne se vend qu'une fois : déjà dans le panier, rien ne change.
+  if (existing && product.serial) return lines;
   if (existing) return setQuantity(lines, key, existing.quantity + qty);
+  if (product.serial) return [...lines, { ...product, quantity: 1 }];
   return [...lines, { ...product, quantity: roundQuantity(qty, product.packId ? "u" : product.unit) }];
 }
 
 /** Change une quantité (ligne désignée par `lineKey`) ; à zéro (ou moins) la ligne disparaît. */
 export function setQuantity(lines: CartLine[], key: string, qty: number): CartLine[] {
   return lines
-    .map((l) => (lineKey(l) === key ? { ...l, quantity: roundQuantity(qty, l.packId ? "u" : l.unit) } : l))
+    .map((l) => (lineKey(l) === key ? { ...l, quantity: l.serial ? Math.min(1, Math.trunc(qty)) : roundQuantity(qty, l.packId ? "u" : l.unit) } : l))
     .filter((l) => l.quantity > 0);
 }
 

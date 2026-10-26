@@ -123,6 +123,8 @@ export function getDocFromServer(ref: Ref) {
   return Promise.resolve(docSnap(ref.path));
 }
 
+export const getDoc = getDocFromServer;
+
 /* ---------- Écritures (en mémoire) ---------- */
 
 const INC = Symbol("increment");

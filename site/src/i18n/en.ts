@@ -62,7 +62,7 @@ export const en: Dict = {
       "The till that takes payment in seconds, in FC, $ or €, and counts your stock for you. Supermarket tools, as simple as a calculator.",
 
     audiencesTitle: "For every line of business",
-    audiencesLead: "vitePOS grows with your business.",
+    audiencesLead: "vitePOS grows with your business, in Kinshasa, Lubumbashi, Kolwezi, Matadi and across the DRC.",
 
     hardwareTitle: "The hardware you already have is enough",
     hardwareLead: "Start with your phone, add hardware as your business grows.",
@@ -137,25 +137,26 @@ export const en: Dict = {
   ],
 
   audiences: [
-    { title: "Shops", text: "Grocery, cosmetics, phones, clothing. A simple till on the owner's or the seller's phone." },
-    { title: "Hardware stores and wholesalers", text: "Large catalogues, sales by the piece, kilo, litre or carton, several sellers, precise stock tracking." },
-    { title: "Pharmacies and depots", text: "Quick search by name or barcode, out-of-stock alerts, regular stocktaking." },
+    { title: "Shops", text: "Grocery, cosmetics, phones, bakeries. A simple till on the owner's or the seller's phone." },
+    { title: "Hardware, wholesale and spare parts", text: "Large catalogues, search by item code, sales by the piece, kilo, litre or carton, several sellers." },
+    { title: "Pharmacies and drinks depots", text: "Quick search by name or barcode, sales by the crate or carton, out-of-stock alerts, regular stocktaking." },
     { title: "Minimarkets and supermarkets", text: "Several tills selling at the same time, daily closing, reports for the manager and the owner." },
   ],
 
   sectors: [
-    "Grocery",
-    "Drinks",
-    "Hardware",
-    "Pharmacy",
-    "Cosmetics",
-    "Phones",
-    "Clothing",
-    "Bookshop",
-    "Wholesale",
-    "Minimarkets",
+    "Grocery and minimarkets",
     "Supermarkets",
+    "Hardware and building materials",
+    "Pharmacies and parapharmacies",
+    "Drinks depots",
+    "Wholesale and semi-wholesale",
+    "Bakeries and pastry shops",
+    "Cosmetics",
+    "Car and motorbike spare parts",
+    "Phones and accessories",
   ],
+
+  cities: "In Kinshasa, Lubumbashi, Kolwezi, Matadi and across the DRC.",
 
   steps: [
     { title: "Create your account", text: "With your e-mail or Google account, from your phone's browser." },

@@ -7,6 +7,7 @@ import { useReady } from "../data/session";
 import { watchSalesOfDay } from "../data/sales";
 import { errorMessage } from "../data/errors";
 import { DayNav } from "../components/DayNav";
+import { SerialLookup } from "../components/SerialLookup";
 import { Money, PageTitle } from "../components/ui";
 import { dayKey, ticketNumber } from "../lib/cart";
 import { formatMoney2, summarizeDay } from "../lib/cashday";
@@ -86,6 +87,7 @@ export function VentesScreen() {
           )}
         </Paper>
       )}
+      <SerialLookup />
     </>
   );
 }

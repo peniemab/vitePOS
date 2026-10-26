@@ -19,6 +19,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  TextInput,
   UnstyledButton,
 } from "@mantine/core";
 import { IconMinus, IconPlus, IconShoppingCart, IconStarFilled, IconTrash, IconUserPlus, IconX } from "@tabler/icons-react";
@@ -28,7 +29,11 @@ import { currenciesOf, ratesOf } from "../data/boutique";
 import { createSale, useCart } from "../data/sales";
 import { useClients } from "../data/clients";
 import { ClientModal } from "./ClientsScreen";
-import { BarcodeField } from "../components/BarcodeField";
+import { BarcodeField, ScanButton } from "../components/BarcodeField";
+import { ScanVideo } from "../components/ScanVideo";
+import { canUseCamera, useCameraScan } from "../components/useCameraScan";
+import { findSerial, useSerialsInStock, type Serial } from "../data/serials";
+import { formatDayShort, normalizeSerial } from "../lib/serials";
 import { formatQty } from "../components/ProductModal";
 import { Money } from "../components/ui";
 import { computePayment, lineKey, lineTotal, stockByProduct, suggestedBills, type PaymentMethod } from "../lib/cart";
@@ -113,6 +118,10 @@ function ProductPicker() {
   const [weighing, setWeighing] = useState<Product | null>(null);
   // Produit vendu aussi en paquet ou carton : on demande comment le client l'achète.
   const [choosing, setChoosing] = useState<Product | null>(null);
+  // Appareil suivi par IMEI : on demande lequel est vendu.
+  const [choosingSerial, setChoosingSerial] = useState<Product | null>(null);
+  const serials = useSerialsInStock(boutique.id);
+  const inCart = useMemo(() => new Set(cart.lines.map((l) => l.serial).filter(Boolean)), [cart.lines]);
 
   const active = useMemo(() => (products ?? []).filter((p) => !p.archived), [products]);
   const categories = useMemo(() => collectCategories(active), [active]);
@@ -126,6 +135,7 @@ function ProductPicker() {
   /** `pack` : `undefined` = demander si le produit a des emballages, `null` = à l'unité. */
   function pick(p: Product, pack?: Pack | null) {
     if (p.stock <= 0) return setMessage({ text: `Rupture de stock : ${p.name}`, ok: false });
+    if (p.serialTracked) return setChoosingSerial(p);
     if (pack === undefined && p.packs.length) return setChoosing(p);
     if (pack) {
       cart.add(p, 1, pack);
@@ -136,15 +146,46 @@ function ProductPicker() {
     setMessage({ text: `+ ${p.name}`, ok: true });
   }
 
+  /** Ajoute l'appareil `serial` (IMEI) au panier. */
+  function addSerial(p: Product, serial: string) {
+    if (inCart.has(serial)) return setMessage({ text: `IMEI ${serial} : déjà dans le panier`, ok: false });
+    cart.add(p, 1, null, serial);
+    setMessage({ text: `+ ${p.name} · IMEI ${serial}`, ok: true });
+  }
+
   function onScan(code: string) {
     const found = findScan(active, code);
     if (found) {
       // Le code dit déjà ce qui est vendu : la bouteille ou le paquet.
       pick(found.product, found.pack);
       setQ("");
-    } else if (!active.some((p) => matchProduct(p, code))) {
-      setMessage({ text: `Aucun produit pour « ${code} »`, ok: false });
+      return;
     }
+    // Un IMEI scanné : l'appareil en stock part directement dans le panier.
+    const serial = normalizeSerial(code);
+    const inStock = serials?.find((s) => s.serial === serial);
+    const product = inStock && active.find((p) => p.id === inStock.productId);
+    if (product) {
+      addSerial(product, serial);
+      setQ("");
+      return;
+    }
+    if (serial.length >= 8 && !active.some((p) => matchProduct(p, code))) {
+      // Peut-être un appareil déjà vendu : on le dit (utile pour la garantie).
+      void findSerial(boutique.id, serial)
+        .then((s) => {
+          if (!s) return setMessage({ text: `Aucun produit pour « ${code} »`, ok: false });
+          if (s.status === "vendu")
+            return setMessage({
+              text: `IMEI ${serial} (${s.productName}) vendu le ${formatDayShort(s.soldDay)}${s.warrantyUntil ? `, garanti jusqu'au ${formatDayShort(s.warrantyUntil)}` : ""}`,
+              ok: false,
+            });
+          setMessage({ text: `IMEI ${serial} : sorti du stock (casse ou don)`, ok: false });
+        })
+        .catch(() => setMessage({ text: `Aucun produit pour « ${code} »`, ok: false }));
+      return;
+    }
+    if (!active.some((p) => matchProduct(p, code))) setMessage({ text: `Aucun produit pour « ${code} »`, ok: false });
   }
 
   return (
@@ -201,6 +242,16 @@ function ProductPicker() {
         </Text>
       )}
 
+      <SerialChooser
+        product={choosingSerial}
+        serials={(serials ?? []).filter((s) => s.productId === choosingSerial?.id && !inCart.has(s.serial))}
+        onClose={() => setChoosingSerial(null)}
+        onChoose={(serial) => {
+          const p = choosingSerial;
+          setChoosingSerial(null);
+          if (p) addSerial(p, serial);
+        }}
+      />
       <PackChooser
         product={choosing}
         currency={boutique.currency}
@@ -264,6 +315,74 @@ function ProductTile({ product: p, currency, onPick }: { product: Product; curre
         </Text>
       )}
     </UnstyledButton>
+  );
+}
+
+/** « Quel appareil le client achète ? » : liste des IMEI en stock, ou saisie / scan du numéro. */
+function SerialChooser({
+  product,
+  serials,
+  onClose,
+  onChoose,
+}: {
+  product: Product | null;
+  serials: Serial[];
+  onClose: () => void;
+  onChoose: (serial: string) => void;
+}) {
+  const [typed, setTyped] = useState("");
+  const [err, setErr] = useState("");
+  useEffect(() => {
+    setTyped("");
+    setErr("");
+  }, [product?.id]);
+  const scan = useCameraScan((code) => submitCode(code));
+
+  function submitCode(code: string) {
+    const s = normalizeSerial(code);
+    if (serials.some((x) => x.serial === s)) return onChoose(s);
+    setErr(`L'IMEI ${s || code} n'est pas en stock pour cet article.`);
+  }
+
+  return (
+    <Modal opened={!!product} onClose={onClose} title={product ? `${product.name} · quel appareil ?` : ""}>
+      {product && (
+        <Stack gap="xs">
+          <TextInput
+            label="IMEI ou numéro de série"
+            description="Scannez le code sur la boîte ou tapez-le, puis Entrée."
+            autoFocus
+            autoComplete="off"
+            value={typed}
+            error={err || undefined}
+            onChange={(e) => {
+              setTyped(e.currentTarget.value);
+              setErr("");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && typed.trim()) {
+                e.preventDefault();
+                submitCode(typed);
+              }
+            }}
+            rightSection={canUseCamera() ? <ScanButton scanning={scan.scanning} onClick={() => (scan.scanning ? scan.stop() : void scan.start())} /> : undefined}
+          />
+          <ScanVideo videoRef={scan.videoRef} scanning={scan.scanning} error={scan.error} />
+          <Text size="sm" c="dimmed">
+            {serials.length ? "Ou choisissez dans le stock :" : "Aucun appareil en stock : ajoutez-les dans Stock, avec « Mouvement »."}
+          </Text>
+          <ScrollArea.Autosize mah={260}>
+            <Stack gap={6}>
+              {serials.map((s) => (
+                <Button key={s.serial} variant="default" justify="flex-start" className="n" onClick={() => onChoose(s.serial)}>
+                  {s.serial}
+                </Button>
+              ))}
+            </Stack>
+          </ScrollArea.Autosize>
+        </Stack>
+      )}
+    </Modal>
   );
 }
 
@@ -390,6 +509,11 @@ function CartPanel({ onPay }: { onPay: () => void }) {
                     {packLabel({ name: l.packName, units: l.packUnits ?? 1 }, l.unit)}
                   </Badge>
                 )}
+                {l.serial && (
+                  <Text size="xs" className="n">
+                    IMEI {l.serial}
+                  </Text>
+                )}
                 <Text size="xs" c="dimmed">
                   <Money value={l.unitPrice} currency={c} />
                   {l.packName ? ` /${l.packName.toLowerCase()}` : l.unit !== "u" ? ` /${l.unit}` : ""}
@@ -401,21 +525,28 @@ function CartPanel({ onPay }: { onPay: () => void }) {
                 )}
               </div>
               <div style={{ textAlign: "right" }}>
-                <Group gap={4} wrap="nowrap" justify="flex-end">
-                  <ActionIcon
-                    variant="default"
-                    aria-label={l.quantity <= step ? "Retirer" : "Moins"}
-                    onClick={() => cart.setQty(key, l.quantity - step)}
-                  >
-                    {l.quantity <= step ? <IconTrash size={16} /> : <IconMinus size={16} />}
+                {l.serial ? (
+                  // Un appareil (IMEI) se vend à l'unité : on le retire seulement.
+                  <ActionIcon variant="default" aria-label="Retirer" onClick={() => cart.setQty(key, 0)} ml="auto">
+                    <IconTrash size={16} />
                   </ActionIcon>
-                  <Text className="n" fw={700} w={44} ta="center">
-                    {formatQty(l.quantity, qtyUnit)}
-                  </Text>
-                  <ActionIcon variant="default" aria-label="Plus" onClick={() => cart.setQty(key, l.quantity + step)}>
-                    <IconPlus size={16} />
-                  </ActionIcon>
-                </Group>
+                ) : (
+                  <Group gap={4} wrap="nowrap" justify="flex-end">
+                    <ActionIcon
+                      variant="default"
+                      aria-label={l.quantity <= step ? "Retirer" : "Moins"}
+                      onClick={() => cart.setQty(key, l.quantity - step)}
+                    >
+                      {l.quantity <= step ? <IconTrash size={16} /> : <IconMinus size={16} />}
+                    </ActionIcon>
+                    <Text className="n" fw={700} w={44} ta="center">
+                      {formatQty(l.quantity, qtyUnit)}
+                    </Text>
+                    <ActionIcon variant="default" aria-label="Plus" onClick={() => cart.setQty(key, l.quantity + step)}>
+                      <IconPlus size={16} />
+                    </ActionIcon>
+                  </Group>
+                )}
                 <Text fw={600} size="sm" mt={4}>
                   <Money value={lineTotal(l, c)} currency={c} />
                 </Text>

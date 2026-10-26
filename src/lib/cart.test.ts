@@ -131,3 +131,20 @@ describe("emballages dans le panier", () => {
     expect(lines).toEqual([{ ...bouteille, quantity: 1 }]);
   });
 });
+
+describe("appareils suivis par IMEI", () => {
+  const tel = { productId: "tel", name: "Galaxy A15", unit: "u" as const, unitPrice: 350000, warrantyMonths: 12 };
+
+  it("une ligne par appareil, qu'on ne peut pas ajouter deux fois", () => {
+    let lines = addToCart([], { ...tel, serial: "352099001761481" });
+    lines = addToCart(lines, { ...tel, serial: "352099001761481" });
+    lines = addToCart(lines, { ...tel, serial: "SN0099" });
+    expect(lines.map((l) => [l.serial, l.quantity])).toEqual([
+      ["352099001761481", 1],
+      ["SN0099", 1],
+    ]);
+    expect(lineKey(lines[0])).toBe("tel#352099001761481");
+    expect(setQuantity(lines, "tel#SN0099", 5).find((l) => l.serial === "SN0099")?.quantity).toBe(1);
+    expect(setQuantity(lines, "tel#SN0099", 0)).toHaveLength(1);
+  });
+});
