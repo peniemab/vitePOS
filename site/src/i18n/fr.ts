@@ -31,6 +31,15 @@ export const fr = {
     tagline: "Point de vente rapide et hors ligne, conçu à Kinshasa.",
     manual: "Manuel de l'utilisateur",
     brochure: "Brochure (PDF)",
+    terms: "Conditions d'utilisation",
+    privacy: "Confidentialité",
+    product: "Produit",
+    legal: "Informations",
+    app: "Application",
+    login: "Se connecter",
+    signup: "Créer ma boutique",
+    credits: "Crédits photos",
+    creditsText: "Photos libres de droits de Wikimedia Commons, recadrées :",
   },
 
   home: {
@@ -106,6 +115,70 @@ export const fr = {
     finalTitle: "Votre caisse est prête en 5 minutes.",
     finalText: "Gratuit pour commencer, sans carte bancaire.",
     finalCta: "Créer ma boutique",
+
+    /** Carrousel du haut de page : une diapositive par type de commerce (la première porte le titre principal). */
+    slides: [
+      {
+        tag: "Supermarchés et supérettes",
+        title: "",
+        text: "",
+        pops: ["Vente encaissée · 21 100 FC", "Payé en $, monnaie rendue · 900 FC", "Caisse 2 · 8 articles · 14 500 FC", "Stock à jour · Riz 1 kg : 38 restants"],
+      },
+      {
+        tag: "Pharmacies et dépôts",
+        title: "Plus aucun produit périmé oublié en rayon.",
+        text: "Recherche par nom ou code-barres, alerte 30 jours avant la péremption, inventaire en scannant le rayon.",
+        pops: ["Alerte · 2 lots périment dans 30 jours", "Vente · Paracétamol 500 mg · 2 500 FC", "Lot reçu, périme le · 15/03/2027", "Inventaire · rayon 3 compté"],
+      },
+      {
+        tag: "Téléphonie et accessoires",
+        title: "Des clients en confiance, qui reviennent acheter.",
+        text: "Chaque téléphone vendu est enregistré avec son IMEI et sa garantie, et chaque client garde son historique d'achats. Il revient ? Vous retrouvez tout en une seconde.",
+        pops: ["IMEI scanné · Galaxy A15", "Vente garantie 12 mois · 420 000 FC", "Client retrouvé · Papa Jean, 3 achats", "Ticket envoyé par WhatsApp"],
+      },
+      {
+        tag: "Quincailleries et matériaux",
+        title: "Des milliers d'articles, retrouvés en un instant.",
+        text: "Recherche par code article, vente à la pièce, au kilo ou au carton, plusieurs vendeurs en même temps.",
+        pops: ["Trouvé · Tuyau PVC 32 mm", "Vente · 2 sacs de ciment · 40 $", "Vendu au carton · 4 boîtes de vis", "Alerte · Peinture 20 L bientôt en rupture"],
+      },
+      {
+        tag: "Commerçants et entrepreneurs",
+        title: "Votre business dans la poche.",
+        text: "Vos vendeurs encaissent, vous suivez chaque vente en direct depuis votre téléphone, où que vous soyez.",
+        pops: ["Caisse ouverte par Grâce · 8 h 02", "Ventes du jour · 186 000 FC", "Meilleure vente · Lait Nido 400 g", "Clôture de caisse, écart · 0 FC"],
+      },
+    ],
+    /** Ventes qui apparaissent en direct dans l'accroche, et bande de ventes qui défile sous les points forts. */
+    tape: [
+      "Vente · 21 100 FC · 11 articles",
+      "Paiement en $ · monnaie rendue 900 FC",
+      "Réception · 3 cartons de lait",
+      "Alerte · Huile 1 L bientôt en rupture",
+      "Clôture · caisse juste à 0 FC près",
+      "Vente · 2 sacs de ciment · 40 $",
+      "Hors ligne · 3 ventes envoyées au retour du réseau",
+      "Inventaire · rayon boissons compté",
+    ],
+    carousel: { label: "Présentation de vitePOS", prev: "Diapositive précédente", next: "Diapositive suivante", pause: "Mettre en pause", play: "Relancer le défilement", goTo: "Aller à la diapositive", now: "à l'instant" },
+
+    whyEyebrow: "Pourquoi vitePOS",
+    whyTitle: "Le cahier de caisse, c'est fini.",
+    whyCard: { label: "Vente encaissée", amount: "21 100 FC", sub: "Payé en FC et en $ · monnaie rendue : 900 FC" },
+    whyStock: { label: "Stock à jour", sub: "Coca-Cola 33 cl · 46 restants" },
+
+    featuresEyebrow: "Fonctions",
+    devicesEyebrow: "Appareils",
+    audiencesEyebrow: "Pour qui",
+    sectorsAll: "Tous les secteurs",
+    galleryTitle: "Pensé pour les commerces de la RDC",
+    galleryText: "Du petit commerce au supermarché, vitePOS s'adapte à la façon dont on vend ici : plusieurs devises, coupures de réseau, vente au carton ou à la pièce.",
+    hardwareEyebrow: "Matériel",
+    offlineEyebrow: "Hors ligne",
+    stepsEyebrow: "Mise en route",
+    faqEyebrow: "Questions",
+    faqLead: "Vous ne trouvez pas votre réponse ? Le manuel explique chaque écran pas à pas.",
+    faqManual: "Lire le manuel",
   },
 
   strengths: [
@@ -196,6 +269,11 @@ export const fr = {
       a: "Chaque boutique est séparée des autres et sauvegardée en ligne. Chaque employé a son propre compte et ne voit que ce que vous lui autorisez.",
     },
   ],
+
+  legal: {
+    updated: "Mise à jour le",
+    missing: "à compléter",
+  },
 
   manual: {
     title: "Le journal de votre boutique · Manuel vitePOS",

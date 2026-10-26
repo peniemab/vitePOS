@@ -6,13 +6,13 @@ import { fr, type Dict } from "./fr";
 import { en } from "./en";
 
 export type Lang = "fr" | "en";
-export type PageKey = "home" | "manual" | "brochure";
+export type PageKey = "home" | "manual" | "brochure" | "terms" | "privacy";
 
 export const dicts: Record<Lang, Dict> = { fr, en };
 
 const ROUTES: Record<Lang, Record<PageKey, string>> = {
-  fr: { home: "/", manual: "/manuel", brochure: "/brochure" },
-  en: { home: "/en/", manual: "/en/manual", brochure: "/en/brochure" },
+  fr: { home: "/", manual: "/manuel", brochure: "/brochure", terms: "/conditions", privacy: "/confidentialite" },
+  en: { home: "/en/", manual: "/en/manual", brochure: "/en/brochure", terms: "/en/terms", privacy: "/en/privacy" },
 };
 
 /** Fichiers PDF, un par langue. */

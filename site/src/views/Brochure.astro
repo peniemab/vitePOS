@@ -67,7 +67,7 @@ const b = t.brochure;
           <p class="b-url">{APP_HOST}</p>
         </div>
         <figure class="b-qr-box">
-          <img class="b-qr" src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="110" height="110" />
+          <img class="b-qr" src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="76" height="76" />
           <figcaption>{b.qrLabel}</figcaption>
         </figure>
       </footer>
@@ -81,8 +81,10 @@ const b = t.brochure;
           t.features.map((f) => (
             <article>
               <div class="b-icon" set:html={icons[f.icon]} />
-              <h3>{f.title}</h3>
-              <p>{f.text}</p>
+              <div>
+                <h3>{f.title}</h3>
+                <p>{f.text}</p>
+              </div>
             </article>
           ))
         }
@@ -99,7 +101,8 @@ const b = t.brochure;
         <div>
           <h2 class="b-title small">{b.stepsTitle}</h2>
           <ol class="b-steps">
-            {t.steps.map((s) => <li><b>{s.title}</b> {s.text}</li>)}
+            {/* A5 : les titres suffisent (le détail est sur le site et dans le manuel). */}
+            {t.steps.map((s) => <li><b>{s.title}</b></li>)}
           </ol>
         </div>
       </div>
@@ -110,7 +113,7 @@ const b = t.brochure;
           <p>{b.website} <b>{SITE_HOST}</b></p>
         </div>
         <figure class="b-qr-box">
-          <img class="b-qr" src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="84" height="84" />
+          <img class="b-qr" src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="60" height="60" />
           <figcaption>{b.qrLabel}</figcaption>
         </figure>
       </footer>

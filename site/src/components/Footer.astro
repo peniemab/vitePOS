@@ -1,5 +1,7 @@
 ---
 import Brand from "./Brand.astro";
+import credits from "../data/photo-credits.json";
+import { LEGAL_READY, LOGIN_URL, SIGNUP_URL } from "../data/content";
 import { dicts, PDF, route, type Lang } from "../i18n";
 
 interface Props {
@@ -7,14 +9,61 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = dicts[lang];
+const home = route(lang, "home");
 const year = new Date().getFullYear();
 ---
 
 <footer class="foot">
-  <div class="wrap foot-inner">
-    <Brand size="small" lang={lang} />
-    <p>{t.footer.tagline}</p>
-    <p><a href={route(lang, "manual")}>{t.footer.manual}</a> · <a href={PDF[lang].brochure} download>{t.footer.brochure}</a></p>
-    <p class="muted">© {year} vitePOS</p>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <Brand size="small" lang={lang} />
+      <p>{t.footer.tagline}</p>
+      <p class="foot-cities">{t.cities}</p>
+    </div>
+    <nav aria-label={t.footer.product}>
+      <h2>{t.footer.product}</h2>
+      {t.header.nav.map((n) => <a href={`${home}#${t.home.ids[n.id]}`}>{n.label}</a>)}
+    </nav>
+    <nav aria-label={t.footer.legal}>
+      <h2>{t.footer.legal}</h2>
+      <a href={route(lang, "manual")}>{t.footer.manual}</a>
+      <a href={PDF[lang].brochure} download>{t.footer.brochure}</a>
+      {
+        LEGAL_READY && (
+          <>
+            <a href={route(lang, "terms")}>{t.footer.terms}</a>
+            <a href={route(lang, "privacy")}>{t.footer.privacy}</a>
+          </>
+        )
+      }
+    </nav>
+    <nav aria-label={t.footer.app}>
+      <h2>{t.footer.app}</h2>
+      <a href={LOGIN_URL}>{t.footer.login}</a>
+      <a href={SIGNUP_URL}>{t.footer.signup}</a>
+    </nav>
+  </div>
+  <div class="wrap foot-bottom">
+    <p>© {year} vitePOS</p>
+    <details class="credits">
+      <summary>{t.footer.credits}</summary>
+      <p>{t.footer.creditsText}</p>
+      <ul>
+        {
+          credits.map((c) => (
+            <li>
+              <a href={c.source} rel="noopener">{c.title}</a> · {c.author}
+              {c.licenseUrl ? (
+                <>
+                  {" "}· <a href={c.licenseUrl} rel="noopener license">{c.license}</a>
+                </>
+              ) : (
+                <> · {c.license}</>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </details>
   </div>
 </footer>

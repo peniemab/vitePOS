@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Charte vitePOS · quatre directions</title>
+    <!-- Proposition de charte : trois directions, chacune appliquée au même extrait du site et à la même carte de caisse.
+         Toutes gardent le bleu nuit et le rouge du logo. Page de travail, pas publiée. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=Manrope:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Unbounded:wght@500;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: "Barlow", sans-serif; background: #e9ebef; color: #191c1e; }
+      .page { max-width: 1240px; margin: 0 auto; padding: 32px 16px 64px; }
+      .page > h1 { font-family: "Barlow Condensed", sans-serif; font-size: 2.6rem; margin: 0; color: #1a2b4c; }
+      .page > p { color: #5b6270; max-width: 60em; }
+      .dirs { display: grid; gap: 28px; margin-top: 28px; }
+      .dir { border-radius: 18px; overflow: hidden; box-shadow: 0 10px 40px rgba(26, 43, 76, 0.12); }
+      .dir-head { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; padding: 18px 22px; background: #fff; border-bottom: 1px solid #e1e4ea; }
+      .dir-head b { font-family: "Barlow Condensed", sans-serif; font-size: 1.7rem; color: #1a2b4c; }
+      .dir-head span { color: #5b6270; }
+      .tag { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #b6171e; }
+      .dir-body { display: grid; grid-template-columns: 300px 1fr; }
+      @media (max-width: 900px) { .dir-body { grid-template-columns: 1fr; } }
+      .spec { padding: 22px; font-size: 0.92rem; }
+      .spec h4 { margin: 0 0 8px; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
+      .sw { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 18px; }
+      .sw small { display: block; font-size: 0.65rem; margin-top: 3px; opacity: 0.75; }
+      .type-big { font-size: 2rem; line-height: 1; margin: 0 0 4px; }
+      .type-num { font-size: 1.6rem; margin: 10px 0 4px; }
+      .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+      .demo { padding: 22px; display: grid; gap: 18px; grid-template-columns: 1.35fr 1fr; align-items: start; }
+      @media (max-width: 700px) { .demo { grid-template-columns: 1fr; } }
+      .logo { width: 26px; height: 29px; }
+
+      /* ---------- Direction A : Bleu nuit affûté (évolution de l'actuel) ---------- */
+      .A { --bg: #f4f6fa; --surface: #fff; --ink: #121a2c; --muted: #5a6476; --navy: #1a2b4c; --red: #b6171e; --line: #dde2ec; --r: 10px; }
+      .A .spec, .A .demo { background: var(--bg); color: var(--ink); }
+      .A .font-h { font-family: "Barlow Condensed", sans-serif; font-weight: 700; }
+      .A .font-b { font-family: "Barlow", sans-serif; }
+      .A .btn { font-family: "Barlow", sans-serif; font-weight: 700; padding: 10px 16px; border-radius: var(--r); border: 0; }
+      .A .btn.pri { background: var(--red); color: #fff; }
+      .A .btn.sec { background: var(--navy); color: #fff; }
+      .A .btn.ghost { background: #fff; color: var(--navy); box-shadow: inset 0 0 0 1.5px var(--line); }
+      .A .hero { background: linear-gradient(180deg, #e9eef8, #fff); border-radius: 14px; padding: 22px; box-shadow: 0 1px 0 var(--line); }
+      .A .hero h3 { font-family: "Barlow Condensed", sans-serif; font-size: 2.3rem; line-height: 0.98; color: var(--navy); margin: 10px 0; }
+      .A .hero h3 em { font-style: normal; color: var(--red); }
+      .A .hero p { color: var(--muted); }
+      .A .card { background: var(--surface); border-radius: 14px; border: 1px solid var(--line); overflow: hidden; }
+      .A .card-top { background: var(--navy); color: #fff; padding: 10px 14px; font-family: "Barlow Condensed"; font-weight: 700; display: flex; justify-content: space-between; }
+      .A .tile { border: 1px solid var(--line); border-radius: var(--r); padding: 10px; }
+      .A .total { font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.6rem; color: var(--navy); }
+
+      /* ---------- Direction B : Clair et premium (style fintech) ---------- */
+      .B { --bg: #ffffff; --soft: #f5f7fb; --ink: #0e1726; --muted: #667085; --navy: #1a2b4c; --red: #c8232a; --line: #eaecf0; --r: 14px; }
+      .B .spec, .B .demo { background: var(--bg); color: var(--ink); font-family: "Plus Jakarta Sans", sans-serif; }
+      .B .font-h { font-family: "Manrope", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+      .B .font-b { font-family: "Plus Jakarta Sans", sans-serif; }
+      .B .btn { font-family: "Plus Jakarta Sans"; font-weight: 600; padding: 11px 18px; border-radius: 999px; border: 0; }
+      .B .btn.pri { background: var(--navy); color: #fff; }
+      .B .btn.sec { background: var(--red); color: #fff; }
+      .B .btn.ghost { background: var(--soft); color: var(--navy); }
+      .B .hero { background: var(--soft); border-radius: 24px; padding: 26px; }
+      .B .hero h3 { font-family: "Manrope"; font-weight: 800; letter-spacing: -0.03em; font-size: 2.1rem; line-height: 1.05; color: var(--ink); margin: 10px 0; }
+      .B .hero h3 em { font-style: normal; color: var(--red); }
+      .B .hero p { color: var(--muted); }
+      .B .card { background: #fff; border-radius: 22px; box-shadow: 0 12px 32px rgba(16, 24, 40, 0.08); overflow: hidden; }
+      .B .card-top { padding: 14px 16px; font-family: "Manrope"; font-weight: 800; display: flex; justify-content: space-between; color: var(--ink); border-bottom: 1px solid var(--line); }
+      .B .tile { background: var(--soft); border-radius: 14px; padding: 12px; }
+      .B .total { font-family: "Manrope"; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.02em; }
+
+      /* ---------- Direction C : Audacieux Kinshasa (couleurs chaudes, jaune du drapeau) ---------- */
+      .C { --bg: #f7f1e6; --surface: #fffaf1; --ink: #17140f; --muted: #6b5f4d; --navy: #1a2b4c; --red: #b6171e; --yellow: #f2b705; --line: #e8dcc6; --r: 6px; }
+      .C .spec, .C .demo { background: var(--bg); color: var(--ink); font-family: "Barlow", sans-serif; }
+      .C .font-h { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+      .C .font-b { font-family: "Barlow", sans-serif; }
+      .C .btn { font-family: "Bricolage Grotesque"; font-weight: 700; padding: 10px 16px; border-radius: var(--r); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+      .C .btn.pri { background: var(--yellow); color: var(--ink); }
+      .C .btn.sec { background: var(--navy); color: #fff; }
+      .C .btn.ghost { background: var(--surface); color: var(--ink); }
+      .C .hero { background: var(--navy); color: #fff; border-radius: 4px; padding: 24px; position: relative; overflow: hidden; }
+      .C .hero::after { content: ""; position: absolute; right: -30px; top: -30px; width: 140px; height: 140px; border-radius: 50%; background: var(--yellow); opacity: 0.95; }
+      .C .hero h3 { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 2.3rem; line-height: 0.98; margin: 10px 0; position: relative; z-index: 1; }
+      .C .hero h3 em { font-style: normal; color: var(--yellow); }
+      .C .hero p { color: #d8e2ff; position: relative; z-index: 1; }
+      .C .hero .tag { color: var(--yellow); position: relative; z-index: 1; }
+      .C .card { background: var(--surface); border: 2px solid var(--ink); border-radius: 6px; box-shadow: 5px 5px 0 var(--ink); overflow: hidden; }
+      .C .card-top { background: var(--red); color: #fff; padding: 10px 14px; font-family: "Bricolage Grotesque"; font-weight: 800; display: flex; justify-content: space-between; }
+      .C .tile { border: 1.5px solid var(--ink); border-radius: 4px; padding: 10px; background: #fff; }
+      .C .total { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 1.6rem; }
+
+      /* ---------- Direction D : Wax moderne (motif tiré du « V » du logo) ---------- */
+      .D {
+        --bg: #fbf8f3; --surface: #fff; --ink: #141b2d; --muted: #646a78; --navy: #1a2b4c; --red: #b6171e; --clay: #d9773c; --line: #ece5da; --r: 12px;
+        /* Chevrons en V, comme un pagne wax : rouge et terre cuite sur bleu nuit */
+        --wax: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='28' viewBox='0 0 48 28'%3E%3Cpath d='M0 4l12 14L24 4l12 14L48 4' fill='none' stroke='%23b6171e' stroke-width='5'/%3E%3Cpath d='M0 16l12 10 12-10 12 10 12-10' fill='none' stroke='%23d9773c' stroke-width='2.5'/%3E%3C/svg%3E");
+      }
+      .D .spec, .D .demo { background: var(--bg); color: var(--ink); font-family: "DM Sans", sans-serif; }
+      .D .font-h { font-family: "Unbounded", sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+      .D .font-b { font-family: "DM Sans", sans-serif; }
+      .D .type-big { font-size: 1.6rem; }
+      .D .btn { font-family: "DM Sans"; font-weight: 700; padding: 11px 18px; border-radius: var(--r); border: 0; }
+      .D .btn.pri { background: var(--red); color: #fff; box-shadow: 0 4px 0 #7d0f14; }
+      .D .btn.sec { background: var(--navy); color: #fff; box-shadow: 0 4px 0 #0c1630; }
+      .D .btn.ghost { background: #fff; color: var(--navy); box-shadow: inset 0 0 0 1.5px var(--line), 0 4px 0 var(--line); }
+      .D .hero { background: var(--navy); color: #fff; border-radius: 20px; padding: 24px 24px 46px; position: relative; overflow: hidden; }
+      .D .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 28px; background: var(--wax) repeat-x; background-color: #10203d; }
+      .D .hero h3 { font-family: "Unbounded"; font-weight: 800; font-size: 1.75rem; line-height: 1.08; letter-spacing: -0.03em; margin: 10px 0; }
+      .D .hero h3 em { font-style: normal; color: #ff8a5b; }
+      .D .hero p { color: #c9d4ec; }
+      .D .hero .tag { color: #ff8a5b; }
+      .D .card { background: var(--surface); border-radius: 20px; border: 1px solid var(--line); overflow: hidden; box-shadow: 0 10px 30px rgba(20, 27, 45, 0.07); }
+      .D .card-top { background: var(--navy); color: #fff; padding: 12px 16px 18px; font-family: "Unbounded"; font-weight: 700; font-size: 0.95rem; display: flex; justify-content: space-between; position: relative; }
+      .D .card-top::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: linear-gradient(90deg, var(--red) 0 60%, var(--clay) 60%); }
+      .D .tile { background: var(--bg); border-radius: 12px; padding: 10px; border-left: 4px solid var(--clay); }
+      .D .total { font-family: "Unbounded"; font-weight: 800; font-size: 1.3rem; color: var(--navy); }
+
+      /* Pièces communes de la carte de caisse */
+      .card-body { padding: 14px; display: grid; gap: 10px; }
+      .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .tile b { display: block; font-size: 0.9rem; }
+      .tile small { opacity: 0.65; font-size: 0.72rem; }
+      .tile .p { margin-top: 6px; font-weight: 700; }
+      .row { display: flex; justify-content: space-between; align-items: center; }
+      .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+      .chip { font-size: 0.75rem; padding: 3px 10px; border-radius: 999px; border: 1px solid currentColor; opacity: 0.8; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1>Charte vitePOS : quatre directions</h1>
+      <p>
+        Même contenu, quatre styles. Toutes gardent le logo (bleu nuit et rouge). Choisissez celle qui vous ressemble le plus,
+        ou dites ce que vous voulez mélanger (par exemple « les polices de B avec les couleurs de C »). La direction choisie
+        s'appliquera à l'app, au site, au manuel et à la brochure.
+      </p>
+
+      <div class="dirs" id="dirs"></div>
+    </div>
+
+    <template id="tpl">
+      <section class="dir">
+        <div class="dir-head"><b data-name></b><span data-pitch></span></div>
+        <div class="dir-body">
+          <div class="spec">
+            <h4>Couleurs</h4>
+            <div class="sw" data-sw></div>
+            <h4>Typographie</h4>
+            <p class="type-big font-h">Vendez plus vite.</p>
+            <p class="font-b" style="margin: 0">Texte courant : la caisse de votre boutique, sur votre téléphone.</p>
+            <p class="type-num font-h">21 100 FC</p>
+            <small data-fonts></small>
+            <h4 style="margin-top: 16px">Boutons</h4>
+            <div class="btns">
+              <button class="btn pri">Encaisser</button>
+              <button class="btn sec">Ouvrir la caisse</button>
+              <button class="btn ghost">Voir le stock</button>
+            </div>
+          </div>
+          <div class="demo">
+            <div class="hero">
+              <div class="tag">Caisse · Stock · Ventes</div>
+              <h3>Vendez plus vite.<br />Perdez moins.<br /><em>Même sans réseau.</em></h3>
+              <p class="font-b">Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.</p>
+              <div class="btns"><button class="btn pri">Commencer gratuitement</button><button class="btn ghost">Télécharger la brochure</button></div>
+            </div>
+            <div class="card">
+              <div class="card-top"><span>Caisse</span><span>MN</span></div>
+              <div class="card-body font-b">
+                <div class="chips"><span class="chip">Tous</span><span class="chip">Boissons</span><span class="chip">Lait</span></div>
+                <div class="tiles">
+                  <div class="tile"><b>Coca-Cola 33 cl</b><small>BOI-001</small><div class="p">1 000 FC</div></div>
+                  <div class="tile"><b>Lait Nido 400 g</b><small>LAI-001</small><div class="p">12 000 FC</div></div>
+                  <div class="tile"><b>Huile Mama 1 L</b><small>HUI-001</small><div class="p">6 500 FC</div></div>
+                  <div class="tile"><b>Riz parfumé 1 kg</b><small>RIZ-001</small><div class="p">2 800 FC</div></div>
+                </div>
+                <div class="row"><span>Total · 11 articles</span><span class="total">21 100 FC</span></div>
+                <button class="btn pri" style="width: 100%">Encaisser</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </template>
+
+    <script>
+      const dirs = [
+        {
+          cls: "A",
+          name: "A · Bleu nuit affûté",
+          pitch: "L'évolution de l'actuel : même esprit, plus net. Titres serrés, rouge pour l'action, bleu nuit pour la structure. Sérieux et rassurant.",
+          fonts: "Titres : Barlow Condensed · Texte : Barlow",
+          sw: [["#1a2b4c", "Bleu nuit"], ["#b6171e", "Rouge caisse"], ["#f4f6fa", "Fond"], ["#dde2ec", "Traits"], ["#121a2c", "Texte"]],
+        },
+        {
+          cls: "B",
+          name: "B · Clair et premium",
+          pitch: "Inspiré des apps de paiement : beaucoup de blanc, coins arrondis, ombres douces, boutons en pilule. Moderne et haut de gamme.",
+          fonts: "Titres : Manrope · Texte : Plus Jakarta Sans",
+          sw: [["#1a2b4c", "Bleu nuit"], ["#c8232a", "Rouge"], ["#f5f7fb", "Fond doux"], ["#eaecf0", "Traits"], ["#0e1726", "Texte"]],
+        },
+        {
+          cls: "C",
+          name: "C · Audacieux Kinshasa",
+          pitch: "Couleurs chaudes et le jaune du drapeau, contours noirs francs, ombres décalées. On le reconnaît de loin : très « marché », très local.",
+          fonts: "Titres : Bricolage Grotesque · Texte : Barlow",
+          sw: [["#1a2b4c", "Bleu nuit"], ["#b6171e", "Rouge"], ["#f2b705", "Jaune"], ["#f7f1e6", "Sable"], ["#17140f", "Encre"]],
+        },
+        {
+          cls: "D",
+          name: "D · Wax moderne",
+          pitch: "Un motif de pagne wax tiré du « V » du logo, une terre cuite chaude à côté du rouge, des titres larges et ronds, des boutons qui « s'enfoncent ». Africain et moderne, sans faire folklore.",
+          fonts: "Titres : Unbounded · Texte : DM Sans",
+          sw: [["#1a2b4c", "Bleu nuit"], ["#b6171e", "Rouge"], ["#d9773c", "Terre cuite"], ["#fbf8f3", "Crème"], ["#141b2d", "Encre"]],
+        },
+      ];
+      const box = document.getElementById("dirs");
+      const tpl = document.getElementById("tpl");
+      for (const d of dirs) {
+        const el = tpl.content.firstElementChild.cloneNode(true);
+        el.classList.add(d.cls);
+        el.querySelector("[data-name]").textContent = d.name;
+        el.querySelector("[data-pitch]").textContent = d.pitch;
+        el.querySelector("[data-fonts]").textContent = d.fonts;
+        el.querySelector("[data-sw]").innerHTML = d.sw
+          .map(([c, n]) => `<div><div style="height:42px;border-radius:8px;background:${c};box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)"></div><small>${n}<br>${c}</small></div>`)
+          .join("");
+        box.appendChild(el);
+      }
+    </script>
+  </body>
+</html>

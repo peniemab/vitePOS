@@ -1,0 +1,10 @@
+---
+import Legal from "../views/Legal.astro";
+import { LEGAL_READY } from "../data/content";
+import { route } from "../i18n";
+
+// Tant que les coordonnées de l'éditeur ne sont pas remplies, la page renvoie à l'accueil.
+if (!LEGAL_READY) return Astro.redirect(route("fr", "home"));
+---
+
+<Legal lang="fr" kind="privacy" />

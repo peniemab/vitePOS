@@ -1,0 +1,33 @@
+---
+/**
+ * Une photo libre de droits (dossier public/photos), en deux tailles : 960 px pour les téléphones, la grande au-delà.
+ * Auteur et licence de chaque photo : data/photo-credits.json, affichés dans le pied de page.
+ */
+import credits from "../data/photo-credits.json";
+
+interface Props {
+  name: string;
+  alt: string;
+  class?: string;
+  sizes: string;
+  /** Image prioritaire (haut de page) : chargée tout de suite plutôt qu'au défilement. */
+  eager?: boolean;
+}
+const { name, alt, class: className, sizes, eager = false } = Astro.props;
+const photo = credits.find((c) => c.file === name);
+if (!photo) throw new Error(`Photo inconnue : ${name}`);
+const small = Math.round((photo.w * 960) / Math.max(photo.w, photo.h));
+---
+
+<img
+  class={className}
+  src={`/photos/${name}.webp`}
+  srcset={`/photos/${name}-960.webp ${small}w, /photos/${name}.webp ${photo.w}w`}
+  sizes={sizes}
+  alt={alt}
+  width={photo.w}
+  height={photo.h}
+  loading={eager ? "eager" : "lazy"}
+  fetchpriority={eager ? "high" : undefined}
+  decoding="async"
+/>

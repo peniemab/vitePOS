@@ -2,9 +2,11 @@
 /** Page d'accueil du site, dans la langue demandée (pages/index.astro en français, pages/en/index.astro en anglais). */
 import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
+import Photo from "../components/Photo.astro";
 import { SIGNUP_URL } from "../data/content";
-import { icons } from "../data/icons";
-import { dicts, PDF, type Lang } from "../i18n";
+import { alertIcon, icons, moreIcons } from "../data/icons";
+import { dicts, PDF, route, type Lang } from "../i18n";
+import "../styles/home.css";
 
 interface Props {
   lang: Lang;
@@ -13,60 +15,239 @@ const { lang } = Astro.props;
 const t = dicts[lang];
 const h = t.home;
 const ids = h.ids;
+
+/** Photo et capture de chaque diapositive, dans l'ordre de `h.slides`. */
+const slideMedia = [
+  { photo: "supermarche", shot: "tel-caisse", alt: h.altCaisse },
+  { photo: "pharmacie-comptoir", shot: "tel-stock", alt: h.shots.telStock.alt },
+  { photo: "telephonie", shot: "tel-ticket", alt: h.shots.telTicket.alt },
+  { photo: "quincaillerie", shot: "tel-stock", alt: h.shots.telStock.alt },
+  { photo: "boutique", shot: "tel-accueil", alt: h.altHome },
+];
+/** Photo de chaque carte « Pour qui », dans l'ordre de `t.audiences`. */
+const audiencePhotos = ["boutique", "quincaillerie", "pharmacie", "supermarche"];
+const gallery = ["vetements", "marche", "pharmacie-comptoir", "comptoir", "mercerie", "vendeur"];
+const hardwareIcons = [moreIcons.deviceMobile, moreIcons.printer, moreIcons.barcode];
+const strengthIcons = [moreIcons.cash, moreIcons.wifiOff, moreIcons.users];
+
+/** Une notification « Vente · 2 sacs de ciment · 40 $ » : l'action, puis le chiffre (dernier morceau) mis en avant. */
+function toToast(text: string) {
+  const parts = text.split(" · ");
+  const value = parts.length > 1 ? parts.pop()! : "";
+  const label = parts.join(" · ");
+  const kind = /^(Alerte|Alert)/.test(label)
+    ? "alert"
+    : /^(IMEI|Trouvé|Found|Ticket|Receipt|Client|Customer)/.test(label)
+      ? "scan"
+      : /^(Stock|Réception|Delivery|Inventaire|Stocktake|Clôture|Closing|Caisse ouverte|Till opened)/.test(label)
+        ? "stock"
+        : "sale";
+  const icon = { alert: alertIcon, scan: moreIcons.barcode, stock: icons.package, sale: moreIcons.cash }[kind];
+  return { label, value, kind, icon };
+}
 ---
 
 <Base title={h.title} description={h.description} lang={lang} page="home">
-  <!-- Accroche -->
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <p class="eyebrow">{h.eyebrow}</p>
-        <h1 class="h1-lines"><span>{h.h1[0]}</span> <span>{h.h1[1]}</span> <span class="accent">{h.h1[2]}</span></h1>
-        <p class="lead">{h.lead}</p>
-        <div class="cta-row">
-          <a class="btn" href={SIGNUP_URL}>{h.ctaStart}</a>
-          <a class="btn btn-ghost" href={PDF[lang].brochure} download>{h.ctaBrochure}</a>
-        </div>
-        <ul class="ticks">
-          {h.ticks.map((tick) => <li>{tick}</li>)}
-        </ul>
-      </div>
-      <div class="hero-phones">
-        <div class="back"><Shot name="tel-accueil" device="tel" alt={h.altHome} eager /></div>
-        <div class="front"><Shot name="tel-caisse" device="tel" alt={h.altCaisse} eager /></div>
-      </div>
+  <!-- Accroche : carrousel, une diapositive par type de commerce -->
+  <section class="hero" aria-roledescription="carousel" aria-label={h.carousel.label} data-carousel>
+    <div class="slides">
+      {
+        h.slides.map((s, i) => {
+          const m = slideMedia[i];
+          return (
+            <div
+              class:list={["slide", { "is-active": i === 0 }]}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${i + 1} / ${h.slides.length}`}
+              aria-hidden={i === 0 ? undefined : "true"}
+              data-slide
+            >
+              <Photo name={m.photo} alt="" class="slide-bg" eager={i === 0} sizes="100vw" />
+              <div class="wrap slide-inner">
+                <div class="slide-text">
+                  {i === 0 ? (
+                    <h1 class="slide-title">
+                      <span>{h.h1[0]}</span> <span>{h.h1[1]}</span> <span class="accent">{h.h1[2]}</span>
+                    </h1>
+                  ) : (
+                    <h2 class="slide-title">{s.title}</h2>
+                  )}
+                  <p class="lead">{i === 0 ? h.lead : s.text}</p>
+                  <div class="cta-row">
+                    <a class="btn btn-lg" href={SIGNUP_URL} tabindex={i === 0 ? undefined : -1}>
+                      {h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} />
+                    </a>
+                    <a class="btn btn-lg btn-light" href={PDF[lang].brochure} download tabindex={i === 0 ? undefined : -1}>
+                      {h.ctaBrochure}
+                    </a>
+                  </div>
+                  {i === 0 && (
+                    <ul class="ticks">
+                      {h.ticks.map((tick) => (
+                        <li>
+                          <span set:html={moreIcons.check} />
+                          {tick}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div class="slide-device">
+                  <Shot name={m.shot} device="tel" alt={m.alt} eager={i === 0} />
+                  {/* Notifications de ventes, propres au secteur : le script les fait apparaître une à une. */}
+                  <div class="toasts" aria-hidden="true" data-toasts>
+                    {s.pops.map(toToast).map((n) => (
+                      <div class={`toast toast-${n.kind}`}>
+                        <span class="toast-icon" set:html={n.icon} />
+                        <div class="toast-body">
+                          <span class="toast-head">
+                            <img src="/logo.svg" alt="" width="12" height="13" />
+                            vitePOS<span class="toast-time">{h.carousel.now}</span>
+                          </span>
+                          <span class="toast-label">{n.label}</span>
+                          {n.value && <b class="toast-value">{n.value}</b>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })
+      }
     </div>
-  </section>
 
-  <!-- Points forts -->
-  <section class="strip">
-    <div class="wrap strip-grid">
-      {t.strengths.map((s) => <div><strong>{s.title}</strong><span>{s.text}</span></div>)}
+    <!-- Animation de fond tirée du logo : le grand « V » en filigrane, son point rouge qui bat à chaque vente,
+         et son trait rouge qui traverse l'image à chaque changement de diapositive. -->
+    <div class="hero-fx" aria-hidden="true">
+      <svg class="mark" viewBox="-140 -140 280 305">
+        <path class="mark-v" d="M-130,-105 L-60,-105 L-20,60 L50,-105 L125,-105 L10,125 C-2,145 -18,155 -35,155 C-52,155 -68,145 -80,125 Z" />
+        <polygon class="mark-slash" points="-15,-30 40,-130 95,-130 15,20" />
+        <circle class="mark-dot" cx="85" cy="-70" r="14" />
+      </svg>
+      <div class="sweep"></div>
     </div>
-  </section>
 
-  <!-- Promesses -->
-  <section class="section promises-section">
-    <div class="wrap">
-      <ol class="promises">
+    <!-- Une seule ligne fixe sur toute la largeur du bas : seul le point rouge du logo avance dessus,
+         d'une diapositive à l'autre. Elle est découpée en zones cliquables invisibles, une par diapositive. -->
+    <div class="progress" data-controls hidden>
+      <div class="progress-line"></div>
+      <span class="progress-head" data-head></span>
+      <div class="progress-hit">
         {
-          t.promises.map((p, i) => (
-            <li>
-              <span class="promise-num">0{i + 1}</span>
-              <h2>{p.title}</h2>
-              <p>{p.text}</p>
-            </li>
+          h.slides.map((s, i) => (
+            <button type="button" class="seg" aria-label={`${h.carousel.goTo} ${i + 1} : ${s.tag}`} aria-current={i === 0 ? "true" : undefined} data-dot={i} />
           ))
         }
-      </ol>
+      </div>
+    </div>
+
+    <div class="wrap hero-controls" data-controls hidden>
+      <div class="arrows">
+        <button type="button" class="round" aria-label={h.carousel.pause} data-toggle data-label-pause={h.carousel.pause} data-label-play={h.carousel.play}>
+          <span class="i-pause" set:html={moreIcons.pause} /><span class="i-play" set:html={moreIcons.play} />
+        </button>
+        <button type="button" class="round" aria-label={h.carousel.prev} data-prev set:html={moreIcons.chevronLeft} />
+        <button type="button" class="round" aria-label={h.carousel.next} data-next set:html={moreIcons.chevronRight} />
+      </div>
     </div>
   </section>
 
-  <!-- Appareils -->
-  <section id={ids.devices} class="section">
+  <!-- Points forts, posés à cheval sur le bas de l'accroche -->
+  <section class="wrap strengths" aria-label={h.eyebrow}>
+    {
+      t.strengths.map((s, i) => (
+        <div class="strength">
+          <span class="strength-icon" set:html={strengthIcons[i]} />
+          <div>
+            <strong>{s.title}</strong>
+            <span>{s.text}</span>
+          </div>
+        </div>
+      ))
+    }
+  </section>
+
+  <!-- Bande de ventes qui défile, comme le rouleau d'une caisse -->
+  <div class="tape" aria-hidden="true">
+    <div class="tape-track">
+      {[0, 1].map(() => h.tape.map((item) => <span class="tape-item">{item}</span>))}
+    </div>
+  </div>
+
+  <!-- Pourquoi : photo + cartes flottantes, et les trois promesses -->
+  <section class="section why">
+    <div class="wrap why-grid">
+      <div class="why-media">
+        <Photo name="vendeur" alt="" class="why-photo" sizes="(max-width: 860px) 100vw, 50vw" />
+        <div class="float-card float-sale" aria-hidden="true">
+          <span class="float-icon ok" set:html={moreIcons.check} />
+          <div>
+            <small>{h.whyCard.label}</small>
+            <b>{h.whyCard.amount}</b>
+            <small>{h.whyCard.sub}</small>
+          </div>
+        </div>
+        <div class="float-card float-stock" aria-hidden="true">
+          <span class="float-icon" set:html={icons.package} />
+          <div>
+            <b>{h.whyStock.label}</b>
+            <small>{h.whyStock.sub}</small>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="kicker">{h.whyEyebrow}</p>
+        <h2>{h.whyTitle}</h2>
+        <ol class="promises">
+          {
+            t.promises.map((p, i) => (
+              <li>
+                <span class="promise-num">0{i + 1}</span>
+                <div>
+                  <h3>{p.title}</h3>
+                  <p>{p.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fonctions -->
+  <section id={ids.features} class="section section-tint">
     <div class="wrap">
-      <h2>{h.devicesTitle}</h2>
-      <p class="section-lead">{h.devicesLead}</p>
+      <header class="section-head">
+        <p class="kicker">{h.featuresEyebrow}</p>
+        <h2>{h.featuresTitle}</h2>
+        <p class="section-lead">{h.featuresLead}</p>
+      </header>
+      <div class="cards">
+        {
+          t.features.map((f) => (
+            <article class="card">
+              <div class="icon" set:html={icons[f.icon]} />
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Appareils : les vrais écrans -->
+  <section id={ids.devices} class="section devices">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="kicker">{h.devicesEyebrow}</p>
+        <h2>{h.devicesTitle}</h2>
+        <p class="section-lead">{h.devicesLead}</p>
+      </header>
       <div class="shots-wide">
         <figure class="shot-cell">
           <Shot name="tablette-caisse" device="tablette" alt={h.shots.tabletteCaisse.alt} />
@@ -104,39 +285,63 @@ const ids = h.ids;
     </div>
   </section>
 
-  <!-- Fonctions -->
-  <section id={ids.features} class="section">
+  <!-- Pour qui : une carte photo par type de commerce -->
+  <section id={ids.audiences} class="section section-tint">
     <div class="wrap">
-      <h2>{h.featuresTitle}</h2>
-      <p class="section-lead">{h.featuresLead}</p>
-      <div class="cards">
+      <header class="section-head">
+        <p class="kicker">{h.audiencesEyebrow}</p>
+        <h2>{h.audiencesTitle}</h2>
+        <p class="section-lead">{h.audiencesLead}</p>
+      </header>
+      <div class="audience">
         {
-          t.features.map((f) => (
-            <article class="card">
-              <div class="icon" set:html={icons[f.icon]} />
-              <h3>{f.title}</h3>
-              <p>{f.text}</p>
+          t.audiences.map((a, i) => (
+            <article class="aud">
+              <Photo name={audiencePhotos[i]} alt="" class="aud-photo" sizes="(max-width: 560px) 100vw, (max-width: 1000px) 50vw, 25vw" />
+              <div class="aud-body">
+                <h3>{a.title}</h3>
+                <p>{a.text}</p>
+              </div>
             </article>
           ))
         }
       </div>
+      <div class="sectors">
+        <p><b>{h.sectorsAll}</b></p>
+        <ul>
+          {t.sectors.map((s) => <li>{s}</li>)}
+        </ul>
+        <p class="cities"><span set:html={moreIcons.mapPin} />{t.cities}</p>
+      </div>
     </div>
   </section>
 
-  <!-- Pour qui -->
-  <section id={ids.audiences} class="section section-alt">
-    <div class="wrap">
-      <h2>{h.audiencesTitle}</h2>
-      <p class="section-lead">{h.audiencesLead}</p>
-      <div class="audience">
-        {
-          t.audiences.map((a) => (
-            <div class="aud">
-              <h3>{a.title}</h3>
-              <p>{a.text}</p>
-            </div>
-          ))
-        }
+  <!-- Mosaïque de commerces -->
+  <section class="section gallery-section">
+    <div class="wrap gallery-grid">
+      <div class="gallery-text">
+        <h2>{h.galleryTitle}</h2>
+        <p>{h.galleryText}</p>
+        <a class="btn" href={SIGNUP_URL}>{h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
+      </div>
+      <div class="gallery">
+        {gallery.map((g) => <Photo name={g} alt="" class="gallery-photo" sizes="(max-width: 860px) 50vw, 22vw" />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Hors ligne -->
+  <section id={ids.offline} class="section offline">
+    <div class="wrap split">
+      <div>
+        <p class="kicker kicker-light">{h.offlineEyebrow}</p>
+        <h2>{h.offlineTitle}</h2>
+        {h.offlineText.map((p) => <p>{p}</p>)}
+      </div>
+      <div class="offline-card" aria-hidden="true">
+        <div class="oc-row"><span class="oc-dot off"></span>{h.offlineStates[0]}</div>
+        <div class="oc-row"><span class="oc-dot sync"></span>{h.offlineStates[1]}</div>
+        <div class="oc-row"><span class="oc-dot on"></span>{h.offlineStates[2]}</div>
       </div>
     </div>
   </section>
@@ -144,16 +349,23 @@ const ids = h.ids;
   <!-- Matériel -->
   <section class="section">
     <div class="wrap">
-      <h2>{h.hardwareTitle}</h2>
-      <p class="section-lead">{h.hardwareLead}</p>
+      <header class="section-head">
+        <p class="kicker">{h.hardwareEyebrow}</p>
+        <h2>{h.hardwareTitle}</h2>
+        <p class="section-lead">{h.hardwareLead}</p>
+      </header>
       <div class="hardware">
         {
-          h.hardware.map((hw) => (
+          h.hardware.map((hw, i) => (
             <div class="hw">
+              <span class="icon" set:html={hardwareIcons[i]} />
               <h3>{hw.title}</h3>
               <ul>
-                {hw.items.map((i) => (
-                  <li>{i}</li>
+                {hw.items.map((item) => (
+                  <li>
+                    <span set:html={moreIcons.check} />
+                    {item}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -164,25 +376,13 @@ const ids = h.ids;
     </div>
   </section>
 
-  <!-- Hors ligne -->
-  <section id={ids.offline} class="section">
-    <div class="wrap split">
-      <div>
-        <h2>{h.offlineTitle}</h2>
-        {h.offlineText.map((p) => <p>{p}</p>)}
-      </div>
-      <div class="offline-card" aria-hidden="true">
-        <div class="oc-row"><span class="dot off"></span>{h.offlineStates[0]}</div>
-        <div class="oc-row"><span class="dot sync"></span>{h.offlineStates[1]}</div>
-        <div class="oc-row"><span class="dot on"></span>{h.offlineStates[2]}</div>
-      </div>
-    </div>
-  </section>
-
   <!-- Mise en route -->
-  <section class="section section-alt">
+  <section class="section section-tint">
     <div class="wrap">
-      <h2>{h.stepsTitle}</h2>
+      <header class="section-head">
+        <p class="kicker">{h.stepsEyebrow}</p>
+        <h2>{h.stepsTitle}</h2>
+      </header>
       <ol class="steps">
         {t.steps.map((s) => <li><b>{s.title}</b><span>{s.text}</span></li>)}
       </ol>
@@ -191,25 +391,146 @@ const ids = h.ids;
 
   <!-- Questions -->
   <section id={ids.faq} class="section">
-    <div class="wrap narrow">
-      <h2>{h.faqTitle}</h2>
-      {
-        t.faqs.map((f) => (
-          <details>
-            <summary>{f.q}</summary>
-            <p>{f.a}</p>
-          </details>
-        ))
-      }
+    <div class="wrap faq-grid">
+      <div>
+        <p class="kicker">{h.faqEyebrow}</p>
+        <h2>{h.faqTitle}</h2>
+        <p class="section-lead">{h.faqLead}</p>
+        <a class="btn btn-dark" href={route(lang, "manual")}>{h.faqManual}</a>
+      </div>
+      <div class="faq-list">
+        {
+          t.faqs.map((f) => (
+            <details>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
     </div>
   </section>
 
-  <!-- Appel final -->
+  <!-- Appel final, sur photo -->
   <section class="final">
+    <Photo name="marche" alt="" class="final-bg" sizes="100vw" />
     <div class="wrap final-inner">
       <h2>{h.finalTitle}</h2>
       <p>{h.finalText}</p>
-      <a class="btn btn-light" href={SIGNUP_URL}>{h.finalCta}</a>
+      <a class="btn btn-lg btn-light" href={SIGNUP_URL}>{h.finalCta} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
     </div>
   </section>
 </Base>
+
+<script>
+  // Carrousel de l'accroche. Sans JavaScript, la première diapositive reste affichée seule.
+  const root = document.querySelector<HTMLElement>("[data-carousel]");
+  if (root) {
+    const slides = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>("[data-dot]")];
+    const toggle = root.querySelector<HTMLButtonElement>("[data-toggle]")!;
+    const head = root.querySelector<HTMLElement>("[data-head]")!;
+    let fillAnim: Animation | undefined;
+    const DELAY = 7000;
+    let current = 0;
+    let timer = 0;
+    // Le défilement ne s'arrête jamais tout seul : seul le bouton pause l'arrête.
+    let playing = true;
+
+    root.querySelectorAll<HTMLElement>("[data-controls]").forEach((c) => (c.hidden = false));
+    root.classList.add("is-ready");
+
+    function show(i: number) {
+      current = (i + slides.length) % slides.length;
+      slides.forEach((s, k) => {
+        const on = k === current;
+        s.classList.toggle("is-active", on);
+        if (on) s.removeAttribute("aria-hidden");
+        else s.setAttribute("aria-hidden", "true");
+        s.querySelectorAll<HTMLElement>("a").forEach((a) => (on ? a.removeAttribute("tabindex") : a.setAttribute("tabindex", "-1")));
+      });
+      dots.forEach((d, k) => (k === current ? d.setAttribute("aria-current", "true") : d.removeAttribute("aria-current")));
+      sweep();
+      playToasts();
+      restart();
+    }
+    // Notifications de la diapositive affichée : une nouvelle toutes les 1,6 s, trois au plus à l'écran (deux sur téléphone).
+    let toastTimer = 0;
+    function playToasts() {
+      clearTimeout(toastTimer);
+      root!.querySelectorAll(".toast").forEach((el) => el.classList.remove("in", "out"));
+      const list = [...slides[current].querySelectorAll<HTMLElement>(".toast")];
+      let n = 0;
+      const next = () => {
+        if (n < list.length) {
+          list[n].classList.add("in");
+          // Sur téléphone, deux notifications à la fois suffisent pour laisser voir l'écran de l'app.
+          const max = matchMedia("(max-width: 860px)").matches ? 2 : 3;
+          if (n >= max) list[n - max].classList.add("out");
+          root!.classList.remove("is-beat");
+          void root!.offsetWidth;
+          root!.classList.add("is-beat");
+          n++;
+          toastTimer = window.setTimeout(next, 1600);
+        }
+      };
+      toastTimer = window.setTimeout(next, 500);
+    }
+    function sweep() {
+      root!.classList.remove("is-sweeping");
+      void root!.offsetWidth;
+      root!.classList.add("is-sweeping");
+    }
+
+    function restart() {
+      clearTimeout(timer);
+      // Le point avance sur la part de ligne de la diapositive en cours.
+      const from = (current / slides.length) * 100;
+      const to = ((current + 1) / slides.length) * 100;
+      fillAnim?.cancel();
+      if (playing) {
+        fillAnim = head.animate([{ left: `${from}%` }, { left: `${to}%` }], { duration: DELAY, easing: "linear", fill: "forwards" });
+        timer = window.setTimeout(() => show(current + 1), DELAY);
+      } else {
+        head.style.left = `${to}%`;
+      }
+    }
+    function setPlaying(p: boolean) {
+      playing = p;
+      root!.classList.toggle("is-paused", !p);
+      toggle.setAttribute("aria-label", p ? toggle.dataset.labelPause! : toggle.dataset.labelPlay!);
+      if (p) restart();
+      else {
+        // En pause, le point s'arrête là où il en était.
+        clearTimeout(timer);
+        fillAnim?.pause();
+      }
+    }
+
+    dots.forEach((d) => d.addEventListener("click", () => show(Number(d.dataset.dot))));
+    root.querySelector("[data-prev]")!.addEventListener("click", () => show(current - 1));
+    root.querySelector("[data-next]")!.addEventListener("click", () => show(current + 1));
+    toggle.addEventListener("click", () => setPlaying(!playing));
+    root.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") show(current - 1);
+      if (e.key === "ArrowRight") show(current + 1);
+    });
+
+    // Glisser du doigt pour changer de diapositive.
+    let startX = 0;
+    let startY = 0;
+    root.addEventListener("touchstart", (e) => ((startX = e.touches[0].clientX), (startY = e.touches[0].clientY)), { passive: true });
+    root.addEventListener(
+      "touchend",
+      (e) => {
+        const dx = e.changedTouches[0].clientX - startX;
+        const dy = e.changedTouches[0].clientY - startY;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(current + (dx < 0 ? 1 : -1));
+      },
+      { passive: true },
+    );
+
+    setPlaying(playing);
+    playToasts();
+  }
+</script>

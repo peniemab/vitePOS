@@ -28,6 +28,15 @@ export const en: Dict = {
     tagline: "A fast point of sale that works offline, made in Kinshasa.",
     manual: "User manual",
     brochure: "Brochure (PDF)",
+    terms: "Terms of use",
+    privacy: "Privacy",
+    product: "Product",
+    legal: "Information",
+    app: "App",
+    login: "Log in",
+    signup: "Create my shop",
+    credits: "Photo credits",
+    creditsText: "Free-licence photos from Wikimedia Commons, cropped:",
   },
 
   home: {
@@ -102,6 +111,68 @@ export const en: Dict = {
     finalTitle: "Your till is ready in 5 minutes.",
     finalText: "Free to start, no credit card.",
     finalCta: "Create my shop",
+
+    slides: [
+      {
+        tag: "Supermarkets and convenience stores",
+        title: "",
+        text: "",
+        pops: ["Sale completed · 21,100 FC", "Paid in $, change given · 900 FC", "Till 2 · 8 items · 14,500 FC", "Stock updated · Rice 1 kg: 38 left"],
+      },
+      {
+        tag: "Pharmacies and drink depots",
+        title: "No more expired products forgotten on the shelf.",
+        text: "Search by name or barcode, an alert 30 days before expiry, stocktaking by scanning the shelf.",
+        pops: ["Alert · 2 batches expire within 30 days", "Sale · Paracetamol 500 mg · 2,500 FC", "Batch received, expires · 15/03/2027", "Stocktake · shelf 3 counted"],
+      },
+      {
+        tag: "Phones and accessories",
+        title: "Confident customers who come back to buy.",
+        text: "Every phone sold is recorded with its IMEI and warranty, and every customer keeps their purchase history. They come back? You find everything in a second.",
+        pops: ["IMEI scanned · Galaxy A15", "Sale with 12-month warranty · 420,000 FC", "Customer found · Papa Jean, 3 purchases", "Receipt sent by WhatsApp"],
+      },
+      {
+        tag: "Hardware and building supplies",
+        title: "Thousands of items, found in an instant.",
+        text: "Search by item code, sell by the piece, by the kilo or by the carton, with several sellers at once.",
+        pops: ["Found · PVC pipe 32 mm", "Sale · 2 bags of cement · $40", "Sold by the carton · 4 boxes of screws", "Alert · Paint 20 L running low"],
+      },
+      {
+        tag: "Traders and entrepreneurs",
+        title: "Your business in your pocket.",
+        text: "Your sellers take payment, you follow every sale live from your phone, wherever you are.",
+        pops: ["Till opened by Grâce · 8:02", "Today's sales · 186,000 FC", "Best seller · Nido milk 400 g", "Till closed, difference · 0 FC"],
+      },
+    ],
+    tape: [
+      "Sale · 21,100 FC · 11 items",
+      "Paid in $, change given · 900 FC",
+      "Delivery · 3 cartons of milk",
+      "Alert · Oil 1 L running low",
+      "Closing · till exact to the franc",
+      "Sale · 2 bags of cement · $40",
+      "Offline · 3 sales sent when network returned",
+      "Stocktake · drinks shelf counted",
+    ],
+    carousel: { label: "vitePOS overview", prev: "Previous slide", next: "Next slide", pause: "Pause", play: "Resume", goTo: "Go to slide", now: "just now" },
+
+    whyEyebrow: "Why vitePOS",
+    whyTitle: "No more cash notebook.",
+    whyCard: { label: "Sale completed", amount: "21,100 FC", sub: "Paid in FC and $ · change given: 900 FC" },
+    whyStock: { label: "Stock up to date", sub: "Coca-Cola 33 cl · 46 left" },
+
+    featuresEyebrow: "Features",
+    devicesEyebrow: "Devices",
+    audiencesEyebrow: "Who it's for",
+    sectorsAll: "All sectors",
+    galleryTitle: "Built for businesses in the DRC",
+    galleryText: "From small shops to supermarkets, vitePOS fits the way people sell here: several currencies, network cuts, selling by the carton or by the piece.",
+    hardwareEyebrow: "Hardware",
+    offlineEyebrow: "Offline",
+    stepsEyebrow: "Getting started",
+    faqEyebrow: "Questions",
+    faqLead: "Can't find your answer? The manual explains every screen step by step.",
+    faqManual: "Read the manual",
   },
 
   strengths: [
@@ -194,6 +265,11 @@ export const en: Dict = {
       a: "Each shop is kept separate from the others and backed up online. Each employee has their own account and only sees what you allow.",
     },
   ],
+
+  legal: {
+    updated: "Updated on",
+    missing: "to be completed",
+  },
 
   manual: {
     title: "Your shop's journal · vitePOS manual",

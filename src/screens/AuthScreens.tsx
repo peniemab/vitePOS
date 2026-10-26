@@ -15,6 +15,9 @@ import { getFirebaseAuth } from "../data/firebase";
 import { errorMessage } from "../data/errors";
 import { useSyncState } from "../data/sync";
 
+/** Site de présentation, où se trouvent les conditions d'utilisation et la politique de confidentialité. */
+const SITE_URL = "https://vitepos-rdc.web.app";
+
 export function AuthCard({ title, sub, children }: { title: string; sub?: ReactNode; children: ReactNode }) {
   return (
     <Box mih="100vh">
@@ -204,6 +207,17 @@ export function SignupScreen() {
         </Stack>
       </form>
       <GoogleButton label="S'inscrire avec Google" />
+      <Text size="xs" c="dimmed" ta="center" mt="sm">
+        En créant un compte, vous acceptez les{" "}
+        <Anchor href={`${SITE_URL}/conditions`} target="_blank" size="xs">
+          conditions d'utilisation
+        </Anchor>{" "}
+        et la{" "}
+        <Anchor href={`${SITE_URL}/confidentialite`} target="_blank" size="xs">
+          politique de confidentialité
+        </Anchor>
+        .
+      </Text>
       <Links>
         <Anchor component={Link} to="/connexion" size="sm">
           J'ai déjà un compte

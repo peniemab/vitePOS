@@ -1,0 +1,52 @@
+---
+/**
+ * Conditions d'utilisation ou politique de confidentialité, dans la langue demandée.
+ * Textes dans data/legal.fr.ts et data/legal.en.ts ; coordonnées de l'éditeur dans LEGAL (content.ts).
+ */
+import Base from "../layouts/Base.astro";
+import { APP_HOST, LEGAL, SITE_HOST } from "../data/content";
+import * as fr from "../data/legal.fr";
+import * as en from "../data/legal.en";
+import { dicts, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+  kind: "terms" | "privacy";
+}
+const { lang, kind } = Astro.props;
+const t = dicts[lang];
+const doc = (lang === "fr" ? fr : en)[kind];
+
+// Un champ de l'éditeur pas encore rempli reste bien visible, pour ne pas publier un texte incomplet.
+const missing = `<mark class="legal-missing">${t.legal.missing}</mark>`;
+const values: Record<string, string> = {
+  editor: LEGAL.editor || missing,
+  rccm: LEGAL.rccm || missing,
+  address: LEGAL.address || missing,
+  email: LEGAL.email ? `<a href="mailto:${LEGAL.email}">${LEGAL.email}</a>` : missing,
+  whatsapp: LEGAL.whatsapp || missing,
+  site: SITE_HOST,
+  app: APP_HOST,
+};
+const fill = (text: string) => text.replace(/\{(\w+)\}/g, (all, key: string) => values[key] ?? all);
+---
+
+<Base title={`${doc.title} · vitePOS`} description={doc.description} lang={lang} page={kind}>
+  <article class="section legal">
+    <div class="wrap narrow">
+      <h1>{doc.title}</h1>
+      <p class="legal-updated">{t.legal.updated} {LEGAL.updated[lang]}</p>
+      <p class="legal-intro" set:html={fill(doc.intro)} />
+      {
+        doc.sections.map((s) => (
+          <section>
+            <h2>{s.title}</h2>
+            {s.paras.map((p) => (
+              <p set:html={fill(p)} />
+            ))}
+          </section>
+        ))
+      }
+    </div>
+  </article>
+</Base>

@@ -54,38 +54,6 @@
   background: linear-gradient(180deg, #cfd5df, #9aa3b2);
 }
 
-/* Haut de page : deux téléphones légèrement décalés (accueil derrière, caisse devant). */
-.hero-phones {
-  position: relative;
-  justify-self: center;
-  width: 100%;
-  max-width: 470px;
-  aspect-ratio: 1 / 1.08;
-}
-.hero-phones .back,
-.hero-phones .front {
-  position: absolute;
-  width: 54%;
-}
-.hero-phones .frame-phone {
-  max-width: none;
-}
-.hero-phones .back {
-  left: 2%;
-  top: 0;
-  transform: rotate(-6deg);
-}
-.hero-phones .front {
-  right: 2%;
-  top: 7%;
-  transform: rotate(4deg);
-}
-@media (max-width: 860px) {
-  .hero-phones {
-    max-width: 380px;
-  }
-}
-
 /* Sections de captures */
 .shots-wide {
   display: grid;
@@ -129,38 +97,4 @@
   display: block;
   color: var(--ink);
   font-size: 1.1rem;
-}
-
-.hardware {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 32px;
-}
-@media (max-width: 860px) {
-  .hardware {
-    grid-template-columns: 1fr;
-  }
-}
-.hw {
-  padding: 20px;
-  border-radius: var(--radius);
-  background: #fff;
-  border: 1px solid var(--line);
-}
-.hw h3 {
-  margin-bottom: 8px;
-}
-.hw ul {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--muted);
-}
-.hw li + li {
-  margin-top: 4px;
-}
-.note {
-  margin-top: 16px;
-  font-size: 0.95rem;
-  color: var(--muted);
 }

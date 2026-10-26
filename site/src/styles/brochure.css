@@ -1,4 +1,4 @@
-/* Brochure A4 recto-verso. À l'écran : deux feuilles posées sur un fond gris ; à l'impression : deux pages
+/* Brochure A5 recto-verso (148 × 210 mm). À l'écran : deux feuilles posées sur un fond gris ; à l'impression : deux pages
    pleines, sans marge (les fonds de couleur vont jusqu'au bord). */
 
 .sheets {
@@ -11,20 +11,20 @@
   overflow-x: auto;
 }
 .sheet {
-  width: 210mm;
-  height: 297mm;
+  width: 148mm;
+  height: 210mm;
   background: #fff;
   box-shadow: 0 10px 40px rgba(26, 43, 76, 0.18);
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
-  font-size: 13.5px;
-  line-height: 1.45;
+  font-size: 10.2px;
+  line-height: 1.4;
   color: var(--ink);
 }
 
-/* Écran plus étroit qu'une feuille A4 : alignée à gauche, sinon son bord gauche serait hors d'atteinte. */
+/* Écran plus étroit qu'une feuille A5 : alignée à gauche, sinon son bord gauche serait hors d'atteinte. */
 @media (max-width: 860px) {
   .sheets {
     justify-content: start;
@@ -45,7 +45,7 @@
 /* ---------- Recto ---------- */
 .recto {
   background: linear-gradient(180deg, var(--navy-soft) 0%, #fff 46%);
-  padding: 12mm 14mm 0;
+  padding: 8mm 9mm 0;
 }
 .b-top {
   display: flex;
@@ -54,7 +54,7 @@
 }
 .b-brand {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.9rem;
+  font-size: 1.45rem;
   font-weight: 600;
   color: var(--navy);
 }
@@ -63,7 +63,7 @@
 }
 .b-tag {
   margin-left: auto;
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -71,14 +71,14 @@
 }
 .b-hero {
   display: grid;
-  grid-template-columns: 1fr 72mm;
-  gap: 6mm;
+  grid-template-columns: 1fr 50mm;
+  gap: 4mm;
   align-items: center;
-  margin-top: 8mm;
+  margin-top: 5mm;
 }
 .recto h1 {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 3.2rem;
+  font-size: 2.25rem;
   line-height: 0.98;
   color: var(--navy);
   margin: 0;
@@ -90,19 +90,19 @@
   color: var(--brick);
 }
 .b-lead {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   color: var(--muted);
-  margin: 5mm 0 6mm;
+  margin: 3mm 0 3.5mm;
 }
 .b-strengths {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 2.5mm;
+  gap: 1.5mm;
 }
 .b-strengths li {
-  padding-left: 7mm;
+  padding-left: 5mm;
   position: relative;
 }
 .b-strengths li::before {
@@ -117,7 +117,7 @@
 }
 .b-phones {
   position: relative;
-  height: 118mm;
+  height: 80mm;
 }
 .b-phones .frame-phone {
   max-width: none;
@@ -125,7 +125,7 @@
 .b-phones .back,
 .b-phones .front {
   position: absolute;
-  width: 46mm;
+  width: 31mm;
 }
 .b-phones .back {
   left: 0;
@@ -134,20 +134,20 @@
 }
 .b-phones .front {
   right: 0;
-  top: 14mm;
+  top: 10mm;
   transform: rotate(4deg);
 }
 .b-promises {
   list-style: none;
   padding: 0;
-  margin: 9mm 0 0;
+  margin: 5mm 0 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6mm;
+  gap: 3.5mm;
 }
 .b-promises li {
-  border-top: 2.5px solid var(--navy);
-  padding-top: 3mm;
+  border-top: 2px solid var(--navy);
+  padding-top: 2mm;
 }
 .b-promises .num {
   font-family: "Barlow Condensed", sans-serif;
@@ -155,19 +155,19 @@
   color: var(--brick);
 }
 .b-promises h2 {
-  font-size: 1.45rem;
+  font-size: 1.05rem;
   line-height: 1.05;
   color: var(--navy);
-  margin: 1mm 0 2mm;
+  margin: 0.5mm 0 1.5mm;
 }
 .b-promises p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.85rem;
 }
 .b-cta {
-  margin: auto -14mm 0;
-  padding: 8mm 14mm;
+  margin: auto -9mm 0;
+  padding: 5mm 9mm;
   background: var(--navy);
   color: #fff;
   display: flex;
@@ -183,87 +183,93 @@
 }
 .b-cta .b-cta-title {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 2rem;
+  font-size: 1.45rem;
   font-weight: 700;
   color: #fff;
 }
 .b-cta .b-url {
-  margin-top: 2mm;
+  margin-top: 1.5mm;
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #f6827a;
 }
 .b-qr {
   display: block;
   background: #fff;
-  padding: 2mm;
-  border-radius: 3mm;
+  padding: 1.5mm;
+  border-radius: 2mm;
 }
 .b-qr-box {
   margin: 0;
   text-align: center;
 }
 .b-qr-box figcaption {
-  margin-top: 1.5mm;
-  font-size: 0.72rem;
+  margin-top: 1mm;
+  font-size: 0.6rem;
   font-weight: 600;
 }
 
 /* ---------- Verso ---------- */
 .verso {
-  padding: 13mm 14mm 0;
+  padding: 8mm 9mm 0;
 }
 .b-title {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 2.2rem;
+  font-size: 1.45rem;
   color: var(--navy);
-  border-bottom: 2.5px solid var(--navy);
-  padding-bottom: 2mm;
-  margin: 0 0 5mm;
+  border-bottom: 2px solid var(--navy);
+  padding-bottom: 1.5mm;
+  margin: 0 0 3mm;
 }
 .b-title.small {
-  font-size: 1.6rem;
+  font-size: 1.15rem;
 }
 .b-features {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 4mm 8mm;
+  gap: 2.5mm 5mm;
 }
 .b-features article {
-  display: grid;
-  grid-template-columns: 9mm 1fr;
-  column-gap: 3mm;
+  display: flex;
+  gap: 2mm;
+  align-items: flex-start;
 }
 .b-icon {
-  grid-row: span 2;
-  width: 9mm;
-  height: 9mm;
-  border-radius: 2.5mm;
+  flex-shrink: 0;
+  width: 6.5mm;
+  height: 6.5mm;
+  border-radius: 1.8mm;
   background: var(--navy-soft);
   color: var(--navy);
   display: grid;
   place-items: center;
 }
 .b-icon svg {
-  width: 5mm;
-  height: 5mm;
+  width: 3.8mm;
+  height: 3.8mm;
 }
 .b-features h3 {
-  font-size: 1.05rem;
+  font-size: 0.85rem;
   color: var(--navy);
   margin: 0;
 }
 .b-features p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.78rem;
+  line-height: 1.32;
 }
 .b-split {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8mm;
-  margin-top: 8mm;
+  /* A5 : les secteurs sur toute la largeur, puis les trois étapes côte à côte. */
+  grid-template-columns: 1fr;
+  gap: 4mm;
+  margin-top: 4mm;
+}
+.b-split .b-steps {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3mm;
 }
 .b-sectors {
   list-style: none;
@@ -271,17 +277,19 @@
   margin: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 2.5mm;
+  gap: 1.4mm;
 }
 .b-sectors li {
-  padding: 1.5mm 3.5mm;
+  padding: 0.8mm 2.2mm;
+  font-size: 0.78rem;
   border-radius: 99px;
   background: var(--navy-soft);
   color: var(--navy);
   font-weight: 600;
 }
 .b-cities {
-  margin: 4mm 0 0;
+  margin: 2.5mm 0 0;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--navy);
 }
@@ -291,7 +299,7 @@
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 3mm;
+  gap: 2mm;
 }
 .b-audiences b,
 .b-steps b {
@@ -301,14 +309,14 @@
 .b-audiences li,
 .b-steps li {
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.82rem;
 }
 .b-steps {
   counter-reset: s;
 }
 .b-steps li {
   counter-increment: s;
-  padding-left: 9mm;
+  padding-left: 6.5mm;
   position: relative;
 }
 .b-steps li::before {
@@ -316,8 +324,8 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 6.5mm;
-  height: 6.5mm;
+  width: 4.8mm;
+  height: 4.8mm;
   border-radius: 50%;
   background: var(--navy);
   color: #fff;
@@ -327,8 +335,8 @@
   font-weight: 700;
 }
 .b-contact {
-  margin: auto -14mm 0;
-  padding: 6mm 14mm;
+  margin: auto -9mm 0;
+  padding: 4mm 9mm;
   background: var(--navy-soft);
   display: flex;
   align-items: center;
@@ -340,7 +348,7 @@
 }
 .b-contact .b-contact-title {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.15rem;
 }
 .b-contact p {
   margin: 1mm 0 0;
@@ -348,7 +356,7 @@
 
 /* ---------- Impression : deux pages A4 pleines ---------- */
 @page {
-  size: A4;
+  size: A5;
   margin: 0;
 }
 @media print {
