@@ -44,6 +44,13 @@
   --warn: #f08c00;
   --bad: #e03131;
   --radius: 14px;
+  /* Thème du site : tout le site est sur le bleu nuit dégradé de l'accroche. */
+  --page: #0c1834;
+  --d-text: #e8edf7;
+  --d-muted: #a9b6d2;
+  --d-line: rgba(255, 255, 255, 0.1);
+  --d-card: rgba(255, 255, 255, 0.045);
+  --d-accent: #ff6b5e;
 }
 
 *,
@@ -52,7 +59,7 @@
   box-sizing: border-box;
 }
 html {
-  scroll-behavior: smooth;
+  /* Pas de « smooth » ici : le défilement doux vers les sections est fait par le script de Header.astro, plus lent. */
   -webkit-text-size-adjust: 100%;
 }
 /* Sur téléphone, la page ne glisse jamais sur le côté. « clip » (et non « hidden ») sur html et body :
@@ -61,22 +68,86 @@ html,
 body {
   overflow-x: clip;
 }
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}
 body {
   margin: 0;
   font-family: "Barlow", "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.55;
-  color: var(--ink);
-  background: var(--bg);
+  color: var(--d-text);
+  background-color: var(--page);
+  /* Le bleu de l'accroche continue sur toute la page ; les halos animés sont dans .page-bg. */
+  background-image: linear-gradient(180deg, #0a142a 0%, #0f1f42 35%, #0d1b3a 70%, #0a1530 100%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
 img {
   max-width: 100%;
+}
+
+/* ---------- Fond animé ----------
+   Calque fixe derrière tout le contenu. Seules des transformations sont animées (léger pour les petits téléphones). */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.glow {
+  position: absolute;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  will-change: transform;
+}
+.glow-1 {
+  top: -25vmax;
+  right: -20vmax;
+  background: radial-gradient(circle, rgba(57, 135, 229, 0.4) 0%, rgba(57, 135, 229, 0) 62%);
+  animation: drift-1 20s ease-in-out infinite alternate;
+}
+.glow-2 {
+  top: 30vh;
+  left: -30vmax;
+  background: radial-gradient(circle, rgba(182, 23, 30, 0.34) 0%, rgba(182, 23, 30, 0) 62%);
+  animation: drift-2 24s ease-in-out infinite alternate;
+}
+.glow-3 {
+  bottom: -35vmax;
+  right: 5vw;
+  background: radial-gradient(circle, rgba(79, 127, 216, 0.3) 0%, rgba(79, 127, 216, 0) 62%);
+  animation: drift-3 28s ease-in-out infinite alternate;
+}
+@keyframes drift-1 {
+  to {
+    transform: translate(-28vw, 30vh) scale(1.15);
+  }
+}
+@keyframes drift-2 {
+  to {
+    transform: translate(45vw, -18vh) scale(0.9);
+  }
+}
+@keyframes drift-3 {
+  to {
+    transform: translate(-40vw, -25vh) scale(1.1);
+  }
+}
+/* Fines lignes inclinées comme le trait rouge du logo, qui glissent lentement en diagonale. */
+.slashes {
+  position: absolute;
+  inset: -20%;
+  background: repeating-linear-gradient(118deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 140px);
+  -webkit-mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 70%);
+  animation: slide-lines 40s linear infinite;
+  will-change: transform;
+}
+@keyframes slide-lines {
+  to {
+    /* Décalage = 2 périodes du motif à 118° (141 px / sin 118°), pour que la boucle ne saute pas. */
+    transform: translate(-319.4px, 0);
+  }
 }
 a {
   color: inherit;
@@ -89,11 +160,11 @@ h3 {
   margin: 0 0 12px;
 }
 h1 {
-  font-size: clamp(2.3rem, 6vw, 3.6rem);
+  font-size: clamp(2rem, 4.6vw, 3rem);
   font-weight: 700;
 }
 h2 {
-  font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+  font-size: clamp(1.7rem, 3.4vw, 2.3rem);
   font-weight: 700;
 }
 h3 {
@@ -155,7 +226,7 @@ p {
 .link {
   text-decoration: none;
   font-weight: 600;
-  color: var(--navy);
+  color: #fff;
 }
 
 /* En-tête */
@@ -163,9 +234,17 @@ p {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 1px 0 var(--line), 0 6px 20px rgba(15, 28, 54, 0.05);
-  backdrop-filter: saturate(1.4) blur(8px);
+  /* Transparente en haut de page : elle se fond dans l'accroche. En défilant, elle prend le même bleu, flouté,
+     sans bordure ni ombre (classe ajoutée par le script de Header.astro). */
+  background: transparent;
+  transition:
+    background-color 0.3s ease,
+    backdrop-filter 0.3s ease;
+}
+.top.is-scrolled {
+  background: rgba(10, 20, 42, 0.82);
+  backdrop-filter: saturate(1.3) blur(12px);
+  -webkit-backdrop-filter: saturate(1.3) blur(12px);
 }
 .top-inner {
   display: flex;
@@ -181,7 +260,15 @@ p {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.6rem;
   font-weight: 600;
-  color: var(--navy);
+  color: #fff;
+}
+/* Le « V » bleu nuit disparaîtrait sur le fond sombre : pastille blanche derrière. */
+.brand img {
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px;
+  width: 34px;
+  height: auto;
 }
 .brand b {
   font-weight: 700;
@@ -193,11 +280,11 @@ p {
 }
 .nav a {
   text-decoration: none;
-  color: var(--muted);
+  color: var(--d-muted);
   font-weight: 600;
 }
 .nav a:hover {
-  color: var(--navy);
+  color: #fff;
 }
 .top-actions {
   margin-left: auto;
@@ -210,22 +297,90 @@ p {
   font-weight: 700;
   font-size: 0.85rem;
   letter-spacing: 0.04em;
-  color: var(--navy);
+  color: #fff;
   text-decoration: none;
-  background: var(--navy-soft);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
   padding: 6px 10px;
 }
 .lang-switch:hover {
-  color: var(--brick);
+  background: rgba(255, 255, 255, 0.18);
+}
+/* Repère : le lien de la section affichée à l'écran. */
+.nav a.is-current,
+.nav a[aria-current="page"] {
+  color: #fff;
+  box-shadow: 0 2px 0 var(--d-accent);
+}
+
+/* Bouton du menu, seulement sur téléphone et petite tablette. */
+.menu-btn {
+  display: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+}
+.menu-btn svg {
+  width: 22px;
+  height: 22px;
+}
+.menu-btn .i-close,
+.top.is-open .menu-btn .i-menu {
+  display: none;
+}
+.top.is-open .menu-btn .i-close {
+  display: inline;
+}
+.top.is-open {
+  background: rgba(10, 20, 42, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+/* Menu du téléphone : grandes lignes faciles à toucher, sous la barre. */
+.mobile-nav {
+  padding: 8px 0 20px;
+}
+.mobile-nav[hidden] {
+  display: none;
+}
+.mobile-nav .wrap {
+  display: flex;
+  flex-direction: column;
+}
+.mobile-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 4px;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.mobile-nav a.is-current {
+  color: var(--d-accent);
 }
 @media (max-width: 860px) {
   .nav {
     display: none;
   }
+  .menu-btn {
+    display: inline-grid;
+  }
+}
+@media (min-width: 861px) {
+  .mobile-nav {
+    display: none !important;
+  }
 }
 @media (max-width: 480px) {
-  .top-actions .link {
+  .top-actions .link,
+  .top-actions .lang-switch {
     display: none;
   }
   .top-inner {
@@ -249,11 +404,11 @@ p {
   padding: 88px 0;
 }
 .section h2 {
-  color: var(--navy);
+  color: #fff;
 }
 .section-lead {
-  color: var(--muted);
-  font-size: 1.12rem;
+  color: var(--d-muted);
+  font-size: 1.05rem;
   margin-bottom: 32px;
 }
 @media (max-width: 600px) {
@@ -264,7 +419,7 @@ p {
 
 /* Questions (accordéons) */
 details {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--d-line);
   padding: 4px 0;
 }
 summary {
@@ -290,13 +445,12 @@ details[open] summary::after {
   content: "−";
 }
 details p {
-  color: var(--muted);
+  color: var(--d-muted);
   padding-bottom: 12px;
 }
 
 /* Pied de page */
 .foot {
-  background: var(--navy-deep);
   color: #c9d3e8;
   padding: 56px 0 28px;
 }
@@ -309,14 +463,6 @@ details p {
 }
 .foot .brand {
   color: #fff;
-}
-/* Le logo bleu nuit disparaîtrait sur le fond sombre : pastille blanche derrière. */
-.foot .brand img {
-  background: #fff;
-  border-radius: 8px;
-  padding: 4px;
-  width: 34px;
-  height: auto;
 }
 .foot-grid {
   display: grid;
@@ -353,7 +499,6 @@ details p {
   gap: 12px 24px;
   margin-top: 44px;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 0.92rem;
 }
 .foot-bottom p {
@@ -401,7 +546,7 @@ section[id] {
 
 /* Conditions d'utilisation et confidentialité */
 .legal h1 {
-  color: var(--navy);
+  color: #fff;
   margin-bottom: 4px;
 }
 .legal h2 {
@@ -409,16 +554,14 @@ section[id] {
   margin: 28px 0 8px;
 }
 .legal p {
-  color: var(--ink);
+  color: var(--d-text);
 }
 .legal-updated {
-  color: var(--muted);
+  color: var(--d-muted);
   font-size: 0.95rem;
 }
 .legal-intro {
   font-size: 1.1rem;
-  border-left: 4px solid var(--navy);
-  padding-left: 14px;
 }
 .legal-missing {
   background: #fff0ee;

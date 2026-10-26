@@ -4,7 +4,7 @@ import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import Photo from "../components/Photo.astro";
 import { SIGNUP_URL } from "../data/content";
-import { alertIcon, icons, moreIcons } from "../data/icons";
+import { alertIcon, icons, moreIcons, navIcons } from "../data/icons";
 import { dicts, PDF, route, type Lang } from "../i18n";
 import "../styles/home.css";
 
@@ -29,6 +29,8 @@ const audiencePhotos = ["boutique", "quincaillerie", "pharmacie", "supermarche"]
 const gallery = ["vetements", "marche", "pharmacie-comptoir", "comptoir", "mercerie", "vendeur"];
 const hardwareIcons = [moreIcons.deviceMobile, moreIcons.printer, moreIcons.barcode];
 const strengthIcons = [moreIcons.cash, moreIcons.wifiOff, moreIcons.users];
+/** Icône de chaque question, dans l'ordre de `t.faqs` : prix, matériel, hors ligne, installation, devises, sécurité. */
+const faqIcons = [navIcons.tag, moreIcons.deviceMobile, moreIcons.wifiOff, navIcons.download, moreIcons.cash, moreIcons.shieldCheck];
 
 /** Une notification « Vente · 2 sacs de ciment · 40 $ » : l'action, puis le chiffre (dernier morceau) mis en avant. */
 function toToast(text: string) {
@@ -396,13 +398,16 @@ function toToast(text: string) {
         <p class="kicker">{h.faqEyebrow}</p>
         <h2>{h.faqTitle}</h2>
         <p class="section-lead">{h.faqLead}</p>
-        <a class="btn btn-dark" href={route(lang, "manual")}>{h.faqManual}</a>
+        <a class="btn btn-light" href={route(lang, "manual")}><span class="btn-icon" set:html={navIcons.book} />{h.faqManual}</a>
       </div>
       <div class="faq-list">
         {
-          t.faqs.map((f) => (
+          t.faqs.map((f, i) => (
             <details>
-              <summary>{f.q}</summary>
+              <summary>
+                <span class="faq-icon" set:html={faqIcons[i]} />
+                <span>{f.q}</span>
+              </summary>
               <p>{f.a}</p>
             </details>
           ))

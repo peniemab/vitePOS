@@ -22,6 +22,8 @@ export const en: Dict = {
     manual: "Manual",
     login: "Sign in",
     signup: "Try it free",
+    menu: "Open menu",
+    close: "Close menu",
   },
 
   footer: {
@@ -315,6 +317,6 @@ export const en: Dict = {
     contactTitle: "Try vitePOS today",
     website: "Website:",
     download: "Download the brochure (PDF)",
-    screenNote: "One double-sided A4 sheet, to print or send by WhatsApp.",
+    screenNote: "One double-sided A5 sheet, to print or send by WhatsApp.",
   },
 };

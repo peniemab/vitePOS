@@ -1,6 +1,6 @@
 # Images du site à créer par IA
 
-Ces images remplacent les photos provisoires du site. Il y en a 14, une par emplacement.
+Ces images remplacent les photos provisoires du site. Il y en a 15, une par emplacement.
 
 **Comment faire**
 1. Ouvrez un générateur d'images : Gemini (gemini.google.com, gratuit), ChatGPT, ou Microsoft Designer (gratuit).
@@ -44,9 +44,14 @@ A Congolese pharmacist in a white coat stands behind the counter of a bright nei
 A young Congolese man sells smartphones in a small phone and accessories shop, glass display case with phones and chargers, he shows a new phone to a customer, subject on the right third, left side darker and less busy. Wide 16:9.
 ```
 
-**`slide-boutique.png`**
+**`slide-quincaillerie.png`**
 ```
-A Congolese woman shop owner in her neighbourhood grocery shop (alimentation), shelves of rice, oil, milk powder and drinks, she looks at her smartphone with a satisfied smile, subject on the right third, left side simpler. Wide 16:9.
+Inside a well-stocked Congolese hardware store (quincaillerie): paint cans, PVC pipes, tools, bags of cement and boxes of screws on tall shelves, a seller in a work shirt finds an item quickly for a customer, subject on the right third, left side calmer and slightly darker. Wide 16:9.
+```
+
+**`slide-commercant.png`**
+```
+A confident Congolese businesswoman, owner of a well-stocked general store (alimentation), stands near her counter while her seller serves a customer in the background, she checks today's sales on her smartphone with a satisfied smile, subject on the right third, left side simpler. Wide 16:9.
 ```
 
 ## Section « Pourquoi vitePOS » : portrait 3:4

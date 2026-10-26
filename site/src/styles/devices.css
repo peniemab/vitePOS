@@ -90,11 +90,11 @@
 }
 .shot-cell figcaption {
   text-align: center;
-  color: var(--muted);
+  color: var(--d-muted);
   max-width: 420px;
 }
 .shot-cell figcaption b {
   display: block;
-  color: var(--ink);
-  font-size: 1.1rem;
+  color: #fff;
+  font-size: 1.05rem;
 }

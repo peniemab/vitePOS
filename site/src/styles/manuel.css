@@ -1,6 +1,12 @@
 /* Manuel façon journal : une pleine page bleu nuit, gros titres serrés, numéros de chapitre géants,
    encadrés « Astuce » et « Attention ». S'imprime en A4 (voir @media print en bas). */
 
+/* Le manuel garde ses pages claires sur le fond sombre du site. */
+.mag {
+  background: #fff;
+  color: var(--ink);
+}
+
 /* Une */
 .mag-cover {
   background: radial-gradient(120% 90% at 85% 10%, #263c66 0%, var(--navy) 50%, var(--navy-deep) 100%);

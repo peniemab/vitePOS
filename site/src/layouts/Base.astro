@@ -42,6 +42,13 @@ const abs = (p: string) => new URL(p, Astro.site).href;
     <link rel="preload" href="/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
+    <!-- Fond animé de tout le site : halos bleu et rouge qui dérivent, fines lignes à l'angle du trait du logo. -->
+    <div class="page-bg" aria-hidden="true">
+      <span class="glow glow-1"></span>
+      <span class="glow glow-2"></span>
+      <span class="glow glow-3"></span>
+      <span class="slashes"></span>
+    </div>
     <Header lang={lang} page={page} />
     <main>
       <slot />

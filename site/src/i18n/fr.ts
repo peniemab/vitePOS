@@ -25,6 +25,8 @@ export const fr = {
     manual: "Manuel",
     login: "Se connecter",
     signup: "Essayer gratuitement",
+    menu: "Ouvrir le menu",
+    close: "Fermer le menu",
   },
 
   footer: {
@@ -319,7 +321,7 @@ export const fr = {
     contactTitle: "Essayez vitePOS dès aujourd'hui",
     website: "Site web :",
     download: "Télécharger la brochure (PDF)",
-    screenNote: "Une feuille A4 recto-verso, à imprimer ou à envoyer par WhatsApp.",
+    screenNote: "Une feuille A5 recto-verso, à imprimer ou à envoyer par WhatsApp.",
   },
 };
 

@@ -1,6 +1,7 @@
 ---
 import Brand from "./Brand.astro";
 import { LOGIN_URL, SIGNUP_URL } from "../data/content";
+import { navIcons } from "../data/icons";
 import { dicts, otherLang, route, type Lang, type PageKey } from "../i18n";
 
 interface Props {
@@ -10,19 +11,128 @@ interface Props {
 const { lang, page } = Astro.props;
 const t = dicts[lang];
 const home = route(lang, "home");
+const sections = t.header.nav.map((n) => ({ ...n, anchor: t.home.ids[n.id] }));
 ---
 
 <header class="top">
   <div class="wrap top-inner">
     <Brand lang={lang} />
     <nav class="nav" aria-label="Sections">
-      {t.header.nav.map((n) => <a href={`${home}#${t.home.ids[n.id]}`}>{n.label}</a>)}
-      <a href={route(lang, "manual")}>{t.header.manual}</a>
+      {/* « Hors ligne » reste dans le pied de page et le menu du téléphone, mais pas dans la barre du haut. */}
+      {
+        sections
+          .filter((n) => n.id !== "offline")
+          .map((n) => (
+            <a href={`${home}#${n.anchor}`} data-spy={n.anchor}>
+              {n.label}
+            </a>
+          ))
+      }
+      <a href={route(lang, "manual")} aria-current={page === "manual" ? "page" : undefined}>{t.header.manual}</a>
     </nav>
     <div class="top-actions">
       <a class="lang-switch" href={route(otherLang(lang), page)} hreflang={otherLang(lang)} title={t.switchTitle}>{t.switchLabel}</a>
       <a class="link" href={LOGIN_URL}>{t.header.login}</a>
       <a class="btn btn-small" href={SIGNUP_URL}>{t.header.signup}</a>
+      <button
+        type="button"
+        class="menu-btn"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        aria-label={t.header.menu}
+        data-label-open={t.header.menu}
+        data-label-close={t.header.close}
+      >
+        <span class="i-menu" set:html={navIcons.menu} /><span class="i-close" set:html={navIcons.close} />
+      </button>
     </div>
   </div>
+
+  <!-- Menu du téléphone : toutes les sections, le manuel et la connexion, en grandes lignes faciles à toucher. -->
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Menu" hidden>
+    <div class="wrap">
+      {
+        sections.map((n) => (
+          <a href={`${home}#${n.anchor}`} data-spy={n.anchor}>
+            {n.label}
+          </a>
+        ))
+      }
+      <a href={route(lang, "manual")}>{t.header.manual}</a>
+      <a href={LOGIN_URL}>{t.header.login}</a>
+      <a href={route(otherLang(lang), page)} hreflang={otherLang(lang)}>{t.switchTitle}</a>
+    </div>
+  </nav>
 </header>
+
+<script>
+  const top = document.querySelector<HTMLElement>(".top");
+  if (top) {
+    // La barre reste transparente en haut de page, et prend le bleu flouté dès qu'on fait défiler.
+    const update = () => top.classList.toggle("is-scrolled", window.scrollY > 8);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+
+    // Menu du téléphone : s'ouvre et se ferme avec le bouton, se ferme au choix d'un lien ou avec Échap.
+    const btn = top.querySelector<HTMLButtonElement>(".menu-btn")!;
+    const panel = top.querySelector<HTMLElement>("#mobile-nav")!;
+    const setOpen = (open: boolean) => {
+      panel.hidden = !open;
+      top.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", String(open));
+      btn.setAttribute("aria-label", open ? btn.dataset.labelClose! : btn.dataset.labelOpen!);
+    };
+    btn.addEventListener("click", () => setOpen(panel.hidden));
+    panel.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) setOpen(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !panel.hidden) {
+        setOpen(false);
+        btn.focus();
+      }
+    });
+
+    // Défilement doux vers une section (molo molo) : environ une seconde, qui démarre et finit en douceur.
+    const glideTo = (target: HTMLElement, hash: string) => {
+      const offset = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+      const from = window.scrollY;
+      const to = target.getBoundingClientRect().top + from - offset;
+      const distance = to - from;
+      const duration = Math.min(1600, Math.max(800, Math.abs(distance) * 0.35));
+      const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+      const start = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / duration);
+        window.scrollTo(0, from + distance * ease(p));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      history.pushState(null, "", hash);
+    };
+    document.addEventListener("click", (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href*='#']");
+      if (!a || a.origin !== location.origin || a.pathname !== location.pathname || !a.hash) return;
+      const target = document.getElementById(decodeURIComponent(a.hash.slice(1)));
+      if (!target) return;
+      e.preventDefault();
+      glideTo(target, a.hash);
+    });
+
+    // Repère : le lien de la section affichée à l'écran est mis en avant dans le menu.
+    const links = [...top.querySelectorAll<HTMLAnchorElement>("[data-spy]")];
+    const targets = [...new Set(links.map((a) => a.dataset.spy!))].map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
+    if (targets.length) {
+      const spy = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            links.forEach((a) => a.classList.toggle("is-current", a.dataset.spy === entry.target.id));
+          }
+        },
+        { rootMargin: "-45% 0px -50% 0px" },
+      );
+      targets.forEach((el) => spy.observe(el));
+    }
+  }
+</script>
