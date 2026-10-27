@@ -7,6 +7,8 @@ import { SIGNUP_URL } from "../data/content";
 import { alertIcon, icons, moreIcons, navIcons } from "../data/icons";
 import { dicts, PDF, route, type Lang } from "../i18n";
 import "../styles/home.css";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 interface Props {
   lang: Lang;
@@ -24,6 +26,8 @@ const slideMedia = [
   { photo: "quincaillerie", shot: "tel-stock", alt: h.shots.telStock.alt },
   { photo: "boutique", shot: "tel-accueil", alt: h.altHome },
 ];
+/** Dessins de la BD (public/bd/bd-1.webp…) : une case sans dessin affiche « Dessin à venir ». */
+const comicArt = h.comic.panels.map((_, i) => (existsSync(join(process.cwd(), "public", "bd", `bd-${i + 1}.webp`)) ? `/bd/bd-${i + 1}.webp` : null));
 /** Photo de chaque carte « Pour qui », dans l'ordre de `t.audiences`. */
 const audiencePhotos = ["boutique", "quincaillerie", "pharmacie", "supermarche"];
 const gallery = ["vetements", "marche", "pharmacie-comptoir", "comptoir", "mercerie", "vendeur"];
@@ -179,43 +183,42 @@ function toToast(text: string) {
     </div>
   </div>
 
-  <!-- Pourquoi : photo + cartes flottantes, et les trois promesses -->
-  <section class="section why">
-    <div class="wrap why-grid">
-      <div class="why-media">
-        <Photo name="vendeur" alt="" class="why-photo" sizes="(max-width: 860px) 100vw, 50vw" />
-        <div class="float-card float-sale" aria-hidden="true">
-          <span class="float-icon ok" set:html={moreIcons.check} />
-          <div>
-            <small>{h.whyCard.label}</small>
-            <b>{h.whyCard.amount}</b>
-            <small>{h.whyCard.sub}</small>
-          </div>
-        </div>
-        <div class="float-card float-stock" aria-hidden="true">
-          <span class="float-icon" set:html={icons.package} />
-          <div>
-            <b>{h.whyStock.label}</b>
-            <small>{h.whyStock.sub}</small>
-          </div>
-        </div>
-      </div>
-      <div>
+  <!-- Pourquoi : la BD de Maman Ngalula, en 6 cases. Les bulles sont du texte (traduisibles), les dessins dans public/bd/. -->
+  <section class="section why" id="pourquoi" data-comic>
+    <div class="wrap">
+      <header class="section-head">
         <p class="kicker">{h.whyEyebrow}</p>
         <h2>{h.whyTitle}</h2>
-        <ol class="promises">
-          {
-            t.promises.map((p, i) => (
-              <li>
-                <span class="promise-num">0{i + 1}</span>
-                <div>
-                  <h3>{p.title}</h3>
-                  <p>{p.text}</p>
+        <p class="section-lead">{h.comic.lead}</p>
+      </header>
+      <ol class="comic">
+        {
+          h.comic.panels.map((p, i) => (
+            <li class:list={["panel", `panel-${p.chapter}`]} style={`--i: ${i}`}>
+              {comicArt[i] ? (
+                <img src={comicArt[i]} alt="" width="1072" height="790" loading="lazy" decoding="async" />
+              ) : (
+                <div class="panel-placeholder" aria-hidden="true">
+                  <span>{i + 1}</span>
+                  <small>{h.comic.placeholder}</small>
                 </div>
-              </li>
-            ))
-          }
-        </ol>
+              )}
+              <p class="panel-cap">
+                <b>{h.comic.chapters[p.chapter]}</b> {p.caption}
+              </p>
+              {p.bubbles.map((bubble, k) => (
+                <p class:list={["bubble", `bubble-${bubble.side}`, bubble.tail && `tail-${bubble.tail}`]} style={`--k: ${k}`}>
+                  <small>{bubble.who}</small>
+                  {bubble.text}
+                </p>
+              ))}
+            </li>
+          ))
+        }
+      </ol>
+      <div class="comic-end">
+        <p>{h.comic.end}</p>
+        <a class="btn btn-lg" href={SIGNUP_URL}>{h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
       </div>
     </div>
   </section>
@@ -428,6 +431,21 @@ function toToast(text: string) {
 </Base>
 
 <script>
+  // BD : les cases apparaissent une à une quand la section arrive à l'écran.
+  const comic = document.querySelector<HTMLElement>("[data-comic]");
+  if (comic) {
+    comic.classList.add("is-ready");
+    new IntersectionObserver(
+      ([entry], obs) => {
+        if (entry.isIntersecting) {
+          comic.classList.add("is-in");
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.15 },
+    ).observe(comic.querySelector(".comic")!);
+  }
+
   // Carrousel de l'accroche. Sans JavaScript, la première diapositive reste affichée seule.
   const root = document.querySelector<HTMLElement>("[data-carousel]");
   if (root) {

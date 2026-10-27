@@ -159,9 +159,48 @@ export const en: Dict = {
     carousel: { label: "vitePOS overview", prev: "Previous slide", next: "Next slide", pause: "Pause", play: "Resume", goTo: "Go to slide", now: "just now" },
 
     whyEyebrow: "Why vitePOS",
-    whyTitle: "No more cash notebook.",
-    whyCard: { label: "Sale completed", amount: "21,100 FC", sub: "Paid in FC and $ · change given: 900 FC" },
-    whyStock: { label: "Stock up to date", sub: "Coca-Cola 33 cl · 46 left" },
+    whyTitle: "Maman Ngalula's story",
+    comic: {
+      lead: "She runs a grocery shop in Kinshasa and managed her stock and till in a notebook. Until the day…",
+      chapters: { before: "Before", spark: "The spark", after: "With vitePOS" },
+      placeholder: "Drawing coming soon",
+      panels: [
+        {
+          chapter: "before",
+          caption: "A Sunday of stocktaking",
+          bubbles: [{ who: "Maman Ngalula", text: "A whole Sunday of counting… and we still have to redo the drinks shelf!", side: "left" }],
+        },
+        {
+          chapter: "before",
+          caption: "In the middle of the week",
+          bubbles: [
+            { who: "A customer", text: "No more Nido milk?", side: "left" },
+            { who: "Grâce", text: "It's run out… And those tins have expired, we hadn't noticed.", side: "right" },
+          ],
+        },
+        {
+          chapter: "spark",
+          caption: "One evening",
+          bubbles: [{ who: "Patrick", text: "Auntie, with vitePOS stock counts itself with every sale. And the app warns you before you run out.", side: "left" }],
+        },
+        {
+          chapter: "after",
+          caption: "Stocktaking",
+          bubbles: [{ who: "Grâce", text: "It used to take all Sunday. Now we scan the shelf together: done before opening!", side: "left" }],
+        },
+        {
+          chapter: "after",
+          caption: "Stock",
+          bubbles: [{ who: "Grâce", text: "Alert: only 6 tins of Nido left, and a batch expires in 30 days. We'll order today.", side: "right" }],
+        },
+        {
+          chapter: "after",
+          caption: "Evening, wherever she is",
+          bubbles: [{ who: "Maman Ngalula", text: "Sales, profit, best seller… I see it all from my phone. And my Sundays are mine again.", side: "right", tail: "left" }],
+        },
+      ] as { chapter: "before" | "spark" | "after"; caption: string; bubbles: { who: string; text: string; side: "left" | "right"; tail?: "left" | "right" }[] }[],
+      end: "Less time counting, more time selling.",
+    },
 
     featuresEyebrow: "Features",
     devicesEyebrow: "Devices",

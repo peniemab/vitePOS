@@ -165,9 +165,49 @@ export const fr = {
     carousel: { label: "Présentation de vitePOS", prev: "Diapositive précédente", next: "Diapositive suivante", pause: "Mettre en pause", play: "Relancer le défilement", goTo: "Aller à la diapositive", now: "à l'instant" },
 
     whyEyebrow: "Pourquoi vitePOS",
-    whyTitle: "Le cahier de caisse, c'est fini.",
-    whyCard: { label: "Vente encaissée", amount: "21 100 FC", sub: "Payé en FC et en $ · monnaie rendue : 900 FC" },
-    whyStock: { label: "Stock à jour", sub: "Coca-Cola 33 cl · 46 restants" },
+    whyTitle: "L'histoire de Maman Ngalula",
+    /** BD « Pourquoi vitePOS » : 6 cases, bulles en texte (les dessins sont dans public/bd/). */
+    comic: {
+      lead: "Patronne d'une alimentation à Kinshasa, elle gérait son stock et sa caisse dans un cahier. Jusqu'au jour où…",
+      chapters: { before: "Avant", spark: "Le déclic", after: "Avec vitePOS" },
+      placeholder: "Dessin à venir",
+      panels: [
+        {
+          chapter: "before",
+          caption: "Un dimanche d'inventaire",
+          bubbles: [{ who: "Maman Ngalula", text: "Tout le dimanche à compter… et il faut encore recommencer le rayon boissons !", side: "left" }],
+        },
+        {
+          chapter: "before",
+          caption: "En pleine semaine",
+          bubbles: [
+            { who: "Une cliente", text: "Vous n'avez plus de lait Nido ?", side: "left" },
+            { who: "Grâce", text: "Il est fini… Et ces boîtes-là sont périmées, on ne les avait pas vues.", side: "right" },
+          ],
+        },
+        {
+          chapter: "spark",
+          caption: "Un soir",
+          bubbles: [{ who: "Patrick", text: "Tantine, avec vitePOS le stock se compte tout seul à chaque vente. Et l'app te prévient avant la rupture.", side: "left" }],
+        },
+        {
+          chapter: "after",
+          caption: "L'inventaire",
+          bubbles: [{ who: "Grâce", text: "Avant, on y passait tout le dimanche. Là, on scanne le rayon à deux : fini avant l'ouverture !", side: "left" }],
+        },
+        {
+          chapter: "after",
+          caption: "Le stock",
+          bubbles: [{ who: "Grâce", text: "Alerte : plus que 6 boîtes de Nido, et un lot périme dans 30 jours. On commande aujourd'hui.", side: "right" }],
+        },
+        {
+          chapter: "after",
+          caption: "Le soir, où qu'elle soit",
+          bubbles: [{ who: "Maman Ngalula", text: "Ventes, bénéfice, meilleur produit… Je vois tout depuis mon téléphone. Et mes dimanches sont à moi.", side: "right", tail: "left" }],
+        },
+      ] as { chapter: "before" | "spark" | "after"; caption: string; bubbles: { who: string; text: string; side: "left" | "right"; tail?: "left" | "right" }[] }[],
+      end: "Moins de temps à compter, plus de temps pour vendre.",
+    },
 
     featuresEyebrow: "Fonctions",
     devicesEyebrow: "Appareils",

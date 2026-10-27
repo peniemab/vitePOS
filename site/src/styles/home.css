@@ -652,138 +652,192 @@
   }
 }
 
-/* ---------- Pourquoi : photo et cartes flottantes ---------- */
-.why-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 72px;
-  align-items: center;
-}
-.why-grid h2 {
-  font-size: clamp(1.75rem, 3.4vw, 2.4rem);
-  line-height: 1.02;
-}
-.why-media {
-  position: relative;
-  padding: 0 28px 36px 0;
-}
-.why-media::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 70%;
-  height: 70%;
-  border-radius: 24px;
-  background: linear-gradient(135deg, var(--navy), #2c4a85);
-}
-.why-photo {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3.4;
-  object-fit: cover;
-  border-radius: 24px;
-  box-shadow: 0 30px 60px rgba(15, 28, 54, 0.2);
-}
-.float-card {
-  position: absolute;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  padding: 14px 18px;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 18px 40px rgba(15, 28, 54, 0.18);
-  color: var(--ink);
-}
-.float-card small {
-  display: block;
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-.float-card b {
-  display: block;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.5rem;
-  line-height: 1.1;
-  color: var(--navy);
-}
-.float-stock b {
-  font-size: 1.15rem;
-}
-.float-icon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: var(--navy-soft);
-  color: var(--navy);
-}
-.float-icon.ok {
-  background: #e6f6ea;
-  color: #2b8a3e;
-}
-.float-sale {
-  left: -24px;
-  bottom: 72px;
-}
-.float-stock {
-  right: -4px;
-  top: 28px;
-}
-.promises {
+/* ---------- Pourquoi : la BD de Maman Ngalula ---------- */
+.comic {
   list-style: none;
-  margin: 28px 0 0;
+  margin: 0;
   padding: 0;
   display: grid;
+  /* Deux grandes cases par ligne : les dessins restent lisibles sous les bulles. */
+  grid-template-columns: repeat(2, 1fr);
   gap: 22px;
+  counter-reset: panel;
 }
-.promises li {
-  display: flex;
-  gap: 18px;
+.panel {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #13254a;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
-.promise-num {
-  flex-shrink: 0;
+.panel > img,
+.panel-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* En attendant les dessins : un fond aux couleurs du chapitre, avec le numéro de la case. */
+.panel-placeholder {
   display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--d-accent);
+  place-content: center;
+  justify-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #1d335f, #0f1f42);
+  color: rgba(255, 255, 255, 0.18);
+}
+.panel-placeholder span {
   font-family: "Barlow Condensed", sans-serif;
+  font-size: 7rem;
   font-weight: 700;
-  font-size: 1.2rem;
+  line-height: 1;
 }
-.promises h3 {
-  font-size: 1.25rem;
-  color: #fff;
-  margin: 4px 0 4px;
+.panel-placeholder small {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
 }
-.promises p {
-  color: var(--d-muted);
+.panel-spark .panel-placeholder {
+  background: linear-gradient(135deg, #5a3d0c, #2b1e08);
+}
+.panel-after .panel-placeholder {
+  background: linear-gradient(135deg, #2c4a85, #13254a);
+}
+/* Récitatif (le petit encadré des BD), en bas à gauche : chapitre en couleur, puis le moment. */
+.panel-cap {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
   margin: 0;
+  padding: 7px 12px;
+  background: rgba(10, 20, 42, 0.88);
+  color: #dfe6f5;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
-@media (max-width: 860px) {
-  .why-grid {
+.panel-cap b {
+  margin-right: 6px;
+  color: #a9b6d2;
+  font-weight: 800;
+}
+.panel-spark .panel-cap b {
+  color: #f2b705;
+}
+.panel-after .panel-cap b {
+  color: #69db7c;
+}
+/* Bulles : blanches, avec leur pointe vers le personnage qui parle. */
+.bubble {
+  position: absolute;
+  top: 12px;
+  z-index: 3;
+  max-width: 58%;
+  margin: 0;
+  padding: 9px 13px;
+  border-radius: 16px;
+  background: #fff;
+  color: #141b2d;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.3;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+.bubble small {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--brick);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid #fff;
+}
+.bubble-left {
+  left: 12px;
+}
+.bubble-left::after {
+  left: 24px;
+}
+.bubble-right {
+  right: 12px;
+}
+.bubble-right::after {
+  right: 24px;
+}
+/* Pointe du côté opposé : la bulle est à droite mais la personne qui parle est à gauche (ou l'inverse). */
+.bubble.tail-left::after {
+  left: 24px;
+  right: auto;
+}
+.bubble.tail-right::after {
+  right: 24px;
+  left: auto;
+}
+/* Case avec deux bulles (une de chaque côté) : chacune reste dans sa moitié. */
+.panel:has(.bubble + .bubble) .bubble {
+  max-width: 46%;
+}
+/* Les cases apparaissent une à une, comme on lit une planche (seulement si le script est là). */
+.why.is-ready .panel {
+  opacity: 0;
+  transform: translateY(24px) scale(0.97);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
+  transition-delay: calc(var(--i) * 0.18s);
+}
+.why.is-in .panel {
+  opacity: 1;
+  transform: none;
+}
+.why.is-ready .bubble {
+  opacity: 0;
+  transform: scale(0.8);
+  transform-origin: bottom left;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.3, 1.4, 0.5, 1);
+  transition-delay: calc(var(--i) * 0.18s + 0.45s);
+}
+.why.is-in .bubble {
+  opacity: 1;
+  transform: none;
+}
+.comic-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-top: 28px;
+  padding: 22px 26px;
+  background: var(--d-card);
+  border-radius: 6px;
+}
+.comic-end p {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+}
+@media (max-width: 760px) {
+  .comic {
     grid-template-columns: 1fr;
-    gap: 44px;
+    gap: 16px;
   }
-  .float-sale {
-    left: 8px;
-    bottom: 52px;
-  }
-  .float-stock {
-    right: 12px;
-    top: 12px;
-  }
-}
-@media (max-width: 420px) {
-  .float-stock {
-    display: none;
+  .bubble {
+    font-size: 0.8rem;
+    padding: 7px 10px;
   }
 }
 
