@@ -197,7 +197,7 @@ export const en: Dict = {
         caption: "The spark",
         bubbles: [
           { who: "Patrick", text: "Auntie, try vitePOS: stock counts itself. And it's free to start.", side: "left" },
-          { who: "Maman Ngalula", text: "Really? Even without network? Show me!", side: "right" },
+          { who: "Maman Ngalula", text: "Really? How does it work? Show me!", side: "right" },
         ],
       },
       result: {
@@ -206,8 +206,8 @@ export const en: Dict = {
         title: "One week later…",
         text: "Grâce and Maman Ngalula would never go back to the notebook. Here is what changed.",
         bubbles: [
-          { who: "Grâce", text: "No more Sundays lost counting!", side: "left" },
-          { who: "Maman Ngalula", text: "And no more running out. I see everything on my phone.", side: "right" },
+          { who: "Maman Ngalula", text: "No more running out, and I see everything on my phone!", side: "left" },
+          { who: "Grâce", text: "And no more Sundays lost counting!", side: "right" },
         ],
       },
       end: "Less time counting, more time selling.",

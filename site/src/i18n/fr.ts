@@ -211,7 +211,7 @@ export const fr = {
         caption: "Le déclic",
         bubbles: [
           { who: "Patrick", text: "Tantine, essaie vitePOS : le stock se compte tout seul. Et c'est gratuit pour commencer.", side: "left" },
-          { who: "Maman Ngalula", text: "Vraiment ? Même sans réseau ? Montre-moi ça !", side: "right" },
+          { who: "Maman Ngalula", text: "Vraiment ? Comment ça marche ? Montre-moi ça !", side: "right" },
         ],
       } as { art: number; caption: string; bubbles: ComicBubble[] },
       /** Juste après le déclic : Grâce et sa patronne, satisfaites, quelques jours plus tard. */
@@ -221,8 +221,8 @@ export const fr = {
         title: "Une semaine plus tard…",
         text: "Grâce et Maman Ngalula ne reviendraient pour rien au monde au cahier. Voici ce qui a changé.",
         bubbles: [
-          { who: "Grâce", text: "Plus de dimanches perdus à compter !", side: "left" },
-          { who: "Maman Ngalula", text: "Et plus aucune rupture. Je vois tout sur mon téléphone.", side: "right" },
+          { who: "Maman Ngalula", text: "Plus aucune rupture, et je vois tout sur mon téléphone !", side: "left" },
+          { who: "Grâce", text: "Et plus de dimanches perdus à compter !", side: "right" },
         ],
       } as { art: number; caption: string; title: string; text: string; bubbles: ComicBubble[] },
       end: "Moins de temps à compter, plus de temps pour vendre.",
