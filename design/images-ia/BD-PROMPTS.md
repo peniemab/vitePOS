@@ -68,3 +68,8 @@ Panel 6. Evening at home, a comfortable living room. Maman Ngalula, relaxed on a
 ```
 Panel 7. Daytime, Maman Ngalula is far from her shop, standing in a busy Kinshasa street market among stalls and people, holding her smartphone to her ear, worried and frowning, her other hand on her forehead. She has no idea what is happening in her shop. Same characters, same style.
 ```
+
+**`bd-8.png` · Une semaine plus tard, satisfaites** (nouvelle case)
+```
+Panel 8. One week later, bright morning in the tidy, well-stocked shop. Grâce and Maman Ngalula stand side by side behind the counter, both laughing and visibly satisfied, giving each other a high five; Maman Ngalula holds her smartphone in her other hand. Full shelves behind them, a happy customer leaving with a bag. Warm, joyful atmosphere. Same characters, same style.
+```

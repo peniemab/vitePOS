@@ -8,6 +8,8 @@ import { SIGNUP_URL } from "../data/content";
 import { alertIcon, icons, moreIcons, navIcons } from "../data/icons";
 import { dicts, PDF, route, type Lang } from "../i18n";
 import "../styles/home.css";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 interface Props {
   lang: Lang;
@@ -25,6 +27,8 @@ const slideMedia = [
   { photo: "quincaillerie", shot: "tel-stock", alt: h.shots.telStock.alt },
   { photo: "boutique", shot: "tel-accueil", alt: h.altHome },
 ];
+/** Le bloc « Une semaine plus tard » n'apparaît qu'une fois son dessin ajouté (public/bd/bd-8.webp). */
+const resultReady = existsSync(join(process.cwd(), "public", "bd", `bd-${h.comic.result.art}.webp`));
 /** Photo de chaque carte « Pour qui », dans l'ordre de `t.audiences`. */
 const audiencePhotos = ["boutique", "quincaillerie", "pharmacie", "supermarche"];
 const gallery = ["vetements", "marche", "pharmacie-comptoir", "comptoir", "mercerie", "vendeur"];
@@ -193,7 +197,7 @@ function toToast(text: string) {
         <ComicPanel
           art={h.comic.spark.art}
           caption=""
-          bubbles={[{ who: h.comic.spark.who, text: h.comic.spark.text, side: "left" }]}
+          bubbles={h.comic.spark.bubbles}
           kind="spark"
           label={h.comic.spark.caption}
           placeholder={h.comic.placeholder}
@@ -203,6 +207,23 @@ function toToast(text: string) {
           <a class="btn btn-lg" href={SIGNUP_URL}>{h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
         </div>
       </div>
+      <!-- Juste après : Grâce et sa patronne, satisfaites, une semaine plus tard (affiché seulement quand le dessin existe). -->
+      {resultReady && (
+      <div class="comic-result">
+        <div class="comic-result-text">
+          <h3>{h.comic.result.title}</h3>
+          <p>{h.comic.result.text}</p>
+        </div>
+        <ComicPanel
+          art={h.comic.result.art}
+          caption=""
+          bubbles={h.comic.result.bubbles}
+          kind="solution"
+          label={h.comic.columns.after}
+          placeholder={h.comic.placeholder}
+        />
+      </div>
+      )}
       <div class="comic-cols" aria-hidden="true">
         <span class="col-before">{h.comic.columns.before}</span>
         <span class="col-after">{h.comic.columns.after}</span>

@@ -68,7 +68,7 @@ export const en: Dict = {
       ordiStock: { alt: "Stock on a computer", title: "Stock on a computer", text: "The whole catalogue, prices and quantities." },
     },
 
-    featuresTitle: "Run your shop like a supermarket",
+    featuresTitle: "Your whole business on one screen",
     featuresLead:
       "The till that takes payment in seconds, in FC, $ or €, and counts your stock for you. Supermarket tools, as simple as a calculator.",
 
@@ -192,7 +192,24 @@ export const en: Dict = {
           },
         },
       ] as ComicRow[],
-      spark: { art: 3, caption: "The spark", who: "Patrick", text: "Auntie, try vitePOS: stock counts itself and the app warns you before you run out. It's free to start." },
+      spark: {
+        art: 3,
+        caption: "The spark",
+        bubbles: [
+          { who: "Patrick", text: "Auntie, try vitePOS: stock counts itself. And it's free to start.", side: "left" },
+          { who: "Maman Ngalula", text: "Really? Even without network? Show me!", side: "right" },
+        ],
+      },
+      result: {
+        art: 8,
+        caption: "One week later",
+        title: "One week later…",
+        text: "Grâce and Maman Ngalula would never go back to the notebook. Here is what changed.",
+        bubbles: [
+          { who: "Grâce", text: "No more Sundays lost counting!", side: "left" },
+          { who: "Maman Ngalula", text: "And no more running out. I see everything on my phone.", side: "right" },
+        ],
+      },
       end: "Less time counting, more time selling.",
     },
 

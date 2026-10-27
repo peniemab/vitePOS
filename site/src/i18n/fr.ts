@@ -9,7 +9,7 @@ import { chapters as manualChapters, type Chapter } from "../data/manuel";
 export type SectionId = "features" | "devices" | "audiences" | "offline" | "faq";
 
 /** Une ligne de la BD : le problème (sans vitePOS) à gauche, la solution (avec vitePOS) à droite. */
-type ComicBubble = { who: string; text: string; side: "left" | "right"; tail?: "left" | "right" };
+export type ComicBubble = { who: string; text: string; side: "left" | "right"; tail?: "left" | "right" };
 type ComicPanel = { art: number; caption: string; bubbles: ComicBubble[] };
 export type ComicRow = { topic: string; problem: ComicPanel; solution: ComicPanel };
 
@@ -77,7 +77,7 @@ export const fr = {
       ordiStock: { alt: "Le stock sur ordinateur", title: "Le stock sur ordinateur", text: "Tout le catalogue, les prix et les quantités." },
     },
 
-    featuresTitle: "Gérez votre boutique comme un supermarché",
+    featuresTitle: "Tout votre business sur un seul écran",
     featuresLead:
       "La caisse qui encaisse en quelques secondes, en FC, $ ou €, et compte votre stock pour vous. Les outils d'une grande surface, simples comme une calculatrice.",
 
@@ -205,8 +205,26 @@ export const fr = {
           },
         },
       ] as ComicRow[],
-      /** Le déclic, en bas, à côté du bouton : c'est l'invitation à essayer. */
-      spark: { art: 3, caption: "Le déclic", who: "Patrick", text: "Tantine, essaie vitePOS : le stock se compte tout seul et l'app te prévient avant la rupture. C'est gratuit pour commencer." },
+      /** Le déclic, en tête de section, à côté du bouton : Patrick propose, sa tante répond. */
+      spark: {
+        art: 3,
+        caption: "Le déclic",
+        bubbles: [
+          { who: "Patrick", text: "Tantine, essaie vitePOS : le stock se compte tout seul. Et c'est gratuit pour commencer.", side: "left" },
+          { who: "Maman Ngalula", text: "Vraiment ? Même sans réseau ? Montre-moi ça !", side: "right" },
+        ],
+      } as { art: number; caption: string; bubbles: ComicBubble[] },
+      /** Juste après le déclic : Grâce et sa patronne, satisfaites, quelques jours plus tard. */
+      result: {
+        art: 8,
+        caption: "Une semaine plus tard",
+        title: "Une semaine plus tard…",
+        text: "Grâce et Maman Ngalula ne reviendraient pour rien au monde au cahier. Voici ce qui a changé.",
+        bubbles: [
+          { who: "Grâce", text: "Plus de dimanches perdus à compter !", side: "left" },
+          { who: "Maman Ngalula", text: "Et plus aucune rupture. Je vois tout sur mon téléphone.", side: "right" },
+        ],
+      } as { art: number; caption: string; title: string; text: string; bubbles: ComicBubble[] },
       end: "Moins de temps à compter, plus de temps pour vendre.",
     },
 

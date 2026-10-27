@@ -246,7 +246,6 @@ p {
   min-height: 50px;
   padding: 0 24px;
   border: 0;
-  border-radius: 2px;
   background: var(--brick);
   color: #fff;
   font-weight: 700;
@@ -317,7 +316,6 @@ p {
 /* Le « V » bleu nuit disparaîtrait sur le fond sombre : pastille blanche derrière. */
 .brand img {
   background: #fff;
-  border-radius: 8px;
   padding: 4px;
   width: 34px;
   height: auto;
@@ -352,7 +350,6 @@ p {
   color: #fff;
   text-decoration: none;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
   padding: 6px 10px;
 }
 .lang-switch:hover {
@@ -372,7 +369,6 @@ p {
   width: 42px;
   height: 42px;
   border: 0;
-  border-radius: 2px;
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
   cursor: pointer;
@@ -620,5 +616,4 @@ section[id] {
   color: var(--brick);
   font-weight: 700;
   padding: 0 4px;
-  border-radius: 3px;
 }
