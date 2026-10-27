@@ -1,0 +1,48 @@
+---
+/**
+ * Une case de la BD « Pourquoi vitePOS » : le dessin (public/bd/bd-N.webp), le récitatif et les bulles en texte.
+ * Tant que le dessin n'existe pas, la case affiche « Dessin à venir ».
+ */
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
+interface Bubble {
+  who: string;
+  text: string;
+  side: "left" | "right";
+  tail?: "left" | "right";
+}
+interface Props {
+  art: number;
+  caption: string;
+  bubbles: Bubble[];
+  /** « problem » (sans vitePOS) ou « solution » (avec) : couleur du récitatif. */
+  kind: "problem" | "solution" | "spark";
+  label: string;
+  placeholder: string;
+}
+const { art, caption, bubbles, kind, label, placeholder } = Astro.props;
+const src = existsSync(join(process.cwd(), "public", "bd", `bd-${art}.webp`)) ? `/bd/bd-${art}.webp` : null;
+---
+
+<figure class:list={["panel", `panel-${kind}`, { "panel-duo": bubbles.length > 1 }]}>
+  {
+    src ? (
+      <img src={src} alt="" width="1072" height="790" loading="lazy" decoding="async" />
+    ) : (
+      <div class="panel-placeholder" aria-hidden="true">
+        <span>{art}</span>
+        <small>{placeholder}</small>
+      </div>
+    )
+  }
+  <figcaption class="panel-cap"><b>{label}</b> {caption}</figcaption>
+  {
+    bubbles.map((b) => (
+      <p class:list={["bubble", `bubble-${b.side}`, b.tail && `tail-${b.tail}`]}>
+        <small>{b.who}</small>
+        {b.text}
+      </p>
+    ))
+  }
+</figure>

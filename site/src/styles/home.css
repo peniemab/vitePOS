@@ -652,24 +652,78 @@
   }
 }
 
-/* ---------- Pourquoi : la BD de Maman Ngalula ---------- */
+/* ---------- Pourquoi : la BD de Maman Ngalula ----------
+   Chaque ligne : le problème à gauche, une flèche, la solution à droite. On comprend d'un coup d'œil. */
+.comic-cols,
+.comic-row {
+  display: grid;
+  grid-template-columns: 1fr 52px 1fr;
+  column-gap: 16px;
+}
+/* Titres des deux colonnes, au-dessus de la première ligne. */
+.comic-cols {
+  margin-bottom: 12px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.col-before {
+  grid-column: 1;
+  color: #ff8a80;
+}
+.col-after {
+  grid-column: 3;
+  color: #69db7c;
+}
 .comic {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  /* Deux grandes cases par ligne : les dessins restent lisibles sous les bulles. */
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
-  counter-reset: panel;
+  gap: 30px;
+}
+.comic-row {
+  align-items: center;
+  row-gap: 8px;
+}
+.row-topic {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+.row-arrow {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brick);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(182, 23, 30, 0.45);
+}
+.row-arrow svg {
+  width: 26px;
+  height: 26px;
 }
 .panel {
   position: relative;
+  margin: 0;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 6px;
   background: #13254a;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+/* Le problème un peu éteint, la solution lumineuse : la différence se voit avant de lire. */
+.panel-problem > img {
+  filter: saturate(0.7) brightness(0.92);
+}
+.panel-solution {
+  /* Halo vert plutôt qu'une bordure. */
+  box-shadow:
+    0 0 32px rgba(105, 219, 124, 0.35),
+    0 18px 40px rgba(0, 0, 0, 0.35);
 }
 .panel > img,
 .panel-placeholder {
@@ -679,7 +733,7 @@
   height: 100%;
   object-fit: cover;
 }
-/* En attendant les dessins : un fond aux couleurs du chapitre, avec le numéro de la case. */
+/* En attendant un dessin : fond bleu nuit avec le numéro de la case. */
 .panel-placeholder {
   display: grid;
   place-content: center;
@@ -690,19 +744,13 @@
 }
 .panel-placeholder span {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 7rem;
+  font-size: 6rem;
   font-weight: 700;
   line-height: 1;
 }
 .panel-placeholder small {
   color: rgba(255, 255, 255, 0.4);
   font-weight: 600;
-}
-.panel-spark .panel-placeholder {
-  background: linear-gradient(135deg, #5a3d0c, #2b1e08);
-}
-.panel-after .panel-placeholder {
-  background: linear-gradient(135deg, #2c4a85, #13254a);
 }
 /* Récitatif (le petit encadré des BD), en bas à gauche : chapitre en couleur, puis le moment. */
 .panel-cap {
@@ -722,11 +770,14 @@
   color: #a9b6d2;
   font-weight: 800;
 }
+.panel-problem .panel-cap b {
+  color: #ff8a80;
+}
+.panel-solution .panel-cap b {
+  color: #69db7c;
+}
 .panel-spark .panel-cap b {
   color: #f2b705;
-}
-.panel-after .panel-cap b {
-  color: #69db7c;
 }
 /* Bulles : blanches, avec leur pointe vers le personnage qui parle. */
 .bubble {
@@ -783,57 +834,80 @@
   left: auto;
 }
 /* Case avec deux bulles (une de chaque côté) : chacune reste dans sa moitié. */
-.panel:has(.bubble + .bubble) .bubble {
+.panel-duo .bubble {
   max-width: 46%;
 }
-/* Les cases apparaissent une à une, comme on lit une planche (seulement si le script est là). */
-.why.is-ready .panel {
+/* Les lignes apparaissent une à une : d'abord le problème, puis la solution (seulement si le script est là). */
+.why.is-ready .panel,
+.why.is-ready .row-arrow {
   opacity: 0;
-  transform: translateY(24px) scale(0.97);
+  transform: translateY(20px);
   transition:
     opacity 0.6s ease,
     transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
-  transition-delay: calc(var(--i) * 0.18s);
 }
-.why.is-in .panel {
+.why.is-ready .panel-problem {
+  transition-delay: calc(var(--i) * 0.35s);
+}
+.why.is-ready .row-arrow {
+  transition-delay: calc(var(--i) * 0.35s + 0.25s);
+}
+.why.is-ready .panel-solution {
+  transition-delay: calc(var(--i) * 0.35s + 0.45s);
+}
+.why.is-in .panel,
+.why.is-in .row-arrow {
   opacity: 1;
   transform: none;
 }
-.why.is-ready .bubble {
-  opacity: 0;
-  transform: scale(0.8);
-  transform-origin: bottom left;
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s cubic-bezier(0.3, 1.4, 0.5, 1);
-  transition-delay: calc(var(--i) * 0.18s + 0.45s);
-}
-.why.is-in .bubble {
-  opacity: 1;
-  transform: none;
-}
-.comic-end {
-  display: flex;
-  flex-wrap: wrap;
+/* En tête de section : le déclic à gauche, la phrase et le bouton à droite. */
+.comic-spark {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px 24px;
-  margin-top: 28px;
-  padding: 22px 26px;
+  margin-bottom: 40px;
+  padding: 20px;
   background: var(--d-card);
   border-radius: 6px;
 }
-.comic-end p {
-  margin: 0;
+.comic-spark-text p {
+  margin: 0 0 18px;
   font-family: "Barlow Condensed", sans-serif;
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
   font-weight: 700;
+  line-height: 1.05;
   color: #fff;
 }
 @media (max-width: 760px) {
-  .comic {
+  /* Téléphone : problème, flèche vers le bas, solution, l'un sous l'autre. */
+  .comic-cols {
+    display: none;
+  }
+  .comic-row {
     grid-template-columns: 1fr;
-    gap: 16px;
+    justify-items: center;
+    row-gap: 10px;
+  }
+  .row-topic {
+    justify-self: start;
+  }
+  .row-arrow {
+    width: 42px;
+    height: 42px;
+    transform: rotate(90deg);
+  }
+  .why.is-ready .row-arrow {
+    transform: translateY(20px) rotate(90deg);
+  }
+  .why.is-in .row-arrow {
+    transform: rotate(90deg);
+  }
+  .panel {
+    width: 100%;
+  }
+  .comic-spark {
+    grid-template-columns: 1fr;
   }
   .bubble {
     font-size: 0.8rem;

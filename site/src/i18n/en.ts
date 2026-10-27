@@ -2,7 +2,7 @@
  * English texts for the site, manual and brochure. Same shape as `fr.ts` (type `Dict`).
  * The app itself is in French: buttons quoted from it stay in French.
  */
-import type { Dict } from "./fr";
+import type { ComicRow, Dict } from "./fr";
 import { chapters } from "../data/manual.en";
 
 export const en: Dict = {
@@ -161,44 +161,38 @@ export const en: Dict = {
     whyEyebrow: "Why vitePOS",
     whyTitle: "Maman Ngalula's story",
     comic: {
-      lead: "She runs a grocery shop in Kinshasa and managed her stock and till in a notebook. Until the day…",
-      chapters: { before: "Before", spark: "The spark", after: "With vitePOS" },
+      lead: "She runs a grocery shop in Kinshasa and managed everything in a notebook. Her nephew suggested vitePOS: here is her life before, and after.",
+      columns: { before: "Without vitePOS", after: "With vitePOS" },
       placeholder: "Drawing coming soon",
-      panels: [
+      rows: [
         {
-          chapter: "before",
-          caption: "A Sunday of stocktaking",
-          bubbles: [{ who: "Maman Ngalula", text: "A whole Sunday of counting… and we still have to redo the drinks shelf!", side: "left" }],
+          topic: "Stocktaking",
+          problem: { art: 1, caption: "A whole Sunday", bubbles: [{ who: "Maman Ngalula", text: "A whole Sunday of counting… and we still have to redo the drinks shelf!", side: "left" }] },
+          solution: { art: 4, caption: "Done before opening", bubbles: [{ who: "Grâce", text: "We scan the shelf together and the app shows what's missing. Already done!", side: "left" }] },
         },
         {
-          chapter: "before",
-          caption: "In the middle of the week",
-          bubbles: [
-            { who: "A customer", text: "No more Nido milk?", side: "left" },
-            { who: "Grâce", text: "It's run out… And those tins have expired, we hadn't noticed.", side: "right" },
-          ],
+          topic: "Stock",
+          problem: {
+            art: 2,
+            caption: "Out of stock, expired",
+            bubbles: [
+              { who: "A customer", text: "No more Nido milk?", side: "left" },
+              { who: "Grâce", text: "It's run out… And those tins have expired.", side: "right" },
+            ],
+          },
+          solution: { art: 5, caption: "Warned in time", bubbles: [{ who: "Grâce", text: "Only 6 tins of Nido left, and a batch expires in 30 days: we'll order today.", side: "right" }] },
         },
         {
-          chapter: "spark",
-          caption: "One evening",
-          bubbles: [{ who: "Patrick", text: "Auntie, with vitePOS stock counts itself with every sale. And the app warns you before you run out.", side: "left" }],
+          topic: "Keeping track",
+          problem: { art: 7, caption: "Away from the shop", bubbles: [{ who: "Maman Ngalula", text: "Grâce, how much did we sell today? Is there any rice left?", side: "left", tail: "right" }] },
+          solution: {
+            art: 6,
+            caption: "Wherever she is",
+            bubbles: [{ who: "Maman Ngalula", text: "Sales, profit, stock… I see it all from my phone. And my Sundays are mine again.", side: "right", tail: "left" }],
+          },
         },
-        {
-          chapter: "after",
-          caption: "Stocktaking",
-          bubbles: [{ who: "Grâce", text: "It used to take all Sunday. Now we scan the shelf together: done before opening!", side: "left" }],
-        },
-        {
-          chapter: "after",
-          caption: "Stock",
-          bubbles: [{ who: "Grâce", text: "Alert: only 6 tins of Nido left, and a batch expires in 30 days. We'll order today.", side: "right" }],
-        },
-        {
-          chapter: "after",
-          caption: "Evening, wherever she is",
-          bubbles: [{ who: "Maman Ngalula", text: "Sales, profit, best seller… I see it all from my phone. And my Sundays are mine again.", side: "right", tail: "left" }],
-        },
-      ] as { chapter: "before" | "spark" | "after"; caption: string; bubbles: { who: string; text: string; side: "left" | "right"; tail?: "left" | "right" }[] }[],
+      ] as ComicRow[],
+      spark: { art: 3, caption: "The spark", who: "Patrick", text: "Auntie, try vitePOS: stock counts itself and the app warns you before you run out. It's free to start." },
       end: "Less time counting, more time selling.",
     },
 

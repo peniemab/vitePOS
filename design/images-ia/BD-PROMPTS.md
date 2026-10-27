@@ -20,7 +20,7 @@ Il faut donc des dessins **sans aucun texte**, avec un peu d'espace libre en hau
 ## Style et personnages (à coller une seule fois, au début)
 
 ```
-Create a series of 6 comic book panels, one image per message. Style: classic European "ligne claire" comic art: clean black outlines of uniform thickness, flat bright colors without gradients, no hatching, simple readable backgrounds, warm natural light, expressive faces. Original characters only, not based on any existing comic, set in Kinshasa, Democratic Republic of the Congo. Accent colors: deep navy blue (#1A2B4C) and red (#B6171E). Absolutely no text, no letters, no speech bubbles, no brand logos in the image. Leave some calm empty space in the upper part of each panel for speech bubbles that will be added later. Landscape 4:3.
+Create a series of comic book panels, one image per message. Style: classic European "ligne claire" comic art: clean black outlines of uniform thickness, flat bright colors without gradients, no hatching, simple readable backgrounds, warm natural light, expressive faces. Original characters only, not based on any existing comic, set in Kinshasa, Democratic Republic of the Congo. Accent colors: deep navy blue (#1A2B4C) and red (#B6171E). Absolutely no text, no letters, no speech bubbles, no brand logos in the image. Leave some calm empty space in the upper part of each panel for speech bubbles that will be added later. Landscape 4:3.
 
 Recurring characters (keep them identical in every panel):
 - MAMAN NGALULA: Congolese shop owner, about 45, round friendly face, warm brown skin, colorful wax headwrap and matching wax dress in navy blue and red patterns, small gold earrings.
@@ -39,9 +39,9 @@ Recurring place: "Alimentation Mama Ngalula", a small, well-kept grocery shop in
 Panel 1. Sunday, the shop is closed (metal shutter half down). Maman Ngalula and Grâce sit on the floor among opened cardboard boxes and stacks of products, counting by hand. Maman Ngalula holds an old notebook full of crossed-out numbers and looks exhausted; Grâce scratches her head. A wall clock shows it is late.
 ```
 
-**`bd-2.png` · Avant, en pleine semaine**
+**`bd-2.png` · Avant, rupture et périmés** (à refaire : le rayon vide doit se voir)
 ```
-Panel 2. Weekday in the shop. A woman customer points at an empty spot on the shelf where tins of milk powder should be. Behind the counter, Grâce looks embarrassed, holding a dusty tin of milk powder she just found at the back of the shelf (it is expired). Other shelves are messy.
+Panel 2. Weekday in the shop. In the foreground, a clearly EMPTY wooden shelf section: bare planks where tins of milk powder should be, only dust and one fallen price tag, while the shelves around it are full. A woman customer points at this empty shelf, annoyed. Behind the counter, Grâce looks embarrassed, holding a dusty tin of milk powder she just found at the back (it is expired). Same characters, same style.
 ```
 
 **`bd-3.png` · Le déclic**
@@ -62,4 +62,9 @@ Panel 5. Daytime, well-stocked shelves. Grâce looks at a notification on her sm
 **`bd-6.png` · Avec vitePOS, le soir**
 ```
 Panel 6. Evening at home, a comfortable living room. Maman Ngalula, relaxed on a sofa, looks at her smartphone with a big satisfied smile; a cup of tea on a small table. The old notebook lies closed and forgotten on a shelf in the background.
+```
+
+**`bd-7.png` · Avant, loin de la boutique** (nouvelle case)
+```
+Panel 7. Daytime, Maman Ngalula is far from her shop, standing in a busy Kinshasa street market among stalls and people, holding her smartphone to her ear, worried and frowning, her other hand on her forehead. She has no idea what is happening in her shop. Same characters, same style.
 ```

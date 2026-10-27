@@ -3,12 +3,11 @@
 import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import Photo from "../components/Photo.astro";
+import ComicPanel from "../components/ComicPanel.astro";
 import { SIGNUP_URL } from "../data/content";
 import { alertIcon, icons, moreIcons, navIcons } from "../data/icons";
 import { dicts, PDF, route, type Lang } from "../i18n";
 import "../styles/home.css";
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 
 interface Props {
   lang: Lang;
@@ -26,8 +25,6 @@ const slideMedia = [
   { photo: "quincaillerie", shot: "tel-stock", alt: h.shots.telStock.alt },
   { photo: "boutique", shot: "tel-accueil", alt: h.altHome },
 ];
-/** Dessins de la BD (public/bd/bd-1.webp…) : une case sans dessin affiche « Dessin à venir ». */
-const comicArt = h.comic.panels.map((_, i) => (existsSync(join(process.cwd(), "public", "bd", `bd-${i + 1}.webp`)) ? `/bd/bd-${i + 1}.webp` : null));
 /** Photo de chaque carte « Pour qui », dans l'ordre de `t.audiences`. */
 const audiencePhotos = ["boutique", "quincaillerie", "pharmacie", "supermarche"];
 const gallery = ["vetements", "marche", "pharmacie-comptoir", "comptoir", "mercerie", "vendeur"];
@@ -183,7 +180,7 @@ function toToast(text: string) {
     </div>
   </div>
 
-  <!-- Pourquoi : la BD de Maman Ngalula, en 6 cases. Les bulles sont du texte (traduisibles), les dessins dans public/bd/. -->
+  <!-- Pourquoi : la BD de Maman Ngalula. Chaque ligne montre le problème à gauche et sa solution à droite. -->
   <section class="section why" id="pourquoi" data-comic>
     <div class="wrap">
       <header class="section-head">
@@ -191,35 +188,37 @@ function toToast(text: string) {
         <h2>{h.whyTitle}</h2>
         <p class="section-lead">{h.comic.lead}</p>
       </header>
+      <!-- Le déclic d'abord : Patrick invite sa tante à essayer vitePOS, à côté du bouton. Les lignes en dessous le prouvent. -->
+      <div class="comic-spark">
+        <ComicPanel
+          art={h.comic.spark.art}
+          caption=""
+          bubbles={[{ who: h.comic.spark.who, text: h.comic.spark.text, side: "left" }]}
+          kind="spark"
+          label={h.comic.spark.caption}
+          placeholder={h.comic.placeholder}
+        />
+        <div class="comic-spark-text">
+          <p>{h.comic.end}</p>
+          <a class="btn btn-lg" href={SIGNUP_URL}>{h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
+        </div>
+      </div>
+      <div class="comic-cols" aria-hidden="true">
+        <span class="col-before">{h.comic.columns.before}</span>
+        <span class="col-after">{h.comic.columns.after}</span>
+      </div>
       <ol class="comic">
         {
-          h.comic.panels.map((p, i) => (
-            <li class:list={["panel", `panel-${p.chapter}`]} style={`--i: ${i}`}>
-              {comicArt[i] ? (
-                <img src={comicArt[i]} alt="" width="1072" height="790" loading="lazy" decoding="async" />
-              ) : (
-                <div class="panel-placeholder" aria-hidden="true">
-                  <span>{i + 1}</span>
-                  <small>{h.comic.placeholder}</small>
-                </div>
-              )}
-              <p class="panel-cap">
-                <b>{h.comic.chapters[p.chapter]}</b> {p.caption}
-              </p>
-              {p.bubbles.map((bubble, k) => (
-                <p class:list={["bubble", `bubble-${bubble.side}`, bubble.tail && `tail-${bubble.tail}`]} style={`--k: ${k}`}>
-                  <small>{bubble.who}</small>
-                  {bubble.text}
-                </p>
-              ))}
+          h.comic.rows.map((row, i) => (
+            <li class="comic-row" style={`--i: ${i}`}>
+              <h3 class="row-topic">{row.topic}</h3>
+              <ComicPanel {...row.problem} kind="problem" label={h.comic.columns.before} placeholder={h.comic.placeholder} />
+              <span class="row-arrow" aria-hidden="true" set:html={moreIcons.arrowRight} />
+              <ComicPanel {...row.solution} kind="solution" label={h.comic.columns.after} placeholder={h.comic.placeholder} />
             </li>
           ))
         }
       </ol>
-      <div class="comic-end">
-        <p>{h.comic.end}</p>
-        <a class="btn btn-lg" href={SIGNUP_URL}>{h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
-      </div>
     </div>
   </section>
 
@@ -443,7 +442,7 @@ function toToast(text: string) {
         }
       },
       { threshold: 0.15 },
-    ).observe(comic.querySelector(".comic")!);
+    ).observe(comic.querySelector(".comic-spark")!);
   }
 
   // Carrousel de l'accroche. Sans JavaScript, la première diapositive reste affichée seule.
