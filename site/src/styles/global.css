@@ -143,6 +143,58 @@ img {
   animation: slide-lines 40s linear infinite;
   will-change: transform;
 }
+/* Réseau de boutiques connectées (dessiné par le script de Base.astro). */
+.network {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* Objets qui flottent sur toute la largeur du fond, derrière le contenu (assez pâles pour laisser lire le texte). */
+.floaters {
+  position: absolute;
+  inset: 0;
+}
+.floater {
+  position: absolute;
+  top: 0;
+  width: var(--w);
+  opacity: 0;
+  filter: blur(var(--blur)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
+  animation-name: float-up;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+.floater svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@keyframes float-up {
+  0% {
+    transform: translate3d(0, 105vh, 0) rotate(var(--r0));
+    opacity: 0;
+  }
+  8%,
+  88% {
+    opacity: var(--o);
+  }
+  100% {
+    transform: translate3d(var(--dx), -25vh, 0) rotate(var(--r1));
+    opacity: 0;
+  }
+}
+/* Téléphone : un objet sur deux et plus petits, pour ne pas encombrer un petit écran. */
+@media (max-width: 700px) {
+  .floater:nth-child(2n) {
+    display: none;
+  }
+  .floater {
+    width: calc(var(--w) * 0.75);
+  }
+}
+
 @keyframes slide-lines {
   to {
     /* Décalage = 2 périodes du motif à 118° (141 px / sin 118°), pour que la boucle ne saute pas. */
