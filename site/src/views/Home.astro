@@ -270,6 +270,21 @@ function toToast(text: string) {
         <p class="section-lead">{h.devicesLead}</p>
       </header>
 
+      <!-- Les appareils où l'on utilise vitePOS : c'est le cœur de la section. -->
+      <ul class="device-cards">
+        {
+          h.deviceCards.map((d, i) => (
+            <li>
+              <span class="device-card-icon" set:html={[moreIcons.deviceMobile, deviceIcons.tablet, deviceIcons.laptop, moreIcons.printer][i]} />
+              <b>{d.name}</b>
+              <small>{d.systems}</small>
+              <span>{d.text}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h3 class="sync-title">{h.syncTitle}</h3>
       <div class="sync-stage">
         <div class="sync-device sync-laptop">
           <Shot name="ordi-journee" device="ordi" alt={h.shots.ordiJournee.alt} />
@@ -291,20 +306,6 @@ function toToast(text: string) {
           <circle r="9" class="sync-dot"><animateMotion dur="6s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.12;0.36;1" calcMode="linear"><mpath href="#link-phone" /></animateMotion></circle>
         </svg>
       </div>
-
-      <!-- Les appareils où l'on utilise vitePOS : c'est le cœur de la section. -->
-      <ul class="device-cards">
-        {
-          h.deviceCards.map((d, i) => (
-            <li>
-              <span class="device-card-icon" set:html={[moreIcons.deviceMobile, deviceIcons.tablet, deviceIcons.laptop, moreIcons.printer][i]} />
-              <b>{d.name}</b>
-              <small>{d.systems}</small>
-              <span>{d.text}</span>
-            </li>
-          ))
-        }
-      </ul>
 
       <div class="compat">
         <h3>{h.compatTitle}</h3>

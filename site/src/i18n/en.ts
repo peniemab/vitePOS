@@ -69,6 +69,7 @@ export const en: Dict = {
       laptopToast: "Today's sales · 944,450 FC",
       phoneToast: "New sale · Grâce",
     },
+    syncTitle: "And everything stays in sync",
     compatTitle: "Compatible accessories",
     compatHardware: ["USB or Bluetooth barcode scanner", "58 or 80 mm receipt printer", "Phone camera for scanning"],
     shots: {
@@ -86,7 +87,7 @@ export const en: Dict = {
       "The till that takes payment in seconds, in FC, $ or €, and counts your stock for you. Supermarket tools, as simple as a calculator.",
 
     audiencesTitle: "For every line of business",
-    audiencesLead: "vitePOS grows with your business, in Kinshasa, Lubumbashi, Kolwezi, Matadi and across the DRC.",
+    audiencesLead: "vitePOS grows with your business.",
 
     hardwareTitle: "The hardware you already have is enough",
     hardwareLead: "Start with your phone, add hardware as your business grows.",

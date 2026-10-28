@@ -79,6 +79,7 @@ export const fr = {
       laptopToast: "Ventes du jour · 944 450 FC",
       phoneToast: "Nouvelle vente · Grâce",
     },
+    syncTitle: "Et tout reste synchronisé",
     compatTitle: "Accessoires compatibles",
     compatHardware: ["Douchette code-barres USB ou Bluetooth", "Imprimante de tickets 58 ou 80 mm", "Caméra du téléphone pour scanner"],
     shots: {
@@ -96,7 +97,7 @@ export const fr = {
       "La caisse qui encaisse en quelques secondes, en FC, $ ou €, et compte votre stock pour vous. Les outils d'une grande surface, simples comme une calculatrice.",
 
     audiencesTitle: "Pour tous les secteurs d'activité",
-    audiencesLead: "vitePOS grandit avec votre commerce, à Kinshasa, Lubumbashi, Kolwezi, Matadi et partout en RDC.",
+    audiencesLead: "vitePOS grandit avec votre commerce.",
 
     hardwareTitle: "Le matériel que vous avez déjà suffit",
     hardwareLead: "Commencez avec votre téléphone, ajoutez du matériel quand votre commerce grandit.",
