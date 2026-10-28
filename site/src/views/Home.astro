@@ -5,7 +5,7 @@ import Shot from "../components/Shot.astro";
 import Photo from "../components/Photo.astro";
 import ComicPanel from "../components/ComicPanel.astro";
 import { SIGNUP_URL } from "../data/content";
-import { alertIcon, icons, moreIcons, navIcons } from "../data/icons";
+import { alertIcon, deviceIcons, icons, moreIcons, navIcons } from "../data/icons";
 import { dicts, PDF, route, type Lang } from "../i18n";
 import "../styles/home.css";
 import { existsSync } from "node:fs";
@@ -29,10 +29,6 @@ const slideMedia = [
 ];
 /** Le bloc « Une semaine plus tard » n'apparaît qu'une fois son dessin ajouté (public/bd/bd-8.webp). */
 const resultReady = existsSync(join(process.cwd(), "public", "bd", `bd-${h.comic.result.art}.webp`));
-/** Photo de chaque carte « Pour qui », dans l'ordre de `t.audiences`. */
-const audiencePhotos = ["boutique", "quincaillerie", "pharmacie", "supermarche"];
-const gallery = ["vetements", "marche", "pharmacie-comptoir", "comptoir", "mercerie", "vendeur"];
-const hardwareIcons = [moreIcons.deviceMobile, moreIcons.printer, moreIcons.barcode];
 const strengthIcons = [moreIcons.cash, moreIcons.wifiOff, moreIcons.users];
 /** Icône de chaque question, dans l'ordre de `t.faqs` : prix, matériel, hors ligne, installation, devises, sécurité. */
 const faqIcons = [navIcons.tag, moreIcons.deviceMobile, moreIcons.wifiOff, navIcons.download, moreIcons.cash, moreIcons.shieldCheck];
@@ -265,7 +261,7 @@ function toToast(text: string) {
     </div>
   </section>
 
-  <!-- Appareils : les vrais écrans -->
+  <!-- Appareils : une seule scène animée. Une vente faite sur la tablette part vers l'ordinateur et le téléphone. -->
   <section id={ids.devices} class="section devices">
     <div class="wrap">
       <header class="section-head">
@@ -273,44 +269,53 @@ function toToast(text: string) {
         <h2>{h.devicesTitle}</h2>
         <p class="section-lead">{h.devicesLead}</p>
       </header>
-      <div class="shots-wide">
-        <figure class="shot-cell">
-          <Shot name="tablette-caisse" device="tablette" alt={h.shots.tabletteCaisse.alt} />
-          <figcaption><b>{h.shots.tabletteCaisse.title}</b>{h.shots.tabletteCaisse.text}</figcaption>
-        </figure>
-        <figure class="shot-cell">
+
+      <div class="sync-stage">
+        <div class="sync-device sync-laptop">
           <Shot name="ordi-journee" device="ordi" alt={h.shots.ordiJournee.alt} />
-          <figcaption><b>{h.shots.ordiJournee.title}</b>{h.shots.ordiJournee.text}</figcaption>
-        </figure>
-      </div>
-      <div class="shots-phones">
-        <figure class="shot-cell">
-          <Shot name="tel-ticket" device="tel" alt={h.shots.telTicket.alt} />
-          <figcaption><b>{h.shots.telTicket.title}</b>{h.shots.telTicket.text}</figcaption>
-        </figure>
-        <figure class="shot-cell">
-          <Shot name="tel-stock" device="tel" alt={h.shots.telStock.alt} />
-          <figcaption><b>{h.shots.telStock.title}</b>{h.shots.telStock.text}</figcaption>
-        </figure>
-        <figure class="shot-cell">
+          <span class="sync-toast sync-toast-laptop" aria-hidden="true"><span set:html={moreIcons.check} />{h.sync.laptopToast}</span>
+        </div>
+        <div class="sync-device sync-tablet">
+          <Shot name="tablette-caisse" device="tablette" alt={h.shots.tabletteCaisse.alt} />
+          <span class="sync-sale" aria-hidden="true"><small>{h.sync.sale}</small><b>{h.sync.amount}</b></span>
+        </div>
+        <div class="sync-device sync-phone">
           <Shot name="tel-accueil" device="tel" alt={h.shots.telAccueil.alt} />
-          <figcaption><b>{h.shots.telAccueil.title}</b>{h.shots.telAccueil.text}</figcaption>
-        </figure>
+          <span class="sync-toast sync-toast-phone" aria-hidden="true"><span set:html={moreIcons.check} />{h.sync.phoneToast}</span>
+        </div>
+        <!-- Liaisons entre les appareils : la vente voyage de la tablette vers l'ordinateur et le téléphone. -->
+        <svg class="sync-links" viewBox="0 0 1600 1000" aria-hidden="true">
+          <path id="link-laptop" d="M430 640 C 470 520, 560 470, 700 430" />
+          <path id="link-phone" d="M620 870 C 900 960, 1150 930, 1330 800" />
+          <circle r="9" class="sync-dot"><animateMotion dur="6s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.12;0.3;1" calcMode="linear"><mpath href="#link-laptop" /></animateMotion></circle>
+          <circle r="9" class="sync-dot"><animateMotion dur="6s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.12;0.36;1" calcMode="linear"><mpath href="#link-phone" /></animateMotion></circle>
+        </svg>
       </div>
-      <div class="shots-laptops">
-        <figure class="shot-cell">
-          <Shot name="ordi-ventes" device="ordi" alt={h.shots.ordiVentes.alt} />
-          <figcaption><b>{h.shots.ordiVentes.title}</b>{h.shots.ordiVentes.text}</figcaption>
-        </figure>
-        <figure class="shot-cell">
-          <Shot name="ordi-stock" device="ordi" alt={h.shots.ordiStock.alt} />
-          <figcaption><b>{h.shots.ordiStock.title}</b>{h.shots.ordiStock.text}</figcaption>
-        </figure>
+
+      <!-- Les appareils où l'on utilise vitePOS : c'est le cœur de la section. -->
+      <ul class="device-cards">
+        {
+          h.deviceCards.map((d, i) => (
+            <li>
+              <span class="device-card-icon" set:html={[moreIcons.deviceMobile, deviceIcons.tablet, deviceIcons.laptop, moreIcons.printer][i]} />
+              <b>{d.name}</b>
+              <small>{d.systems}</small>
+              <span>{d.text}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="compat">
+        <h3>{h.compatTitle}</h3>
+        <ul class="compat-list">
+          {h.compatHardware.map((x, i) => <li><span set:html={[moreIcons.barcode, moreIcons.printer, moreIcons.deviceMobile][i]} />{x}</li>)}
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- Pour qui : une carte photo par type de commerce -->
+  <!-- Pour qui : la liste des secteurs et les villes -->
   <section id={ids.audiences} class="section section-tint">
     <div class="wrap">
       <header class="section-head">
@@ -318,19 +323,6 @@ function toToast(text: string) {
         <h2>{h.audiencesTitle}</h2>
         <p class="section-lead">{h.audiencesLead}</p>
       </header>
-      <div class="audience">
-        {
-          t.audiences.map((a, i) => (
-            <article class="aud">
-              <Photo name={audiencePhotos[i]} alt="" class="aud-photo" sizes="(max-width: 560px) 100vw, (max-width: 1000px) 50vw, 25vw" />
-              <div class="aud-body">
-                <h3>{a.title}</h3>
-                <p>{a.text}</p>
-              </div>
-            </article>
-          ))
-        }
-      </div>
       <div class="sectors">
         <p><b>{h.sectorsAll}</b></p>
         <ul>
@@ -338,19 +330,9 @@ function toToast(text: string) {
         </ul>
         <p class="cities"><span set:html={moreIcons.mapPin} />{t.cities}</p>
       </div>
-    </div>
-  </section>
-
-  <!-- Mosaïque de commerces -->
-  <section class="section gallery-section">
-    <div class="wrap gallery-grid">
-      <div class="gallery-text">
-        <h2>{h.galleryTitle}</h2>
-        <p>{h.galleryText}</p>
-        <a class="btn" href={SIGNUP_URL}>{h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
-      </div>
-      <div class="gallery">
-        {gallery.map((g) => <Photo name={g} alt="" class="gallery-photo" sizes="(max-width: 860px) 50vw, 22vw" />)}
+      <!-- Bouton gardé de l'ancienne mosaïque. -->
+      <div class="sectors-cta">
+        <a class="btn btn-lg" href={SIGNUP_URL}>{h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
       </div>
     </div>
   </section>
@@ -368,36 +350,6 @@ function toToast(text: string) {
         <div class="oc-row"><span class="oc-dot sync"></span>{h.offlineStates[1]}</div>
         <div class="oc-row"><span class="oc-dot on"></span>{h.offlineStates[2]}</div>
       </div>
-    </div>
-  </section>
-
-  <!-- Matériel -->
-  <section class="section">
-    <div class="wrap">
-      <header class="section-head">
-        <p class="kicker">{h.hardwareEyebrow}</p>
-        <h2>{h.hardwareTitle}</h2>
-        <p class="section-lead">{h.hardwareLead}</p>
-      </header>
-      <div class="hardware">
-        {
-          h.hardware.map((hw, i) => (
-            <div class="hw">
-              <span class="icon" set:html={hardwareIcons[i]} />
-              <h3>{hw.title}</h3>
-              <ul>
-                {hw.items.map((item) => (
-                  <li>
-                    <span set:html={moreIcons.check} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))
-        }
-      </div>
-      <p class="note">{h.hardwareNote}</p>
     </div>
   </section>
 

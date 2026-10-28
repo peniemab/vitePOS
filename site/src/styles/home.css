@@ -978,54 +978,276 @@
   }
 }
 
-/* ---------- Appareils ---------- */
+/* ---------- Appareils : scène « tout est synchronisé » ----------
+   Une boucle de 6 s : la vente apparaît sur la tablette, un point rouge part vers l'ordinateur et le téléphone,
+   puis chacun affiche sa notification. Les points suivent les liaisons (SVG animateMotion, même durée de 6 s). */
 .devices {
   position: relative;
   overflow-x: clip;
 }
-
-/* ---------- Pour qui : cartes photo ---------- */
-.audience {
+.sync-stage {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.sync-device {
+  position: absolute;
+  z-index: 2;
+}
+.sync-device .frame-phone,
+.sync-device .frame-tablet {
+  max-width: none;
+}
+.sync-laptop {
+  left: 19%;
+  top: 0;
+  width: 62%;
+}
+.sync-tablet {
+  left: 0;
+  bottom: 4%;
+  width: 40%;
+  z-index: 3;
+}
+.sync-phone {
+  right: 3%;
+  bottom: 0;
+  width: 15%;
+  z-index: 3;
+}
+.sync-links {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.sync-links path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.28);
+  stroke-width: 3;
+  stroke-dasharray: 8 12;
+  animation: link-flow 1.2s linear infinite;
+}
+@keyframes link-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+.sync-dot {
+  fill: #ff4d52;
+  filter: drop-shadow(0 0 8px rgba(255, 77, 82, 0.9));
+}
+/* La vente qui vient d'être encaissée sur la tablette. */
+.sync-sale {
+  position: absolute;
+  left: 50%;
+  top: -14%;
+  display: grid;
+  padding: 10px 16px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+  animation: sync-sale 6s ease-in-out infinite;
+}
+.sync-sale small {
+  color: #2b8a3e;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+.sync-sale b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--navy);
+}
+@keyframes sync-sale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 12px) scale(0.9);
+  }
+  6%,
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
+/* Notifications reçues sur l'ordinateur et le téléphone. */
+.sync-toast {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(15, 28, 54, 0.92);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+}
+.sync-toast span {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: #2b8a3e;
+}
+.sync-toast svg {
+  width: 15px;
+  height: 15px;
+}
+.sync-toast-laptop {
+  right: 6%;
+  top: 8%;
+  animation: sync-toast 6s ease-out infinite;
+  animation-delay: 0s;
+  --at: 30%;
+}
+.sync-toast-phone {
+  right: 30%;
+  top: 6%;
+  animation: sync-toast-late 6s ease-out infinite;
+}
+@keyframes sync-toast {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  34%,
+  86% {
+    opacity: 1;
+    transform: none;
+  }
+  94%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes sync-toast-late {
+  0%,
+  36% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  40%,
+  86% {
+    opacity: 1;
+    transform: none;
+  }
+  94%,
+  100% {
+    opacity: 0;
+  }
+}
+/* Les appareils compatibles : quatre cartes, le cœur de la section. */
+.device-cards {
+  list-style: none;
+  margin: 32px auto 0;
+  padding: 0;
+  max-width: 1040px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+  gap: 16px;
 }
-.aud {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.device-cards li {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 20px;
   background: var(--d-card);
-  box-shadow: none;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
 }
-.aud:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.3);
-}
-.aud-photo {
-  display: block;
-  width: 100%;
-  height: 210px;
-  object-fit: cover;
-  transition: transform 0.6s ease;
-}
-.aud:hover .aud-photo {
-  transform: scale(1.05);
-}
-.aud-body {
-  position: relative;
-  padding: 22px;
-  background: transparent;
-}
-.aud h3 {
+.device-card-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #2c4a85, #4f7fd8);
   color: #fff;
 }
-.aud p {
-  color: var(--d-muted);
-  margin: 0;
+.device-cards b {
+  color: #fff;
+  font-size: 1.2rem;
 }
+.device-cards small {
+  color: #69db7c;
+  font-weight: 700;
+}
+.device-cards span:not(.device-card-icon) {
+  color: var(--d-muted);
+  font-size: 0.95rem;
+}
+/* Compatible avec ce que vous avez déjà. */
+.compat {
+  max-width: 1040px;
+  margin: 40px auto 0;
+}
+.compat h3 {
+  color: #fff;
+  margin-bottom: 14px;
+}
+.compat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.compat-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--d-card);
+  color: #dfe6f5;
+  font-weight: 600;
+}
+.compat-list svg {
+  width: 20px;
+  height: 20px;
+  color: #8fb0ff;
+}
+
+
+@media (max-width: 760px) {
+  .sync-sale {
+    padding: 6px 10px;
+  }
+  .sync-sale small {
+    font-size: 0.65rem;
+  }
+  .sync-sale b {
+    font-size: 1rem;
+  }
+  .sync-toast {
+    font-size: 0.62rem;
+    padding: 5px 7px;
+    gap: 5px;
+  }
+  .sync-toast span {
+    width: 15px;
+    height: 15px;
+  }
+  .device-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+}
+
+/* ---------- Pour qui : cartes photo ---------- */
 .sectors {
   margin-top: 36px;
   padding: 26px 28px;
@@ -1048,6 +1270,9 @@
   background: rgba(255, 255, 255, 0.1);
   font-size: 0.95rem;
 }
+.sectors-cta {
+  margin-top: 28px;
+}
 .sectors .cities {
   display: flex;
   align-items: center;
@@ -1059,62 +1284,6 @@
   width: 20px;
   height: 20px;
   color: #ff6b5e;
-}
-@media (max-width: 1000px) {
-  .audience {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-@media (max-width: 560px) {
-  .audience {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ---------- Mosaïque de commerces ---------- */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 56px;
-  align-items: center;
-}
-.gallery-text h2 {
-  color: #fff;
-  font-size: clamp(1.75rem, 3.4vw, 2.4rem);
-  line-height: 1.02;
-}
-.gallery-text p {
-  color: var(--d-muted);
-  font-size: 1.05rem;
-  margin-bottom: 24px;
-}
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 150px;
-  gap: 12px;
-}
-.gallery-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.gallery-photo:nth-child(1) {
-  grid-row: span 2;
-}
-.gallery-photo:nth-child(4),
-.gallery-photo:nth-child(5) {
-  grid-row: span 2;
-}
-@media (max-width: 860px) {
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-  .gallery {
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: 120px;
-  }
 }
 
 /* ---------- Hors ligne : bandeau sombre ---------- */
@@ -1173,51 +1342,6 @@
   .split {
     grid-template-columns: 1fr;
     gap: 32px;
-  }
-}
-
-/* ---------- Matériel ---------- */
-.hardware {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-.hw {
-  padding: 26px;
-  background: var(--d-card);
-  box-shadow: none;
-}
-.hw h3 {
-  color: #fff;
-  margin-bottom: 10px;
-}
-.hw ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  color: var(--d-muted);
-}
-.hw li {
-  display: flex;
-  gap: 8px;
-}
-.hw li + li {
-  margin-top: 8px;
-}
-.hw li svg {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  margin-top: 4px;
-  color: #69db7c;
-}
-.note {
-  margin-top: 20px;
-  color: var(--d-muted);
-}
-@media (max-width: 860px) {
-  .hardware {
-    grid-template-columns: 1fr;
   }
 }
 

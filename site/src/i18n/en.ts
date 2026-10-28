@@ -56,8 +56,21 @@ export const en: Dict = {
     altCaisse: "The vitePOS till with a cart in progress",
 
     devicesTitle: "One till, on all your devices",
-    devicesLead:
-      "The real vitePOS screens. Phone, tablet, computer or POS terminal: it runs wherever there is a recent browser, and everything stays in sync.",
+    devicesLead: "Phone, tablet, computer or POS terminal: vitePOS runs on the device you already have. And everything stays in sync: a sale made at the counter shows up instantly on the other screens.",
+    deviceCards: [
+      { name: "Phone", systems: "Android · iPhone", text: "To sell anywhere and follow your business from afar." },
+      { name: "Tablet", systems: "Android · iPad", text: "Perfect at the counter: items on the left, cart on the right." },
+      { name: "Computer", systems: "Windows · Mac", text: "For management, stock and reports." },
+      { name: "POS terminal", systems: "Android with Chrome", text: "For fixed tills, with printer and scanner." },
+    ],
+    sync: {
+      sale: "Sale completed",
+      amount: "21,100 FC",
+      laptopToast: "Today's sales · 944,450 FC",
+      phoneToast: "New sale · Grâce",
+    },
+    compatTitle: "Compatible accessories",
+    compatHardware: ["USB or Bluetooth barcode scanner", "58 or 80 mm receipt printer", "Phone camera for scanning"],
     shots: {
       tabletteCaisse: { alt: "The till on a tablet: items on the left, cart on the right", title: "Till on a tablet", text: "Items on the left, cart on the right: perfect at the counter." },
       ordiJournee: { alt: "The till day: money expected in the drawer in FC, $ and €", title: "Till day", text: "The money expected in the drawer in FC, $ and €, then closing." },

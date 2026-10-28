@@ -63,3 +63,8 @@ export const navIcons = {
   download: tabler(["M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2", "M7 11l5 5l5 -5", "M12 4l0 12"]),
   book: tabler(["M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0", "M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0", "M3 6l0 13", "M12 6l0 13", "M21 6l0 13"]),
 };
+
+export const deviceIcons = {
+  tablet: tabler(["M5 4a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v16a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1v-16", "M11 17a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"]),
+  laptop: tabler(["M3 19l18 0", "M5 7a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8"]),
+};

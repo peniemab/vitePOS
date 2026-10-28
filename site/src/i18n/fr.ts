@@ -65,8 +65,22 @@ export const fr = {
     altCaisse: "La caisse de vitePOS avec un panier en cours",
 
     devicesTitle: "Une seule caisse, sur tous vos appareils",
-    devicesLead:
-      "Les vrais écrans de vitePOS. Téléphone, tablette, ordinateur ou terminal de caisse : il fonctionne partout où il y a un navigateur récent, et tout reste synchronisé.",
+    devicesLead: "Téléphone, tablette, ordinateur ou terminal de caisse : vitePOS fonctionne sur l'appareil que vous avez déjà. Et tout reste synchronisé : une vente faite au comptoir apparaît aussitôt sur les autres écrans.",
+    /** Les appareils où l'on utilise vitePOS (cœur de la section), et la scène qui montre la synchronisation. */
+    deviceCards: [
+      { name: "Téléphone", systems: "Android · iPhone", text: "Pour vendre partout et suivre votre commerce à distance." },
+      { name: "Tablette", systems: "Android · iPad", text: "Idéale au comptoir : les articles à gauche, le panier à droite." },
+      { name: "Ordinateur", systems: "Windows · Mac", text: "Pour la gestion, le stock et les rapports." },
+      { name: "Terminal de caisse", systems: "Android avec Chrome", text: "Pour les caisses fixes, avec imprimante et douchette." },
+    ],
+    sync: {
+      sale: "Vente encaissée",
+      amount: "21 100 FC",
+      laptopToast: "Ventes du jour · 944 450 FC",
+      phoneToast: "Nouvelle vente · Grâce",
+    },
+    compatTitle: "Accessoires compatibles",
+    compatHardware: ["Douchette code-barres USB ou Bluetooth", "Imprimante de tickets 58 ou 80 mm", "Caméra du téléphone pour scanner"],
     shots: {
       tabletteCaisse: { alt: "La caisse sur tablette : articles à gauche, panier à droite", title: "Caisse sur tablette", text: "Les articles à gauche, le panier à droite : idéal au comptoir." },
       ordiJournee: { alt: "La journée de caisse : argent attendu dans le tiroir en FC, $ et €", title: "Journée de caisse", text: "L'argent attendu dans le tiroir en FC, $ et €, puis la clôture." },
