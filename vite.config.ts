@@ -9,7 +9,9 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: false,
-      includeAssets: ["favicon.svg", "logo.svg", "apple-touch-icon.png"],
+      // Icônes et logo sont déjà dans globPatterns : les déclarer aussi ici les mettrait deux fois dans la liste
+      // de mise en cache, et le service worker refuserait de s'installer (« Entry already exists »).
+      includeManifestIcons: false,
       manifest: {
         name: "vitePOS · Caisse et stock",
         short_name: "vitePOS",
