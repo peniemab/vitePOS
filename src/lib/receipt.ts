@@ -7,18 +7,61 @@ import { PAYMENT_LABELS, type Sale } from "./sales";
 import { ticketNumber } from "./cart";
 import { packLabel } from "./products";
 import { formatDayShort } from "./serials";
+import { code128Bitmap, escPosRaster, qrBitmap, unpack, type Bitmap, type PackedBitmap } from "./bitmap";
 
 export type PaperWidth = 58 | 80;
+
+/** Adresse du site de vitePOS, dans le petit QR code en bas de chaque ticket. */
+export const VITEPOS_SITE = "https://vitepos-rdc.web.app";
 
 export type ReceiptLine =
   | { kind: "title"; text: string }
   | { kind: "center"; text: string }
   | { kind: "text"; text: string }
   | { kind: "pair"; left: string; right: string; strong?: boolean }
-  | { kind: "rule" };
+  | { kind: "rule" }
+  | { kind: "logo"; bitmap: PackedBitmap }
+  | { kind: "barcode"; value: string }
+  /** `small` : le petit QR code vitePOS du bas du ticket. */
+  | { kind: "qr"; value: string; small?: boolean };
 
-export interface ReceiptShop {
+/** En-tête et pied du ticket, réglés par le propriétaire (tout est facultatif sauf le nom). */
+export interface ReceiptSettings {
+  logo?: PackedBitmap | null;
+  address?: string;
+  phone?: string;
+  rccm?: string;
+  idNat?: string;
+  taxId?: string;
+  /** Message de fin (« Merci et à bientôt ! » si vide). */
+  footer?: string;
+  /** Lien du QR code de la boutique (WhatsApp, Facebook, site…) et la phrase imprimée dessous. */
+  link?: string;
+  linkLabel?: string;
+}
+
+export interface ReceiptShop extends ReceiptSettings {
   name: string;
+}
+
+/** Points imprimables sur la largeur du papier (203 dpi). */
+export function paperDots(width: PaperWidth): number {
+  return width === 80 ? 576 : 384;
+}
+
+/** Image d'une ligne logo, QR code ou code-barres, à la taille du papier ; `null` pour une ligne de texte. */
+export function lineBitmap(l: ReceiptLine, width: PaperWidth): Bitmap | null {
+  const dots = paperDots(width);
+  switch (l.kind) {
+    case "logo":
+      return unpack(l.bitmap);
+    case "barcode":
+      return code128Bitmap(l.value, dots - 16, 64);
+    case "qr":
+      return qrBitmap(l.value, l.small ? (width === 80 ? 128 : 112) : width === 80 ? 264 : 216);
+    default:
+      return null;
+  }
 }
 
 function qty(q: number, unit: string): string {
@@ -33,14 +76,22 @@ function dateTime(ms: number): string {
 export function receiptLines(shop: ReceiptShop, sale: Sale): ReceiptLine[] {
   const c = sale.currency;
   const p = sale.payment;
-  const out: ReceiptLine[] = [
-    { kind: "title", text: shop.name },
+  const out: ReceiptLine[] = [];
+  if (shop.logo) out.push({ kind: "logo", bitmap: shop.logo });
+  out.push({ kind: "title", text: shop.name });
+  const info = (label: string, v?: string) => v?.trim() && out.push({ kind: "center", text: `${label}${v.trim()}` });
+  info("", shop.address);
+  info("Tél : ", shop.phone);
+  info("RCCM : ", shop.rccm);
+  info("ID NAT : ", shop.idNat);
+  info("N° impôt : ", shop.taxId);
+  out.push(
     { kind: "center", text: "Ticket de vente" },
     { kind: "rule" },
     { kind: "text", text: dateTime(sale.createdAtMs) },
     { kind: "text", text: `N° ${ticketNumber(sale.id)}` },
     { kind: "text", text: `Vendeur : ${sale.memberName}` },
-  ];
+  );
   if (sale.clientName) out.push({ kind: "text", text: `Client : ${sale.clientName}` });
   if (sale.status === "annulee") out.push({ kind: "center", text: "*** VENTE ANNULÉE ***" });
   out.push({ kind: "rule" });
@@ -73,7 +124,14 @@ export function receiptLines(shop: ReceiptShop, sale: Sale): ReceiptLine[] {
     if (p.change > 0) out.push({ kind: "pair", left: "Rendu", right: formatMoney(p.change, p.currency) });
   }
   out.push({ kind: "rule" });
-  out.push({ kind: "center", text: "Merci et à bientôt !" });
+  // Code-barres du numéro : on retrouvera la vente en le scannant (retour, réclamation).
+  out.push({ kind: "barcode", value: ticketNumber(sale.id) }, { kind: "center", text: ticketNumber(sale.id) });
+  if (shop.link?.trim()) {
+    out.push({ kind: "qr", value: shop.link.trim() });
+    if (shop.linkLabel?.trim()) out.push({ kind: "center", text: shop.linkLabel.trim() });
+  }
+  out.push({ kind: "center", text: shop.footer?.trim() || "Merci et à bientôt !" });
+  out.push({ kind: "qr", value: VITEPOS_SITE, small: true }, { kind: "center", text: "Caisse vitePOS : scannez pour l'essayer" });
   return out;
 }
 
@@ -94,12 +152,19 @@ function center(text: string, cols: number): string {
 }
 
 /** Une ligne du ticket prête à dessiner en image : texte déjà mis en colonnes, gras, double taille. */
-export interface ReceiptRow {
+export interface TextRow {
   text: string;
   bold?: boolean;
   /** Double hauteur et largeur (nom de la boutique) : deux fois moins de caractères par ligne. */
   big?: boolean;
 }
+
+/** Logo, QR code ou code-barres, centré. */
+export interface ImageRow {
+  image: Bitmap;
+}
+
+export type ReceiptRow = TextRow | ImageRow;
 
 /** Coupe un texte en lignes d'au plus `max` caractères, entre les mots quand c'est possible. */
 function wrapWords(text: string, max: number): string[] {
@@ -133,13 +198,15 @@ export function receiptRows(lines: ReceiptLine[], width: PaperWidth): ReceiptRow
         // En double taille, le nom tient sur moins de caractères : on le coupe entre les mots.
         return wrapWords(l.text, Math.floor(cols / 2)).map((t) => ({ text: center(t, Math.floor(cols / 2)), big: true, bold: true }));
       case "center":
-        return [{ text: center(l.text, cols) }];
+        return wrapWords(l.text, cols).map((t) => ({ text: center(t, cols) }));
       case "text":
         return [{ text: l.text.slice(0, cols) }];
       case "pair":
         return [{ text: pairText(l.left, l.right, cols), bold: l.strong }];
       case "rule":
         return [{ text: "-".repeat(cols) }];
+      default:
+        return [{ image: lineBitmap(l, width)! }];
     }
   });
 }
@@ -148,17 +215,22 @@ export function receiptRows(lines: ReceiptLine[], width: PaperWidth): ReceiptRow
 export function receiptText(lines: ReceiptLine[], width: PaperWidth = 58): string {
   const cols = columns(width);
   return lines
-    .map((l) => {
+    .flatMap((l): string[] => {
       switch (l.kind) {
         case "title":
         case "center":
-          return center(l.text, cols);
+          return wrapWords(l.text, cols).map((t) => center(t, cols));
         case "text":
-          return l.text;
+          return [l.text];
         case "pair":
-          return pairText(l.left, l.right, cols);
+          return [pairText(l.left, l.right, cols)];
         case "rule":
-          return "-".repeat(cols);
+          return ["-".repeat(cols)];
+        case "qr":
+          // Le lien de la boutique reste utile en texte ; le QR vitePOS, non.
+          return l.small ? [] : [l.value];
+        default:
+          return [];
       }
     })
     .join("\n");
@@ -198,13 +270,13 @@ export function escPos(lines: ReceiptLine[], width: PaperWidth): Uint8Array {
       case "title":
         align(1);
         b.push(ESC, 0x21, 0x30); // double hauteur et largeur
-        text(l.text.slice(0, Math.floor(cols / 2)));
+        wrapWords(l.text, Math.floor(cols / 2)).forEach(text);
         b.push(ESC, 0x21, 0x00);
         align(0);
         break;
       case "center":
         align(1);
-        text(l.text.slice(0, cols));
+        wrapWords(l.text, cols).forEach(text);
         align(0);
         break;
       case "text":
@@ -218,8 +290,42 @@ export function escPos(lines: ReceiptLine[], width: PaperWidth): Uint8Array {
       case "rule":
         text("-".repeat(cols));
         break;
+      default:
+        // Logo, QR code, code-barres : imprimés en image, comme dans l'app de partage.
+        b.push(...escPosRaster(lineBitmap(l, width)!, paperDots(width)));
+        break;
     }
   }
-  b.push(0x0a, 0x0a, 0x0a, GS, 0x56, 0x00); // avance et coupe
+  b.push(0x0a, 0x0a, 0x0a, 0x0a, 0x0a, GS, 0x56, 0x00); // avance (marge pour la déchirure) et coupe
   return new Uint8Array(b);
+}
+
+/** Vente d'exemple, pour l'aperçu du ticket dans Paramètres et le ticket de test. */
+export function sampleSale(currency: Sale["currency"], nowMs: number): Sale {
+  const p = currency === "CDF" ? 1 : 0.001;
+  const lines = [
+    { productId: "a", name: "Riz 5 kg", unit: "u" as const, unitPrice: 18500 * p, quantity: 2, lineTotal: 37000 * p },
+    { productId: "b", name: "Huile 1 L", unit: "u" as const, unitPrice: 6000 * p, quantity: 1, lineTotal: 6000 * p },
+  ];
+  return {
+    id: "exempleTST042",
+    uid: "",
+    memberName: "Grâce",
+    lines,
+    subtotal: 43000 * p,
+    discountPercent: 0,
+    discount: 0,
+    total: 43000 * p,
+    currency,
+    payment: { method: "especes", currency, rates: null, due: 43000 * p, received: 50000 * p, change: 7000 * p },
+    clientId: "",
+    clientName: "",
+    inStats: false,
+    status: "validee",
+    cancelReason: "",
+    cancelledByName: "",
+    createdAtMs: nowMs,
+    dayKey: "",
+    synced: true,
+  };
 }

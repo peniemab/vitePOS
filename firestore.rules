@@ -76,6 +76,29 @@ service cloud.firestore {
     function changes() {
       return request.resource.data.diff(resource.data).affectedKeys();
     }
+    function shortText(v, max) {
+      return v is string && v.size() <= max;
+    }
+    // En-tête et pied du ticket de caisse : logo (image noir et blanc), coordonnées, mentions légales,
+    // lien du QR code de la boutique et message de fin. Chaque champ est facultatif.
+    function validReceipt(r) {
+      return r is map
+        && r.keys().hasOnly(['logo', 'address', 'phone', 'rccm', 'idNat', 'taxId', 'footer', 'link', 'linkLabel'])
+        && shortText(r.get('address', ''), 160)
+        && shortText(r.get('phone', ''), 40)
+        && shortText(r.get('rccm', ''), 60)
+        && shortText(r.get('idNat', ''), 60)
+        && shortText(r.get('taxId', ''), 60)
+        && shortText(r.get('footer', ''), 120)
+        && shortText(r.get('link', ''), 300)
+        && shortText(r.get('linkLabel', ''), 60)
+        && (r.get('logo', null) == null
+            || (r.logo is map
+                && r.logo.keys().hasOnly(['w', 'h', 'bits'])
+                && r.logo.w is int && r.logo.w >= 1 && r.logo.w <= 576
+                && r.logo.h is int && r.logo.h >= 1 && r.logo.h <= 300
+                && shortText(r.logo.bits, 30000)));
+    }
 
     // ---------- Fiche du compte ----------
 
@@ -138,7 +161,8 @@ service cloud.firestore {
         && request.resource.data.usdRateCdf is number
         && request.resource.data.usdRateCdf > 0
         && request.resource.data.get('eurRateCdf', 0) is number
-        && request.resource.data.get('eurRateCdf', 0) >= 0;
+        && request.resource.data.get('eurRateCdf', 0) >= 0
+        && (request.resource.data.get('receipt', null) == null || validReceipt(request.resource.data.receipt));
 
       // ---------- Membres ----------
 

@@ -9,6 +9,7 @@ import { PageTitle } from "../components/ui";
 import { confirmLogout } from "../components/Layout";
 import { ThemeSwitch } from "../components/ThemeSwitch";
 import { PrinterCard } from "../components/PrinterCard";
+import { ReceiptCard } from "../components/ReceiptCard";
 import { CURRENCIES, CURRENCY_LIST, type Currency } from "../lib/fx";
 
 function onError(e: unknown) {
@@ -166,7 +167,9 @@ export function SettingsScreen() {
           </Paper>
         )}
 
-        <PrinterCard shopName={boutique.name} paperWidth={boutique.paperWidthMm} />
+        {isOwner && <ReceiptCard boutique={boutique} />}
+
+        <PrinterCard shop={{ ...boutique.receipt, name: boutique.name }} currency={boutique.currency} paperWidth={boutique.paperWidthMm} />
 
         <Button variant="default" color="red" onClick={confirmLogout}>
           Se déconnecter

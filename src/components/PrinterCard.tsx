@@ -21,7 +21,8 @@ import {
   setPrinterMode,
 } from "../data/printer";
 import { errorMessage } from "../data/errors";
-import type { PaperWidth, ReceiptLine } from "../lib/receipt";
+import { receiptLines, sampleSale, type PaperWidth, type ReceiptLine, type ReceiptShop } from "../lib/receipt";
+import type { Currency } from "../lib/fx";
 import type { PrinterMode } from "../lib/printing";
 
 const MODE_LABELS: Record<PrinterMode, string> = {
@@ -32,19 +33,15 @@ const MODE_LABELS: Record<PrinterMode, string> = {
   browser: "Fenêtre d'impression du navigateur",
 };
 
-function testTicket(shopName: string): ReceiptLine[] {
-  return [
-    { kind: "title", text: shopName },
-    { kind: "center", text: "Ticket de test" },
-    { kind: "rule" },
-    { kind: "pair", left: "Imprimante", right: "OK" },
-    { kind: "pair", left: "Accents", right: "é è à ç €" },
-    { kind: "rule" },
-    { kind: "center", text: "vitePOS" },
-  ];
+/** Le vrai ticket de la boutique (logo, coordonnées, QR codes) avec une vente d'exemple et les accents. */
+function testTicket(shop: ReceiptShop, currency: Currency): ReceiptLine[] {
+  const lines = receiptLines(shop, sampleSale(currency, Date.now()));
+  const at = lines.findIndex((l) => l.kind === "title") + 1;
+  lines.splice(at, 0, { kind: "center", text: "*** TICKET DE TEST ***" }, { kind: "pair", left: "Accents", right: "é è à ç €" });
+  return lines;
 }
 
-export function PrinterCard({ shopName, paperWidth }: { shopName: string; paperWidth: PaperWidth }) {
+export function PrinterCard({ shop, currency, paperWidth }: { shop: ReceiptShop; currency: Currency; paperWidth: PaperWidth }) {
   const [mode, setMode] = useState<PrinterMode>(getPrinterMode());
   const [printerName, setPrinterName] = useState(getBluetoothPrinterName());
   const [busy, setBusy] = useState(false);
@@ -76,7 +73,7 @@ export function PrinterCard({ shopName, paperWidth }: { shopName: string; paperW
   async function test() {
     setBusy(true);
     try {
-      if (!(await printReceipt(testTicket(shopName), paperWidth))) window.print();
+      if (!(await printReceipt(testTicket(shop, currency), paperWidth))) window.print();
     } catch (e) {
       fail(e);
     } finally {

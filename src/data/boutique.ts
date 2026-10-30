@@ -30,6 +30,8 @@ import { CURRENCY_LIST, isCurrency, isValidRate, type Currency, type Rates } fro
 import { generateInviteCode, normalizeInviteCode } from "../lib/invite";
 import { isRole, isStatus, type MemberStatus, type Permissions, type Role } from "../lib/roles";
 import { isPlan, trialEnd, type BillingCycle, type Plan } from "../lib/subscription";
+import type { PackedBitmap } from "../lib/bitmap";
+import type { ReceiptSettings } from "../lib/receipt";
 
 export interface Profile {
   uid: string;
@@ -52,6 +54,8 @@ export interface Boutique {
   eurRateUpdatedAtMs: number;
   paperWidthMm: 58 | 80;
   autoPrintTicket: boolean;
+  /** En-tête et pied du ticket : logo, coordonnées, mentions légales, QR code de la boutique. */
+  receipt: ReceiptSettings;
   /** Abonnement : fixé par l'éditeur de vitePOS (le propriétaire peut changer de formule pendant l'essai). */
   plan: Plan;
   billingCycle: BillingCycle;
@@ -80,6 +84,24 @@ function toProfile(uid: string, d: DocumentData): Profile {
   return { uid, email: String(d.email ?? ""), name: String(d.name ?? ""), boutiqueId: String(d.boutiqueId ?? "") };
 }
 
+function toReceipt(r: unknown): ReceiptSettings {
+  if (!r || typeof r !== "object") return {};
+  const d = r as Record<string, unknown>;
+  const str = (k: string) => (typeof d[k] === "string" ? (d[k] as string) : "");
+  const logo = d.logo as PackedBitmap | null | undefined;
+  return {
+    logo: logo && typeof logo.bits === "string" && logo.w > 0 && logo.h > 0 ? logo : null,
+    address: str("address"),
+    phone: str("phone"),
+    rccm: str("rccm"),
+    idNat: str("idNat"),
+    taxId: str("taxId"),
+    footer: str("footer"),
+    link: str("link"),
+    linkLabel: str("linkLabel"),
+  };
+}
+
 function toBoutique(id: string, d: DocumentData): Boutique {
   return {
     id,
@@ -93,6 +115,7 @@ function toBoutique(id: string, d: DocumentData): Boutique {
     eurRateUpdatedAtMs: ms(d.eurRateUpdatedAt),
     paperWidthMm: d.paperWidthMm === 80 ? 80 : 58,
     autoPrintTicket: d.autoPrintTicket === true,
+    receipt: toReceipt(d.receipt),
     plan: isPlan(d.plan) ? d.plan : "boutique",
     billingCycle: d.billingCycle === "annuel" ? "annuel" : "mensuel",
     trialEndsAtMs: ms(d.trialEndsAt),
@@ -309,6 +332,23 @@ export function updateBoutique(
   onError?: (e: unknown) => void,
 ): void {
   track(updateDoc(boutiqueRef(id), { ...patch, updatedAt: serverTimestamp() }), onError);
+}
+
+/** En-tête et pied du ticket (propriétaire seulement, fonctionne hors ligne). */
+export function updateReceipt(id: string, receipt: ReceiptSettings, onError?: (e: unknown) => void): void {
+  const t = (v?: string) => (v ?? "").trim();
+  const clean = {
+    logo: receipt.logo ?? null,
+    address: t(receipt.address),
+    phone: t(receipt.phone),
+    rccm: t(receipt.rccm),
+    idNat: t(receipt.idNat),
+    taxId: t(receipt.taxId),
+    footer: t(receipt.footer),
+    link: t(receipt.link),
+    linkLabel: t(receipt.linkLabel),
+  };
+  track(updateDoc(boutiqueRef(id), { receipt: clean, updatedAt: serverTimestamp() }), onError);
 }
 
 /** Pendant l'essai seulement : le propriétaire choisit une autre formule (fonctionne hors ligne). */

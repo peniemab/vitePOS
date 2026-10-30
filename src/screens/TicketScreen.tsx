@@ -1,7 +1,7 @@
 /** Ticket d'une vente : aperçu, impression (navigateur ou thermique), partage, annulation. */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useParams } from "react-router";
-import { Alert, Badge, Button, Group, Modal, Paper, Stack, Text, TextInput } from "@mantine/core";
+import { Alert, Badge, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCash, IconCloudCheck, IconCloudUpload, IconPrinter, IconReceiptOff, IconShare } from "@tabler/icons-react";
 import { useReady } from "../data/session";
@@ -10,7 +10,8 @@ import { cancelSale, watchSale } from "../data/sales";
 import { errorMessage } from "../data/errors";
 import { getPrinterMode, printReceipt } from "../data/printer";
 import { PageTitle } from "../components/ui";
-import { receiptLines, receiptText, type ReceiptLine } from "../lib/receipt";
+import { receiptLines, receiptText } from "../lib/receipt";
+import { Receipt } from "../components/Receipt";
 import { canCancelSale, type Sale } from "../lib/sales";
 import { ticketNumber } from "../lib/cart";
 
@@ -25,7 +26,7 @@ export function TicketScreen() {
 
   useEffect(() => watchSale(boutique.id, id, setSale, (e) => setError(errorMessage(e))), [boutique.id, id]);
 
-  const lines = sale ? receiptLines({ name: boutique.name }, sale) : [];
+  const lines = useMemo(() => (sale ? receiptLines({ ...boutique.receipt, name: boutique.name }, sale) : []), [sale, boutique.receipt, boutique.name]);
   const justSold = (location.state as { justSold?: boolean } | null)?.justSold === true;
 
   async function print() {
@@ -107,7 +108,7 @@ export function TicketScreen() {
       )}
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "flex-start" }}>
-        <Receipt lines={lines} />
+        <Receipt lines={lines} width={boutique.paperWidthMm} />
         <Stack style={{ flex: "1 1 220px" }} gap="xs" className="no-print">
           <Button component={Link} to="/caisse" size="lg" leftSection={<IconCash size={20} />}>
             Nouvelle vente
@@ -128,41 +129,6 @@ export function TicketScreen() {
 
       <CancelModal sale={sale} opened={cancelOpen} onClose={() => setCancelOpen(false)} />
     </>
-  );
-}
-
-/** Le ticket tel qu'il sort de l'imprimante (seul élément imprimé par le navigateur). */
-function Receipt({ lines }: { lines: ReceiptLine[] }) {
-  return (
-    <Paper className="receipt" p="md" shadow="xs">
-      {lines.map((l, i) => {
-        switch (l.kind) {
-          case "title":
-            return (
-              <div key={i} className="receipt-title">
-                {l.text}
-              </div>
-            );
-          case "center":
-            return (
-              <div key={i} style={{ textAlign: "center" }}>
-                {l.text}
-              </div>
-            );
-          case "text":
-            return <div key={i}>{l.text}</div>;
-          case "pair":
-            return (
-              <div key={i} className="receipt-pair" style={{ fontWeight: l.strong ? 700 : undefined, fontSize: l.strong ? "1.1em" : undefined }}>
-                <span>{l.left}</span>
-                <span>{l.right}</span>
-              </div>
-            );
-          case "rule":
-            return <hr key={i} className="receipt-rule" />;
-        }
-      })}
-    </Paper>
   );
 }
 

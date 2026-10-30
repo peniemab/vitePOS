@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { encodeCp1252, escPos, receiptLines, receiptText, receiptRows } from "./receipt";
+import { encodeCp1252, escPos, receiptLines, receiptText, receiptRows, type TextRow } from "./receipt";
+import { blank, pack } from "./bitmap";
 import { canCancelSale, type Sale } from "./sales";
 
 const sale: Sale = {
@@ -60,7 +61,7 @@ describe("receiptRows", () => {
         { kind: "rule" },
       ],
       58,
-    );
+    ) as TextRow[];
     expect(rows[0]).toEqual({ text: "      Mama", big: true, bold: true });
     expect(rows[1].text).toHaveLength(32);
     expect(rows[1].text.endsWith("21 100 FC")).toBe(true);
@@ -69,7 +70,7 @@ describe("receiptRows", () => {
   });
 
   it("passe à la ligne un nom de boutique trop long en double taille", () => {
-    const rows = receiptRows([{ kind: "title", text: "Alimentation Mama Ngalula" }], 58);
+    const rows = receiptRows([{ kind: "title", text: "Alimentation Mama Ngalula" }], 58) as TextRow[];
     expect(rows.map((r) => r.text.trim())).toEqual(["Alimentation", "Mama Ngalula"]);
   });
 });
@@ -107,5 +108,57 @@ describe("ticket d'un appareil", () => {
     const text = receiptText(receiptLines({ name: "Boutique" }, tel));
     expect(text).toContain("IMEI / N° série : 352099001761481");
     expect(text).toContain("Garantie jusqu'au 11/10/2027");
+  });
+});
+
+describe("en-tête et pied du ticket", () => {
+  const shop = {
+    name: "S&K",
+    logo: pack(blank(16, 8)),
+    address: "999, av. Libération, Kinshasa",
+    phone: "+243 890 809 883",
+    rccm: "CD/KIN/RCCM/14-B-2145",
+    footer: "Merci de votre visite",
+    link: "https://wa.me/243890809883",
+    linkLabel: "Scannez et suivez-nous",
+  };
+  const lines = receiptLines(shop, sale);
+
+  it("met le logo en premier et les coordonnées sous le nom", () => {
+    expect(lines[0].kind).toBe("logo");
+    expect(lines[1]).toEqual({ kind: "title", text: "S&K" });
+    const text = receiptText(lines, 58);
+    expect(text).toContain("Tél : +243 890 809 883");
+    expect(text).toContain("RCCM : CD/KIN/RCCM/14-B-2145");
+    expect(text).not.toContain("ID NAT");
+  });
+
+  it("ajoute le code-barres du ticket, le QR de la boutique, le message de fin et le QR vitePOS", () => {
+    expect(lines).toContainEqual({ kind: "barcode", value: "Q9XM-4P" });
+    expect(lines).toContainEqual({ kind: "qr", value: "https://wa.me/243890809883" });
+    expect(lines.at(-2)).toMatchObject({ kind: "qr", small: true });
+    const text = receiptText(lines, 58);
+    expect(text).toContain("Merci de votre visite");
+    expect(text).toContain("https://wa.me/243890809883");
+    expect(text).not.toContain("Merci et à bientôt");
+  });
+
+  it("sans réglages : pas de QR de boutique, message par défaut", () => {
+    const plain = receiptLines({ name: "B" }, sale);
+    expect(plain.filter((l) => l.kind === "qr")).toHaveLength(1);
+    expect(receiptText(plain)).toContain("Merci et à bientôt !");
+  });
+
+  it("dessine les images à la largeur du papier et les envoie à l'imprimante", () => {
+    for (const r of receiptRows(lines, 58)) if ("image" in r) expect(r.image.width).toBeLessThanOrEqual(384);
+    const bytes = [...escPos(lines, 58)];
+    // Au moins trois images (logo, code-barres, deux QR) en commande GS v 0.
+    const rasters = bytes.filter((b, i) => b === 0x1d && bytes[i + 1] === 0x76 && bytes[i + 2] === 0x30).length;
+    expect(rasters).toBeGreaterThanOrEqual(4);
+  });
+
+  it("coupe les longues lignes centrées au lieu de les tronquer", () => {
+    for (const l of receiptText(lines, 58).split("\n")) expect(l.length).toBeLessThanOrEqual(32);
+    expect(receiptText(lines, 58)).toContain("Libération,");
   });
 });
