@@ -8,6 +8,7 @@ import { errorMessage } from "../data/errors";
 import { PageTitle } from "../components/ui";
 import { confirmLogout } from "../components/Layout";
 import { ThemeSwitch } from "../components/ThemeSwitch";
+import { PrinterCard } from "../components/PrinterCard";
 import { CURRENCIES, CURRENCY_LIST, type Currency } from "../lib/fx";
 
 function onError(e: unknown) {
@@ -164,6 +165,8 @@ export function SettingsScreen() {
             </Stack>
           </Paper>
         )}
+
+        <PrinterCard shopName={boutique.name} paperWidth={boutique.paperWidthMm} />
 
         <Button variant="default" color="red" onClick={confirmLogout}>
           Se déconnecter

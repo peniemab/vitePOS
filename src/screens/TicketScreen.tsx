@@ -8,7 +8,7 @@ import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { cancelSale, watchSale } from "../data/sales";
 import { errorMessage } from "../data/errors";
-import { canUseThermalPrinter, printThermal } from "../data/printer";
+import { printReceipt } from "../data/printer";
 import { PageTitle } from "../components/ui";
 import { receiptLines, receiptText, type ReceiptLine } from "../lib/receipt";
 import { canCancelSale, type Sale } from "../lib/sales";
@@ -30,15 +30,13 @@ export function TicketScreen() {
 
   async function print() {
     if (!sale) return;
-    if (canUseThermalPrinter()) {
-      try {
-        await printThermal(lines, boutique.paperWidthMm);
-        return;
-      } catch (e) {
-        // Imprimante non choisie ou débranchée : on passe par la fenêtre d'impression.
-        if ((e as Error)?.name !== "NotFoundError")
-          notifications.show({ color: "orange", message: `Imprimante thermique : ${(e as Error)?.message || errorMessage(e)}` });
-      }
+    try {
+      // Imprimante thermique choisie dans Paramètres (Bluetooth, RawBT ou USB) ; sinon, fenêtre d'impression.
+      if (await printReceipt(lines, boutique.paperWidthMm)) return;
+    } catch (e) {
+      // Choix de l'imprimante annulé : on ne dit rien. Autre souci : on l'explique, puis fenêtre d'impression.
+      if ((e as Error)?.name === "NotFoundError") return;
+      notifications.show({ color: "orange", message: `Imprimante : ${(e as Error)?.message || errorMessage(e)}`, autoClose: 8000 });
     }
     window.print();
   }
