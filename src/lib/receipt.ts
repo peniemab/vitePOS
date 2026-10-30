@@ -93,6 +93,57 @@ function center(text: string, cols: number): string {
   return " ".repeat(Math.floor((cols - t.length) / 2)) + t;
 }
 
+/** Une ligne du ticket prête à dessiner en image : texte déjà mis en colonnes, gras, double taille. */
+export interface ReceiptRow {
+  text: string;
+  bold?: boolean;
+  /** Double hauteur et largeur (nom de la boutique) : deux fois moins de caractères par ligne. */
+  big?: boolean;
+}
+
+/** Coupe un texte en lignes d'au plus `max` caractères, entre les mots quand c'est possible. */
+function wrapWords(text: string, max: number): string[] {
+  const out: string[] = [];
+  let line = "";
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    for (let w = word; w.length; ) {
+      const room = line ? max - line.length - 1 : max;
+      if (w.length <= room) {
+        line = line ? `${line} ${w}` : w;
+        w = "";
+      } else if (line) {
+        out.push(line);
+        line = "";
+      } else {
+        out.push(w.slice(0, max));
+        w = w.slice(max);
+      }
+    }
+  }
+  if (line) out.push(line);
+  return out.length ? out : [""];
+}
+
+/** Lignes du ticket pour l'image partagée vers une app d'impression (Thermer…), au même format que le papier. */
+export function receiptRows(lines: ReceiptLine[], width: PaperWidth): ReceiptRow[] {
+  const cols = columns(width);
+  return lines.flatMap((l): ReceiptRow[] => {
+    switch (l.kind) {
+      case "title":
+        // En double taille, le nom tient sur moins de caractères : on le coupe entre les mots.
+        return wrapWords(l.text, Math.floor(cols / 2)).map((t) => ({ text: center(t, Math.floor(cols / 2)), big: true, bold: true }));
+      case "center":
+        return [{ text: center(l.text, cols) }];
+      case "text":
+        return [{ text: l.text.slice(0, cols) }];
+      case "pair":
+        return [{ text: pairText(l.left, l.right, cols), bold: l.strong }];
+      case "rule":
+        return [{ text: "-".repeat(cols) }];
+    }
+  });
+}
+
 /** Ticket en texte brut (partage WhatsApp, SMS…). */
 export function receiptText(lines: ReceiptLine[], width: PaperWidth = 58): string {
   const cols = columns(width);

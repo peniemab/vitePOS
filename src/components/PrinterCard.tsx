@@ -9,10 +9,12 @@ import { IconBluetooth, IconPrinter } from "@tabler/icons-react";
 import {
   bluetoothUnavailableMessage,
   canUseBluetooth,
+  canShareImage,
   canUseUsb,
   getBluetoothPrinterName,
   getPrinterMode,
   isAndroid,
+  isIOS,
   pickBluetoothPrinter,
   pickUsbPrinter,
   printReceipt,
@@ -26,6 +28,7 @@ const MODE_LABELS: Record<PrinterMode, string> = {
   bluetooth: "Imprimante Bluetooth",
   rawbt: "Imprimante Bluetooth avec l'app RawBT (Android)",
   usb: "Imprimante USB (ordinateur)",
+  share: "Partager vers une app d'impression (Thermer sur iPhone)",
   browser: "Fenêtre d'impression du navigateur",
 };
 
@@ -47,7 +50,7 @@ export function PrinterCard({ shopName, paperWidth }: { shopName: string; paperW
   const [busy, setBusy] = useState(false);
 
   function fail(e: unknown) {
-    if ((e as Error)?.name === "NotFoundError") return; // Choix annulé.
+    if (["NotFoundError", "AbortError"].includes((e as Error)?.name)) return; // Choix ou partage annulé.
     notifications.show({ color: "red", title: "Imprimante", message: (e as Error)?.message || errorMessage(e), autoClose: false });
   }
 
@@ -81,7 +84,13 @@ export function PrinterCard({ shopName, paperWidth }: { shopName: string; paperW
     }
   }
 
-  const modes: PrinterMode[] = ["bluetooth", ...(isAndroid() ? (["rawbt"] as const) : []), "usb", "browser"];
+  const modes: PrinterMode[] = [
+    ...(isIOS() || canShareImage() ? (["share"] as const) : []),
+    "bluetooth",
+    ...(isAndroid() ? (["rawbt"] as const) : []),
+    "usb",
+    "browser",
+  ];
 
   return (
     <Paper p="md">
@@ -116,6 +125,18 @@ export function PrinterCard({ shopName, paperWidth }: { shopName: string; paperW
             Installez l'app gratuite <b>RawBT</b> depuis le Play Store, connectez-y votre imprimante une fois, puis vitePOS lui
             enverra chaque ticket.
           </Text>
+        )}
+        {mode === "share" && (
+          <Text size="sm">
+            En touchant « Imprimer », le ticket devient une image et le menu de partage s'ouvre{" "}
+            : choisissez votre app d'impression (par exemple <b>Thermer</b>), qui l'imprime sur l'imprimante déjà connectée.
+            Fonctionne aussi sans internet. L'impression automatique après la vente n'est pas possible dans ce mode.
+          </Text>
+        )}
+        {mode === "share" && !canShareImage() && (
+          <Alert color="orange" title="Partage indisponible ici">
+            Ce navigateur ne sait pas partager une image. Sur iPhone, ouvrez vitePOS dans Safari.
+          </Alert>
         )}
         {mode === "usb" && !canUseUsb() && (
           <Alert color="orange" title="USB indisponible ici">

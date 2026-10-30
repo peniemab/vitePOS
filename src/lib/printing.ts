@@ -3,10 +3,13 @@
  * Bluetooth, adresse de l'app RawBT. Sans React ni Firebase.
  */
 
-/** Comment ce téléphone ou cet ordinateur imprime les tickets. */
-export type PrinterMode = "browser" | "bluetooth" | "rawbt" | "usb";
+/**
+ * Comment ce téléphone ou cet ordinateur imprime les tickets. « share » : le ticket part en image vers une app
+ * d'impression (Thermer sur iPhone…).
+ */
+export type PrinterMode = "browser" | "bluetooth" | "rawbt" | "usb" | "share";
 
-export const PRINTER_MODES: PrinterMode[] = ["browser", "bluetooth", "rawbt", "usb"];
+export const PRINTER_MODES: PrinterMode[] = ["browser", "bluetooth", "rawbt", "usb", "share"];
 
 export function isPrinterMode(v: unknown): v is PrinterMode {
   return typeof v === "string" && (PRINTER_MODES as string[]).includes(v);

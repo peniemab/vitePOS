@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { encodeCp1252, escPos, receiptLines, receiptText } from "./receipt";
+import { encodeCp1252, escPos, receiptLines, receiptText, receiptRows } from "./receipt";
 import { canCancelSale, type Sale } from "./sales";
 
 const sale: Sale = {
@@ -48,6 +48,29 @@ describe("ticket", () => {
 
   it("signale une vente annulée", () => {
     expect(receiptText(receiptLines({ name: "B" }, { ...sale, status: "annulee" }))).toContain("ANNULÉE");
+  });
+});
+
+describe("receiptRows", () => {
+  it("met le ticket en colonnes pour l'image", () => {
+    const rows = receiptRows(
+      [
+        { kind: "title", text: "Mama" },
+        { kind: "pair", left: "TOTAL", right: "21 100 FC", strong: true },
+        { kind: "rule" },
+      ],
+      58,
+    );
+    expect(rows[0]).toEqual({ text: "      Mama", big: true, bold: true });
+    expect(rows[1].text).toHaveLength(32);
+    expect(rows[1].text.endsWith("21 100 FC")).toBe(true);
+    expect(rows[1].bold).toBe(true);
+    expect(rows[2].text).toBe("-".repeat(32));
+  });
+
+  it("passe à la ligne un nom de boutique trop long en double taille", () => {
+    const rows = receiptRows([{ kind: "title", text: "Alimentation Mama Ngalula" }], 58);
+    expect(rows.map((r) => r.text.trim())).toEqual(["Alimentation", "Mama Ngalula"]);
   });
 });
 

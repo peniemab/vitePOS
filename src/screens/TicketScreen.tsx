@@ -8,7 +8,7 @@ import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { cancelSale, watchSale } from "../data/sales";
 import { errorMessage } from "../data/errors";
-import { printReceipt } from "../data/printer";
+import { getPrinterMode, printReceipt } from "../data/printer";
 import { PageTitle } from "../components/ui";
 import { receiptLines, receiptText, type ReceiptLine } from "../lib/receipt";
 import { canCancelSale, type Sale } from "../lib/sales";
@@ -35,14 +35,15 @@ export function TicketScreen() {
       if (await printReceipt(lines, boutique.paperWidthMm)) return;
     } catch (e) {
       // Choix de l'imprimante annulé : on ne dit rien. Autre souci : on l'explique, puis fenêtre d'impression.
-      if ((e as Error)?.name === "NotFoundError") return;
+      if (["NotFoundError", "AbortError"].includes((e as Error)?.name)) return;
       notifications.show({ color: "orange", message: `Imprimante : ${(e as Error)?.message || errorMessage(e)}`, autoClose: 8000 });
     }
     window.print();
   }
 
   useEffect(() => {
-    if (sale && justSold && boutique.autoPrintTicket && !autoPrinted.current) {
+    // En mode partage (Thermer…), le téléphone exige un toucher : pas d'impression automatique.
+    if (sale && justSold && boutique.autoPrintTicket && !autoPrinted.current && getPrinterMode() !== "share") {
       autoPrinted.current = true;
       void print();
     }

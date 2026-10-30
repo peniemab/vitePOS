@@ -3,10 +3,12 @@
  * - « bluetooth » : Bluetooth basse consommation via Web Bluetooth (Chrome sur Android, app Bluefy sur iPhone) ;
  * - « rawbt » : l'app Android RawBT imprime à notre place (toutes les imprimantes Bluetooth) ;
  * - « usb » : imprimante branchée en USB/série, via Web Serial (Chrome ou Edge sur ordinateur et tablette) ;
+ * - « share » : le ticket part en image vers une app d'impression (Thermer sur iPhone), par le partage du téléphone ;
  * - « browser » : fenêtre d'impression du navigateur.
  */
 import { escPos, type PaperWidth, type ReceiptLine } from "../lib/receipt";
 import { BLE_PRINTER_SERVICES, chunks, isPrinterMode, rawbtUrl, type PrinterMode } from "../lib/printing";
+import { receiptImageFile } from "./receiptImage";
 
 const MODE_KEY = "vitepos.printer.mode";
 const NAME_KEY = "vitepos.printer.name";
@@ -27,15 +29,33 @@ function writeStorage(key: string, value: string | null) {
   }
 }
 
+export function isIOS(): boolean {
+  return typeof navigator !== "undefined" && /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+/** Le téléphone sait partager une image vers une autre app (Thermer…). */
+export function canShareImage(): boolean {
+  if (typeof navigator === "undefined" || !navigator.canShare) return false;
+  try {
+    return navigator.canShare({ files: [new File([new Uint8Array(1)], "t.png", { type: "image/png" })] });
+  } catch {
+    return false;
+  }
+}
+
 export function isAndroid(): boolean {
   return typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
 }
 
 /* ---------- Choix du mode ---------- */
 
-/** Mode par défaut : le Bluetooth si l'appareil le permet, sinon l'USB, sinon la fenêtre d'impression. */
+/**
+ * Mode par défaut : le Bluetooth si l'appareil le permet ; sur iPhone (pas de Bluetooth dans Safari), le partage
+ * vers une app d'impression ; sinon l'USB, sinon la fenêtre d'impression.
+ */
 function defaultMode(): PrinterMode {
   if (bluetooth()) return "bluetooth";
+  if (isIOS() && canShareImage()) return "share";
   if (serial()) return "usb";
   return "browser";
 }
@@ -238,6 +258,12 @@ async function printUsb(bytes: Uint8Array): Promise<void> {
 export async function printReceipt(lines: ReceiptLine[], width: PaperWidth): Promise<boolean> {
   const mode = getPrinterMode();
   if (mode === "browser") return false;
+  if (mode === "share") {
+    // Pas d'attente avant le partage : iPhone ne l'ouvre que juste après le toucher de l'utilisateur.
+    const file = receiptImageFile(lines, width, "ticket");
+    await navigator.share({ files: [file] });
+    return true;
+  }
   const bytes = escPos(lines, width);
   if (mode === "bluetooth") await printBluetooth(bytes);
   else if (mode === "rawbt") window.location.href = rawbtUrl(bytes);
