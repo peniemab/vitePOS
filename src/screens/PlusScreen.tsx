@@ -1,18 +1,17 @@
-/** Menu « Plus » : les rubriques qui ne sont pas déjà dans la barre du haut (ordinateur) ou du bas (téléphone). */
+/** Menu « Plus » (téléphone) : les rubriques qui ne sont pas déjà dans la barre du bas. Sur ordinateur, tout est dans le menu de gauche. */
 import { Link } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
 import { Paper, Text, ThemeIcon, UnstyledButton } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import { PageTitle } from "../components/ui";
 import { InstallCard } from "../components/InstallCard";
-import { TABS, useTopTabs } from "../components/Layout";
+import { TABS } from "../components/Layout";
 import { useSections } from "../components/sections";
 
 export function PlusScreen() {
-  // Même seuil que la mise en page : barre du haut sur ordinateur, barre du bas sur téléphone.
+  // Même seuil que la mise en page : menu de gauche sur ordinateur, barre du bas sur téléphone.
   const wide = useMediaQuery("(min-width: 62em)", true);
-  const topTabs = useTopTabs();
-  const shown = new Set((wide ? topTabs : TABS).map((t) => t.to));
+  const shown = new Set(wide ? [] : TABS.map((t) => t.to));
   const items = useSections()
     .flatMap((g) => g.items)
     .filter((i) => !shown.has(i.to));

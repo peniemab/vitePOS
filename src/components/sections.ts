@@ -1,4 +1,4 @@
-/** Toutes les rubriques de l'app, pour le menu « Plus » (filtrées selon les droits du membre). */
+/** Toutes les rubriques de l'app, pour le menu de gauche (ordinateur) et le menu « Plus » (téléphone), filtrées selon les droits du membre. */
 import {
   IconCalendarCheck,
   IconCash,
@@ -33,20 +33,25 @@ export interface SectionGroup {
 export function useSections(): SectionGroup[] {
   const { member, permissions } = useReady();
   const groups: { title: string; items: (Section & { show?: boolean })[] }[] = [
+    { title: "", items: [{ to: "/", label: "Accueil", icon: IconHome, end: true }] },
     {
       title: "Vendre",
       items: [
-        { to: "/", label: "Accueil", icon: IconHome, end: true },
         { to: "/caisse", label: "Caisse", icon: IconCash },
         { to: "/ventes", label: "Ventes", icon: IconReceipt },
         { to: "/clients", label: "Clients", icon: IconUsers },
       ],
     },
     {
-      title: "Gérer",
+      title: "Stock",
       items: [
-        { to: "/stock", label: "Stock", icon: IconPackage },
+        { to: "/stock", label: "Articles", icon: IconPackage },
         { to: "/inventaire", label: "Inventaire", icon: IconClipboardCheck, show: permissions.manageStock },
+      ],
+    },
+    {
+      title: "Argent",
+      items: [
         { to: "/depenses", label: "Dépenses", icon: IconWallet },
         { to: "/journee", label: "Journée de caisse", icon: IconCalendarCheck, show: permissions.closeCash || permissions.viewReports },
         { to: "/rapports", label: "Rapports", icon: IconChartBar, show: permissions.viewReports },

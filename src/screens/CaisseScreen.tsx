@@ -100,7 +100,7 @@ export function CaisseScreen() {
       {wide ? (
         <Box style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 380px", gap: 20, alignItems: "start" }}>
           <ProductPicker />
-          <Paper className="cart-panel" style={{ position: "sticky", top: 76 }}>
+          <Paper className="cart-panel" style={{ position: "sticky", top: 20 }}>
             <CartPanel onPay={openPayment} />
           </Paper>
         </Box>

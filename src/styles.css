@@ -84,37 +84,145 @@ body {
   text-overflow: ellipsis;
   min-width: 0;
 }
-.top-tab {
-  display: inline-flex;
+/* Menu de gauche (ordinateur), aux couleurs du site */
+.side-nav {
+  background: var(--app-glow), linear-gradient(160deg, #0a142a 0%, #0f1f42 55%, #14306a 100%) !important;
+  color: #dfe6f5;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 14px;
+  overflow-y: auto;
+}
+.side-nav[data-mini] {
   align-items: center;
-  gap: 6px;
-  color: inherit;
-  text-decoration: none;
-  opacity: 0.75;
-  padding: 7px 12px;
-  border-radius: 6px;
-  font-weight: 500;
+  padding: 18px 10px;
+}
+.side-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px 18px;
+}
+.side-nav[data-mini] .side-brand {
+  padding: 4px 0 18px;
+}
+.side-brand img {
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+.side-brand b,
+.side-me b {
+  display: block;
+  font: 700 1.15rem/1.1 "Barlow Condensed", sans-serif;
+  color: #fff;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.top-tab:hover {
-  opacity: 1;
+.side-me b {
+  font: 600 0.92rem/1.2 Barlow, sans-serif;
 }
-.top-tab.active {
-  opacity: 1;
+.side-brand small,
+.side-me small {
+  display: block;
+  font-size: 0.78rem;
+  color: #93a3c4;
+}
+.side-items {
+  display: grid;
+  gap: 2px;
+}
+.side-group {
+  margin: 14px 12px 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7f90b4;
+}
+.side-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: #c9d3e8;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+.side-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.side-item.active {
   background: rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 -2px 0 var(--app-sky);
+  color: #fff;
 }
-/* Ordinateur à l'écran étroit ou zoomé : les 7 onglets tiennent, sans icônes, et le nom de la boutique s'abrège. */
-@media (max-width: 75em) {
-  .top-tab {
-    padding: 7px 9px;
-  }
-  .top-tab svg {
-    display: none;
-  }
-  .app-header .brand {
-    max-width: 200px;
-  }
+.side-item.active::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--app-sky);
+}
+.side-nav[data-mini] .side-item {
+  justify-content: center;
+  width: 48px;
+  padding: 11px;
+  margin-bottom: 4px;
+}
+.side-nav[data-mini] .side-item.active::before {
+  left: -10px;
+}
+.side-badge {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: #b6171e;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.side-nav[data-mini] .side-badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  padding: 0 5px;
+}
+.side-foot {
+  margin-top: auto;
+  padding-top: 16px;
+  display: grid;
+  gap: 10px;
+}
+.side-nav[data-mini] .side-foot {
+  justify-items: center;
+}
+.side-sync {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  font-size: 0.82rem;
+  color: #a9b6d2;
+}
+.side-me {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+}
+.side-nav[data-mini] .side-me {
+  padding: 0;
+  background: none;
 }
 
 /* Barre du bas (téléphone) */

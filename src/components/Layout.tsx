@@ -1,12 +1,22 @@
-/** Barre du haut (onglets sur ordinateur), barre du bas sur téléphone, zone principale. */
-import { Suspense } from "react";
-import { NavLink, Outlet } from "react-router";
+/** Menu de gauche sur ordinateur (réduit aux icônes sur la caisse) ; barre du haut et barre du bas sur téléphone. */
+import { Suspense, type ReactElement } from "react";
+import { NavLink, Outlet, useLocation } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
-import { AppShell, Avatar, Group, Menu, Text, UnstyledButton, useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
+import {
+  AppShell,
+  Avatar,
+  Group,
+  Menu,
+  Text,
+  Tooltip,
+  UnstyledButton,
+  useComputedColorScheme,
+  useMantineColorScheme,
+  type MenuProps,
+} from "@mantine/core";
 import { modals } from "@mantine/modals";
 import {
   IconCash,
-  IconChartBar,
   IconDots,
   IconHome,
   IconLogout,
@@ -14,13 +24,15 @@ import {
   IconPackage,
   IconReceipt,
   IconSun,
-  IconWallet,
 } from "@tabler/icons-react";
 import { logout, useReady } from "../data/session";
 import { getSyncState, useSyncState } from "../data/sync";
 import { ROLE_LABELS } from "../lib/roles";
 import { needsAttention } from "../lib/subscription";
+import { needsRestock } from "../lib/products";
+import { useCatalog } from "../data/products";
 import { SubscriptionBanner } from "./SubscriptionBanner";
+import { useSections } from "./sections";
 
 /** Barre du bas (téléphone). */
 export const TABS = [
@@ -30,17 +42,6 @@ export const TABS = [
   { to: "/ventes", label: "Ventes", icon: IconReceipt },
   { to: "/plus", label: "Plus", icon: IconDots },
 ];
-
-/** Barre du haut (ordinateur) : il y a de la place pour les dépenses et les rapports. */
-export function useTopTabs() {
-  const { permissions } = useReady();
-  return [
-    ...TABS.slice(0, 4),
-    { to: "/depenses", label: "Dépenses", icon: IconWallet },
-    ...(permissions.viewReports ? [{ to: "/rapports", label: "Rapports", icon: IconChartBar }] : []),
-    TABS[4]!,
-  ];
-}
 
 export function connectionLabel(online: boolean, pending: number): string {
   if (!online) return pending > 0 ? `Hors ligne · ${pending} en attente` : "Hors ligne";
@@ -72,67 +73,40 @@ export function confirmLogout() {
 }
 
 export function Layout() {
-  const { boutique, member, subscription } = useReady();
+  const { boutique, subscription } = useReady();
   const wide = useMediaQuery("(min-width: 62em)", true);
-  const { online, pending } = useSyncState();
-  const topTabs = useTopTabs();
+  // Sur la caisse, le menu se réduit aux icônes pour laisser la place aux articles et au panier.
+  const mini = useLocation().pathname.startsWith("/caisse");
 
   return (
-    <AppShell header={{ height: 56 }} footer={{ height: 62, collapsed: wide }} padding={0}>
+    <AppShell
+      header={{ height: 56, collapsed: wide }}
+      navbar={{ width: mini ? 76 : 244, breakpoint: "md", collapsed: { mobile: true } }}
+      footer={{ height: 62, collapsed: wide }}
+      padding={0}
+    >
       <AppShell.Header className="app-header">
-        <Group h="100%" px={{ base: "sm", sm: "lg" }} gap="md" wrap="nowrap" maw={1180} mx="auto">
+        <Group h="100%" px="sm" gap="md" wrap="nowrap">
           <Group gap={8} wrap="nowrap" style={{ minWidth: 0 }}>
             <img src="/favicon.svg" alt="" width={30} height={30} style={{ flexShrink: 0, borderRadius: 6 }} />
             <div className="brand">{boutique.name || "vitePOS"}</div>
           </Group>
-          <Group gap={2} visibleFrom="md" wrap="nowrap" style={{ flex: 1, overflowX: "auto" }}>
-            {topTabs.map((t) => (
-              <NavLink key={t.to} to={t.to} end={t.end} className="top-tab">
-                <t.icon size={18} stroke={1.8} aria-hidden="true" />
-                {t.label}
-              </NavLink>
-            ))}
-          </Group>
           <Group gap="sm" wrap="nowrap" ml="auto">
-            <Menu position="bottom-end" withinPortal width={260}>
-              <Menu.Target>
-                <UnstyledButton aria-label={`Mon compte (${connectionLabel(online, pending)})`} style={{ lineHeight: 0 }}>
-                  <Avatar color="brick" variant="filled" radius="xl">
-                    {initials(member.name, member.email)}
-                  </Avatar>
-                </UnstyledButton>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <div style={{ padding: "8px 12px" }}>
-                  <Text fw={700} truncate>
-                    {member.name || member.email}
-                  </Text>
-                  <Text size="xs" c="dimmed" truncate>
-                    {member.email}
-                  </Text>
-                  <Text size="xs" c="dimmed">
-                    {ROLE_LABELS[member.role]}
-                  </Text>
-                </div>
-                <Menu.Label>
-                  <Group gap={6}>
-                    <span className={`dot ${!online ? "off" : pending > 0 ? "sync" : "on"}`} />
-                    {connectionLabel(online, pending)}
-                  </Group>
-                </Menu.Label>
-                <Menu.Divider />
-                <DarkModeItem />
-                <Menu.Item leftSection={<IconLogout size={16} />} color="red" onClick={confirmLogout}>
-                  Se déconnecter
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <AccountMenu position="bottom-end">
+              <UnstyledButton aria-label="Mon compte" style={{ lineHeight: 0 }}>
+                <AccountAvatar />
+              </UnstyledButton>
+            </AccountMenu>
           </Group>
         </Group>
       </AppShell.Header>
 
+      <AppShell.Navbar className="side-nav" data-mini={mini || undefined} withBorder={false}>
+        <SideNav mini={mini} />
+      </AppShell.Navbar>
+
       <AppShell.Main>
-        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "20px 16px 40px" }}>
+        <div style={{ maxWidth: mini ? 1320 : 1180, margin: "0 auto", padding: "20px 16px 40px" }}>
           {needsAttention(subscription) && <SubscriptionBanner />}
           <Suspense fallback={<div className="loading">Chargement…</div>}>
             <Outlet />
@@ -151,6 +125,126 @@ export function Layout() {
         </nav>
       </AppShell.Footer>
     </AppShell>
+  );
+}
+
+/** Menu de gauche (ordinateur) : rubriques par groupe, état de l'envoi et compte en bas. */
+function SideNav({ mini }: { mini: boolean }) {
+  const { boutique, member } = useReady();
+  const { online, pending } = useSyncState();
+  const { products } = useCatalog();
+  const alerts = products?.filter(needsRestock).length ?? 0;
+  const groups = useSections();
+  const sync = connectionLabel(online, pending);
+  const dot = `dot ${!online ? "off" : pending > 0 ? "sync" : "on"}`;
+
+  return (
+    <>
+      <div className="side-brand">
+        <img src="/favicon.svg" alt="" width={36} height={36} />
+        {!mini && (
+          <div style={{ minWidth: 0 }}>
+            <b>{boutique.name || "vitePOS"}</b>
+            <small>{ROLE_LABELS[member.role]}</small>
+          </div>
+        )}
+      </div>
+      <nav className="side-items" aria-label="Sections">
+        {groups.map((g) => (
+          <div key={g.title || "accueil"}>
+            {g.title && !mini && <div className="side-group">{g.title}</div>}
+            {g.items.map((i) => {
+              const badge = i.to === "/stock" ? alerts : 0;
+              const link = (
+                <NavLink to={i.to} end={i.end} className="side-item" aria-label={mini ? i.label : undefined}>
+                  <i.icon size={20} stroke={1.8} aria-hidden="true" />
+                  {!mini && <span>{i.label}</span>}
+                  {badge > 0 && (
+                    <span className="side-badge" title={`${badge} article${badge > 1 ? "s" : ""} à racheter`}>
+                      {badge}
+                    </span>
+                  )}
+                </NavLink>
+              );
+              return mini ? (
+                <Tooltip key={i.to} label={i.label} position="right" withArrow>
+                  {link}
+                </Tooltip>
+              ) : (
+                <div key={i.to}>{link}</div>
+              );
+            })}
+          </div>
+        ))}
+      </nav>
+      <div className="side-foot">
+        {mini ? (
+          <Tooltip label={sync} position="right" withArrow>
+            <span className={dot} aria-label={sync} />
+          </Tooltip>
+        ) : (
+          <div className="side-sync">
+            <span className={dot} />
+            {sync}
+          </div>
+        )}
+        <AccountMenu position="right-end">
+          <UnstyledButton className="side-me" aria-label={`Mon compte (${sync})`}>
+            <AccountAvatar />
+            {!mini && (
+              <div style={{ minWidth: 0 }}>
+                <b>{member.name || member.email}</b>
+                <small>Mon compte</small>
+              </div>
+            )}
+          </UnstyledButton>
+        </AccountMenu>
+      </div>
+    </>
+  );
+}
+
+function AccountAvatar() {
+  const { member } = useReady();
+  return (
+    <Avatar color="brick" variant="filled" radius="xl">
+      {initials(member.name, member.email)}
+    </Avatar>
+  );
+}
+
+/** Menu du compte : nom, rôle, état de l'envoi, mode sombre, déconnexion. */
+function AccountMenu({ position, children }: { position: MenuProps["position"]; children: ReactElement }) {
+  const { member } = useReady();
+  const { online, pending } = useSyncState();
+  return (
+    <Menu position={position} withinPortal width={260}>
+      <Menu.Target>{children}</Menu.Target>
+      <Menu.Dropdown>
+        <div style={{ padding: "8px 12px" }}>
+          <Text fw={700} truncate>
+            {member.name || member.email}
+          </Text>
+          <Text size="xs" c="dimmed" truncate>
+            {member.email}
+          </Text>
+          <Text size="xs" c="dimmed">
+            {ROLE_LABELS[member.role]}
+          </Text>
+        </div>
+        <Menu.Label>
+          <Group gap={6}>
+            <span className={`dot ${!online ? "off" : pending > 0 ? "sync" : "on"}`} />
+            {connectionLabel(online, pending)}
+          </Group>
+        </Menu.Label>
+        <Menu.Divider />
+        <DarkModeItem />
+        <Menu.Item leftSection={<IconLogout size={16} />} color="red" onClick={confirmLogout}>
+          Se déconnecter
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 }
 
