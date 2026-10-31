@@ -8,6 +8,7 @@
   /* Deuxième série (dépenses) : paire bleu / orange validée, lisible aussi par les daltoniens. */
   --app-series-2: #eb6834;
   --app-grid: #e6e7e3;
+  --app-soft: #eef1f6;
 }
 :root[data-mantine-color-scheme="dark"] {
   --mantine-color-body: #0f141c;
@@ -17,6 +18,7 @@
   --app-series-1: #3987e5;
   --app-series-2: #d95926;
   --app-grid: #2b3442;
+  --app-soft: #222b3a;
 }
 
 /* Sur téléphone, l'écran ne glisse jamais sur le côté (les listes qui défilent, comme les catégories de la
@@ -169,43 +171,320 @@ body {
   color: var(--mantine-color-dimmed);
 }
 
-/* Caisse : tuiles des articles */
+/* Caisse : tuiles des articles, une couleur par rayon (--c) */
 .product-tile {
+  --c: #7a8599;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-height: 92px;
-  padding: 10px 12px;
-  border: 1px solid var(--mantine-color-default-border);
-  border-radius: 12px;
+  padding: 10px;
+  border-top: 4px solid var(--c);
+  border-radius: 10px;
   background: var(--app-surface);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.08s ease;
+  transition: transform 0.08s ease, box-shadow 0.12s ease;
 }
 .product-tile:active {
   transform: scale(0.97);
-  background: var(--mantine-color-default-hover);
+}
+.product-tile[data-in] {
+  box-shadow: 0 0 0 2px var(--app-sky), 0 6px 16px rgba(57, 135, 229, 0.18);
 }
 .product-tile[data-empty] {
   opacity: 0.5;
+}
+.product-tile .ph {
+  height: 52px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--c) 13%, var(--app-surface));
+  color: var(--c);
+  font: 700 1.4rem/1 "Barlow Condensed", sans-serif;
+}
+.product-tile .name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  min-height: 2.4em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.product-tile .pr {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: auto;
+}
+.product-tile .price {
+  font: 700 1.2rem/1.1 "Barlow Condensed", sans-serif;
+  white-space: nowrap;
+}
+.product-tile .stock {
+  font-size: 0.75rem;
+  color: var(--mantine-color-dimmed);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.product-tile .stock[data-low] {
+  color: var(--app-due);
+  font-weight: 700;
+}
+.product-tile .star {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #f2b10c;
+}
+.product-tile .qty {
+  position: absolute;
+  top: -10px;
+  left: -6px;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 99px;
+  display: grid;
+  place-items: center;
+  background: var(--app-sky);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 2px solid var(--app-surface);
+  box-shadow: 0 4px 10px rgba(57, 135, 229, 0.45);
+}
+@media (min-width: 62em) {
+  .product-tile {
+    padding: 12px;
+    gap: 8px;
+  }
+  .product-tile .ph {
+    height: 64px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .product-tile {
     transition: none;
   }
 }
+/* Pastille de couleur du rayon dans les filtres */
+.cat-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Caisse : panier */
+.cart-panel {
+  padding: 0 !important;
+  overflow: hidden;
+}
+.cart-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+}
+.cart-head h3 {
+  margin: 0;
+  font: 700 1.3rem "Barlow Condensed", sans-serif;
+}
+.cart-count {
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: var(--app-soft);
+  color: var(--mantine-color-dimmed);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.cart-lines {
+  padding: 0 16px;
+}
+.cart-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--mantine-color-default-border);
+}
+.cart-line .tot {
+  font: 700 1.1rem "Barlow Condensed", sans-serif;
+  text-align: right;
+}
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  border-radius: 8px;
+  background: var(--app-soft);
+}
+.stepper b {
+  min-width: 40px;
+  text-align: center;
+}
+.cart-foot {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--mantine-color-default-border);
+  background: color-mix(in srgb, var(--mantine-color-body) 60%, var(--app-surface));
+}
+.cart-total b {
+  font: 700 2.2rem/1 "Barlow Condensed", sans-serif;
+}
+.pay-btn {
+  height: 58px !important;
+  font-size: 1.15rem !important;
+}
 
 /* Caisse sur téléphone : barre du panier posée sur la barre d'onglets */
 .cart-bar {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: var(--app-shell-footer-offset, 62px);
+  left: 12px;
+  right: 12px;
+  bottom: calc(var(--app-shell-footer-offset, 62px) + 10px);
   z-index: 99;
-  padding: 8px 12px;
-  background: var(--mantine-color-body);
-  border-top: 1px solid var(--mantine-color-default-border);
-  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--app-glow), var(--app-night);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(15, 31, 66, 0.35);
+}
+.cart-bar .open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.cart-bar .bag {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+}
+.cart-bar .bag em {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 99px;
+  display: grid;
+  place-items: center;
+  background: #b6171e;
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.cart-bar small {
+  display: block;
+  color: #a9b6d2;
+  font-size: 0.8rem;
+}
+.cart-bar b {
+  font: 700 1.35rem "Barlow Condensed", sans-serif;
+}
+.cart-bar .go {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fff;
+  color: #0f1f42;
+  font-weight: 700;
+}
+
+/* Encaissement */
+.pay-due {
+  text-align: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--app-glow), var(--app-night);
+  color: #fff;
+}
+.pay-due small,
+.pay-due em {
+  color: #a9b6d2;
+  font-style: normal;
+  font-size: 0.88rem;
+}
+.pay-due small {
+  font-weight: 600;
+}
+.pay-due b {
+  display: block;
+  font: 700 2.6rem/1.05 "Barlow Condensed", sans-serif;
+}
+.pay-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.pay-method {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px var(--mantine-color-default-border);
+}
+.pay-method[data-on] {
+  box-shadow: inset 0 0 0 2px var(--app-sky);
+  background: color-mix(in srgb, var(--app-sky) 8%, var(--app-surface));
+  color: var(--app-sky);
+}
+.pay-bills {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+.pay-bill {
+  padding: 9px 0;
+  border-radius: 10px;
+  text-align: center;
+  background: var(--app-soft);
+  font: 700 1rem "Barlow Condensed", sans-serif;
+}
+.pay-bill[data-on] {
+  background: #0f1f42;
+  color: #fff;
+}
+.pay-change {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--app-paid) 14%, var(--app-surface));
+  color: var(--app-paid);
+  font-weight: 700;
+}
+.pay-change[data-missing] {
+  background: color-mix(in srgb, var(--app-due) 12%, var(--app-surface));
+  color: var(--app-due);
+}
+.pay-change b {
+  font: 700 1.9rem "Barlow Condensed", sans-serif;
 }
 
 /* Ticket de caisse */
@@ -321,4 +600,19 @@ body {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   font-size: 0.82rem;
   white-space: nowrap;
+}
+.night-btn:disabled,
+.night-btn[data-disabled] {
+  opacity: 0.45;
+}
+/* Encaissement sur téléphone : feuille qui monte du bas */
+.pay-sheet-inner {
+  align-items: flex-end !important;
+  padding: 0 !important;
+}
+.pay-sheet {
+  flex: 1 1 100% !important;
+  max-width: 100% !important;
+  max-height: 94dvh !important;
+  border-radius: 22px 22px 0 0 !important;
 }

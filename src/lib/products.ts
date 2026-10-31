@@ -246,6 +246,29 @@ export function collectCategories(products: Pick<Product, "category" | "archived
   return [...set].sort((a, b) => a.localeCompare(b, "fr"));
 }
 
+/** Couleurs des rayons à la caisse : chaque rayon garde toujours la même. */
+export const CATEGORY_COLORS = ["#3987e5", "#1f9d55", "#e8890c", "#9c36b5", "#0ca678", "#e03131", "#1971c2", "#c2255c"];
+const NO_CATEGORY_COLOR = "#7a8599";
+
+export function categoryColor(category: string): string {
+  const key = fold(category);
+  if (!key) return NO_CATEGORY_COLOR;
+  let h = 0;
+  for (const ch of key) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return CATEGORY_COLORS[h % CATEGORY_COLORS.length];
+}
+
+/** Deux lettres pour la vignette d'un article : « Huile Mama 1 L » → « HM », « Sucre » → « SU ». */
+export function initials(name: string): string {
+  const words = fold(name)
+    .toUpperCase()
+    .split(/[^A-Z0-9]+/)
+    .filter((w) => /[A-Z]/.test(w));
+  if (!words.length) return "?";
+  if (words.length === 1) return words[0].slice(0, 2);
+  return words[0][0] + words[1][0];
+}
+
 export function sortByName<T extends Pick<Product, "name">>(products: T[]): T[] {
   return [...products].sort((a, b) => a.name.localeCompare(b.name, "fr"));
 }

@@ -58,7 +58,7 @@ const SHOTS = [
   ["man-fiche", "tel", "/stock", `await tap(/^Coca-Cola 33 cl/, 900); await reveal(/^Emballages/);`],
   ["man-reception", "tel", "/stock", `await type("input[placeholder^='Nom, code article']", "15449000000993"); await enter("input[placeholder^='Nom, code article']"); await type("[role=dialog] input[inputmode=decimal]", "3");`],
   ["man-journee", "tel", "/journee"],
-  ["man-encaisser", "tel", "/caisse?panier=1", `await tap(/^Panier/); await tap(/^Encaisser$/); await tap(/^25\\s000\\sFC$/, 500);`],
+  ["man-encaisser", "tel", "/caisse?panier=1", `await tap(/^Encaisser$/); await tap(/^25\\s000\\sFC$/, 500);`],
   ["man-depense", "tel", "/depenses", `await tap(/^Nouvelle dépense$/, 900);`],
   ["man-cloture", "tel", "/journee", `await reveal(/^Clôture$/);`],
   ["man-inventaire", "tel", "/inventaire"],

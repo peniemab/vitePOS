@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  categoryColor,
+  CATEGORY_COLORS,
   collectCategories,
+  initials,
   findByBarcode,
   findByCode,
   findScan,
@@ -202,5 +205,20 @@ describe("suivi par IMEI et péremption", () => {
     const ok = validateProduct({ ...base, serialTracked: true, warrantyMonths: 12, tracksExpiry: true });
     expect("value" in ok && ok.value).toMatchObject({ serialTracked: true, warrantyMonths: 12, tracksExpiry: true });
     expect(validateProduct({ ...base, serialTracked: true, warrantyMonths: 99 })).toHaveProperty("error");
+  });
+});
+
+describe("tuiles de la caisse", () => {
+  it("donne toujours la même couleur à un rayon, accents et majuscules compris", () => {
+    expect(categoryColor("Épicerie")).toBe(categoryColor("epicerie "));
+    expect(CATEGORY_COLORS).toContain(categoryColor("Boissons"));
+    expect(categoryColor("")).not.toMatch(new RegExp(CATEGORY_COLORS.join("|")));
+  });
+  it("prend deux lettres du nom", () => {
+    expect(initials("Huile Mama 1 L")).toBe("HM");
+    expect(initials("Sucre")).toBe("SU");
+    expect(initials("Élixir d'or")).toBe("ED");
+    expect(initials("33 cl")).toBe("CL");
+    expect(initials("")).toBe("?");
   });
 });

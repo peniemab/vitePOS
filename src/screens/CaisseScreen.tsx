@@ -1,5 +1,5 @@
 /** Caisse : choisir les articles (tuiles, recherche, scan), panier, remise et encaissement. */
-import { useDeferredValue, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
 import {
@@ -22,7 +22,22 @@ import {
   TextInput,
   UnstyledButton,
 } from "@mantine/core";
-import { IconMinus, IconPlus, IconShoppingCart, IconStarFilled, IconTrash, IconUserPlus, IconX } from "@tabler/icons-react";
+import {
+  IconArrowBackUp,
+  IconArrowRight,
+  IconCash,
+  IconCheck,
+  IconDeviceMobileDollar,
+  IconDiscount,
+  IconMinus,
+  IconPlus,
+  IconShoppingBag,
+  IconShoppingCart,
+  IconStarFilled,
+  IconTrash,
+  IconUserPlus,
+  IconX,
+} from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useActor, useCatalog } from "../data/products";
 import { currenciesOf, ratesOf } from "../data/boutique";
@@ -38,7 +53,18 @@ import { formatQty } from "../components/ProductModal";
 import { Money } from "../components/ui";
 import { computePayment, lineKey, lineTotal, stockByProduct, suggestedBills, type PaymentMethod } from "../lib/cart";
 import { convert, CURRENCIES, formatMoney, hasRate, type Currency } from "../lib/fx";
-import { collectCategories, findScan, matchProduct, packLabel, sortForCheckout, stockLevel, type Pack, type Product } from "../lib/products";
+import {
+  categoryColor,
+  collectCategories,
+  findScan,
+  initials,
+  matchProduct,
+  packLabel,
+  sortForCheckout,
+  stockLevel,
+  type Pack,
+  type Product,
+} from "../lib/products";
 import { matchClient } from "../lib/clients";
 
 const VISIBLE = 120;
@@ -74,7 +100,7 @@ export function CaisseScreen() {
       {wide ? (
         <Box style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 380px", gap: 20, alignItems: "start" }}>
           <ProductPicker />
-          <Paper p="md" style={{ position: "sticky", top: 76 }}>
+          <Paper className="cart-panel" style={{ position: "sticky", top: 76 }}>
             <CartPanel onPay={openPayment} />
           </Paper>
         </Box>
@@ -82,21 +108,27 @@ export function CaisseScreen() {
         <>
           <ProductPicker />
           {/* Laisse la place à la barre du panier au-dessus de la barre d'onglets. */}
-          <div style={{ height: 72 }} />
+          <div style={{ height: 84 }} />
           {cart.lines.length > 0 && (
             <div className="cart-bar">
-              <Button fullWidth size="lg" leftSection={<IconShoppingCart size={20} />} onClick={() => setCartOpen(true)}>
-                <span style={{ flex: 1 }}>
-                  Panier · {cart.totals.itemCount} article{cart.totals.itemCount > 1 ? "s" : ""}
+              <UnstyledButton className="open" onClick={() => setCartOpen(true)} aria-label="Voir le panier">
+                <span className="bag">
+                  <IconShoppingBag size={22} />
+                  <em>{cart.totals.itemCount}</em>
                 </span>
-                <span className="n" style={{ marginLeft: 12 }}>
-                  {formatMoney(cart.totals.total, boutique.currency)}
+                <span>
+                  <small>Panier</small>
+                  <b className="n">{formatMoney(cart.totals.total, boutique.currency)}</b>
                 </span>
-              </Button>
+              </UnstyledButton>
+              <UnstyledButton className="go" onClick={openPayment}>
+                Encaisser
+                <IconArrowRight size={18} />
+              </UnstyledButton>
             </div>
           )}
-          <Drawer opened={cartOpen} onClose={() => setCartOpen(false)} position="bottom" size="85%" title="Panier">
-            <CartPanel onPay={openPayment} />
+          <Drawer opened={cartOpen} onClose={() => setCartOpen(false)} position="bottom" size="85%" withCloseButton={false} padding={0}>
+            <CartPanel onPay={openPayment} onClose={() => setCartOpen(false)} />
           </Drawer>
         </>
       )}
@@ -122,6 +154,7 @@ function ProductPicker() {
   const [choosingSerial, setChoosingSerial] = useState<Product | null>(null);
   const serials = useSerialsInStock(boutique.id);
   const inCart = useMemo(() => new Set(cart.lines.map((l) => l.serial).filter(Boolean)), [cart.lines]);
+  const wanted = useMemo(() => stockByProduct(cart.lines), [cart.lines]);
 
   const active = useMemo(() => (products ?? []).filter((p) => !p.archived), [products]);
   const categories = useMemo(() => collectCategories(active), [active]);
@@ -191,7 +224,7 @@ function ProductPicker() {
   return (
     <div>
       <div className="sticky-tools">
-        <BarcodeField value={q} onChange={setQ} onScan={onScan} autoFocus placeholder="Nom, code article ou scan" />
+        <BarcodeField value={q} onChange={setQ} onScan={onScan} autoFocus placeholder="Nom de l'article ou scannez le code-barres" />
         <ScrollArea type="never" mt="xs">
           <Chip.Group value={category} onChange={(v) => setCategory(v as string)}>
             <Group gap={6} wrap="nowrap">
@@ -200,12 +233,18 @@ function ProductPicker() {
               </Chip>
               {active.some((p) => p.favorite) && (
                 <Chip value="*fav" size="sm" variant="outline">
-                  Favoris
+                  <Group gap={6} wrap="nowrap">
+                    <IconStarFilled size={13} color="#f2b10c" />
+                    Favoris
+                  </Group>
                 </Chip>
               )}
               {categories.map((c) => (
                 <Chip key={c} value={c} size="sm" variant="outline">
-                  {c}
+                  <Group gap={6} wrap="nowrap">
+                    <span className="cat-dot" style={{ background: categoryColor(c) }} />
+                    {c}
+                  </Group>
                 </Chip>
               ))}
             </Group>
@@ -226,9 +265,9 @@ function ProductPicker() {
         </Text>
       )}
 
-      <SimpleGrid cols={{ base: 2, xs: 3, lg: 4 }} spacing="xs">
+      <SimpleGrid cols={{ base: 2, xs: 3, lg: 4 }} spacing={{ base: 10, lg: 12 }} verticalSpacing={{ base: 14, lg: 16 }} pt={6}>
         {list.slice(0, VISIBLE).map((p) => (
-          <ProductTile key={p.id} product={p} currency={boutique.currency} onPick={() => pick(p)} />
+          <ProductTile key={p.id} product={p} currency={boutique.currency} inCart={wanted.get(p.id) ?? 0} onPick={() => pick(p)} />
         ))}
       </SimpleGrid>
       {list.length > VISIBLE && (
@@ -277,37 +316,36 @@ function ProductPicker() {
   );
 }
 
-function ProductTile({ product: p, currency, onPick }: { product: Product; currency: Currency; onPick: () => void }) {
+function ProductTile({ product: p, currency, inCart, onPick }: { product: Product; currency: Currency; inCart: number; onPick: () => void }) {
   const level = stockLevel(p);
   return (
-    <UnstyledButton className="product-tile" data-empty={level === "empty" || undefined} onClick={onPick}>
-      <Group gap={4} wrap="nowrap" align="flex-start">
-        {p.favorite && <IconStarFilled size={13} color="var(--mantine-color-yellow-6)" style={{ flexShrink: 0, marginTop: 3 }} />}
-        <Text fw={600} size="sm" lineClamp={2} style={{ lineHeight: 1.25 }}>
-          {p.name}
-        </Text>
-      </Group>
-      {p.sku && (
-        <Text size="xs" c="dimmed" mt={-4} className="n">
-          {p.sku}
-        </Text>
-      )}
-      <Group justify="space-between" align="flex-end" mt="auto" gap={4} wrap="nowrap">
-        <Text fw={700} size="md">
+    <UnstyledButton
+      className="product-tile"
+      style={{ "--c": categoryColor(p.category) } as CSSProperties}
+      data-empty={level === "empty" || undefined}
+      data-in={inCart > 0 || undefined}
+      onClick={onPick}
+    >
+      {inCart > 0 && <span className="qty n">{formatQty(inCart, "u")}</span>}
+      {p.favorite && <IconStarFilled size={15} className="star" aria-label="Favori" />}
+      <span className="ph" aria-hidden>
+        {initials(p.name)}
+      </span>
+      <span className="name">{p.name}</span>
+      <span className="pr">
+        <span className="price">
           <Money value={p.sellPrice} currency={currency} />
           {p.unit !== "u" && (
-            <Text span size="xs" c="dimmed">
+            <Text span size="xs" c="dimmed" fw={500}>
               {" "}
               /{p.unit}
             </Text>
           )}
-        </Text>
-        {level !== "ok" && (
-          <Badge size="xs" variant="light" color={level === "empty" ? "red" : "orange"}>
-            {level === "empty" ? "Rupture" : formatQty(p.stock, p.unit)}
-          </Badge>
-        )}
-      </Group>
+        </span>
+        <span className="stock" data-low={level !== "ok" || undefined}>
+          {level === "empty" ? "Rupture" : level === "low" ? `${formatQty(p.stock, p.unit)} restant${p.stock > 1 ? "s" : ""}` : `${formatQty(p.stock, p.unit)} en stock`}
+        </span>
+      </span>
       {p.packs.length > 0 && (
         <Text size="xs" c="dimmed" mt={-4} truncate>
           ou {packLabel(p.packs[0], p.unit).toLowerCase()}
@@ -469,148 +507,183 @@ function WeighModal({ product, onClose, onConfirm }: { product: Product | null; 
 
 /* ---------- Panier ---------- */
 
-function CartPanel({ onPay }: { onPay: () => void }) {
+function CartPanel({ onPay, onClose }: { onPay: () => void; onClose?: () => void }) {
   const { boutique, permissions } = useReady();
   const { products } = useCatalog();
   const cart = useCart();
   const c = boutique.currency;
+  const [discountOpen, setDiscountOpen] = useState(false);
   const stockOf = useMemo(() => new Map((products ?? []).map((p) => [p.id, p.stock])), [products]);
   // Bouteilles et paquets du même produit puisent dans le même stock.
   const wanted = useMemo(() => stockByProduct(cart.lines), [cart.lines]);
-
-  if (!cart.lines.length)
-    return (
-      <Stack align="center" py="xl" gap="xs">
-        <IconShoppingCart size={36} opacity={0.3} />
-        <Text c="dimmed">Le panier est vide.</Text>
-        <Text size="sm" c="dimmed">
-          Touchez un article pour l'ajouter.
-        </Text>
-      </Stack>
-    );
+  const rates = ratesOf(boutique);
+  const others = currenciesOf(boutique).filter((x) => x !== c && hasRate(rates, x) && hasRate(rates, c));
+  const count = cart.totals.itemCount;
+  const showDiscount = permissions.editPrices && (discountOpen || cart.discountPercent > 0);
 
   return (
-    <Stack gap="sm">
-      <div>
-        {cart.lines.map((l) => {
-          const stock = stockOf.get(l.productId);
-          const over = stock != null && (wanted.get(l.productId) ?? 0) > stock;
-          const key = lineKey(l);
-          const qtyUnit = l.packId ? "u" : l.unit;
-          const step = qtyUnit === "u" ? 1 : 0.1;
-          return (
-            <div key={key} className="list-row" style={{ alignItems: "flex-start" }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <Text fw={600} size="sm" truncate>
-                  {l.name}
-                </Text>
-                {l.packName && (
-                  <Badge size="sm" variant="light" mb={2}>
-                    {packLabel({ name: l.packName, units: l.packUnits ?? 1 }, l.unit)}
-                  </Badge>
-                )}
-                {l.serial && (
-                  <Text size="xs" className="n">
-                    IMEI {l.serial}
-                  </Text>
-                )}
-                <Text size="xs" c="dimmed">
-                  <Money value={l.unitPrice} currency={c} />
-                  {l.packName ? ` /${l.packName.toLowerCase()}` : l.unit !== "u" ? ` /${l.unit}` : ""}
-                </Text>
-                {over && (
-                  <Text size="xs" c="orange">
-                    Plus que {formatQty(stock, l.unit)} en stock
-                  </Text>
-                )}
-              </div>
-              <div style={{ textAlign: "right" }}>
-                {l.serial ? (
-                  // Un appareil (IMEI) se vend à l'unité : on le retire seulement.
-                  <ActionIcon variant="default" aria-label="Retirer" onClick={() => cart.setQty(key, 0)} ml="auto">
-                    <IconTrash size={16} />
-                  </ActionIcon>
-                ) : (
-                  <Group gap={4} wrap="nowrap" justify="flex-end">
-                    <ActionIcon
-                      variant="default"
-                      aria-label={l.quantity <= step ? "Retirer" : "Moins"}
-                      onClick={() => cart.setQty(key, l.quantity - step)}
-                    >
-                      {l.quantity <= step ? <IconTrash size={16} /> : <IconMinus size={16} />}
-                    </ActionIcon>
-                    <Text className="n" fw={700} w={44} ta="center">
-                      {formatQty(l.quantity, qtyUnit)}
-                    </Text>
-                    <ActionIcon variant="default" aria-label="Plus" onClick={() => cart.setQty(key, l.quantity + step)}>
-                      <IconPlus size={16} />
-                    </ActionIcon>
-                  </Group>
-                )}
-                <Text fw={600} size="sm" mt={4}>
-                  <Money value={lineTotal(l, c)} currency={c} />
-                </Text>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <ClientPicker />
-
-      {permissions.editPrices && (
-        <Group justify="space-between">
-          <Text size="sm">Remise</Text>
-          <NumberInput
-            size="sm"
-            w={110}
-            min={0}
-            max={100}
-            suffix=" %"
-            hideControls
-            inputMode="decimal"
-            value={cart.discountPercent || ""}
-            onChange={(v) => cart.setDiscountPercent(Number(v) || 0)}
-          />
-        </Group>
-      )}
-
-      <div>
-        {cart.totals.discount > 0 && (
-          <>
-            <Group justify="space-between">
-              <Text size="sm" c="dimmed">
-                Sous-total
-              </Text>
-              <Money value={cart.totals.subtotal} currency={c} />
-            </Group>
-            <Group justify="space-between">
-              <Text size="sm" c="dimmed">
-                Remise {cart.discountPercent} %
-              </Text>
-              <span className="n">-{formatMoney(cart.totals.discount, c)}</span>
-            </Group>
-          </>
+    <div>
+      <div className="cart-head">
+        <h3>Vente en cours</h3>
+        {count > 0 && (
+          <span className="cart-count">
+            {count} article{count > 1 ? "s" : ""}
+          </span>
         )}
-        <Group justify="space-between" mt={4}>
-          <Text fw={700} size="lg">
-            Total
-          </Text>
-          <Text fw={700} fz={28} className="n">
-            {formatMoney(cart.totals.total, c)}
-          </Text>
+        <Group gap={4} ml="auto" wrap="nowrap">
+          {cart.lines.length > 0 && (
+            <Button variant="subtle" color="gray" size="compact-sm" leftSection={<IconTrash size={15} />} onClick={cart.clear}>
+              Vider
+            </Button>
+          )}
+          {onClose && (
+            <ActionIcon variant="subtle" color="gray" aria-label="Fermer" onClick={onClose}>
+              <IconX size={18} />
+            </ActionIcon>
+          )}
         </Group>
       </div>
 
-      <Group grow>
-        <Button variant="default" onClick={cart.clear}>
-          Vider
-        </Button>
-        <Button size="lg" onClick={onPay}>
-          Encaisser
-        </Button>
-      </Group>
-    </Stack>
+      {!cart.lines.length ? (
+        <Stack align="center" py="xl" gap="xs">
+          <IconShoppingCart size={36} opacity={0.3} />
+          <Text c="dimmed">Le panier est vide.</Text>
+          <Text size="sm" c="dimmed">
+            Touchez un article pour l'ajouter.
+          </Text>
+        </Stack>
+      ) : (
+        <>
+          <Box px={16} pb={6}>
+            <ClientPicker />
+          </Box>
+          <div className="cart-lines">
+            {cart.lines.map((l) => {
+              const stock = stockOf.get(l.productId);
+              const over = stock != null && (wanted.get(l.productId) ?? 0) > stock;
+              const key = lineKey(l);
+              const qtyUnit = l.packId ? "u" : l.unit;
+              const step = qtyUnit === "u" ? 1 : 0.1;
+              return (
+                <div key={key} className="cart-line">
+                  <div style={{ minWidth: 0 }}>
+                    <Text fw={600} size="sm" truncate>
+                      {l.name}
+                    </Text>
+                    {l.packName && (
+                      <Badge size="sm" variant="light" mb={2}>
+                        {packLabel({ name: l.packName, units: l.packUnits ?? 1 }, l.unit)}
+                      </Badge>
+                    )}
+                    {l.serial && (
+                      <Text size="xs" className="n">
+                        IMEI {l.serial}
+                      </Text>
+                    )}
+                  </div>
+                  <span className="tot n">{formatMoney(lineTotal(l, c), c)}</span>
+                  <div style={{ minWidth: 0 }}>
+                    <Text size="xs" c="dimmed">
+                      <Money value={l.unitPrice} currency={c} />
+                      {l.packName ? ` le ${l.packName.toLowerCase()}` : l.unit !== "u" ? ` le ${l.unit}` : " l'unité"}
+                    </Text>
+                    {over && (
+                      <Text size="xs" c="orange">
+                        Plus que {formatQty(stock, l.unit)} en stock
+                      </Text>
+                    )}
+                  </div>
+                  {l.serial ? (
+                    // Un appareil (IMEI) se vend à l'unité : on le retire seulement.
+                    <ActionIcon variant="subtle" color="gray" aria-label="Retirer" onClick={() => cart.setQty(key, 0)} style={{ justifySelf: "end" }}>
+                      <IconTrash size={16} />
+                    </ActionIcon>
+                  ) : (
+                    <span className="stepper">
+                      <ActionIcon
+                        variant="subtle"
+                        color="gray"
+                        size="lg"
+                        aria-label={l.quantity <= step ? "Retirer" : "Moins"}
+                        onClick={() => cart.setQty(key, l.quantity - step)}
+                      >
+                        {l.quantity <= step ? <IconTrash size={16} /> : <IconMinus size={16} />}
+                      </ActionIcon>
+                      <b className="n">{formatQty(l.quantity, qtyUnit)}</b>
+                      <ActionIcon variant="subtle" color="gray" size="lg" aria-label="Plus" onClick={() => cart.setQty(key, l.quantity + step)}>
+                        <IconPlus size={16} />
+                      </ActionIcon>
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="cart-foot">
+            {(cart.totals.discount > 0 || permissions.editPrices) && (
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Sous-total
+                </Text>
+                <Text fw={700} className="n">
+                  {formatMoney(cart.totals.subtotal, c)}
+                </Text>
+              </Group>
+            )}
+            {permissions.editPrices && !showDiscount && (
+              <UnstyledButton onClick={() => setDiscountOpen(true)} c="var(--app-sky)" fw={600} fz="sm">
+                <Group gap={6}>
+                  <IconDiscount size={17} />
+                  Ajouter une remise
+                </Group>
+              </UnstyledButton>
+            )}
+            {showDiscount && (
+              <Group justify="space-between">
+                <Text size="sm">Remise</Text>
+                <NumberInput
+                  size="sm"
+                  w={110}
+                  min={0}
+                  max={100}
+                  suffix=" %"
+                  hideControls
+                  inputMode="decimal"
+                  autoFocus={!cart.discountPercent}
+                  value={cart.discountPercent || ""}
+                  onChange={(v) => cart.setDiscountPercent(Number(v) || 0)}
+                />
+              </Group>
+            )}
+            {cart.totals.discount > 0 && (
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Remise {cart.discountPercent} %
+                </Text>
+                <span className="n">-{formatMoney(cart.totals.discount, c)}</span>
+              </Group>
+            )}
+            <Group justify="space-between" align="flex-end" className="cart-total" wrap="nowrap">
+              <div>
+                <Text size="sm" fw={600} c="dimmed">
+                  Total à payer
+                </Text>
+                {others.length > 0 && (
+                  <Text size="sm" c="dimmed" className="n">
+                    ≈ {others.map((x) => formatMoney(convert(cart.totals.total, c, x, rates), x)).join(" · ")}
+                  </Text>
+                )}
+              </div>
+              <b className="n">{formatMoney(cart.totals.total, c)}</b>
+            </Group>
+            <Button size="lg" className="night-btn pay-btn" leftSection={<IconCash size={22} />} onClick={onPay}>
+              Encaisser
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -652,46 +725,60 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
 
   const due = "error" in result ? 0 : result.due;
   const sym = CURRENCIES[payCurrency].symbol;
+  const given = Number(received) || 0;
+  const methods: { value: PaymentMethod; label: string; icon: typeof IconCash }[] = [
+    { value: "especes", label: "Espèces", icon: IconCash },
+    { value: "mobile_money", label: "Mobile money", icon: IconDeviceMobileDollar },
+  ];
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Encaissement" fullScreen={narrow} size="md">
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title="Encaissement"
+      size="md"
+      classNames={narrow ? { inner: "pay-sheet-inner", content: "pay-sheet" } : undefined}
+      transitionProps={narrow ? { transition: "slide-up" } : undefined}
+    >
       <form onSubmit={submit}>
-        <Stack>
-          <div style={{ textAlign: "center" }}>
-            <Text size="sm" c="dimmed">
-              À payer
-            </Text>
-            <Text fz={40} fw={700} className="n" lh={1.1}>
-              {formatMoney(total, boutique.currency)}
-            </Text>
+        <Stack gap="md">
+          <div className="pay-due">
+            <small>À payer</small>
+            <b className="n">{formatMoney(total, boutique.currency)}</b>
             {others.length > 0 && (
-              <Text size="sm" c="dimmed" className="n">
-                soit {others.map((c) => formatMoney(convert(total, boutique.currency, c, rates), c)).join(" ou ")}
-              </Text>
+              <em className="n">soit {others.map((c) => formatMoney(convert(total, boutique.currency, c, rates), c)).join(" ou ")} au taux du jour</em>
             )}
           </div>
 
-          <SegmentedControl
-            fullWidth
-            value={method}
-            onChange={(v) => {
-              setMethod(v as PaymentMethod);
-              setReceived("");
-            }}
-            data={[
-              { value: "especes", label: "Espèces" },
-              { value: "mobile_money", label: "Mobile money" },
-            ]}
-          />
-          <SegmentedControl
-            fullWidth
-            value={payCurrency}
-            onChange={(v) => {
-              setPayCurrency(v as Currency);
-              setReceived("");
-            }}
-            data={currencies.map((c) => ({ value: c, label: `${CURRENCIES[c].short} (${CURRENCIES[c].symbol})` }))}
-          />
+          <div className="pay-methods" role="radiogroup" aria-label="Moyen de paiement">
+            {methods.map((m) => (
+              <UnstyledButton
+                key={m.value}
+                className="pay-method"
+                role="radio"
+                aria-checked={method === m.value}
+                data-on={method === m.value || undefined}
+                onClick={() => {
+                  setMethod(m.value);
+                  setReceived("");
+                }}
+              >
+                <m.icon size={22} />
+                {m.label}
+              </UnstyledButton>
+            ))}
+          </div>
+          {currencies.length > 1 && (
+            <SegmentedControl
+              fullWidth
+              value={payCurrency}
+              onChange={(v) => {
+                setPayCurrency(v as Currency);
+                setReceived("");
+              }}
+              data={currencies.map((c, i) => ({ value: c, label: `${i === 0 ? "Payé " : ""}en ${CURRENCIES[c].short}` }))}
+            />
+          )}
 
           {"error" in result ? (
             <Text c="red">{result.error}</Text>
@@ -703,46 +790,48 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
                 </Text>
               )}
               <NumberInput
-                label={`Montant reçu (${sym})`}
+                label="Le client donne"
                 size="xl"
-                autoFocus
+                autoFocus={!narrow}
                 min={0}
                 thousandSeparator=" "
                 decimalSeparator=","
                 decimalScale={CURRENCIES[payCurrency].decimals}
                 hideControls
                 inputMode="decimal"
+                rightSection={<Text c="dimmed" fw={600} pr="sm">{sym}</Text>}
+                rightSectionWidth={56}
+                classNames={{ input: "n" }}
+                styles={{ label: { fontSize: 14, fontWeight: 700, color: "var(--mantine-color-dimmed)", marginBottom: 4 } }}
                 value={received}
                 onChange={setReceived}
               />
-              <Group gap={6}>
-                <Button size="sm" variant="light" onClick={() => setReceived(due)}>
-                  Montant exact
-                </Button>
+              <div className="pay-bills">
+                <UnstyledButton className="pay-bill" data-on={given === due || undefined} onClick={() => setReceived(due)}>
+                  Exact
+                </UnstyledButton>
                 {suggestedBills(due, payCurrency)
                   .filter((b) => b !== due)
                   .map((b) => (
-                    <Button key={b} size="sm" variant="default" onClick={() => setReceived(b)}>
+                    <UnstyledButton key={b} className="pay-bill n" data-on={given === b || undefined} onClick={() => setReceived(b)}>
                       {formatMoney(b, payCurrency)}
-                    </Button>
+                    </UnstyledButton>
                   ))}
-              </Group>
-              <Paper p="sm" ta="center" bg={result.ok && Number(received) > 0 ? "var(--mantine-color-teal-light)" : undefined}>
-                {result.missing > 0 && Number(received) > 0 ? (
-                  <Text c="red" fw={600}>
-                    Il manque <span className="n">{formatMoney(result.missing, payCurrency)}</span>
-                  </Text>
-                ) : (
-                  <>
-                    <Text size="sm" c="dimmed">
-                      À rendre
-                    </Text>
-                    <Text fz={32} fw={700} className="n" lh={1.1}>
-                      {formatMoney(result.change, payCurrency)}
-                    </Text>
-                  </>
-                )}
-              </Paper>
+              </div>
+              {result.missing > 0 && given > 0 ? (
+                <div className="pay-change" data-missing>
+                  <span>Il manque</span>
+                  <b className="n">{formatMoney(result.missing, payCurrency)}</b>
+                </div>
+              ) : (
+                <div className="pay-change">
+                  <Group gap={6} wrap="nowrap">
+                    <IconArrowBackUp size={18} />
+                    Monnaie à rendre
+                  </Group>
+                  <b className="n">{formatMoney(given > 0 ? result.change : 0, payCurrency)}</b>
+                </div>
+              )}
             </>
           ) : (
             <Text ta="center" c="dimmed">
@@ -751,7 +840,13 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
             </Text>
           )}
 
-          <Button type="submit" size="xl" disabled={"error" in result || !result.ok || (method === "especes" && !(Number(received) > 0))}>
+          <Button
+            type="submit"
+            size="xl"
+            className="night-btn pay-btn"
+            leftSection={<IconCheck size={22} />}
+            disabled={"error" in result || !result.ok || (method === "especes" && !(given > 0))}
+          >
             Valider la vente
           </Button>
         </Stack>
