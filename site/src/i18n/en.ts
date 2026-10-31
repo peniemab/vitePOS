@@ -239,6 +239,49 @@ export const en: Dict = {
     faqEyebrow: "Questions",
     faqLead: "Can't find your answer? The manual explains every screen step by step.",
     faqManual: "Read the manual",
+
+    gallery: {
+      eyebrow: "Preview",
+      title: "See vitePOS before you try it",
+      lead: "Real screens from the app, on phone, tablet and computer.",
+      tabs: [
+        { label: "Home", text: "Today's sales, stock alerts and the day's exchange rate as soon as you open it.", alt: "vitePOS home screen on a phone" },
+        { label: "Till", text: "Tap or scan items, take payment in FC, $ or €, the change is worked out.", alt: "The vitePOS till on a tablet" },
+        { label: "Stock", text: "Every sale takes the item out of stock. Shortages and expiry dates are flagged.", alt: "The stock list on a computer" },
+        { label: "Sales", text: "Every sale, by seller and by day, with the profit on each one.", alt: "Sales history on a computer" },
+        { label: "Day", text: "Closing the till: what should be in the drawer, in cash and mobile money.", alt: "The day's summary on a computer" },
+        { label: "Receipt", text: "The receipt is printed, or sent to the customer on WhatsApp.", alt: "A sales receipt on a phone" },
+      ],
+    },
+
+    receipt: {
+      eyebrow: "New",
+      title: "A receipt that carries your brand",
+      lead: "Every sale gives a clear receipt in your name: your customer knows what they paid and where to find you again.",
+      points: [
+        { title: "Your logo on top", text: "Add it from a photo: vitePOS prepares it for the printer." },
+        { title: "Your details", text: "Address, phone, RCCM, national ID, tax number." },
+        { title: "Your QR code", text: "To your WhatsApp, Facebook or TikTok: customers find you again." },
+        { title: "A barcode on every receipt", text: "To find the sale in an instant." },
+      ],
+      printers: "58 and 80 mm thermal printers, over Bluetooth or USB.",
+      alt: "vitePOS receipt with logo, details, barcode and QR code",
+    },
+
+    install: {
+      eyebrow: "Install",
+      title: "Nothing to download",
+      lead: "vitePOS opens in the browser. Add its icon to your home screen: it then opens like an app, even without network.",
+      yours: "Your device",
+      open: "Open vitePOS",
+      scan: "Or scan with your phone",
+      help: { title: "We can set it up for you", text: "Our team can come to you to install everything and show you how to sell." },
+      devices: [
+        { name: "Android", where: "Chrome", steps: ["Open getvitepos.web.app in Chrome", "Tap the three dots at the top, then “Install app”", "The vitePOS icon appears on your home screen"] },
+        { name: "iPhone and iPad", where: "Safari or Chrome", steps: ["Open getvitepos.web.app in Safari or Chrome", "Tap the Share button", "Choose “Add to Home Screen”"] },
+        { name: "Computer", where: "Chrome or Edge", steps: ["Open getvitepos.web.app", "Click the install icon in the address bar", "vitePOS opens in its own window"] },
+      ],
+    },
   },
 
   strengths: [

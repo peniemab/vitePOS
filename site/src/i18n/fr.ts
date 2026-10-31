@@ -255,6 +255,52 @@ export const fr = {
     faqEyebrow: "Questions",
     faqLead: "Vous ne trouvez pas votre réponse ? Le manuel explique chaque écran pas à pas.",
     faqManual: "Lire le manuel",
+
+    /** Galerie : de vraies captures de l'app, une par onglet. */
+    gallery: {
+      eyebrow: "Aperçu",
+      title: "Voyez vitePOS avant de l'essayer",
+      lead: "De vrais écrans de l'application, sur téléphone, tablette et ordinateur.",
+      tabs: [
+        { label: "Accueil", text: "Les ventes du jour, les alertes de stock et le taux du jour dès l'ouverture.", alt: "Accueil de vitePOS sur téléphone" },
+        { label: "Caisse", text: "Touchez les articles ou scannez-les, encaissez en FC, $ ou €, la monnaie est calculée.", alt: "La caisse de vitePOS sur tablette" },
+        { label: "Stock", text: "Chaque vente retire l'article du stock. Les ruptures et les péremptions vous sont signalées.", alt: "La liste du stock sur ordinateur" },
+        { label: "Ventes", text: "Toutes les ventes, par vendeur et par jour, avec le bénéfice de chacune.", alt: "L'historique des ventes sur ordinateur" },
+        { label: "Journée", text: "La clôture de caisse : ce qui doit être dans le tiroir, en espèces et en mobile money.", alt: "Le bilan de la journée sur ordinateur" },
+        { label: "Ticket", text: "Le ticket s'imprime, ou part par WhatsApp au client.", alt: "Un ticket de vente sur téléphone" },
+      ],
+    },
+
+    /** Ticket de caisse personnalisé. */
+    receipt: {
+      eyebrow: "Nouveau",
+      title: "Un ticket à votre image",
+      lead: "Chaque vente donne un ticket clair, à votre nom : votre client sait ce qu'il a payé et où vous retrouver.",
+      points: [
+        { title: "Votre logo en haut", text: "Ajoutez-le depuis une photo : vitePOS le prépare pour l'imprimante." },
+        { title: "Vos coordonnées", text: "Adresse, téléphone, RCCM, ID NAT, numéro d'impôt." },
+        { title: "Votre QR code", text: "Vers votre WhatsApp, Facebook ou TikTok : le client vous retrouve." },
+        { title: "Un code-barres par ticket", text: "Pour retrouver la vente en un instant." },
+      ],
+      printers: "Imprimantes thermiques 58 et 80 mm, en Bluetooth ou en USB.",
+      alt: "Ticket vitePOS avec logo, coordonnées, code-barres et QR code",
+    },
+
+    /** Installation : selon l'appareil du visiteur. */
+    install: {
+      eyebrow: "Installer",
+      title: "Rien à télécharger",
+      lead: "vitePOS s'ouvre dans le navigateur. Ajoutez son icône sur l'écran d'accueil : elle s'ouvre ensuite comme une application, même sans réseau.",
+      yours: "Votre appareil",
+      open: "Ouvrir vitePOS",
+      scan: "Ou scannez avec votre téléphone",
+      help: { title: "On l'installe pour vous", text: "Nos équipes peuvent passer chez vous pour tout installer et vous montrer comment vendre." },
+      devices: [
+        { name: "Android", where: "Chrome", steps: ["Ouvrez getvitepos.web.app dans Chrome", "Touchez les trois points en haut, puis « Installer l'application »", "L'icône vitePOS apparaît sur l'écran d'accueil"] },
+        { name: "iPhone et iPad", where: "Safari ou Chrome", steps: ["Ouvrez getvitepos.web.app dans Safari ou Chrome", "Touchez le bouton Partager", "Choisissez « Sur l'écran d'accueil »"] },
+        { name: "Ordinateur", where: "Chrome ou Edge", steps: ["Ouvrez getvitepos.web.app", "Cliquez sur l'icône d'installation dans la barre d'adresse", "vitePOS s'ouvre dans sa propre fenêtre"] },
+      ],
+    },
   },
 
   strengths: [

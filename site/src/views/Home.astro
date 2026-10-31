@@ -4,7 +4,7 @@ import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import Photo from "../components/Photo.astro";
 import ComicPanel from "../components/ComicPanel.astro";
-import { SIGNUP_URL } from "../data/content";
+import { APP_URL, SIGNUP_URL } from "../data/content";
 import { alertIcon, deviceIcons, icons, moreIcons, navIcons } from "../data/icons";
 import { dicts, PDF, route, type Lang } from "../i18n";
 import "../styles/home.css";
@@ -27,6 +27,16 @@ const slideMedia = [
   { photo: "quincaillerie", shot: "tel-stock", alt: h.shots.telStock.alt },
   { photo: "boutique", shot: "tel-accueil", alt: h.altHome },
 ];
+/** Capture de chaque onglet de la galerie, dans l'ordre de `h.gallery.tabs`. */
+const galleryShots = [
+  { name: "tel-accueil", device: "tel" },
+  { name: "tablette-caisse", device: "tablette" },
+  { name: "ordi-stock", device: "ordi" },
+  { name: "ordi-ventes", device: "ordi" },
+  { name: "ordi-journee", device: "ordi" },
+  { name: "tel-ticket", device: "tel" },
+] as const;
+const receiptIcons = [moreIcons.store, moreIcons.mapPin, moreIcons.qr, moreIcons.barcode];
 /** Le bloc « Une semaine plus tard » n'apparaît qu'une fois son dessin ajouté (public/bd/bd-8.webp). */
 const resultReady = existsSync(join(process.cwd(), "public", "bd", `bd-${h.comic.result.art}.webp`));
 const strengthIcons = [moreIcons.cash, moreIcons.wifiOff, moreIcons.users];
@@ -261,6 +271,66 @@ function toToast(text: string) {
     </div>
   </section>
 
+  <!-- Aperçu : de vraies captures, un onglet par écran (onglets en CSS seul, sans JavaScript). -->
+  <section class="section gallery">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="kicker">{h.gallery.eyebrow}</p>
+        <h2>{h.gallery.title}</h2>
+        <p class="section-lead">{h.gallery.lead}</p>
+      </header>
+      <div class="gallery-box">
+        {h.gallery.tabs.map((_, i) => <input type="radio" name="gallery" id={`g-${i}`} class="gallery-radio" checked={i === 0} />)}
+        <div class="gallery-bar">
+          {h.gallery.tabs.map((tab, i) => <label for={`g-${i}`}>{tab.label}</label>)}
+        </div>
+        <div class="gallery-panels">
+          {
+            h.gallery.tabs.map((tab, i) => (
+              <figure class={`gallery-panel gp-${i} gp-${galleryShots[i].device}`}>
+                <div class="gallery-shot">
+                  <Shot name={galleryShots[i].name} device={galleryShots[i].device} alt={tab.alt} />
+                </div>
+                <figcaption>
+                  <b>{tab.label}</b>
+                  <span>{tab.text}</span>
+                </figcaption>
+              </figure>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ticket de caisse personnalisé -->
+  <section class="section receipt-feature">
+    <div class="wrap receipt-split">
+      <div>
+        <p class="kicker">{h.receipt.eyebrow}</p>
+        <h2>{h.receipt.title}</h2>
+        <p class="section-lead">{h.receipt.lead}</p>
+        <ul class="receipt-points">
+          {
+            h.receipt.points.map((pt, i) => (
+              <li>
+                <span class="receipt-point-icon" set:html={receiptIcons[i]} />
+                <div>
+                  <b>{pt.title}</b>
+                  <span>{pt.text}</span>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="receipt-printers"><span set:html={moreIcons.printer} />{h.receipt.printers}</p>
+      </div>
+      <div class="receipt-paper">
+        <img src="/captures/ticket-exemple.webp" alt={h.receipt.alt} width="384" height="1648" loading="lazy" decoding="async" />
+      </div>
+    </div>
+  </section>
+
   <!-- Appareils : une seule scène animée. Une vente faite sur la tablette part vers l'ordinateur et le téléphone. -->
   <section id={ids.devices} class="section devices">
     <div class="wrap">
@@ -367,6 +437,43 @@ function toToast(text: string) {
     </div>
   </section>
 
+  <!-- Installer : la carte de l'appareil du visiteur est mise en avant (petit script en bas de page). -->
+  <section class="section install" data-install>
+    <div class="wrap">
+      <header class="section-head">
+        <p class="kicker">{h.install.eyebrow}</p>
+        <h2>{h.install.title}</h2>
+        <p class="section-lead">{h.install.lead}</p>
+      </header>
+      <div class="install-grid">
+        <ul class="install-cards">
+          {
+            h.install.devices.map((d, i) => (
+              <li data-os={["android", "ios", "desktop"][i]}>
+                <span class="install-yours">{h.install.yours}</span>
+                <span class="install-icon" set:html={[moreIcons.deviceMobile, moreIcons.deviceMobile, deviceIcons.laptop][i]} />
+                <b>{d.name}</b>
+                <small>{d.where}</small>
+                <ol>
+                  {d.steps.map((st) => <li>{st}</li>)}
+                </ol>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="install-open">
+          <a class="btn btn-lg" href={APP_URL}>{h.install.open} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
+          <img src="/qr-app.svg" alt="" width="132" height="132" loading="lazy" />
+          <small>{h.install.scan}</small>
+        </div>
+      </div>
+      <p class="install-help">
+        <span class="install-help-icon" set:html={icons.users} />
+        <span><b>{h.install.help.title}</b> {h.install.help.text}</span>
+      </p>
+    </div>
+  </section>
+
   <!-- Questions -->
   <section id={ids.faq} class="section">
     <div class="wrap faq-grid">
@@ -404,6 +511,15 @@ function toToast(text: string) {
 </Base>
 
 <script>
+  // Installer : met en avant la carte de l'appareil du visiteur.
+  const install = document.querySelector<HTMLElement>("[data-install]");
+  if (install) {
+    const ua = navigator.userAgent;
+    const ipad = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+    const os = /android/i.test(ua) ? "android" : /iphone|ipad|ipod/i.test(ua) || ipad ? "ios" : "desktop";
+    install.querySelector(`[data-os="${os}"]`)?.classList.add("is-yours");
+  }
+
   // BD : les cases apparaissent une à une quand la section arrive à l'écran.
   const comic = document.querySelector<HTMLElement>("[data-comic]");
   if (comic) {

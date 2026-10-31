@@ -45,14 +45,33 @@ body {
   white-space: nowrap;
 }
 
+/* Le bleu nuit du site de présentation : dégradé profond, halo bleu vif. */
+:root {
+  --app-night: linear-gradient(115deg, #0a142a 0%, #0f1f42 55%, #14306a 100%);
+  --app-glow: radial-gradient(circle at 85% 0%, rgba(57, 135, 229, 0.38) 0%, rgba(57, 135, 229, 0) 55%);
+  --app-sky: #3987e5;
+}
+
 /* Barre du haut */
 .app-header {
-  background: var(--mantine-color-navy-6);
+  background: var(--app-glow), var(--app-night);
   color: #f2f5fb;
   border-bottom: 0 !important;
 }
-[data-mantine-color-scheme="dark"] .app-header {
-  background: #101a2e;
+
+/* Carte vedette (ventes du jour) aux couleurs du site */
+.hero-card {
+  background: var(--app-glow), var(--app-night) !important;
+  color: #f2f5fb !important;
+  border: 0 !important;
+}
+.night-btn {
+  background: var(--app-glow), var(--app-night) !important;
+  color: #fff !important;
+}
+.hero-card .mantine-Text-root[data-dimmed],
+.hero-card .hero-sub {
+  color: #a9b6d2;
 }
 .brand {
   font-family: "Barlow Condensed", sans-serif;
@@ -80,7 +99,8 @@ body {
 }
 .top-tab.active {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 -2px 0 var(--app-sky);
 }
 /* Ordinateur à l'écran étroit ou zoomé : les 7 onglets tiennent, sans icônes, et le nom de la boutique s'abrège. */
 @media (max-width: 75em) {

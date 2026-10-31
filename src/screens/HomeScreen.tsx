@@ -47,14 +47,14 @@ export function HomeScreen() {
       <PageTitle title={`Bonjour ${firstName}`} sub={`${boutique.name} · ${ROLE_LABELS[member.role]}`} />
       <InstallCard dismissible mb="md" />
 
-      <Paper component={Link} to="/ventes" p="md" mb="md" style={{ display: "block", textDecoration: "none", color: "inherit" }}>
-        <Text size="sm" c="dimmed">
+      <Paper component={Link} to="/ventes" p="md" mb="md" className="hero-card" style={{ display: "block", textDecoration: "none" }}>
+        <Text size="sm" className="hero-sub">
           {permissions.viewReports ? "Ventes d'aujourd'hui" : "Vos ventes d'aujourd'hui"}
         </Text>
         <Text fz={40} fw={700} className="n" lh={1.15}>
           {mine ? formatMoney(t.revenue, boutique.currency) : "…"}
         </Text>
-        <Text size="sm" c="dimmed">
+        <Text size="sm" className="hero-sub">
           {t.count} vente{t.count > 1 ? "s" : ""}
           {delta != null && ` · ${delta > 0 ? "+" : ""}${delta} % par rapport à hier`}
           {delta == null && y.revenue === 0 && mine ? " · aucune vente hier" : ""}
@@ -62,7 +62,7 @@ export function HomeScreen() {
       </Paper>
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} mb="md">
-        <Button component={Link} to="/caisse" size="xl" leftSection={<IconCash size={24} />}>
+        <Button component={Link} to="/caisse" size="xl" className="night-btn" leftSection={<IconCash size={24} />}>
           Ouvrir la caisse
         </Button>
         <Button component={Link} to="/stock" size="xl" variant="default" leftSection={<IconPackage size={24} />}>

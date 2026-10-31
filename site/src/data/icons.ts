@@ -17,6 +17,27 @@ const tabler = (paths: string[]) =>
   `<svg width="24" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths.map((d) => `<path d="${d}" />`).join("")}</svg>`;
 
 export const moreIcons = {
+  store: tabler([
+    "M3 21l18 0",
+    "M3 7v1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1h-18l2 -4h14l2 4",
+    "M5 21l0 -10.15",
+    "M19 21l0 -10.15",
+    "M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4",
+  ]),
+  qr: tabler([
+    "M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z",
+    "M7 17l0 .01",
+    "M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z",
+    "M7 7l0 .01",
+    "M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z",
+    "M17 7l0 .01",
+    "M14 14l3 0",
+    "M20 14l0 .01",
+    "M14 14l0 3",
+    "M14 20l3 0",
+    "M17 17l3 0",
+    "M20 17l0 3",
+  ]),
   deviceMobile: tabler(["M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14", "M11 4h2", "M12 17v.01"]),
   printer: tabler([
     "M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2",
