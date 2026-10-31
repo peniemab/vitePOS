@@ -258,6 +258,29 @@ export function categoryColor(category: string): string {
   return CATEGORY_COLORS[h % CATEGORY_COLORS.length];
 }
 
+/** Vignettes dessinées pour les articles faciles à reconnaître ; les autres prennent leurs deux lettres. */
+export type ProductIcon = "bottle" | "droplet" | "grain" | "phone" | "beer" | "bread" | "egg" | "candle";
+
+const ICON_WORDS: [ProductIcon, RegExp][] = [
+  ["phone", /\b(credit|unites|airtime|vodacom|airtel|orange|africell|telephone|chargeur|ecouteur)/],
+  ["droplet", /\beau\b/],
+  ["beer", /\b(biere|primus|skol|turbo king|heineken|castel|simba|nkoyi|tembo)/],
+  ["bottle", /\b(coca|fanta|sprite|pepsi|jus|soda|limonade|maltina|vimto|energie|boisson|cl\b)/],
+  ["grain", /\b(riz|mais|haricot|farine|semoule|fufu|ble)/],
+  ["bread", /\b(pain|baguette|biscuit|gateau)/],
+  ["egg", /\boeufs?\b/],
+  ["candle", /\b(bougie|allumette)/],
+];
+
+export function productIcon(name: string, category = ""): ProductIcon | null {
+  const n = fold(name).replace(/œ/g, "oe");
+  for (const [icon, re] of ICON_WORDS) if (re.test(n)) return icon;
+  const c = fold(category);
+  if (/boisson/.test(c)) return "bottle";
+  if (/telephon/.test(c)) return "phone";
+  return null;
+}
+
 /** Deux lettres pour la vignette d'un article : « Huile Mama 1 L » → « HM », « Sucre » → « SU ». */
 export function initials(name: string): string {
   const words = fold(name)

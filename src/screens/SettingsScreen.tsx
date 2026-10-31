@@ -40,7 +40,7 @@ export function SettingsScreen() {
             Apparence
           </Title>
           <Text size="sm" c="dimmed" mb="sm">
-            « Automatique » suit le réglage du téléphone. Le mode sombre repose les yeux le soir et économise la batterie.
+            L'app est en clair au départ. « Automatique » passe en sombre en même temps que le téléphone. Le mode sombre repose les yeux le soir et économise la batterie.
           </Text>
           <ThemeSwitch />
         </Paper>

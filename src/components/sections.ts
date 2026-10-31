@@ -1,11 +1,11 @@
 /** Toutes les rubriques de l'app, pour le menu de gauche (ordinateur) et le menu « Plus » (téléphone), filtrées selon les droits du membre. */
 import {
   IconCalendarCheck,
-  IconCash,
+  IconCashRegister,
   IconChartBar,
   IconClipboardCheck,
   IconCreditCard,
-  IconHome,
+  IconLayoutDashboard,
   IconPackage,
   IconReceipt,
   IconSettings,
@@ -33,11 +33,11 @@ export interface SectionGroup {
 export function useSections(): SectionGroup[] {
   const { member, permissions } = useReady();
   const groups: { title: string; items: (Section & { show?: boolean })[] }[] = [
-    { title: "", items: [{ to: "/", label: "Accueil", icon: IconHome, end: true }] },
+    { title: "", items: [{ to: "/", label: "Accueil", icon: IconLayoutDashboard, end: true }] },
     {
       title: "Vendre",
       items: [
-        { to: "/caisse", label: "Caisse", icon: IconCash },
+        { to: "/caisse", label: "Caisse", icon: IconCashRegister },
         { to: "/ventes", label: "Ventes", icon: IconReceipt },
         { to: "/clients", label: "Clients", icon: IconUsers },
       ],

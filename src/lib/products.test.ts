@@ -4,6 +4,7 @@ import {
   CATEGORY_COLORS,
   collectCategories,
   initials,
+  productIcon,
   findByBarcode,
   findByCode,
   findScan,
@@ -220,5 +221,21 @@ describe("tuiles de la caisse", () => {
     expect(initials("Élixir d'or")).toBe("ED");
     expect(initials("33 cl")).toBe("CL");
     expect(initials("")).toBe("?");
+  });
+});
+
+describe("vignettes dessinées", () => {
+  it("reconnaît les articles courants", () => {
+    expect(productIcon("Coca-Cola 33 cl")).toBe("bottle");
+    expect(productIcon("Eau 1,5 L")).toBe("droplet");
+    expect(productIcon("Riz parfumé 1 kg")).toBe("grain");
+    expect(productIcon("Crédit Vodacom 1 $")).toBe("phone");
+    expect(productIcon("Primus 72 cl")).toBe("beer");
+    expect(productIcon("Œufs x30")).toBe("egg");
+  });
+  it("laisse les deux lettres aux autres", () => {
+    expect(productIcon("Huile Mama 1 L")).toBeNull();
+    expect(productIcon("Dentifrice Signal")).toBeNull();
+    expect(productIcon("Bidon", "Boissons")).toBe("bottle");
   });
 });

@@ -2,7 +2,7 @@
 import { roundMoney, type Currency } from "./fx";
 import { shiftDay } from "./cashday";
 import type { Sale } from "./sales";
-import { stockUnits } from "./cart";
+import { stockUnits, type PaymentMethod } from "./cart";
 
 export type PeriodKind = "jour" | "semaine" | "mois";
 
@@ -35,6 +35,13 @@ export function periodOf(kind: PeriodKind, day: string): Period {
   const days: string[] = [];
   for (let d = start; d <= end; d = shiftDay(d, 1)) days.push(d);
   return { kind, start, end, days };
+}
+
+/** Les `n` derniers jours jusqu'à `day` compris (graphique de l'accueil). */
+export function lastDays(day: string, n: number): Period {
+  const days: string[] = [];
+  for (let i = n - 1; i >= 0; i--) days.push(shiftDay(day, -i));
+  return { kind: n <= 7 ? "semaine" : "mois", start: days[0], end: day, days };
 }
 
 /** Période précédente ou suivante de même nature. */
@@ -128,4 +135,37 @@ export function buildReport(sales: Sale[], period: Period, currency: Currency, c
 export function changePercent(current: number, previous: number): number | undefined {
   if (!previous) return undefined;
   return Math.round(((current - previous) / previous) * 100);
+}
+
+/** Montant court pour les graphiques : 780 000 → « 780 k », 1 250 000 → « 1,3 M », 22 → « 22 ». */
+export function compactAmount(n: number): string {
+  const abs = Math.abs(n);
+  const fmt = (v: number, d: number) => v.toLocaleString("fr-FR", { maximumFractionDigits: d }).replace(/[\u202f\u00a0]/g, " ");
+  if (abs >= 1_000_000) return `${fmt(n / 1_000_000, 1)} M`;
+  if (abs >= 1000) return `${fmt(Math.round(n / 1000), 0)} k`;
+  return fmt(n, 2);
+}
+
+export interface PaymentSlice {
+  method: PaymentMethod;
+  /** Devise dans laquelle le client a payé. */
+  currency: Currency;
+  /** Montant encaissé dans cette devise. */
+  amount: number;
+  /** Valeur dans la devise des prix, pour comparer les parts entre elles. */
+  value: number;
+}
+
+/** Ventes validées réparties par moyen de paiement et devise payée, de la plus grosse part à la plus petite. */
+export function paymentBreakdown(sales: Pick<Sale, "status" | "total" | "payment">[]): PaymentSlice[] {
+  const out = new Map<string, PaymentSlice>();
+  for (const s of sales) {
+    if (s.status !== "validee") continue;
+    const key = `${s.payment.method}-${s.payment.currency}`;
+    const slice = out.get(key) ?? { method: s.payment.method, currency: s.payment.currency, amount: 0, value: 0 };
+    slice.amount = roundMoney(slice.amount + s.payment.due, s.payment.currency);
+    slice.value += s.total;
+    out.set(key, slice);
+  }
+  return [...out.values()].sort((a, b) => b.value - a.value);
 }

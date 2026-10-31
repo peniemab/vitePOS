@@ -1,11 +1,11 @@
-/** Choix de l'apparence (clair, sombre, ou comme le téléphone), gardé sur l'appareil. */
+/** Choix de l'apparence (clair par défaut, sombre, ou automatique comme le téléphone), gardé sur l'appareil. */
 import { SegmentedControl, useMantineColorScheme, type MantineColorScheme } from "@mantine/core";
 import { IconDeviceMobile, IconMoon, IconSun } from "@tabler/icons-react";
 
 const OPTIONS: { value: MantineColorScheme; label: string; Icon: typeof IconSun }[] = [
-  { value: "auto", label: "Automatique", Icon: IconDeviceMobile },
   { value: "light", label: "Clair", Icon: IconSun },
   { value: "dark", label: "Sombre", Icon: IconMoon },
+  { value: "auto", label: "Automatique", Icon: IconDeviceMobile },
 ];
 
 export function ThemeSwitch() {

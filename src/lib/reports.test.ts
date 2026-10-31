@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildReport, changePercent, periodOf, shiftPeriod } from "./reports";
+import { buildReport, changePercent, compactAmount, lastDays, paymentBreakdown, periodOf, shiftPeriod } from "./reports";
 import { gapTotals, inventoryGaps } from "./inventory";
 import type { Sale } from "./sales";
 
@@ -121,5 +121,33 @@ describe("inventaire", () => {
       { productId: "huile", name: "Huile", unit: "L", delta: 0.5, value: 750 },
     ]);
     expect(gapTotals(gaps)).toEqual({ missingValue: 2100, surplusValue: 750, lines: 2 });
+  });
+});
+
+describe("accueil", () => {
+  it("prend les n derniers jours jusqu'à aujourd'hui", () => {
+    const p = lastDays("2026-10-31", 7);
+    expect(p.days).toEqual(["2026-10-25", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30", "2026-10-31"]);
+    expect(lastDays("2026-03-02", 30).start).toBe("2026-02-01");
+  });
+  it("abrège les montants des graphiques", () => {
+    expect(compactAmount(779950)).toBe("780 k");
+    expect(compactAmount(1250000)).toBe("1,3 M");
+    expect(compactAmount(22)).toBe("22");
+  });
+  it("répartit les paiements par moyen et par devise", () => {
+    const usd = { method: "especes" as const, currency: "USD" as const, rates: null, due: 5, received: 5, change: 0 };
+    const mm = { method: "mobile_money" as const, currency: "CDF" as const, rates: null, due: 7000, received: 7000, change: 0 };
+    const slices = paymentBreakdown([
+      sale({ total: 10000, payment: { ...mm, method: "especes", due: 10000 } }),
+      sale({ total: 14250, payment: usd }),
+      sale({ total: 7000, payment: mm }),
+      sale({ total: 9000, status: "annulee", payment: mm }),
+    ]);
+    expect(slices.map((s) => [s.method, s.currency, s.amount])).toEqual([
+      ["especes", "USD", 5],
+      ["especes", "CDF", 10000],
+      ["mobile_money", "CDF", 7000],
+    ]);
   });
 });

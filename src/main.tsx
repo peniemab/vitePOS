@@ -33,7 +33,7 @@ listenForInstall();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <MantineProvider theme={theme} defaultColorScheme="auto">
+    <MantineProvider theme={theme} defaultColorScheme="light">
       <DatesProvider settings={{ locale: "fr", firstDayOfWeek: 1 }}>
         <ModalsProvider labels={{ confirm: "Confirmer", cancel: "Annuler" }}>
           <Notifications position="top-center" />

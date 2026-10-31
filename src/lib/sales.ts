@@ -71,3 +71,13 @@ export function canCancelSale(sale: Pick<Sale, "status" | "createdAtMs">, now = 
   start.setHours(0, 0, 0, 0);
   return sale.createdAtMs >= start.getTime();
 }
+
+/** « à l'instant », « il y a 3 min », « il y a 2 h », puis l'heure (« 08:15 »). */
+export function timeAgo(ms: number, now: number): string {
+  const min = Math.floor((now - ms) / 60000);
+  if (min < 1) return "À l'instant";
+  if (min < 60) return `Il y a ${min} min`;
+  if (min < 6 * 60) return `Il y a ${Math.floor(min / 60)} h`;
+  const d = new Date(ms);
+  return `À ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}

@@ -34,10 +34,14 @@ export function StockScreen() {
   const { boutique, permissions } = useReady();
   const { products, costs, error } = useCatalog();
   const actor = useActor();
-  const [q, setQ] = useState("");
-  const query = useDeferredValue(q);
   const [params] = useSearchParams();
-  const [filter, setFilter] = useState<Filter>(params.get("filtre") === "peremption" ? "expiry" : "all");
+  // L'accueil ouvre le stock déjà filtré : recherche (?q=), alertes ou péremption (?filtre=).
+  const [q, setQ] = useState(() => params.get("q") ?? "");
+  const query = useDeferredValue(q);
+  const [filter, setFilter] = useState<Filter>(() => {
+    const f = params.get("filtre");
+    return f === "peremption" ? "expiry" : f === "alertes" ? "alerts" : "all";
+  });
   const [category, setCategory] = useState<string>("");
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [openId, setOpenId] = useState<string | null>(null);

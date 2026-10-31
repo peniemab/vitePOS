@@ -1,5 +1,5 @@
 /** Caisse : choisir les articles (tuiles, recherche, scan), panier, remise et encaissement. */
-import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
+import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
 import {
@@ -7,7 +7,6 @@ import {
   Badge,
   Box,
   Button,
-  Chip,
   Drawer,
   Group,
   Modal,
@@ -16,7 +15,6 @@ import {
   ScrollArea,
   SegmentedControl,
   Select,
-  SimpleGrid,
   Stack,
   Text,
   TextInput,
@@ -25,9 +23,17 @@ import {
 import {
   IconArrowBackUp,
   IconArrowRight,
+  IconBeer,
+  IconBottle,
+  IconBread,
+  IconCandle,
   IconCash,
   IconCheck,
+  IconDeviceMobile,
   IconDeviceMobileDollar,
+  IconDroplet,
+  IconEgg,
+  IconGrain,
   IconDiscount,
   IconMinus,
   IconPlus,
@@ -59,15 +65,28 @@ import {
   findScan,
   initials,
   matchProduct,
+  productIcon,
   packLabel,
   sortForCheckout,
   stockLevel,
   type Pack,
   type Product,
+  type ProductIcon,
 } from "../lib/products";
 import { matchClient } from "../lib/clients";
 
 const VISIBLE = 120;
+
+const ICONS: Record<ProductIcon, typeof IconBottle> = {
+  bottle: IconBottle,
+  droplet: IconDroplet,
+  grain: IconGrain,
+  phone: IconDeviceMobile,
+  beer: IconBeer,
+  bread: IconBread,
+  egg: IconEgg,
+  candle: IconCandle,
+};
 
 export function CaisseScreen() {
   const wide = useMediaQuery("(min-width: 62em)", true);
@@ -75,10 +94,14 @@ export function CaisseScreen() {
   const [cartOpen, setCartOpen] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
   const { boutique, subscription } = useReady();
+  const [payCurrency, setPayCurrency] = useState<Currency>(boutique.currency);
 
   useEffect(() => {
-    if (!cart.lines.length) setCartOpen(false);
-  }, [cart.lines.length]);
+    if (!cart.lines.length) {
+      setCartOpen(false);
+      setPayCurrency(boutique.currency);
+    }
+  }, [cart.lines.length, boutique.currency]);
 
   if (subscription.readOnly)
     return (
@@ -94,19 +117,20 @@ export function CaisseScreen() {
     setCartOpen(false);
     setPayOpen(true);
   };
+  const panel = <CartPanel onPay={openPayment} payCurrency={payCurrency} onPayCurrency={setPayCurrency} onClose={wide ? undefined : () => setCartOpen(false)} />;
 
   return (
     <>
       {wide ? (
-        <Box style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 380px", gap: 20, alignItems: "start" }}>
-          <ProductPicker />
-          <Paper className="cart-panel" style={{ position: "sticky", top: 20 }}>
-            <CartPanel onPay={openPayment} />
-          </Paper>
-        </Box>
+        <div className="pos">
+          <div className="pos-left">
+            <ProductPicker wide />
+          </div>
+          <aside className="pos-cart">{panel}</aside>
+        </div>
       ) : (
         <>
-          <ProductPicker />
+          <ProductPicker wide={false} />
           {/* Laisse la place à la barre du panier au-dessus de la barre d'onglets. */}
           <div style={{ height: 84 }} />
           {cart.lines.length > 0 && (
@@ -128,18 +152,18 @@ export function CaisseScreen() {
             </div>
           )}
           <Drawer opened={cartOpen} onClose={() => setCartOpen(false)} position="bottom" size="85%" withCloseButton={false} padding={0}>
-            <CartPanel onPay={openPayment} onClose={() => setCartOpen(false)} />
+            {panel}
           </Drawer>
         </>
       )}
-      <PaymentModal opened={payOpen} onClose={() => setPayOpen(false)} />
+      <PaymentModal opened={payOpen} onClose={() => setPayOpen(false)} initialCurrency={payCurrency} />
     </>
   );
 }
 
 /* ---------- Choix des articles ---------- */
 
-function ProductPicker() {
+function ProductPicker({ wide }: { wide: boolean }) {
   const { boutique } = useReady();
   const { products, error } = useCatalog();
   const cart = useCart();
@@ -223,32 +247,36 @@ function ProductPicker() {
 
   return (
     <div>
-      <div className="sticky-tools">
-        <BarcodeField value={q} onChange={setQ} onScan={onScan} autoFocus placeholder="Nom de l'article ou scannez le code-barres" />
-        <ScrollArea type="never" mt="xs">
-          <Chip.Group value={category} onChange={(v) => setCategory(v as string)}>
-            <Group gap={6} wrap="nowrap">
-              <Chip value="" size="sm" variant="outline">
-                Tous
-              </Chip>
-              {active.some((p) => p.favorite) && (
-                <Chip value="*fav" size="sm" variant="outline">
-                  <Group gap={6} wrap="nowrap">
-                    <IconStarFilled size={13} color="#f2b10c" />
-                    Favoris
-                  </Group>
-                </Chip>
-              )}
-              {categories.map((c) => (
-                <Chip key={c} value={c} size="sm" variant="outline">
-                  <Group gap={6} wrap="nowrap">
-                    <span className="cat-dot" style={{ background: categoryColor(c) }} />
-                    {c}
-                  </Group>
-                </Chip>
-              ))}
-            </Group>
-          </Chip.Group>
+      <div className="sticky-tools pos-tools">
+        <div className="search-band">
+          <BarcodeField
+            value={q}
+            onChange={setQ}
+            onScan={onScan}
+            autoFocus={wide}
+            size={wide ? "lg" : "md"}
+            scan={wide ? "label" : "dark"}
+            placeholder={wide ? "Nom de l'article ou scannez le code-barres" : "Article ou code-barres"}
+          />
+        </div>
+        <ScrollArea type="never" mt={wide ? 14 : 10}>
+          <div className="cats" role="radiogroup" aria-label="Rayon">
+            <CatPill value="" current={category} onPick={setCategory}>
+              Tout
+            </CatPill>
+            {active.some((p) => p.favorite) && (
+              <CatPill value="*fav" current={category} onPick={setCategory}>
+                <IconStarFilled size={14} color="#f2b10c" />
+                Favoris
+              </CatPill>
+            )}
+            {categories.map((c) => (
+              <CatPill key={c} value={c} current={category} onPick={setCategory}>
+                <span className="cat-dot" style={{ background: categoryColor(c) }} />
+                {c}
+              </CatPill>
+            ))}
+          </div>
         </ScrollArea>
         {message && (
           <Text size="sm" mt={6} c={message.ok ? "teal" : "red"} fw={500}>
@@ -265,11 +293,11 @@ function ProductPicker() {
         </Text>
       )}
 
-      <SimpleGrid cols={{ base: 2, xs: 3, lg: 4 }} spacing={{ base: 10, lg: 12 }} verticalSpacing={{ base: 14, lg: 16 }} pt={6}>
+      <div className="pos-grid">
         {list.slice(0, VISIBLE).map((p) => (
           <ProductTile key={p.id} product={p} currency={boutique.currency} inCart={wanted.get(p.id) ?? 0} onPick={() => pick(p)} />
         ))}
-      </SimpleGrid>
+      </div>
       {list.length > VISIBLE && (
         <Text size="sm" c="dimmed" ta="center" mt="sm">
           {list.length - VISIBLE} autres articles : affinez la recherche.
@@ -316,8 +344,18 @@ function ProductPicker() {
   );
 }
 
+function CatPill({ value, current, onPick, children }: { value: string; current: string; onPick: (v: string) => void; children: ReactNode }) {
+  return (
+    <UnstyledButton className="cat" role="radio" aria-checked={value === current} data-on={value === current || undefined} onClick={() => onPick(value)}>
+      {children}
+    </UnstyledButton>
+  );
+}
+
 function ProductTile({ product: p, currency, inCart, onPick }: { product: Product; currency: Currency; inCart: number; onPick: () => void }) {
   const level = stockLevel(p);
+  const iconKey = productIcon(p.name, p.category);
+  const Icon = iconKey ? ICONS[iconKey] : null;
   return (
     <UnstyledButton
       className="product-tile"
@@ -329,7 +367,7 @@ function ProductTile({ product: p, currency, inCart, onPick }: { product: Produc
       {inCart > 0 && <span className="qty n">{formatQty(inCart, "u")}</span>}
       {p.favorite && <IconStarFilled size={15} className="star" aria-label="Favori" />}
       <span className="ph" aria-hidden>
-        {initials(p.name)}
+        {Icon ? <Icon size={28} stroke={1.7} /> : initials(p.name)}
       </span>
       <span className="name">{p.name}</span>
       <span className="pr">
@@ -507,7 +545,17 @@ function WeighModal({ product, onClose, onConfirm }: { product: Product | null; 
 
 /* ---------- Panier ---------- */
 
-function CartPanel({ onPay, onClose }: { onPay: () => void; onClose?: () => void }) {
+function CartPanel({
+  onPay,
+  onClose,
+  payCurrency,
+  onPayCurrency,
+}: {
+  onPay: () => void;
+  onClose?: () => void;
+  payCurrency: Currency;
+  onPayCurrency: (c: Currency) => void;
+}) {
   const { boutique, permissions } = useReady();
   const { products } = useCatalog();
   const cart = useCart();
@@ -518,11 +566,14 @@ function CartPanel({ onPay, onClose }: { onPay: () => void; onClose?: () => void
   const wanted = useMemo(() => stockByProduct(cart.lines), [cart.lines]);
   const rates = ratesOf(boutique);
   const others = currenciesOf(boutique).filter((x) => x !== c && hasRate(rates, x) && hasRate(rates, c));
+  const payable = [c, ...others];
+  const payIn = payable.includes(payCurrency) ? payCurrency : c;
+  const totalIn = payIn === c ? cart.totals.total : convert(cart.totals.total, c, payIn, rates);
   const count = cart.totals.itemCount;
   const showDiscount = permissions.editPrices && (discountOpen || cart.discountPercent > 0);
 
   return (
-    <div>
+    <div className="cart-inner">
       <div className="cart-head">
         <h3>Vente en cours</h3>
         {count > 0 && (
@@ -677,8 +728,17 @@ function CartPanel({ onPay, onClose }: { onPay: () => void; onClose?: () => void
               </div>
               <b className="n">{formatMoney(cart.totals.total, c)}</b>
             </Group>
+            {payable.length > 1 && (
+              <SegmentedControl
+                fullWidth
+                value={payIn}
+                onChange={(v) => onPayCurrency(v as Currency)}
+                data={payable.map((x) => ({ value: x, label: CURRENCIES[x].symbol }))}
+                aria-label="Devise payée par le client"
+              />
+            )}
             <Button size="lg" className="night-btn pay-btn" leftSection={<IconCash size={22} />} onClick={onPay}>
-              Encaisser
+              Encaisser <span className="n" style={{ marginLeft: 6 }}>{formatMoney(totalIn, payIn)}</span>
             </Button>
           </div>
         </>
@@ -689,7 +749,7 @@ function CartPanel({ onPay, onClose }: { onPay: () => void; onClose?: () => void
 
 /* ---------- Encaissement ---------- */
 
-function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
+function PaymentModal({ opened, onClose, initialCurrency }: { opened: boolean; onClose: () => void; initialCurrency: Currency }) {
   const { boutique } = useReady();
   const actor = useActor();
   const cart = useCart();
@@ -702,10 +762,10 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
   useEffect(() => {
     if (opened) {
       setMethod("especes");
-      setPayCurrency(boutique.currency);
+      setPayCurrency(initialCurrency);
       setReceived("");
     }
-  }, [opened, boutique.currency]);
+  }, [opened, initialCurrency]);
 
   const total = cart.totals.total;
   const rates = ratesOf(boutique);
@@ -735,13 +795,15 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Encaissement"
+      title={narrow ? undefined : "Encaissement"}
+      withCloseButton={!narrow}
       size="md"
       classNames={narrow ? { inner: "pay-sheet-inner", content: "pay-sheet" } : undefined}
       transitionProps={narrow ? { transition: "slide-up" } : undefined}
     >
       <form onSubmit={submit}>
         <Stack gap="md">
+          {narrow && <span className="grab" aria-hidden />}
           <div className="pay-due">
             <small>À payer</small>
             <b className="n">{formatMoney(total, boutique.currency)}</b>
@@ -776,7 +838,7 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
                 setPayCurrency(v as Currency);
                 setReceived("");
               }}
-              data={currencies.map((c, i) => ({ value: c, label: `${i === 0 ? "Payé " : ""}en ${CURRENCIES[c].short}` }))}
+              data={currencies.map((c, i) => ({ value: c, label: `${i === 0 ? "Payé " : ""}en ${CURRENCIES[c].symbol}` }))}
             />
           )}
 
@@ -801,22 +863,17 @@ function PaymentModal({ opened, onClose }: { opened: boolean; onClose: () => voi
                 inputMode="decimal"
                 rightSection={<Text c="dimmed" fw={600} pr="sm">{sym}</Text>}
                 rightSectionWidth={56}
-                classNames={{ input: "n" }}
+                classNames={{ input: "n recv-input" }}
                 styles={{ label: { fontSize: 14, fontWeight: 700, color: "var(--mantine-color-dimmed)", marginBottom: 4 } }}
                 value={received}
                 onChange={setReceived}
               />
               <div className="pay-bills">
-                <UnstyledButton className="pay-bill" data-on={given === due || undefined} onClick={() => setReceived(due)}>
-                  Exact
-                </UnstyledButton>
-                {suggestedBills(due, payCurrency)
-                  .filter((b) => b !== due)
-                  .map((b) => (
-                    <UnstyledButton key={b} className="pay-bill n" data-on={given === b || undefined} onClick={() => setReceived(b)}>
-                      {formatMoney(b, payCurrency)}
-                    </UnstyledButton>
-                  ))}
+                {[...new Set([due, ...suggestedBills(due, payCurrency)])].slice(0, 4).map((b) => (
+                  <UnstyledButton key={b} className="pay-bill n" data-on={given === b || undefined} onClick={() => setReceived(b)}>
+                    {formatMoney(b, payCurrency).replace(/\s*\S+$/, "")}
+                  </UnstyledButton>
+                ))}
               </div>
               {result.missing > 0 && given > 0 ? (
                 <div className="pay-change" data-missing>
@@ -874,32 +931,37 @@ function ClientPicker() {
       </Group>
     );
 
+  const NEW = "*nouveau";
   return (
-    <Group gap="xs" wrap="nowrap" align="flex-end">
+    <>
       <Select
-        size="sm"
-        placeholder="Client (facultatif)"
+        size="md"
+        variant="filled"
+        className="client-field"
+        leftSection={<IconUserPlus size={18} />}
+        placeholder="Ajouter un client (fidélité, crédit)"
         searchable
-        clearable
         nothingFoundMessage="Aucun client"
-        style={{ flex: 1 }}
-        data={(clients ?? []).map((c) => ({ value: c.id, label: c.phone ? `${c.name} · ${c.phone}` : c.name }))}
+        data={[
+          ...(clients ?? []).map((c) => ({ value: c.id, label: c.phone ? `${c.name} · ${c.phone}` : c.name })),
+          { value: NEW, label: "+ Nouveau client" },
+        ]}
         filter={({ options, search }) =>
           options.filter((o) => {
-            const c = clients?.find((x) => x.id === (o as { value: string }).value);
+            const id = (o as { value: string }).value;
+            if (id === NEW) return true;
+            const c = clients?.find((x) => x.id === id);
             return !!c && matchClient(c, search);
           })
         }
         value={null}
         onChange={(id) => {
+          if (id === NEW) return setCreating(true);
           const c = clients?.find((x) => x.id === id);
           if (c) cart.setClient({ id: c.id, name: c.name });
         }}
       />
-      <ActionIcon variant="default" size="lg" aria-label="Nouveau client" onClick={() => setCreating(true)}>
-        <IconUserPlus size={18} />
-      </ActionIcon>
       <ClientModal client={null} opened={creating} onClose={() => setCreating(false)} onCreated={(c) => cart.setClient(c)} />
-    </Group>
+    </>
   );
 }

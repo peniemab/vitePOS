@@ -16,12 +16,13 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import {
-  IconCash,
+  IconCashRegister,
   IconDots,
   IconHome,
   IconLogout,
   IconMoon,
   IconPackage,
+  IconSettings,
   IconReceipt,
   IconSun,
 } from "@tabler/icons-react";
@@ -37,11 +38,29 @@ import { useSections } from "./sections";
 /** Barre du bas (téléphone). */
 export const TABS = [
   { to: "/", label: "Accueil", icon: IconHome, end: true },
-  { to: "/caisse", label: "Caisse", icon: IconCash },
+  { to: "/caisse", label: "Caisse", icon: IconCashRegister },
   { to: "/stock", label: "Stock", icon: IconPackage },
   { to: "/ventes", label: "Ventes", icon: IconReceipt },
   { to: "/plus", label: "Plus", icon: IconDots },
 ];
+
+/** Version courte pour la pastille de la barre du haut (téléphone). */
+export function connectionShort(online: boolean, pending: number): string {
+  if (!online) return "Hors ligne : ventes gardées";
+  return pending > 0 ? `Envoi en cours (${pending})` : "En ligne";
+}
+
+/** Titre de la barre du haut sur téléphone : la rubrique ouverte, ou le nom de la boutique sur l'accueil. */
+function usePageTitle(): string {
+  const { boutique } = useReady();
+  const path = useLocation().pathname;
+  const groups = useSections();
+  if (path === "/") return boutique.name || "vitePOS";
+  if (path.startsWith("/ticket")) return "Ticket";
+  if (path === "/plus") return "Plus";
+  const item = groups.flatMap((g) => g.items).find((i) => i.to !== "/" && path.startsWith(i.to));
+  return item?.label ?? (boutique.name || "vitePOS");
+}
 
 export function connectionLabel(online: boolean, pending: number): string {
   if (!online) return pending > 0 ? `Hors ligne · ${pending} en attente` : "Hors ligne";
@@ -73,8 +92,10 @@ export function confirmLogout() {
 }
 
 export function Layout() {
-  const { boutique, subscription } = useReady();
+  const { subscription } = useReady();
   const wide = useMediaQuery("(min-width: 62em)", true);
+  const title = usePageTitle();
+  const { online, pending } = useSyncState();
   // Sur la caisse, le menu se réduit aux icônes pour laisser la place aux articles et au panier.
   const mini = useLocation().pathname.startsWith("/caisse");
 
@@ -87,17 +108,17 @@ export function Layout() {
     >
       <AppShell.Header className="app-header">
         <Group h="100%" px="sm" gap="md" wrap="nowrap">
-          <Group gap={8} wrap="nowrap" style={{ minWidth: 0 }}>
-            <img src="/favicon.svg" alt="" width={30} height={30} style={{ flexShrink: 0, borderRadius: 6 }} />
-            <div className="brand">{boutique.name || "vitePOS"}</div>
+          <Group gap={10} wrap="nowrap" style={{ minWidth: 0, flex: 1 }}>
+            <img src="/favicon.svg" alt="" width={32} height={32} style={{ flexShrink: 0, borderRadius: 8 }} />
+            <div className="brand">{title}</div>
           </Group>
-          <Group gap="sm" wrap="nowrap" ml="auto">
-            <AccountMenu position="bottom-end">
-              <UnstyledButton aria-label="Mon compte" style={{ lineHeight: 0 }}>
-                <AccountAvatar />
-              </UnstyledButton>
-            </AccountMenu>
-          </Group>
+          {/* L'état de l'envoi ouvre aussi le menu du compte. */}
+          <AccountMenu position="bottom-end">
+            <UnstyledButton className="status-chip" aria-label={`Mon compte (${connectionLabel(online, pending)})`}>
+              <span className={`dot ${!online ? "off" : pending > 0 ? "sync" : "on"}`} />
+              {connectionShort(online, pending)}
+            </UnstyledButton>
+          </AccountMenu>
         </Group>
       </AppShell.Header>
 
@@ -106,7 +127,7 @@ export function Layout() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <div style={{ maxWidth: mini ? 1320 : 1180, margin: "0 auto", padding: "20px 16px 40px" }}>
+        <div className="app-main">
           {needsAttention(subscription) && <SubscriptionBanner />}
           <Suspense fallback={<div className="loading">Chargement…</div>}>
             <Outlet />
@@ -194,7 +215,7 @@ function SideNav({ mini }: { mini: boolean }) {
             {!mini && (
               <div style={{ minWidth: 0 }}>
                 <b>{member.name || member.email}</b>
-                <small>Mon compte</small>
+                <small>Paramètres</small>
               </div>
             )}
           </UnstyledButton>
@@ -239,6 +260,9 @@ function AccountMenu({ position, children }: { position: MenuProps["position"]; 
           </Group>
         </Menu.Label>
         <Menu.Divider />
+        <Menu.Item component={NavLink} to="/parametres" leftSection={<IconSettings size={16} />}>
+          Paramètres
+        </Menu.Item>
         <DarkModeItem />
         <Menu.Item leftSection={<IconLogout size={16} />} color="red" onClick={confirmLogout}>
           Se déconnecter
