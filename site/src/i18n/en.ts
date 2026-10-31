@@ -42,7 +42,7 @@ export const en: Dict = {
   },
 
   home: {
-    ids: { features: "features", devices: "devices", audiences: "who-its-for", offline: "offline", faq: "faq" },
+    ids: { gallery: "preview", features: "features", devices: "devices", audiences: "who-its-for", offline: "offline", faq: "faq" },
     title: "vitePOS · Sell faster. Lose less. Even offline.",
     description:
       "vitePOS: the till on your phone. Take payment in FC, $ or €, while stock and profit are worked out as you sell, even without network. Free to start.",
@@ -51,7 +51,11 @@ export const en: Dict = {
     lead: "Sales, expenses, profit: everything is worked out while you sell. No more mental arithmetic at closing time.",
     ctaStart: "Start for free",
     ctaBrochure: "Download the brochure",
-    ticks: ["Free to start", "No hardware to buy", "Ready in 5 minutes"],
+    ctaSee: "See the app",
+    ctaStartShort: "Start free",
+    kicker: "The till that works even when the network drops",
+    brochureLink: "Brochure (PDF)",
+    ticks: ["Free to start", "Nothing to buy", "Works offline", "FC, $ and €"],
     altHome: "vitePOS home screen: today's sales and stock alerts",
     altCaisse: "The vitePOS till with a cart in progress",
 
@@ -131,30 +135,40 @@ export const en: Dict = {
     slides: [
       {
         tag: "Supermarkets and convenience stores",
+        short: "Grocery",
+        line: "Several tills at once, the stock updates itself.",
         title: "",
         text: "",
         pops: ["Sale completed · 21,100 FC", "Paid in $, change given · 900 FC", "Till 2 · 8 items · 14,500 FC", "Stock updated · Rice 1 kg: 38 left"],
       },
       {
         tag: "Pharmacies and drink depots",
+        short: "Pharmacies",
+        line: "An alert 30 days before expiry: no more products forgotten on the shelf.",
         title: "No more expired products forgotten on the shelf.",
         text: "Search by name or barcode, an alert 30 days before expiry, stocktaking by scanning the shelf.",
         pops: ["Alert · 2 batches expire within 30 days", "Sale · Paracetamol 500 mg · 2,500 FC", "Batch received, expires · 15/03/2027", "Stocktake · shelf 3 counted"],
       },
       {
         tag: "Phones and accessories",
+        short: "Phones",
+        line: "Every phone sold with its IMEI and warranty, every customer with their history.",
         title: "Confident customers who come back to buy.",
         text: "Every phone sold is recorded with its IMEI and warranty, and every customer keeps their purchase history. They come back? You find everything in a second.",
         pops: ["IMEI scanned · Galaxy A15", "Sale with 12-month warranty · 420,000 FC", "Customer found · Papa Jean, 3 purchases", "Receipt sent by WhatsApp"],
       },
       {
         tag: "Hardware and building supplies",
+        short: "Hardware",
+        line: "Thousands of items found in an instant, sold by the piece or by the carton.",
         title: "Thousands of items, found in an instant.",
         text: "Search by item code, sell by the piece, by the kilo or by the carton, with several sellers at once.",
         pops: ["Found · PVC pipe 32 mm", "Sale · 2 bags of cement · $40", "Sold by the carton · 4 boxes of screws", "Alert · Paint 20 L running low"],
       },
       {
         tag: "Traders and entrepreneurs",
+        short: "Entrepreneurs",
+        line: "Your sellers take payment, you follow every sale from your phone.",
         title: "Your business in your pocket.",
         text: "Your sellers take payment, you follow every sale live from your phone, wherever you are.",
         pops: ["Till opened by Grâce · 8:02", "Today's sales · 186,000 FC", "Best seller · Nido milk 400 g", "Till closed, difference · 0 FC"],

@@ -40,6 +40,8 @@ const receiptIcons = [moreIcons.store, moreIcons.mapPin, moreIcons.qr, moreIcons
 /** Le bloc « Une semaine plus tard » n'apparaît qu'une fois son dessin ajouté (public/bd/bd-8.webp). */
 const resultReady = existsSync(join(process.cwd(), "public", "bd", `bd-${h.comic.result.art}.webp`));
 const strengthIcons = [moreIcons.cash, moreIcons.wifiOff, moreIcons.users];
+/** Icône de chaque secteur de l'accroche, dans l'ordre de `h.slides`. */
+const sectorIcons = [moreIcons.store, alertIcon, moreIcons.deviceMobile, icons.package, icons.chartBar];
 /** Icône de chaque question, dans l'ordre de `t.faqs` : prix, matériel, hors ligne, installation, devises, sécurité. */
 const faqIcons = [navIcons.tag, moreIcons.deviceMobile, moreIcons.wifiOff, navIcons.download, moreIcons.cash, moreIcons.shieldCheck];
 
@@ -61,51 +63,71 @@ function toToast(text: string) {
 ---
 
 <Base title={h.title} description={h.description} lang={lang} page="home">
-  <!-- Accroche : carrousel, une diapositive par type de commerce -->
+  <!-- Accroche : le titre reste fixe ; la photo, le téléphone et la ligne du secteur changent (une diapositive par type de commerce). -->
   <section class="hero" aria-roledescription="carousel" aria-label={h.carousel.label} data-carousel>
-    <div class="slides">
+    <div class="hero-bgs" aria-hidden="true">
       {
-        h.slides.map((s, i) => {
-          const m = slideMedia[i];
-          return (
-            <div
-              class:list={["slide", { "is-active": i === 0 }]}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${i + 1} / ${h.slides.length}`}
-              aria-hidden={i === 0 ? undefined : "true"}
-              data-slide
-            >
-              <Photo name={m.photo} alt="" class="slide-bg" eager={i === 0} sizes="100vw" />
-              <div class="wrap slide-inner">
-                <div class="slide-text">
-                  {i === 0 ? (
-                    <h1 class="slide-title">
-                      <span>{h.h1[0]}</span> <span>{h.h1[1]}</span> <span class="accent">{h.h1[2]}</span>
-                    </h1>
-                  ) : (
-                    <h2 class="slide-title">{s.title}</h2>
-                  )}
-                  <p class="lead">{i === 0 ? h.lead : s.text}</p>
-                  <div class="cta-row">
-                    <a class="btn btn-lg" href={SIGNUP_URL} tabindex={i === 0 ? undefined : -1}>
-                      {h.ctaStart} <span class="btn-icon" set:html={moreIcons.arrowRight} />
-                    </a>
-                    <a class="btn btn-lg btn-light" href={PDF[lang].brochure} download tabindex={i === 0 ? undefined : -1}>
-                      {h.ctaBrochure}
-                    </a>
-                  </div>
-                  {i === 0 && (
-                    <ul class="ticks">
-                      {h.ticks.map((tick) => (
-                        <li>
-                          <span set:html={moreIcons.check} />
-                          {tick}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+        slideMedia.map((m, i) => (
+          <div class:list={["hero-bg", { "is-active": i === 0 }]} data-bg>
+            <Photo name={m.photo} alt="" class="slide-bg" eager={i === 0} sizes="100vw" />
+          </div>
+        ))
+      }
+    </div>
+    <div class="wrap hero-inner">
+      <div class="hero-text">
+        <p class="hero-kicker"><span class="live-dot"></span>{h.kicker}</p>
+        <h1 class="slide-title">
+          <span>{h.h1[0]}</span> <span>{h.h1[1]}</span> <span class="accent">{h.h1[2]}</span>
+        </h1>
+        <p class="lead">{h.lead}</p>
+        <div class="sector">
+          {
+            h.slides.map((s, i) => (
+              <div class:list={["sector-item", { "is-active": i === 0 }]} aria-hidden={i === 0 ? undefined : "true"} data-sector>
+                <span class="sector-icon" set:html={sectorIcons[i]} />
+                <div>
+                  <b>{s.tag}</b>
+                  <span>{s.line}</span>
                 </div>
+              </div>
+            ))
+          }
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-lg" href={SIGNUP_URL} aria-label={h.ctaStart}>
+            <span class="cta-long">{h.ctaStart}</span><span class="cta-short">{h.ctaStartShort}</span>
+            <span class="btn-icon" set:html={moreIcons.arrowRight} />
+          </a>
+          <a class="btn btn-lg btn-light" href={`#${ids.gallery}`}>
+            <span class="btn-icon" set:html={moreIcons.deviceMobile} />
+            {h.ctaSee}
+          </a>
+        </div>
+        <ul class="ticks">
+          {
+            h.ticks.map((tick) => (
+              <li>
+                <span set:html={moreIcons.check} />
+                {tick}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="slides">
+        {
+          h.slides.map((s, i) => {
+            const m = slideMedia[i];
+            return (
+              <div
+                class:list={["slide", { "is-active": i === 0 }]}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${i + 1} / ${h.slides.length} : ${s.tag}`}
+                aria-hidden={i === 0 ? undefined : "true"}
+                data-slide
+              >
                 <div class="slide-device">
                   <Shot name={m.shot} device="tel" alt={m.alt} eager={i === 0} />
                   {/* Notifications de ventes, propres au secteur : le script les fait apparaître une à une. */}
@@ -126,10 +148,10 @@ function toToast(text: string) {
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })
-      }
+            );
+          })
+        }
+      </div>
     </div>
 
     <!-- Animation de fond tirée du logo : le grand « V » en filigrane, son point rouge qui bat à chaque vente,
@@ -158,6 +180,19 @@ function toToast(text: string) {
     </div>
 
     <div class="wrap hero-controls" data-controls hidden>
+      <div class="sector-tabs">
+        {
+          h.slides.map((s, i) => (
+            <button type="button" class="sector-tab" aria-label={`${h.carousel.goTo} ${i + 1} : ${s.tag}`} aria-current={i === 0 ? "true" : undefined} data-dot={i}>
+              {s.short}
+            </button>
+          ))
+        }
+      </div>
+      <a class="hero-pdf" href={PDF[lang].brochure} download>
+        <span set:html={navIcons.download} />
+        {h.brochureLink}
+      </a>
       <div class="arrows">
         <button type="button" class="round" aria-label={h.carousel.pause} data-toggle data-label-pause={h.carousel.pause} data-label-play={h.carousel.play}>
           <span class="i-pause" set:html={moreIcons.pause} /><span class="i-play" set:html={moreIcons.play} />
@@ -272,7 +307,7 @@ function toToast(text: string) {
   </section>
 
   <!-- Aperçu : de vraies captures, un onglet par écran (onglets en CSS seul, sans JavaScript). -->
-  <section class="section gallery">
+  <section class="section gallery" id={ids.gallery}>
     <div class="wrap">
       <header class="section-head">
         <p class="kicker">{h.gallery.eyebrow}</p>
@@ -539,6 +574,8 @@ function toToast(text: string) {
   const root = document.querySelector<HTMLElement>("[data-carousel]");
   if (root) {
     const slides = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
+    const bgs = [...root.querySelectorAll<HTMLElement>("[data-bg]")];
+    const sectors = [...root.querySelectorAll<HTMLElement>("[data-sector]")];
     const dots = [...root.querySelectorAll<HTMLButtonElement>("[data-dot]")];
     const toggle = root.querySelector<HTMLButtonElement>("[data-toggle]")!;
     const head = root.querySelector<HTMLElement>("[data-head]")!;
@@ -560,6 +597,12 @@ function toToast(text: string) {
         if (on) s.removeAttribute("aria-hidden");
         else s.setAttribute("aria-hidden", "true");
         s.querySelectorAll<HTMLElement>("a").forEach((a) => (on ? a.removeAttribute("tabindex") : a.setAttribute("tabindex", "-1")));
+      });
+      bgs.forEach((b, k) => b.classList.toggle("is-active", k === current));
+      sectors.forEach((el, k) => {
+        el.classList.toggle("is-active", k === current);
+        if (k === current) el.removeAttribute("aria-hidden");
+        else el.setAttribute("aria-hidden", "true");
       });
       dots.forEach((d, k) => (k === current ? d.setAttribute("aria-current", "true") : d.removeAttribute("aria-current")));
       sweep();

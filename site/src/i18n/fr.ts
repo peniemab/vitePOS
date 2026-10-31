@@ -51,7 +51,7 @@ export const fr = {
 
   home: {
     /** Ancres des sections (dans l'adresse : /#fonctions). */
-    ids: { features: "fonctions", devices: "appareils", audiences: "pour-qui", offline: "hors-ligne", faq: "questions" },
+    ids: { gallery: "apercu", features: "fonctions", devices: "appareils", audiences: "pour-qui", offline: "hors-ligne", faq: "questions" },
     title: "vitePOS · Vendez plus vite. Perdez moins. Même sans réseau.",
     description:
       "vitePOS : la caisse sur votre téléphone. Encaissez en FC, $ ou €, le stock et le bénéfice se calculent pendant que vous vendez, même sans réseau. Gratuit pour commencer.",
@@ -60,7 +60,11 @@ export const fr = {
     lead: "Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez. Fini les comptes de tête à la fermeture.",
     ctaStart: "Commencer gratuitement",
     ctaBrochure: "Télécharger la brochure",
-    ticks: ["Gratuit pour commencer", "Sans matériel à acheter", "Prêt en 5 minutes"],
+    ctaSee: "Voir l'app",
+    ctaStartShort: "Commencer",
+    kicker: "La caisse qui marche même quand le réseau coupe",
+    brochureLink: "Brochure (PDF)",
+    ticks: ["Gratuit pour commencer", "Rien à acheter", "Marche sans réseau", "FC, $ et €"],
     altHome: "Accueil de vitePOS : ventes du jour et alertes de stock",
     altCaisse: "La caisse de vitePOS avec un panier en cours",
 
@@ -142,30 +146,40 @@ export const fr = {
     slides: [
       {
         tag: "Supermarchés et supérettes",
+        short: "Supérettes",
+        line: "Plusieurs caisses en même temps, le stock se met à jour tout seul.",
         title: "",
         text: "",
         pops: ["Vente encaissée · 21 100 FC", "Payé en $, monnaie rendue · 900 FC", "Caisse 2 · 8 articles · 14 500 FC", "Stock à jour · Riz 1 kg : 38 restants"],
       },
       {
         tag: "Pharmacies et dépôts",
+        short: "Pharmacies",
+        line: "Alerte 30 jours avant la péremption : plus aucun produit oublié en rayon.",
         title: "Plus aucun produit périmé oublié en rayon.",
         text: "Recherche par nom ou code-barres, alerte 30 jours avant la péremption, inventaire en scannant le rayon.",
         pops: ["Alerte · 2 lots périment dans 30 jours", "Vente · Paracétamol 500 mg · 2 500 FC", "Lot reçu, périme le · 15/03/2027", "Inventaire · rayon 3 compté"],
       },
       {
         tag: "Téléphonie et accessoires",
+        short: "Téléphonie",
+        line: "Chaque téléphone vendu avec son IMEI et sa garantie, chaque client avec son historique.",
         title: "Des clients en confiance, qui reviennent acheter.",
         text: "Chaque téléphone vendu est enregistré avec son IMEI et sa garantie, et chaque client garde son historique d'achats. Il revient ? Vous retrouvez tout en une seconde.",
         pops: ["IMEI scanné · Galaxy A15", "Vente garantie 12 mois · 420 000 FC", "Client retrouvé · Papa Jean, 3 achats", "Ticket envoyé par WhatsApp"],
       },
       {
         tag: "Quincailleries et matériaux",
+        short: "Quincailleries",
+        line: "Des milliers d'articles retrouvés en un instant, vendus à la pièce ou au carton.",
         title: "Des milliers d'articles, retrouvés en un instant.",
         text: "Recherche par code article, vente à la pièce, au kilo ou au carton, plusieurs vendeurs en même temps.",
         pops: ["Trouvé · Tuyau PVC 32 mm", "Vente · 2 sacs de ciment · 40 $", "Vendu au carton · 4 boîtes de vis", "Alerte · Peinture 20 L bientôt en rupture"],
       },
       {
         tag: "Commerçants et entrepreneurs",
+        short: "Entrepreneurs",
+        line: "Vos vendeurs encaissent, vous suivez chaque vente depuis votre téléphone.",
         title: "Votre business dans la poche.",
         text: "Vos vendeurs encaissent, vous suivez chaque vente en direct depuis votre téléphone, où que vous soyez.",
         pops: ["Caisse ouverte par Grâce · 8 h 02", "Ventes du jour · 186 000 FC", "Meilleure vente · Lait Nido 400 g", "Clôture de caisse, écart · 0 FC"],

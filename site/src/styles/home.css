@@ -59,27 +59,19 @@
   margin-top: -64px;
   color: #fff;
 }
-/* Toutes les diapositives dans la même case : la plus haute donne la hauteur, rien ne saute. */
-.slides {
-  display: grid;
+/* Photos de fond : une par secteur, empilées ; seule celle du secteur affiché est visible. */
+.hero-bgs {
+  position: absolute;
+  inset: 0;
 }
-.slide {
-  grid-area: 1 / 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-height: min(720px, calc(100svh - 64px));
-  padding: 136px 0 110px;
+.hero-bg {
+  position: absolute;
+  inset: 0;
   opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.8s ease,
-    visibility 0s linear 0.8s;
-}
-.slide.is-active {
-  opacity: 1;
-  visibility: visible;
   transition: opacity 0.8s ease;
+}
+.hero-bg.is-active {
+  opacity: 1;
 }
 .slide-bg {
   position: absolute;
@@ -90,54 +82,57 @@
   transform: scale(1.08);
   transition: transform 8s ease-out;
 }
-.slide.is-active .slide-bg {
+.hero-bg.is-active .slide-bg {
   transform: scale(1);
 }
 /* Voile bleu nuit : le texte reste lisible quelle que soit la photo. */
-.slide::before {
+.hero-bgs::after {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 1;
   background:
-    linear-gradient(90deg, rgba(10, 20, 42, 0.94) 0%, rgba(10, 20, 42, 0.82) 42%, rgba(10, 20, 42, 0.35) 75%, rgba(10, 20, 42, 0.2) 100%),
+    linear-gradient(90deg, rgba(10, 20, 42, 0.95) 0%, rgba(10, 20, 42, 0.86) 45%, rgba(10, 20, 42, 0.45) 78%, rgba(10, 20, 42, 0.3) 100%),
     /* En bas, la photo se fond dans le bleu de la page : aucune coupure avec la suite. */
     linear-gradient(0deg, #0b1630 0%, rgba(11, 22, 48, 0.6) 22%, rgba(11, 22, 48, 0) 45%);
 }
-.slide-inner {
+/* Texte fixe à gauche, téléphone du secteur à droite. Le texte est au-dessus de l'animation de fond. */
+.hero-inner {
   position: relative;
   z-index: 2;
   display: grid;
   grid-template-columns: 1.25fr 0.75fr;
   gap: 48px;
   align-items: center;
+  min-height: min(720px, calc(100svh - 64px));
+  padding-top: 120px;
+  padding-bottom: 110px;
 }
-.slide-text > * {
-  transform: translateY(18px);
-  opacity: 0;
-  transition:
-    transform 0.7s ease,
-    opacity 0.7s ease;
+.hero-text {
+  display: grid;
+  gap: 18px;
+  max-width: 600px;
 }
-.slide.is-active .slide-text > * {
-  transform: none;
-  opacity: 1;
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #a9b6d2;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
-.slide.is-active .slide-text > :nth-child(2) {
-  transition-delay: 0.1s;
-}
-.slide.is-active .slide-text > :nth-child(3) {
-  transition-delay: 0.2s;
-}
-.slide.is-active .slide-text > :nth-child(n + 4) {
-  transition-delay: 0.3s;
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #69db7c;
+  box-shadow: 0 0 0 4px rgba(105, 219, 124, 0.18);
 }
 .slide-title {
-  font-size: clamp(2.2rem, 4.6vw, 3.5rem);
-  line-height: 0.98;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  line-height: 1;
   color: #fff;
-  margin: 0 0 18px;
-  max-width: 13em;
+  margin: 0;
   text-wrap: balance;
 }
 .slide-title span {
@@ -147,26 +142,79 @@
   color: #ff6b5e;
 }
 .hero .lead {
-  font-size: 1.08rem;
+  font-size: 1.05rem;
   color: #d5ddef;
   max-width: 34em;
   margin: 0;
+}
+/* Ligne propre au secteur affiché : seule elle change avec la diapositive. */
+.sector {
+  display: grid;
+}
+.sector-item {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-left: 3px solid #ff4d52;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease,
+    visibility 0s linear 0.45s;
+}
+.sector-item.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.45s ease 0.15s,
+    transform 0.45s ease 0.15s;
+}
+.sector-icon {
+  flex: none;
+  color: #ff7b7f;
+}
+.sector-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.sector-item b {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a9b6d2;
+}
+.sector-item span:not(.sector-icon) {
+  display: block;
+  font-weight: 600;
+  font-size: 0.98rem;
+  line-height: 1.35;
 }
 .cta-row {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin: 28px 0 0;
+  margin: 6px 0 0;
+}
+.cta-short {
+  display: none;
 }
 .ticks {
   list-style: none;
   padding: 0;
-  margin: 22px 0 0;
+  margin: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 22px;
+  gap: 8px 20px;
   color: #d5ddef;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  font-weight: 600;
 }
 .ticks li {
   display: inline-flex;
@@ -178,18 +226,36 @@
   height: 18px;
   color: #69db7c;
 }
-.slide-device {
+/* Téléphones des secteurs, empilés dans la même case : rien ne saute d'une diapositive à l'autre. */
+.slides {
+  display: grid;
   justify-self: center;
   width: 100%;
   max-width: 280px;
-  transform: translateY(40px) rotate(4deg);
+}
+.slide {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.8s ease,
+    visibility 0s linear 0.8s;
+}
+.slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.8s ease;
+}
+.slide-device {
+  width: 100%;
+  transform: translateY(30px);
   opacity: 0;
   transition:
     transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s,
     opacity 0.9s ease 0.15s;
 }
 .slide.is-active .slide-device {
-  transform: rotate(4deg);
+  transform: none;
   opacity: 1;
 }
 .slide-device .frame-phone {
@@ -206,9 +272,47 @@
   bottom: 30px;
   z-index: 3;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  align-items: center;
   gap: 16px;
+}
+.sector-tabs {
+  display: flex;
+  gap: 6px;
+}
+.sector-tab {
+  padding: 7px 13px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #dfe6f5;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.sector-tab:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.sector-tab[aria-current] {
+  background: #fff;
+  color: var(--navy, #1a2b4c);
+}
+.hero-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  color: #a9b6d2;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.hero-pdf:hover {
+  color: #fff;
+}
+.hero-pdf svg {
+  width: 17px;
+  height: 17px;
 }
 .hero-controls[hidden] {
   display: none;
@@ -299,24 +403,32 @@
 }
 
 @media (max-width: 860px) {
-  .slide {
-    min-height: 0;
-    padding: 112px 0 100px;
-    align-items: flex-start;
-  }
-  .slide::before {
-    background: linear-gradient(180deg, rgba(10, 20, 42, 0.78) 0%, rgba(10, 20, 42, 0.88) 55%, rgba(10, 20, 42, 0.96) 100%);
-  }
-  .slide-inner {
+  .hero-inner {
     grid-template-columns: 1fr;
-    gap: 36px;
+    gap: 28px;
+    min-height: 0;
+    padding-top: 92px;
+    padding-bottom: 92px;
   }
-  .slide-device {
-    max-width: 210px;
+  .hero-bgs::after {
+    background: linear-gradient(180deg, rgba(10, 20, 42, 0.8) 0%, rgba(10, 20, 42, 0.9) 55%, rgba(10, 20, 42, 0.96) 100%);
+  }
+  .hero-text {
+    gap: 14px;
+  }
+  .hero-kicker {
+    display: none;
+  }
+  .slides {
+    max-width: 230px;
+  }
+  .sector-tabs,
+  .hero-pdf {
+    display: none;
   }
   .hero-controls {
     bottom: 24px;
-    align-items: center;
+    justify-content: flex-end;
   }
   .round {
     width: 42px;
@@ -324,8 +436,25 @@
   }
 }
 @media (max-width: 480px) {
+  .cta-row {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 8px;
+  }
+  .cta-long {
+    display: none;
+  }
+  .cta-short {
+    display: inline;
+  }
   .cta-row .btn {
-    width: 100%;
+    justify-content: center;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .ticks {
+    gap: 6px 14px;
+    font-size: 0.86rem;
   }
 }
 
@@ -353,11 +482,11 @@
   stroke-width: 1;
 }
 .mark-slash {
-  fill: rgba(182, 23, 30, 0.3);
+  fill: rgba(182, 23, 30, 0.14);
 }
 /* Le point rouge bat à chaque vente qui apparaît. */
 .mark-dot {
-  fill: rgba(224, 36, 44, 0.85);
+  fill: rgba(224, 36, 44, 0.14);
   transform-box: fill-box;
   transform-origin: center;
 }
@@ -387,9 +516,8 @@
   top: -20%;
   bottom: -20%;
   left: 0;
-  width: 140px;
-  background: linear-gradient(90deg, rgba(182, 23, 30, 0), rgba(224, 36, 44, 0.85) 40%, #ff5a5f 50%, rgba(224, 36, 44, 0.85) 60%, rgba(182, 23, 30, 0));
-  box-shadow: 0 0 60px 20px rgba(224, 36, 44, 0.35);
+  width: 60px;
+  background: linear-gradient(90deg, rgba(182, 23, 30, 0), rgba(224, 36, 44, 0.3) 50%, rgba(182, 23, 30, 0));
   transform: translateX(-30vw) skewX(-28deg);
   opacity: 0;
 }
@@ -402,7 +530,7 @@
     opacity: 0;
   }
   15% {
-    opacity: 0.9;
+    opacity: 1;
   }
   100% {
     transform: translateX(120vw) skewX(-28deg);
@@ -417,8 +545,8 @@
 .toasts {
   position: absolute;
   top: 12%;
-  left: -38%;
-  width: 290px;
+  left: -66%;
+  width: 260px;
   display: flex;
   /* La plus récente arrive en haut et pousse les autres vers le bas, comme sur un téléphone. */
   flex-direction: column-reverse;
