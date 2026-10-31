@@ -36,7 +36,7 @@ export const en: Dict = {
     legal: "Information",
     app: "App",
     login: "Log in",
-    signup: "Create my shop",
+    signup: "Create my account",
     credits: "Photo credits",
     creditsText: "Free-licence photos from Wikimedia Commons, cropped:",
   },
@@ -77,7 +77,7 @@ export const en: Dict = {
       ordiJournee: { alt: "The till day: money expected in the drawer in FC, $ and €", title: "Till day", text: "The money expected in the drawer in FC, $ and €, then closing." },
       telTicket: { alt: "A sales receipt with the change given", title: "The receipt", text: "Printed, or sent to the customer by WhatsApp." },
       telStock: { alt: "Stock with its out-of-stock alerts", title: "Stock", text: "Search, categories, out-of-stock alerts." },
-      telAccueil: { alt: "Today's sales compared with yesterday", title: "Your shop from afar", text: "Today's sales compared with yesterday, wherever you are." },
+      telAccueil: { alt: "Today's sales compared with yesterday", title: "Your business from afar", text: "Today's sales compared with yesterday, wherever you are." },
       ordiVentes: { alt: "Today's sales, receipt by receipt", title: "Today's sales", text: "Every receipt, who sold it and how it was paid." },
       ordiStock: { alt: "Stock on a computer", title: "Stock on a computer", text: "The whole catalogue, prices and quantities." },
     },
@@ -118,7 +118,7 @@ export const en: Dict = {
     offlineTitle: "Network down? Keep selling.",
     offlineText: [
       "Every sale is kept on the device and sent as soon as the network returns. Even if two tills sell the same item without internet, the stock stays right.",
-      "And if a phone is lost or broken, everything already sent is backed up online: sign in on another device and your shop is there.",
+      "And if a phone is lost or broken, everything already sent is backed up online: sign in on another device and everything is there.",
     ],
     offlineStates: ["Offline · 3 sales waiting", "Network back · sending…", "Online, everything sent"],
 
@@ -126,7 +126,7 @@ export const en: Dict = {
     faqTitle: "Frequently asked questions",
     finalTitle: "Your till is ready in 5 minutes.",
     finalText: "Free to start, no credit card.",
-    finalCta: "Create my shop",
+    finalCta: "Create my account",
 
     slides: [
       {
@@ -198,7 +198,7 @@ export const en: Dict = {
         },
         {
           topic: "Keeping track",
-          problem: { art: 7, caption: "Away from the shop", bubbles: [{ who: "Maman Ngalula", text: "Grâce, how much did we sell today? Is there any rice left?", side: "left", tail: "right" }] },
+          problem: { art: 7, caption: "Away from her business", bubbles: [{ who: "Maman Ngalula", text: "Grâce, how much did we sell today? Is there any rice left?", side: "left", tail: "right" }] },
           solution: {
             art: 6,
             caption: "Wherever she is",
@@ -300,7 +300,7 @@ export const en: Dict = {
       text: "Every sale is recorded, stock counts itself, and in the evening you know exactly what should be in the till.",
     },
     {
-      title: "Your shop in your pocket.",
+      title: "Your business in your pocket.",
       text: "Your sellers take payment, you see every sale and every missing item live, even when you are away.",
     },
   ],
@@ -317,7 +317,7 @@ export const en: Dict = {
   ],
 
   audiences: [
-    { title: "Shops", text: "Grocery, cosmetics, phones, bakeries. A simple till on the owner's or the seller's phone." },
+    { title: "Neighbourhood businesses", text: "Grocery, cosmetics, phones, bakeries. A simple till on the owner's or the seller's phone." },
     { title: "Hardware, wholesale and spare parts", text: "Large catalogues, search by item code, sales by the piece, kilo, litre or carton, several sellers." },
     { title: "Pharmacies and drinks depots", text: "Quick search by name or barcode, sales by the crate or carton, out-of-stock alerts, regular stocktaking." },
     { title: "Minimarkets and supermarkets", text: "Several tills selling at the same time, daily closing, reports for the manager and the owner." },
@@ -355,7 +355,7 @@ export const en: Dict = {
     },
     {
       q: "Does it work without internet?",
-      a: "Yes. Sales, stock and expenses work without network. You only need internet to create your account and your shop.",
+      a: "Yes. Sales, stock and expenses work without network. You only need internet to create your account.",
     },
     {
       q: "How do I install it?",
@@ -371,7 +371,7 @@ export const en: Dict = {
     },
     {
       q: "Is my data safe?",
-      a: "Each shop is kept separate from the others and backed up online. Each employee has their own account and only sees what you allow.",
+      a: "Each business is kept separate from the others and backed up online. Each employee has their own account and only sees what you allow.",
     },
   ],
 
@@ -381,13 +381,13 @@ export const en: Dict = {
   },
 
   manual: {
-    title: "Your shop's journal · vitePOS manual",
+    title: "Your business journal · vitePOS manual",
     description:
-      "The vitePOS manual, step by step: create your shop, set up stock, sell in FC, $ or €, close the day and follow your figures, even offline.",
-    masthead: "Your shop's journal",
+      "The vitePOS manual, step by step: create your account, set up stock, sell in FC, $ or €, close the day and follow your figures, even offline.",
+    masthead: "Your business journal",
     edition: "2026 edition",
     h1: ["vitePOS,", "the user guide"],
-    lead: "Everything you need to run the till, the stock and the books of your shop, from morning to night, even when the network drops.",
+    lead: "Everything you need to run the till, the stock and the books of your business, from morning to night, even when the network drops.",
     teasers: [
       [4, "Receive 3 packs without counting 72 bottles"],
       [6, "Take payment in FC, $ or € in seconds"],
@@ -412,7 +412,7 @@ export const en: Dict = {
     title: "vitePOS brochure",
     description: "The vitePOS brochure, to print or share: the till that sells faster, loses less and works even offline.",
     tag: "Till · Stock · Sales",
-    lead: "Your shop's till, on your phone. Sales, expenses, profit: everything is worked out while you sell.",
+    lead: "Your business's till, on your phone. Sales, expenses, profit: everything is worked out while you sell.",
     altHome: "vitePOS home screen",
     altCaisse: "The vitePOS till",
     ctaTitle: "Free to start",

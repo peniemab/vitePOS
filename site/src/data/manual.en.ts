@@ -19,7 +19,7 @@ export const chapters: Chapter[] = [
     shot: { name: "man-installer", alt: "vitePOS home screen with the install card", caption: "The install card disappears once the app is installed." },
     tip: {
       title: "Internet only at the start",
-      text: "You need a connection to create your account and your shop. After that, the till works even when the network drops.",
+      text: "You need a connection to create your account. After that, the till works even when the network drops.",
     },
   },
   {
@@ -176,7 +176,7 @@ export const chapters: Chapter[] = [
   {
     id: "follow",
     kicker: "For the owner",
-    title: "Your shop, even from afar",
+    title: "Your business, even from afar",
     lead: "On your phone, wherever you are: what sold, what is running out, what you earned.",
     steps: [
       "<b>Accueil</b> (home): today's sales compared with yesterday, items to restock, the daily rate.",

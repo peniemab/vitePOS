@@ -617,3 +617,10 @@ section[id] {
   font-weight: 700;
   padding: 0 4px;
 }
+
+/* À l'impression (manuel et brochure en PDF), pas de fond animé : Chrome le répéterait en images lourdes sur chaque page. */
+@media print {
+  .page-bg {
+    display: none !important;
+  }
+}

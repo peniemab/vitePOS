@@ -1,8 +1,8 @@
 /** Historique des ventes, jour par jour : totaux du jour et liste des tickets. */
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
-import { Badge, Group, Paper, SimpleGrid, Text, UnstyledButton } from "@mantine/core";
-import { IconCloudUpload } from "@tabler/icons-react";
+import { Badge, Text, UnstyledButton } from "@mantine/core";
+import { IconCash, IconCloudUpload, IconDeviceMobile, IconReceipt, IconReceipt2, IconWallet } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { watchSalesOfDay } from "../data/sales";
 import { errorMessage } from "../data/errors";
@@ -39,68 +39,92 @@ export function VentesScreen() {
       {error && <Text c="red">{error}</Text>}
 
       {summary && (
-        <SimpleGrid cols={{ base: 2, sm: 4 }} mb="md">
-          <Stat label="Chiffre d'affaires" value={formatMoney(summary.revenue, c)} strong />
-          <Stat label="Ventes" value={String(summary.salesCount)} />
-          <Stat label="Espèces" value={formatMoney2(summary.cash)} />
-          <Stat label="Mobile money" value={formatMoney2(summary.mobileMoney)} />
-        </SimpleGrid>
+        <div className="kpis">
+          <Stat label="Chiffre d'affaires" value={formatMoney(summary.revenue, c)} strong icon={<IconWallet size={20} />} />
+          <Stat label="Ventes" value={String(summary.salesCount)} icon={<IconReceipt2 size={20} />} tone="violet" />
+          <Stat label="Espèces" value={formatMoney2(summary.cash)} icon={<IconCash size={20} />} tone="green" />
+          <Stat label="Mobile money" value={formatMoney2(summary.mobileMoney)} icon={<IconDeviceMobile size={20} />} tone="orange" />
+        </div>
       )}
 
       {!visible && !error && <div className="loading">Chargement…</div>}
       {visible && (
-        <Paper p={0} style={{ overflow: "hidden" }}>
-          {visible.map((s) => (
-            <UnstyledButton key={s.id} className="list-row" px="md" onClick={() => navigate(`/ticket/${s.id}`)} style={{ opacity: s.status === "annulee" ? 0.55 : 1 }}>
-              <div style={{ width: 52, flexShrink: 0 }}>
-                <Text className="n" fw={600}>
-                  {s.createdAtMs ? time.format(s.createdAtMs) : "—"}
-                </Text>
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <Group gap={6} wrap="nowrap">
-                  <Text fw={600} truncate>
-                    {ticketNumber(s.id)}
-                  </Text>
-                  {s.status === "annulee" && (
-                    <Badge size="xs" color="red" variant="light">
-                      Annulée
-                    </Badge>
-                  )}
-                  {!s.synced && <IconCloudUpload size={14} color="var(--mantine-color-orange-6)" aria-label="En attente d'envoi" />}
-                </Group>
-                <Text size="xs" c="dimmed" truncate>
-                  {s.memberName}
-                  {s.clientName ? ` · ${s.clientName}` : ""} · {PAYMENT_LABELS[s.payment.method]}
-                  {s.payment.method === "especes" && s.payment.currency !== c ? " $" : ""}
-                </Text>
-              </div>
-              <Text fw={700} td={s.status === "annulee" ? "line-through" : undefined}>
-                <Money value={s.total} currency={c} />
-              </Text>
-            </UnstyledButton>
-          ))}
+        <section className="panel">
+          {visible.map((s) => {
+            const cancelled = s.status === "annulee";
+            const items = s.lines.length;
+            return (
+              <UnstyledButton key={s.id} className="sale-row" w="100%" onClick={() => navigate(`/ticket/${s.id}`)} style={{ opacity: cancelled ? 0.55 : 1 }}>
+                <span className={`ico ${cancelled ? "red" : "blue"}`}>
+                  <IconReceipt size={20} />
+                </span>
+                <div className="who">
+                  <b>
+                    <span className="n">{ticketNumber(s.id)}</span> · {s.clientName || s.memberName}
+                    {cancelled && (
+                      <Badge size="xs" color="red" variant="light" ml={6}>
+                        Annulée
+                      </Badge>
+                    )}
+                    {!s.synced && <IconCloudUpload size={14} color="var(--mantine-color-orange-6)" aria-label="En attente d'envoi" style={{ marginLeft: 6, verticalAlign: -2 }} />}
+                  </b>
+                  <small>
+                    <span className="n">{s.createdAtMs ? time.format(s.createdAtMs) : "—"}</span> · {items} article{items > 1 ? "s" : ""}
+                    {s.clientName ? ` · ${s.memberName}` : ""}
+                  </small>
+                </div>
+                <div className="amt">
+                  <b className="n" style={{ textDecoration: cancelled ? "line-through" : undefined }}>
+                    <Money value={s.total} currency={c} />
+                  </b>
+                  <span className={`pay-tag ${s.payment.method}`}>
+                    {PAYMENT_LABELS[s.payment.method]}
+                    {s.payment.method === "especes" && s.payment.currency !== c ? " $" : ""}
+                  </span>
+                </div>
+              </UnstyledButton>
+            );
+          })}
           {!visible.length && (
             <Text c="dimmed" ta="center" p="xl">
               Aucune vente ce jour-là.
             </Text>
           )}
-        </Paper>
+        </section>
       )}
       <SerialLookup />
     </>
   );
 }
 
-export function Stat({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+/** Carte de chiffre, comme sur l'accueil : pastille d'icône, libellé, grand montant. */
+export function Stat({
+  label,
+  value,
+  strong,
+  icon,
+  tone = "blue",
+  note,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+  icon?: ReactNode;
+  tone?: "blue" | "violet" | "green" | "orange" | "red";
+  note?: string;
+}) {
   return (
-    <Paper p="sm">
-      <Text size="xs" c="dimmed">
+    <div className={strong ? "kpi hero" : "kpi"}>
+      <div className="lbl">
+        {icon && <span className={`ico ${strong ? "glass" : tone}`}>{icon}</span>}
         {label}
-      </Text>
-      <Text fw={700} fz={strong ? 22 : 17} className="n" style={{ whiteSpace: "normal" }}>
-        {value}
-      </Text>
-    </Paper>
+      </div>
+      <div className="val n">{value}</div>
+      {note && (
+        <div className="trend">
+          <span>{note}</span>
+        </div>
+      )}
+    </div>
   );
 }

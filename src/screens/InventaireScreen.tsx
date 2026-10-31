@@ -4,19 +4,20 @@
  */
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router";
-import { Alert, Badge, Button, Chip, Group, Modal, NumberInput, Paper, Progress, ScrollArea, Stack, Table, Text, TextInput } from "@mantine/core";
+import { Alert, Badge, Button, Group, Modal, NumberInput, Paper, Progress, ScrollArea, SegmentedControl, Stack, Table, Text, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { IconCheck, IconClipboardCheck } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useActor, useCatalog } from "../data/products";
 import { cancelInventory, countProduct, startInventory, validateInventory, watchCountLines, watchInventories, type Inventory } from "../data/inventory";
 import { errorMessage } from "../data/errors";
+import { CatPill, ProductThumb } from "../components/ProductThumb";
 import { BarcodeField } from "../components/BarcodeField";
 import { formatQty } from "../components/ProductModal";
 import { PageTitle } from "../components/ui";
 import { gapTotals, inventoryGaps, type CountLine } from "../lib/inventory";
 import { formatMoney } from "../lib/fx";
-import { collectCategories, findByCode, matchProduct, sortByName, type Product } from "../lib/products";
+import { categoryColor, collectCategories, findByCode, matchProduct, sortByName, type Product } from "../lib/products";
 
 export function InventaireScreen() {
   const { boutique, permissions } = useReady();
@@ -160,29 +161,29 @@ function Counting({ inventory }: { inventory: Inventory }) {
       <div className="sticky-tools">
         <BarcodeField value={q} onChange={setQ} onScan={onScan} placeholder="Scanner ou chercher l'article compté" />
         <Group gap="xs" mt="xs" wrap="nowrap">
-          <Chip.Group value={show} onChange={(v) => setShow(v as "todo" | "done")}>
-            <Chip value="todo" size="sm">
-              À compter
-            </Chip>
-            <Chip value="done" size="sm">
-              Comptés ({counted})
-            </Chip>
-          </Chip.Group>
+          <SegmentedControl
+            size="sm"
+            value={show}
+            onChange={(v) => setShow(v as "todo" | "done")}
+            data={[
+              { value: "todo", label: "À compter" },
+              { value: "done", label: `Comptés (${counted})` },
+            ]}
+          />
         </Group>
         {categories.length > 1 && (
           <ScrollArea type="never" mt="xs">
-            <Chip.Group value={category} onChange={(v) => setCategory(v as string)}>
-              <Group gap={6} wrap="nowrap">
-                <Chip value="" size="sm" variant="outline">
-                  Toutes
-                </Chip>
-                {categories.map((c) => (
-                  <Chip key={c} value={c} size="sm" variant="outline">
-                    {c}
-                  </Chip>
-                ))}
-              </Group>
-            </Chip.Group>
+            <div className="cats" role="radiogroup" aria-label="Rayon">
+              <CatPill value="" current={category} onPick={setCategory}>
+                Tous les rayons
+              </CatPill>
+              {categories.map((c) => (
+                <CatPill key={c} value={c} current={category} onPick={setCategory}>
+                  <span className="cat-dot" style={{ background: categoryColor(c) }} />
+                  {c}
+                </CatPill>
+              ))}
+            </div>
           </ScrollArea>
         )}
       </div>
@@ -193,6 +194,7 @@ function Counting({ inventory }: { inventory: Inventory }) {
           const delta = line ? line.counted - line.theoretical : 0;
           return (
             <div key={p.id} className="list-row" style={{ padding: "10px 16px", cursor: "pointer" }} onClick={() => setEditing(p)}>
+              <ProductThumb name={p.name} category={p.category} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <Text fw={600} truncate>
                   {p.name}

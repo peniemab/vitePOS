@@ -1,8 +1,8 @@
 /** Rapports : jour, semaine ou mois — chiffre d'affaires, panier moyen, marge, dépenses, meilleurs produits. */
 import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router";
-import { ActionIcon, Group, Paper, SegmentedControl, SimpleGrid, Table, Text, Title } from "@mantine/core";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { ActionIcon, Group, Paper, SegmentedControl, Text, Title } from "@mantine/core";
+import { IconChevronLeft, IconChevronRight, IconPigMoney, IconReceipt2, IconShoppingBag, IconWallet } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
 import { watchSalesBetween } from "../data/sales";
@@ -115,16 +115,18 @@ export function RapportsScreen() {
 
       {report && (
         <>
-          <SimpleGrid cols={{ base: 2, sm: 4 }} mb="md">
+          <div className="kpis">
             <Stat
-              label={delta == null ? "Chiffre d'affaires" : `Chiffre d'affaires (${delta > 0 ? "+" : ""}${delta} % vs avant)`}
+              label="Chiffre d'affaires"
               value={formatMoney(report.revenue, c)}
               strong
+              icon={<IconWallet size={20} />}
+              note={delta == null ? undefined : `${delta > 0 ? "+" : ""}${delta} % par rapport à la période d'avant`}
             />
-            <Stat label="Ventes" value={String(report.salesCount)} />
-            <Stat label="Panier moyen" value={formatMoney(report.averageBasket, c)} />
-            <Stat label="Dépenses" value={formatMoney2(expenseTotal)} />
-          </SimpleGrid>
+            <Stat label="Ventes" value={String(report.salesCount)} icon={<IconReceipt2 size={20} />} tone="violet" />
+            <Stat label="Panier moyen" value={formatMoney(report.averageBasket, c)} icon={<IconShoppingBag size={20} />} />
+            <Stat label="Dépenses" value={formatMoney2(expenseTotal)} icon={<IconPigMoney size={20} />} tone="orange" />
+          </div>
 
           {report.margin != null && (
             <Paper p="md" mb="md">
@@ -158,30 +160,21 @@ export function RapportsScreen() {
               Meilleurs produits
             </Title>
             {report.topProducts.length ? (
-              <Table.ScrollContainer minWidth={320}>
-                <Table fz="sm" striped>
-                  <Table.Thead>
-                    <Table.Tr>
-                      <Table.Th>Produit</Table.Th>
-                      <Table.Th ta="right">Quantité</Table.Th>
-                      <Table.Th ta="right">Chiffre d'affaires</Table.Th>
-                    </Table.Tr>
-                  </Table.Thead>
-                  <Table.Tbody>
-                    {report.topProducts.slice(0, 10).map((p) => (
-                      <Table.Tr key={p.productId}>
-                        <Table.Td>{p.name}</Table.Td>
-                        <Table.Td ta="right" className="n">
-                          {formatQty(p.quantity, unitOf.get(p.productId) ?? "u")}
-                        </Table.Td>
-                        <Table.Td ta="right" className="n">
-                          {formatMoney(p.revenue, c)}
-                        </Table.Td>
-                      </Table.Tr>
-                    ))}
-                  </Table.Tbody>
-                </Table>
-              </Table.ScrollContainer>
+              report.topProducts.slice(0, 10).map((p, i) => (
+                <div key={p.productId} className="top-row">
+                  <span className="rank">{i + 1}</span>
+                  <div className="name">
+                    <b>{p.name}</b>
+                    <div className="progress">
+                      <div style={{ width: `${Math.max(6, (p.revenue / report.topProducts[0].revenue) * 100)}%` }} />
+                    </div>
+                  </div>
+                  <span className="n v">
+                    {formatMoney(p.revenue, c)}
+                    <small>{formatQty(p.quantity, unitOf.get(p.productId) ?? "u")}</small>
+                  </span>
+                </div>
+              ))
             ) : (
               <Text c="dimmed">Aucune vente sur la période.</Text>
             )}

@@ -1,5 +1,5 @@
 /** Équipe (propriétaire) : code d'invitation, demandes à valider, rôles et désactivation. */
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Link, Navigate } from "react-router";
 import { ActionIcon, Alert, Anchor, Badge, Button, CopyButton, Group, Paper, Select, Stack, Text, Title, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -9,6 +9,7 @@ import { updateMember, watchMembers, type Member } from "../data/boutique";
 import { errorMessage } from "../data/errors";
 import { useSyncState } from "../data/sync";
 import { PageTitle } from "../components/ui";
+import { categoryColor, initials } from "../lib/products";
 import { canManageTeam, ROLE_LABELS, STATUS_LABELS, type Role } from "../lib/roles";
 import { canAddMember, PLANS } from "../lib/subscription";
 
@@ -151,20 +152,25 @@ export function TeamScreen() {
 
 function MemberLabel({ member }: { member: Member }) {
   return (
-    <div style={{ minWidth: 0 }}>
-      <Group gap={6}>
-        <Text fw={600} truncate>
-          {member.name || member.email}
+    <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+      <span className="thumb" style={{ "--c": categoryColor(member.name || member.email) } as CSSProperties} aria-hidden>
+        {initials(member.name || member.email)}
+      </span>
+      <div style={{ minWidth: 0 }}>
+        <Group gap={6}>
+          <Text fw={600} truncate>
+            {member.name || member.email}
+          </Text>
+          {member.status !== "active" && (
+            <Badge size="xs" color={member.status === "pending" ? "orange" : "gray"} variant="light">
+              {STATUS_LABELS[member.status]}
+            </Badge>
+          )}
+        </Group>
+        <Text size="xs" c="dimmed" truncate>
+          {member.email}
         </Text>
-        {member.status !== "active" && (
-          <Badge size="xs" color={member.status === "pending" ? "orange" : "gray"} variant="light">
-            {STATUS_LABELS[member.status]}
-          </Badge>
-        )}
-      </Group>
-      <Text size="xs" c="dimmed" truncate>
-        {member.email}
-      </Text>
-    </div>
+      </div>
+    </Group>
   );
 }

@@ -4,9 +4,9 @@
  */
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
-import { Alert, Button, Group, NumberInput, Paper, SimpleGrid, Stack, Table, Text, Textarea, Title } from "@mantine/core";
+import { Alert, Button, Group, NumberInput, Paper, Stack, Table, Text, Textarea, Title } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconLock } from "@tabler/icons-react";
+import { IconDeviceMobile, IconLock, IconPigMoney, IconReceipt2, IconWallet } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { watchSalesOfDay } from "../data/sales";
@@ -67,12 +67,18 @@ export function JourneeScreen() {
 
       {summary && expected && (
         <Stack>
-          <SimpleGrid cols={{ base: 2, sm: 4 }}>
-            <Stat label="Chiffre d'affaires" value={formatMoney(summary.revenue, boutique.currency)} strong />
-            <Stat label="Ventes" value={`${summary.salesCount}${summary.cancelledCount ? ` (+${summary.cancelledCount} annulées)` : ""}`} />
-            <Stat label="Mobile money" value={formatMoney2(summary.mobileMoney)} />
-            <Stat label="Dépenses" value={formatMoney2(summary.allExpenses)} />
-          </SimpleGrid>
+          <div className="kpis" style={{ marginBottom: 0 }}>
+            <Stat label="Chiffre d'affaires" value={formatMoney(summary.revenue, boutique.currency)} strong icon={<IconWallet size={20} />} />
+            <Stat
+              label="Ventes"
+              value={String(summary.salesCount)}
+              icon={<IconReceipt2 size={20} />}
+              tone="violet"
+              note={summary.cancelledCount ? `+ ${summary.cancelledCount} annulée${summary.cancelledCount > 1 ? "s" : ""}` : undefined}
+            />
+            <Stat label="Mobile money" value={formatMoney2(summary.mobileMoney)} icon={<IconDeviceMobile size={20} />} tone="orange" />
+            <Stat label="Dépenses" value={formatMoney2(summary.allExpenses)} icon={<IconPigMoney size={20} />} tone="red" />
+          </div>
 
           <Paper p="md">
             <Title order={4} mb="xs">

@@ -42,7 +42,7 @@ export const chapters: Chapter[] = [
     shot: { name: "man-installer", alt: "Accueil de vitePOS avec la carte Installer vitePOS", caption: "La carte d'installation disparaît une fois l'app installée." },
     tip: {
       title: "Internet, seulement au début",
-      text: "Il faut du réseau pour créer votre compte et votre boutique. Ensuite, la caisse marche même quand le réseau coupe.",
+      text: "Il faut du réseau pour créer votre compte. Ensuite, la caisse marche même quand le réseau coupe.",
     },
   },
   {
@@ -199,7 +199,7 @@ export const chapters: Chapter[] = [
   {
     id: "suivre",
     kicker: "Le patron",
-    title: "Votre boutique, même à distance",
+    title: "Votre commerce, même à distance",
     lead: "Sur votre téléphone, où que vous soyez : ce qui s'est vendu, ce qui manque, ce que vous avez gagné.",
     steps: [
       "<b>Accueil</b> : les ventes du jour comparées à hier, les produits à réapprovisionner, le taux du jour.",

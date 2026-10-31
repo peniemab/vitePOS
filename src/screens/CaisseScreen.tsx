@@ -1,5 +1,5 @@
 /** Caisse : choisir les articles (tuiles, recherche, scan), panier, remise et encaissement. */
-import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
+import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
 import {
@@ -23,17 +23,9 @@ import {
 import {
   IconArrowBackUp,
   IconArrowRight,
-  IconBeer,
-  IconBottle,
-  IconBread,
-  IconCandle,
   IconCash,
   IconCheck,
-  IconDeviceMobile,
   IconDeviceMobileDollar,
-  IconDroplet,
-  IconEgg,
-  IconGrain,
   IconDiscount,
   IconMinus,
   IconPlus,
@@ -52,6 +44,7 @@ import { useClients } from "../data/clients";
 import { ClientModal } from "./ClientsScreen";
 import { BarcodeField, ScanButton } from "../components/BarcodeField";
 import { ScanVideo } from "../components/ScanVideo";
+import { CatPill, ProductGlyph } from "../components/ProductThumb";
 import { canUseCamera, useCameraScan } from "../components/useCameraScan";
 import { findSerial, useSerialsInStock, type Serial } from "../data/serials";
 import { formatDayShort, normalizeSerial } from "../lib/serials";
@@ -63,30 +56,17 @@ import {
   categoryColor,
   collectCategories,
   findScan,
-  initials,
   matchProduct,
-  productIcon,
   packLabel,
   sortForCheckout,
   stockLevel,
   type Pack,
   type Product,
-  type ProductIcon,
 } from "../lib/products";
 import { matchClient } from "../lib/clients";
 
 const VISIBLE = 120;
 
-const ICONS: Record<ProductIcon, typeof IconBottle> = {
-  bottle: IconBottle,
-  droplet: IconDroplet,
-  grain: IconGrain,
-  phone: IconDeviceMobile,
-  beer: IconBeer,
-  bread: IconBread,
-  egg: IconEgg,
-  candle: IconCandle,
-};
 
 export function CaisseScreen() {
   const wide = useMediaQuery("(min-width: 62em)", true);
@@ -344,18 +324,8 @@ function ProductPicker({ wide }: { wide: boolean }) {
   );
 }
 
-function CatPill({ value, current, onPick, children }: { value: string; current: string; onPick: (v: string) => void; children: ReactNode }) {
-  return (
-    <UnstyledButton className="cat" role="radio" aria-checked={value === current} data-on={value === current || undefined} onClick={() => onPick(value)}>
-      {children}
-    </UnstyledButton>
-  );
-}
-
 function ProductTile({ product: p, currency, inCart, onPick }: { product: Product; currency: Currency; inCart: number; onPick: () => void }) {
   const level = stockLevel(p);
-  const iconKey = productIcon(p.name, p.category);
-  const Icon = iconKey ? ICONS[iconKey] : null;
   return (
     <UnstyledButton
       className="product-tile"
@@ -367,7 +337,7 @@ function ProductTile({ product: p, currency, inCart, onPick }: { product: Produc
       {inCart > 0 && <span className="qty n">{formatQty(inCart, "u")}</span>}
       {p.favorite && <IconStarFilled size={15} className="star" aria-label="Favori" />}
       <span className="ph" aria-hidden>
-        {Icon ? <Icon size={28} stroke={1.7} /> : initials(p.name)}
+        <ProductGlyph name={p.name} category={p.category} />
       </span>
       <span className="name">{p.name}</span>
       <span className="pr">

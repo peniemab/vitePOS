@@ -1,6 +1,6 @@
 /* Compléments au thème Mantine. */
 :root[data-mantine-color-scheme="light"] {
-  --mantine-color-body: #f8f9fb;
+  --mantine-color-body: #f3f5f9;
   --app-surface: #ffffff;
   --app-due: #b6171e;
   --app-paid: #2e7d4f;
@@ -1335,5 +1335,88 @@ body {
   }
   .bars {
     gap: 8px;
+  }
+}
+
+/* ---------- Partout : cartes blanches et barre de titre ---------- */
+.mantine-Paper-root:not(.mantine-Menu-dropdown):not(.mantine-Popover-dropdown):not(.mantine-Combobox-dropdown) {
+  background-color: var(--app-surface);
+}
+.mantine-Paper-root:not([data-with-border]):not(.mantine-Modal-content):not(.mantine-Drawer-content):not(.mantine-Menu-dropdown):not(.mantine-Popover-dropdown):not(.mantine-Combobox-dropdown):not(.mantine-Notification-root) {
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+@media (min-width: 62em) {
+  .page-top {
+    align-items: center !important;
+    margin: -24px -28px 24px;
+    padding: 12px 28px;
+    min-height: 68px;
+    background: var(--app-surface);
+    border-bottom: 1px solid var(--mantine-color-default-border);
+  }
+  .page-top h1 {
+    font-size: 1.55rem !important;
+  }
+}
+
+.ico.orange {
+  background: color-mix(in srgb, #e8890c 14%, var(--app-surface));
+  color: #c46f00;
+}
+.ico.red {
+  background: color-mix(in srgb, #e03131 12%, var(--app-surface));
+  color: #e03131;
+}
+/* Un montant en plusieurs devises passe à la ligne plutôt que d'être coupé. */
+.kpi .val {
+  white-space: normal;
+  overflow: visible;
+  line-height: 1.05;
+}
+@media (max-width: 74.99em) {
+  .kpis[data-three] .kpi.hero {
+    grid-column: 1 / -1;
+  }
+}
+.panel > .sale-row:first-child {
+  padding-top: 0;
+}
+.top-row .v small {
+  display: block;
+  text-align: right;
+  color: var(--mantine-color-dimmed);
+  font: 500 0.78rem/1.2 var(--mantine-font-family);
+}
+
+/* Vignette d'article dans les listes */
+.thumb {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--c) 16%, var(--app-surface));
+  color: var(--c);
+  font: 700 0.95rem/1 "Barlow Condensed", sans-serif;
+  letter-spacing: 0.02em;
+}.ico.gray {
+  background: color-mix(in srgb, #7a8599 14%, var(--app-surface));
+  color: #66708a;
+}
+/* Sur téléphone, le titre de l'écran est déjà dans la barre du haut. */
+@media (max-width: 61.99em) {
+  .page-top {
+    align-items: center !important;
+  }
+  .page-top h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .page-top:not(:has(p, button, a, input)) {
+    display: none;
   }
 }

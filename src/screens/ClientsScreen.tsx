@@ -1,5 +1,5 @@
 /** Clients : recherche, fiche (nom, téléphone, notes) et historique des achats. */
-import { useDeferredValue, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useDeferredValue, useEffect, useMemo, useState, type FormEvent, type CSSProperties } from "react";
 import { useNavigate } from "react-router";
 import { Anchor, Badge, Button, Group, Modal, Paper, Stack, Tabs, Text, TextInput, Textarea, UnstyledButton } from "@mantine/core";
 import { IconPhone, IconPlus, IconSearch } from "@tabler/icons-react";
@@ -9,6 +9,7 @@ import { createClient, updateClient, useClients } from "../data/clients";
 import { watchClientSales } from "../data/sales";
 import { errorMessage } from "../data/errors";
 import { Money, PageTitle } from "../components/ui";
+import { categoryColor, initials } from "../lib/products";
 import { ticketNumber } from "../lib/cart";
 import { matchClient, validateClient, type Client } from "../lib/clients";
 import type { Sale } from "../lib/sales";
@@ -44,6 +45,9 @@ export function ClientsScreen() {
         <Paper p={0} style={{ overflow: "hidden" }}>
           {list.map((c) => (
             <UnstyledButton key={c.id} className="list-row" px="md" onClick={() => setOpenId(c.id)}>
+              <span className="thumb" style={{ "--c": categoryColor(c.name) } as CSSProperties} aria-hidden>
+                {initials(c.name)}
+              </span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <Text fw={600} truncate>
                   {c.name}

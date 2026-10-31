@@ -2,17 +2,37 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Badge, Button, Group, Modal, NumberInput, Paper, SegmentedControl, Select, Stack, Switch, Text, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconPlus } from "@tabler/icons-react";
+import {
+  IconBolt,
+  IconBuildingStore,
+  IconBus,
+  IconDots,
+  IconPackage,
+  IconPigMoney,
+  IconPlus,
+  IconReceipt2,
+  IconUsers,
+} from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { cancelExpense, createExpense, watchExpensesOfDay } from "../data/cashday";
 import { errorMessage } from "../data/errors";
 import { DayNav } from "../components/DayNav";
 import { PageTitle } from "../components/ui";
+import { Stat } from "./VentesScreen";
 import { dayKey } from "../lib/cart";
 import { EXPENSE_CATEGORIES, formatMoney2, type Expense, type ExpenseCategory } from "../lib/cashday";
 import { CURRENCIES, formatMoney, zeroMoney, type Currency } from "../lib/fx";
 import { currenciesOf } from "../data/boutique";
+
+const EXPENSE_ICONS: Record<ExpenseCategory, { icon: typeof IconBus; tone: string }> = {
+  transport: { icon: IconBus, tone: "blue" },
+  fournitures: { icon: IconPackage, tone: "violet" },
+  loyer: { icon: IconBuildingStore, tone: "orange" },
+  communication: { icon: IconBolt, tone: "green" },
+  salaires: { icon: IconUsers, tone: "blue" },
+  autres: { icon: IconDots, tone: "gray" },
+};
 
 export function DepensesScreen() {
   const { boutique, permissions, subscription } = useReady();
@@ -59,43 +79,56 @@ export function DepensesScreen() {
 
       {expenses && (
         <>
-          <Text mb="xs">
-            Total du jour : <b className="n">{formatMoney2(total)}</b>
-          </Text>
-          <Paper p={0} style={{ overflow: "hidden" }}>
-            {expenses.map((e) => (
-              <div key={e.id} className="list-row" style={{ padding: "12px 16px", opacity: e.status === "annulee" ? 0.55 : 1 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <Group gap={6} wrap="nowrap">
-                    <Text fw={600} truncate>
-                      {EXPENSE_CATEGORIES[e.category]}
+          <div className="kpis" data-three>
+            <Stat label="Total du jour" value={formatMoney2(total)} strong icon={<IconPigMoney size={20} />} />
+            <Stat label="Dépenses" value={String(active.length)} icon={<IconReceipt2 size={20} />} tone="violet" />
+            <Stat
+              label="Prises dans la caisse"
+              value={String(active.filter((e) => e.fromTill).length)}
+              icon={<IconBuildingStore size={20} />}
+              tone="orange"
+            />
+          </div>
+          <Paper p={0} px="md" style={{ overflow: "hidden" }}>
+            {expenses.map((e) => {
+              const { icon: Icon, tone } = EXPENSE_ICONS[e.category];
+              return (
+                <div key={e.id} className="list-row" style={{ opacity: e.status === "annulee" ? 0.55 : 1 }}>
+                  <span className={`ico ${e.status === "annulee" ? "red" : tone}`}>
+                    <Icon size={20} />
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Group gap={6} wrap="nowrap">
+                      <Text fw={600} truncate>
+                        {EXPENSE_CATEGORIES[e.category]}
+                      </Text>
+                      {!e.fromTill && (
+                        <Badge size="xs" variant="light" color="gray">
+                          Hors caisse
+                        </Badge>
+                      )}
+                      {e.status === "annulee" && (
+                        <Badge size="xs" variant="light" color="red">
+                          Annulée
+                        </Badge>
+                      )}
+                    </Group>
+                    <Text size="xs" c="dimmed" truncate>
+                      {e.createdAtMs ? time.format(e.createdAtMs) : "—"} · {e.memberName}
+                      {e.description ? ` · ${e.description}` : ""}
                     </Text>
-                    {!e.fromTill && (
-                      <Badge size="xs" variant="light" color="gray">
-                        Hors caisse
-                      </Badge>
-                    )}
-                    {e.status === "annulee" && (
-                      <Badge size="xs" variant="light" color="red">
-                        Annulée
-                      </Badge>
-                    )}
-                  </Group>
-                  <Text size="xs" c="dimmed" truncate>
-                    {e.createdAtMs ? time.format(e.createdAtMs) : "—"} · {e.memberName}
-                    {e.description ? ` · ${e.description}` : ""}
+                  </div>
+                  <Text fw={700} className="n" td={e.status === "annulee" ? "line-through" : undefined}>
+                    {formatMoney(e.amount, e.currency)}
                   </Text>
+                  {permissions.closeCash && e.status === "validee" && (
+                    <Button size="xs" variant="subtle" color="red" onClick={() => confirmCancel(e)}>
+                      Annuler
+                    </Button>
+                  )}
                 </div>
-                <Text fw={700} className="n" td={e.status === "annulee" ? "line-through" : undefined}>
-                  {formatMoney(e.amount, e.currency)}
-                </Text>
-                {permissions.closeCash && e.status === "validee" && (
-                  <Button size="xs" variant="subtle" color="red" onClick={() => confirmCancel(e)}>
-                    Annuler
-                  </Button>
-                )}
-              </div>
-            ))}
+              );
+            })}
             {!expenses.length && (
               <Text c="dimmed" ta="center" p="xl">
                 Aucune dépense ce jour-là.

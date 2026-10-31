@@ -44,7 +44,7 @@ export const fr = {
     legal: "Informations",
     app: "Application",
     login: "Se connecter",
-    signup: "Créer ma boutique",
+    signup: "Créer mon compte",
     credits: "Crédits photos",
     creditsText: "Photos libres de droits de Wikimedia Commons, recadrées :",
   },
@@ -87,7 +87,7 @@ export const fr = {
       ordiJournee: { alt: "La journée de caisse : argent attendu dans le tiroir en FC, $ et €", title: "Journée de caisse", text: "L'argent attendu dans le tiroir en FC, $ et €, puis la clôture." },
       telTicket: { alt: "Un ticket de vente avec la monnaie rendue", title: "Le ticket", text: "Imprimé, ou envoyé au client par WhatsApp." },
       telStock: { alt: "Le stock avec ses alertes de rupture", title: "Le stock", text: "Recherche, catégories, alertes de rupture." },
-      telAccueil: { alt: "Les ventes du jour comparées à hier", title: "Votre boutique à distance", text: "Les ventes du jour comparées à hier, où que vous soyez." },
+      telAccueil: { alt: "Les ventes du jour comparées à hier", title: "Votre commerce à distance", text: "Les ventes du jour comparées à hier, où que vous soyez." },
       ordiVentes: { alt: "Les ventes du jour, ticket par ticket", title: "Les ventes du jour", text: "Chaque ticket, qui l'a vendu et comment il a été payé." },
       ordiStock: { alt: "Le stock sur ordinateur", title: "Le stock sur ordinateur", text: "Tout le catalogue, les prix et les quantités." },
     },
@@ -128,7 +128,7 @@ export const fr = {
     offlineTitle: "Le réseau coupe ? Vous continuez à vendre.",
     offlineText: [
       "Toutes les ventes sont gardées sur l'appareil et envoyées dès que le réseau revient. Même si deux caisses vendent le même article sans internet, le stock reste juste.",
-      "Et si un téléphone est perdu ou cassé, tout ce qui a déjà été envoyé est sauvegardé en ligne : vous vous reconnectez sur un autre appareil et vous retrouvez votre boutique.",
+      "Et si un téléphone est perdu ou cassé, tout ce qui a déjà été envoyé est sauvegardé en ligne : vous vous reconnectez sur un autre appareil et vous retrouvez tout.",
     ],
     offlineStates: ["Hors ligne · 3 ventes en attente", "Réseau revenu · envoi en cours…", "En ligne, tout est envoyé"],
 
@@ -136,7 +136,7 @@ export const fr = {
     faqTitle: "Questions fréquentes",
     finalTitle: "Votre caisse est prête en 5 minutes.",
     finalText: "Gratuit pour commencer, sans carte bancaire.",
-    finalCta: "Créer ma boutique",
+    finalCta: "Créer mon compte",
 
     /** Carrousel du haut de page : une diapositive par type de commerce (la première porte le titre principal). */
     slides: [
@@ -212,7 +212,7 @@ export const fr = {
         },
         {
           topic: "Le suivi",
-          problem: { art: 7, caption: "Loin de la boutique", bubbles: [{ who: "Maman Ngalula", text: "Grâce, on a vendu combien aujourd'hui ? Il reste du riz ?", side: "left", tail: "right" }] },
+          problem: { art: 7, caption: "Loin de son commerce", bubbles: [{ who: "Maman Ngalula", text: "Grâce, on a vendu combien aujourd'hui ? Il reste du riz ?", side: "left", tail: "right" }] },
           solution: {
             art: 6,
             caption: "Où qu'elle soit",
@@ -319,7 +319,7 @@ export const fr = {
       text: "Chaque vente est notée, le stock se compte tout seul, et le soir vous savez exactement ce qui doit être dans la caisse.",
     },
     {
-      title: "Votre boutique dans votre poche.",
+      title: "Votre commerce dans votre poche.",
       text: "Vos vendeurs encaissent, vous voyez chaque vente et chaque article manquant en direct, même quand vous n'êtes pas là.",
     },
   ],
@@ -336,7 +336,7 @@ export const fr = {
   ] as { icon: IconName; title: string; text: string }[],
 
   audiences: [
-    { title: "Boutiques", text: "Alimentation, cosmétiques, téléphonie, boulangeries. Une caisse simple sur le téléphone du patron ou du vendeur." },
+    { title: "Commerces de quartier", text: "Alimentation, cosmétiques, téléphonie, boulangeries. Une caisse simple sur le téléphone du patron ou du vendeur." },
     { title: "Quincailleries, grossistes et pièces de rechange", text: "Gros catalogues, recherche par code article, ventes à la pièce, au kilo, au litre ou au carton, plusieurs vendeurs." },
     { title: "Pharmacies et dépôts de boissons", text: "Recherche rapide par nom ou code-barres, vente au casier ou au carton, alertes de rupture, inventaires réguliers." },
     { title: "Supérettes et supermarchés", text: "Plusieurs caisses qui vendent en même temps, clôture par jour, rapports pour le gérant et le propriétaire." },
@@ -376,7 +376,7 @@ export const fr = {
     },
     {
       q: "Est-ce que ça marche sans internet ?",
-      a: "Oui. Les ventes, le stock et les dépenses fonctionnent sans réseau. Il faut seulement internet pour créer votre compte et votre boutique.",
+      a: "Oui. Les ventes, le stock et les dépenses fonctionnent sans réseau. Il faut seulement internet pour créer votre compte.",
     },
     {
       q: "Comment l'installer ?",
@@ -388,7 +388,7 @@ export const fr = {
     },
     {
       q: "Mes données sont-elles en sécurité ?",
-      a: "Chaque boutique est séparée des autres et sauvegardée en ligne. Chaque employé a son propre compte et ne voit que ce que vous lui autorisez.",
+      a: "Chaque commerce est séparé des autres et sauvegardé en ligne. Chaque employé a son propre compte et ne voit que ce que vous lui autorisez.",
     },
   ],
 
@@ -398,13 +398,13 @@ export const fr = {
   },
 
   manual: {
-    title: "Le journal de votre boutique · Manuel vitePOS",
+    title: "Le journal de votre commerce · Manuel vitePOS",
     description:
-      "Le manuel de vitePOS, pas à pas : créer sa boutique, préparer le stock, vendre en FC, $ ou €, fermer la journée et suivre ses chiffres, même sans réseau.",
-    masthead: "Le journal de votre boutique",
+      "Le manuel de vitePOS, pas à pas : créer son compte, préparer le stock, vendre en FC, $ ou €, fermer la journée et suivre ses chiffres, même sans réseau.",
+    masthead: "Le journal de votre commerce",
     edition: "Édition 2026",
     h1: ["vitePOS,", "mode d'emploi"],
-    lead: "Tout ce qu'il faut pour tenir la caisse, le stock et les comptes de votre boutique, du matin au soir, même quand le réseau coupe.",
+    lead: "Tout ce qu'il faut pour tenir la caisse, le stock et les comptes de votre commerce, du matin au soir, même quand le réseau coupe.",
     teasers: [
       [4, "Recevoir 3 paquets sans compter 72 bouteilles"],
       [6, "Encaisser en FC, $ ou € en quelques secondes"],
@@ -429,7 +429,7 @@ export const fr = {
     title: "Brochure vitePOS",
     description: "La brochure de vitePOS, à imprimer ou à partager : la caisse qui vend plus vite, perd moins et marche même sans réseau.",
     tag: "Caisse · Stock · Ventes",
-    lead: "La caisse de votre boutique, sur votre téléphone. Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.",
+    lead: "La caisse de votre commerce, sur votre téléphone. Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.",
     altHome: "Accueil de vitePOS",
     altCaisse: "La caisse de vitePOS",
     ctaTitle: "Gratuit pour commencer",

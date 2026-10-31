@@ -1,10 +1,12 @@
 /** Stock : catalogue, recherche et scan, catégories, alertes, archives, export CSV. */
 import { useDeferredValue, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { Badge, Button, Chip, Group, Menu, Paper, ScrollArea, SegmentedControl, Text, UnstyledButton } from "@mantine/core";
+import { Badge, Button, Group, Menu, Paper, ScrollArea, SegmentedControl, Text, UnstyledButton } from "@mantine/core";
 import { IconAlertTriangle, IconDots, IconDownload, IconPlus, IconStarFilled, IconTag, IconUpload } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { assignMissingSkus, useActor, useCatalog } from "../data/products";
+import { CatPill, ProductThumb } from "../components/ProductThumb";
+import { categoryColor } from "../lib/products";
 import { BarcodeField } from "../components/BarcodeField";
 import { useLots } from "../data/lots";
 import { expiringLots, expiryLabel } from "../lib/lots";
@@ -89,6 +91,11 @@ export function StockScreen() {
     downloadText(`produits-${boutique.name.replace(/\s+/g, "-")}.csv`, exportProductsCsv(active, costs));
   }
 
+  const pickCategory = (c: string) => {
+    setCategory(c);
+    setVisible(PAGE_SIZE);
+  };
+
   return (
     <>
       <PageTitle
@@ -144,18 +151,17 @@ export function StockScreen() {
         </Group>
         {categories.length > 1 && (
           <ScrollArea type="never" mt="xs">
-            <Chip.Group value={category} onChange={(v) => { setCategory(v as string); setVisible(PAGE_SIZE); }}>
-              <Group gap={6} wrap="nowrap">
-                <Chip value="" size="sm" variant="outline">
-                  Toutes
-                </Chip>
-                {categories.map((c) => (
-                  <Chip key={c} value={c} size="sm" variant="outline">
-                    {c}
-                  </Chip>
-                ))}
-              </Group>
-            </Chip.Group>
+            <div className="cats" role="radiogroup" aria-label="Rayon">
+              <CatPill value="" current={category} onPick={pickCategory}>
+                Tous les rayons
+              </CatPill>
+              {categories.map((c) => (
+                <CatPill key={c} value={c} current={category} onPick={pickCategory}>
+                  <span className="cat-dot" style={{ background: categoryColor(c) }} />
+                  {c}
+                </CatPill>
+              ))}
+            </div>
           </ScrollArea>
         )}
       </div>
@@ -169,6 +175,7 @@ export function StockScreen() {
             .filter((l) => !query || matchProduct(active.find((p) => p.id === l.productId) ?? { name: l.productName, category: "", barcode: "" }, query))
             .map((l) => (
               <UnstyledButton key={l.id} className="list-row" px="md" onClick={() => setOpenId(l.productId)}>
+                <ProductThumb name={l.productName} category={active.find((p) => p.id === l.productId)?.category ?? ""} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <Text fw={600} truncate>
                     {l.productName}
@@ -241,6 +248,7 @@ function ProductRow({ product: p, currency, onOpen }: { product: Product; curren
   const level = stockLevel(p);
   return (
     <UnstyledButton className="list-row" px="md" onClick={onOpen} style={{ opacity: p.archived ? 0.6 : 1 }}>
+      <ProductThumb name={p.name} category={p.category} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <Group gap={6} wrap="nowrap">
           {p.favorite && <IconStarFilled size={14} color="var(--mantine-color-yellow-6)" style={{ flexShrink: 0 }} />}

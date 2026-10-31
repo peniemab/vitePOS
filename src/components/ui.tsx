@@ -5,7 +5,7 @@ import { formatMoney, type Currency } from "../lib/fx";
 
 export function PageTitle({ title, sub, right }: { title: ReactNode; sub?: ReactNode; right?: ReactNode }) {
   return (
-    <Group justify="space-between" align="flex-end" mb="lg" gap="sm">
+    <Group justify="space-between" align="flex-end" mb="lg" gap="sm" className="page-top">
       <Stack gap={2} style={{ minWidth: 0 }}>
         <Title order={1} fz={{ base: 28, sm: 32 }}>
           {title}

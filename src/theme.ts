@@ -1,5 +1,5 @@
 /** Thème Mantine aux couleurs de vitePOS : bleu nuit, accent rouge, Barlow. */
-import { createTheme, type MantineColorsTuple } from "@mantine/core";
+import { Button, createTheme, type MantineColorsTuple } from "@mantine/core";
 
 const navy: MantineColorsTuple = [
   "#eef2fb",
@@ -40,7 +40,8 @@ export const theme = createTheme({
   defaultRadius: "md",
   cursorType: "pointer",
   components: {
-    Paper: { defaultProps: { withBorder: true, radius: "md" } },
+    // Cartes blanches sur fond gris clair, sans bordure (maquette validée).
+    Paper: { defaultProps: { withBorder: false, radius: "md" } },
     Card: { defaultProps: { withBorder: true, radius: "md" } },
     TextInput: { defaultProps: { size: "md" } },
     PasswordInput: { defaultProps: { size: "md" } },
@@ -48,7 +49,14 @@ export const theme = createTheme({
     Select: { defaultProps: { size: "md", allowDeselect: false } },
     SegmentedControl: { defaultProps: { size: "md" } },
     Textarea: { defaultProps: { size: "md", autosize: true, minRows: 2 } },
-    Button: { defaultProps: { size: "md" } },
+    // Boutons principaux : le bleu nuit du site, en dégradé.
+    Button: Button.extend({
+      defaultProps: { size: "md" },
+      vars: (_theme, props) =>
+        (props.variant ?? "filled") === "filled" && (!props.color || props.color === "navy") && !props.disabled
+          ? { root: { "--button-bg": "var(--app-glow), var(--app-night)", "--button-hover": "var(--app-glow), var(--app-night)", "--button-color": "#fff" } }
+          : { root: {} },
+    }),
     Modal: { defaultProps: { centered: true } },
   },
 });
