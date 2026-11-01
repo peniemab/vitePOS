@@ -22,13 +22,14 @@ import {
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
 import { watchSalesBetween } from "../data/sales";
+import { useDays } from "../data/dayStats";
 import { needsRestock } from "../lib/products";
 import { useLots } from "../data/lots";
 import { expiringLots } from "../lib/lots";
 import { InstallCard } from "../components/InstallCard";
 import { dayKey, ticketNumber } from "../lib/cart";
 import { shiftDay } from "../lib/cashday";
-import { buildReport, changePercent, compactAmount, lastDays, paymentBreakdown, periodOf, type Period } from "../lib/reports";
+import { buildReport, changePercent, compactAmount, lastDays, paymentBreakdown, periodOf, reportFromDays, type Period } from "../lib/reports";
 import { CURRENCIES, formatMoney, type Currency } from "../lib/fx";
 import { PAYMENT_LABELS, timeAgo, type Sale } from "../lib/sales";
 
@@ -55,20 +56,21 @@ export function HomeScreen() {
   const expired = expiring.filter((l) => l.daysLeft < 0).length;
   const firstName = member.name.split(" ")[0] || member.email;
   const yesterday = shiftDay(today, -1);
-  const monthStart = `${today.slice(0, 8)}01`;
-  const since = [shiftDay(today, -29), monthStart].sort()[0];
   const [sales, setSales] = useState<Sale[]>();
   const [range, setRange] = useState<Range>("7");
   const [search, setSearch] = useState("");
 
-  useEffect(() => watchSalesBetween(boutique.id, since, today, setSales, () => setSales([])), [boutique.id, since, today]);
+  // Ventes d'hier et d'aujourd'hui seulement ; le graphique lit un résumé par jour.
+  useEffect(() => watchSalesBetween(boutique.id, yesterday, today, setSales, () => setSales([])), [boutique.id, yesterday, today]);
 
   // Un vendeur sans accès aux rapports voit seulement ses propres ventes.
   const mine = useMemo(() => (permissions.viewReports ? sales : sales?.filter((s) => s.uid === member.uid)), [sales, permissions.viewReports, member.uid]);
   const t = useMemo(() => buildReport(mine ?? [], periodOf("jour", today), c, costs), [mine, today, c, costs]);
   const y = useMemo(() => buildReport(mine ?? [], periodOf("jour", yesterday), c, costs), [mine, yesterday, c, costs]);
   const chartPeriod: Period = range === "mois" ? periodOf("mois", today) : lastDays(today, Number(range));
-  const chart = useMemo(() => buildReport(mine ?? [], chartPeriod, c), [mine, chartPeriod.start, chartPeriod.end, c]); // eslint-disable-line react-hooks/exhaustive-deps
+  const days = useDays(boutique.id, chartPeriod.start, chartPeriod.end, () => undefined);
+  const chartUid = permissions.viewReports ? undefined : member.uid;
+  const chart = useMemo(() => reportFromDays(days ?? [], chartPeriod, c, undefined, chartUid), [days, chartPeriod.start, chartPeriod.end, c, chartUid]); // eslint-disable-line react-hooks/exhaustive-deps
   const todaySales = useMemo(() => (mine ?? []).filter((s) => s.dayKey === today), [mine, today]);
   const slices = useMemo(() => paymentBreakdown(todaySales), [todaySales]);
   const latest = useMemo(

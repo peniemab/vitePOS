@@ -2,7 +2,8 @@
 import { roundMoney, type Currency } from "./fx";
 import { shiftDay } from "./cashday";
 import type { Sale } from "./sales";
-import { stockUnits, type PaymentMethod } from "./cart";
+import type { PaymentMethod } from "./cart";
+import { addDay, daysFromSales, emptyDay, type DayTotals } from "./dayStats";
 
 export type PeriodKind = "jour" | "semaine" | "mois";
 
@@ -77,57 +78,56 @@ export interface Report {
  * au prorata, pour que la somme des produits égale le chiffre d'affaires.
  */
 export function buildReport(sales: Sale[], period: Period, currency: Currency, costs?: Map<string, number>): Report {
-  const valid = sales.filter((s) => s.status === "validee" && s.dayKey >= period.start && s.dayKey <= period.end);
-  const byDay = new Map(period.days.map((d) => [d, { day: d, revenue: 0, count: 0 }]));
-  const products = new Map<string, ProductStat>();
-  let revenue = 0;
-  let discounts = 0;
-  let cash = 0;
-  let mobileMoney = 0;
-  let cost = 0;
-  let costedRevenue = 0;
+  return reportFromDays(daysFromSales(sales), period, currency, costs);
+}
 
-  for (const s of valid) {
-    revenue += s.total;
-    discounts += s.discount;
-    if (s.payment.method === "especes") cash += s.total;
-    else mobileMoney += s.total;
-    const d = byDay.get(s.dayKey);
-    if (d) {
-      d.revenue += s.total;
-      d.count++;
-    }
-    const ratio = s.subtotal > 0 ? s.total / s.subtotal : 0;
-    for (const l of s.lines) {
-      const lineRevenue = l.lineTotal * ratio;
-      const p = products.get(l.productId) ?? { productId: l.productId, name: l.name, quantity: 0, revenue: 0 };
-      // Quantités et coûts toujours à l'unité : un paquet de 24 compte pour 24.
-      p.quantity += stockUnits(l);
-      p.revenue += lineRevenue;
-      products.set(l.productId, p);
-      const unitCost = costs?.get(l.productId);
-      if (unitCost != null) {
-        cost += unitCost * stockUnits(l);
-        costedRevenue += lineRevenue;
-      }
+/**
+ * Même résumé à partir des résumés par jour. Avec `uid`, seulement les ventes de cet employé
+ * (chiffre d'affaires et nombre de ventes : de quoi tracer son graphique, pas plus).
+ */
+export function reportFromDays(days: DayTotals[], period: Period, currency: Currency, costs?: Map<string, number>, uid?: string): Report {
+  const total = emptyDay(period.start);
+  const byDay = new Map(period.days.map((d) => [d, { day: d, revenue: 0, count: 0 }]));
+  for (const d of days) {
+    if (d.day < period.start || d.day > period.end) continue;
+    const mine = uid ? { ...emptyDay(d.day), revenue: d.members[uid]?.r ?? 0, count: d.members[uid]?.c ?? 0 } : d;
+    addDay(total, mine);
+    const slot = byDay.get(d.day);
+    if (slot) {
+      slot.revenue += mine.revenue;
+      slot.count += mine.count;
     }
   }
 
   const r = (n: number) => roundMoney(n, currency);
+  const qty = (n: number) => Math.round(n * 1000) / 1000;
+  let cost = 0;
+  let costedRevenue = 0;
+  for (const [id, p] of Object.entries(total.products)) {
+    const unitCost = costs?.get(id);
+    if (unitCost != null) {
+      cost += unitCost * p.q;
+      costedRevenue += p.r;
+    }
+  }
+  const revenue = total.revenue;
+  const count = Math.round(total.count);
   const hasCosts = !!costs && costedRevenue > 0;
   return {
     revenue: r(revenue),
-    salesCount: valid.length,
-    averageBasket: valid.length ? r(revenue / valid.length) : 0,
-    discounts: r(discounts),
+    salesCount: count,
+    averageBasket: count ? r(revenue / count) : 0,
+    discounts: r(total.discounts),
     costOfGoods: hasCosts ? r(cost) : undefined,
     margin: hasCosts ? r(costedRevenue - cost) : undefined,
     costCoverage: revenue > 0 ? Math.min(1, costedRevenue / revenue) : 0,
-    byDay: [...byDay.values()].map((d) => ({ ...d, revenue: r(d.revenue) })),
-    topProducts: [...products.values()]
-      .map((p) => ({ ...p, revenue: r(p.revenue), quantity: Math.round(p.quantity * 1000) / 1000 }))
+    byDay: [...byDay.values()].map((d) => ({ ...d, revenue: r(d.revenue), count: Math.round(d.count) })),
+    topProducts: Object.entries(total.products)
+      .map(([productId, p]) => ({ productId, name: p.n, revenue: r(p.r), quantity: qty(p.q) }))
+      // Une vente annulée laisse ses articles à zéro dans le résumé du jour : on ne les montre pas.
+      .filter((p) => p.quantity > 0 || p.revenue > 0)
       .sort((a, b) => b.revenue - a.revenue),
-    payment: { cash: r(cash), mobileMoney: r(mobileMoney) },
+    payment: { cash: r(total.cash), mobileMoney: r(total.mobileMoney) },
   };
 }
 

@@ -321,6 +321,7 @@ export function sampleSale(currency: Sale["currency"], nowMs: number): Sale {
     clientId: "",
     clientName: "",
     inStats: false,
+    inDayStats: false,
     status: "validee",
     cancelReason: "",
     cancelledByName: "",

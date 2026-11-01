@@ -4,6 +4,8 @@
  */
 import { Timestamp } from "./fake-firestore";
 import { nextSku } from "../src/lib/products";
+import { daysFromSales } from "../src/lib/dayStats";
+import type { Sale } from "../src/lib/sales";
 
 type Data = Record<string, unknown>;
 
@@ -310,6 +312,13 @@ export function seed(): [string, Data][] {
   ];
   for (const [month, sales, saleCount, spent, spentUsd] of months)
     out.push([`${B}/monthStats/${month}`, { sales: { CDF: sales }, saleCount, expenses: { CDF: spent, USD: spentUsd } }]);
+
+  // Résumés par jour depuis trois jours : les graphiques mêlent ventes (jours d'avant) et résumés, comme
+  // dans une boutique qui vient de recevoir la mise à jour.
+  const statsFrom = dayKeyOf(new Date(today.getTime() - 3 * 86_400_000));
+  const recent = out.filter(([p, d]) => p.startsWith(`${B}/sales/`) && String(d.dayKey) >= statsFrom).map(([, d]) => d as unknown as Sale);
+  for (const { day, ...d } of daysFromSales(recent)) out.push([`${B}/dayStats/${day}`, d]);
+  out.push([`${B}/dayStats/start`, { day: statsFrom }]);
 
   return out;
 }

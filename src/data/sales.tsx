@@ -10,6 +10,7 @@ import { collection, doc, increment, limit, onSnapshot, orderBy, query, serverTi
 import { notifications } from "@mantine/notifications";
 import { getDb } from "./firebase";
 import { countSale } from "./monthStats";
+import { countSaleDay } from "./dayStats";
 import { markReturned, markSold } from "./serials";
 import { warrantyUntil } from "../lib/serials";
 import { monthOf } from "../lib/monthStats";
@@ -73,6 +74,7 @@ function toSale(id: string, d: DocumentData, synced: boolean): Sale {
     clientId: String(d.clientId ?? ""),
     clientName: String(d.clientName ?? ""),
     inStats: d.inStats === true,
+    inDayStats: d.inDayStats === true,
     status: d.status === "annulee" ? "annulee" : "validee",
     cancelReason: String(d.cancelReason ?? ""),
     cancelledByName: String(d.cancelledByName ?? ""),
@@ -191,6 +193,7 @@ export function createSale(
     clientId: client?.id ?? "",
     clientName: client?.name ?? "",
     inStats: true,
+    inDayStats: true,
     status: "validee",
     movementId: movementRef.id,
     dayKey: dayKey(now),
@@ -206,6 +209,7 @@ export function createSale(
     });
   }
   countSale(batch, actor.boutiqueId, monthOf(dayKey(now)), currency, totals.total, 1);
+  countSaleDay(batch, actor.boutiqueId, { uid: actor.uid, dayKey: dayKey(now), lines, subtotal: totals.subtotal, total: totals.total, discount: totals.discount, payment }, 1);
   for (const l of lines) if (l.serial) markSold(batch, actor, l.serial, saleRef.id, dayKey(now), l.warrantyUntil ?? "");
   if (client) {
     batch.update(doc(clientsCol(actor.boutiqueId), client.id), {
@@ -255,6 +259,7 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
   }
   // Une vente faite avant les compteurs mensuels n'y figure pas : rien à retirer.
   if (sale.inStats) countSale(batch, actor.boutiqueId, monthOf(sale.dayKey), sale.currency, sale.total, -1);
+  if (sale.inDayStats) countSaleDay(batch, actor.boutiqueId, sale, -1);
   for (const l of sale.lines) if (l.serial) markReturned(batch, actor, l.serial);
   if (sale.clientId) {
     batch.update(doc(clientsCol(actor.boutiqueId), sale.clientId), {

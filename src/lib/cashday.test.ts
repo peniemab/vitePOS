@@ -22,6 +22,7 @@ function sale(over: Partial<Sale> & Pick<Sale, "total" | "payment">): Sale {
     clientId: "",
     clientName: "",
     inStats: true,
+    inDayStats: true,
     ...over,
   };
 }

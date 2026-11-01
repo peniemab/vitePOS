@@ -58,6 +58,8 @@ export function doc(parent: unknown, ...segs: string[]): Ref {
   return { type: "doc", path, id: path.split("/").pop()! };
 }
 
+/** Comme Firestore : `where(documentId(), …)` compare l'identifiant du document. */
+export const documentId = () => "__name__";
 export const where = (field: string, op: string, value: unknown): Constraint => ({ kind: "where", field, op, value });
 export const orderBy = (field: string, dir = "asc"): Constraint => ({ kind: "orderBy", field, dir });
 export const limit = (n: number): Constraint => ({ kind: "limit", n });
@@ -67,9 +69,9 @@ export function query(ref: Ref, ...constraints: Constraint[]): Query {
 
 const comparable = (v: unknown) => (v instanceof Timestamp ? v.toMillis() : (v as number | string));
 
-function matches(data: DocumentData, c: Constraint): boolean {
+function matches(id: string, data: DocumentData, c: Constraint): boolean {
   if (c.kind !== "where") return true;
-  const v = comparable(data[c.field]);
+  const v = c.field === "__name__" ? id : comparable(data[c.field]);
   const w = comparable(c.value);
   switch (c.op) {
     case "==":
@@ -96,7 +98,7 @@ function querySnap(q: Query | Ref) {
   const depth = q.path.split("/").length + 1;
   let rows = [...store.entries()].filter(([p]) => p.startsWith(q.path + "/") && p.split("/").length === depth);
   const constraints = "constraints" in q ? q.constraints : [];
-  for (const c of constraints) rows = rows.filter(([, d]) => matches(d, c));
+  for (const c of constraints) rows = rows.filter(([p, d]) => matches(p.split("/").pop()!, d, c));
   for (const c of constraints)
     if (c.kind === "orderBy")
       rows.sort(([, a], [, b]) => {

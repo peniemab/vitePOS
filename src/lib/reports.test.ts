@@ -18,6 +18,7 @@ function sale(over: Partial<Sale>): Sale {
     clientId: "",
     clientName: "",
     inStats: true,
+    inDayStats: true,
     status: "validee",
     cancelReason: "",
     cancelledByName: "",

@@ -1,11 +1,11 @@
 /** Rapports : jour, semaine ou mois — chiffre d'affaires, panier moyen, marge, dépenses, meilleurs produits. */
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router";
 import { ActionIcon, Group, Paper, SegmentedControl, Text, Title } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight, IconPigMoney, IconReceipt2, IconShoppingBag, IconWallet } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
-import { watchSalesBetween } from "../data/sales";
+import { useDays } from "../data/dayStats";
 import { watchExpensesBetween } from "../data/cashday";
 import { errorMessage } from "../data/errors";
 import { PageTitle } from "../components/ui";
@@ -19,8 +19,7 @@ import { Stat } from "./VentesScreen";
 import { dayKey } from "../lib/cart";
 import { formatDay, formatMoney2, type Expense } from "../lib/cashday";
 import { formatMoney, zeroMoney } from "../lib/fx";
-import { buildReport, changePercent, periodOf, shiftPeriod, type Period, type PeriodKind } from "../lib/reports";
-import type { Sale } from "../lib/sales";
+import { changePercent, reportFromDays, periodOf, shiftPeriod, type Period, type PeriodKind } from "../lib/reports";
 
 function periodLabel(p: Period): string {
   if (p.kind === "jour") return formatDay(p.start);
@@ -39,8 +38,6 @@ export function RapportsScreen() {
   const today = dayKey(Date.now());
   const [period, setPeriod] = useState<Period>(() => periodOf("semaine", today));
   const previous = useMemo(() => shiftPeriod(period, -1), [period]);
-  const [sales, setSales] = useState<Sale[]>();
-  const [prevSales, setPrevSales] = useState<Sale[]>();
   const [expenses, setExpenses] = useState<Expense[]>();
   const [error, setError] = useState<string>();
   const [months, setMonths] = useState<MonthTotals[]>();
@@ -52,22 +49,16 @@ export function RapportsScreen() {
   );
 
   useEffect(() => {
-    setSales(undefined);
-    setPrevSales(undefined);
     setExpenses(undefined);
-    const onError = (e: unknown) => setError(errorMessage(e));
-    const a = watchSalesBetween(boutique.id, period.start, period.end, setSales, onError);
-    const b = watchSalesBetween(boutique.id, previous.start, previous.end, setPrevSales, onError);
-    const c = watchExpensesBetween(boutique.id, period.start, period.end, setExpenses, onError);
-    return () => {
-      a();
-      b();
-      c();
-    };
-  }, [boutique.id, period.start, period.end, previous.start, previous.end]);
+    return watchExpensesBetween(boutique.id, period.start, period.end, setExpenses, (e) => setError(errorMessage(e)));
+  }, [boutique.id, period.start, period.end]);
 
-  const report = useMemo(() => (sales ? buildReport(sales, period, boutique.currency, costs) : undefined), [sales, period, boutique.currency, costs]);
-  const prev = useMemo(() => (prevSales ? buildReport(prevSales, previous, boutique.currency) : undefined), [prevSales, previous, boutique.currency]);
+  // Un petit résumé par jour au lieu de toutes les ventes de la période et de celle d'avant.
+  const onError = useCallback((e: unknown) => setError(errorMessage(e)), []);
+  const days = useDays(boutique.id, period.start, period.end, onError);
+  const prevDays = useDays(boutique.id, previous.start, previous.end, onError);
+  const report = useMemo(() => (days ? reportFromDays(days, period, boutique.currency, costs) : undefined), [days, period, boutique.currency, costs]);
+  const prev = useMemo(() => (prevDays ? reportFromDays(prevDays, previous, boutique.currency) : undefined), [prevDays, previous, boutique.currency]);
 
   if (!permissions.viewReports) return <Navigate to="/plus" replace />;
 

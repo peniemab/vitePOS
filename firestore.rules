@@ -283,8 +283,9 @@ service cloud.firestore {
 
         allow create: if notBlocked(bid)
           && isActive(bid)
-          && request.resource.data.keys().hasOnly(['uid', 'memberName', 'lines', 'subtotal', 'discountPercent', 'discount', 'total', 'currency', 'payment', 'clientId', 'clientName', 'inStats', 'status', 'movementId', 'dayKey', 'createdAt', 'clientAtMs'])
+          && request.resource.data.keys().hasOnly(['uid', 'memberName', 'lines', 'subtotal', 'discountPercent', 'discount', 'total', 'currency', 'payment', 'clientId', 'clientName', 'inStats', 'inDayStats', 'status', 'movementId', 'dayKey', 'createdAt', 'clientAtMs'])
           && request.resource.data.get('inStats', true) is bool
+          && request.resource.data.get('inDayStats', true) is bool
           && request.resource.data.clientId is string
           && request.resource.data.clientId.size() <= 64
           && request.resource.data.clientName is string
@@ -424,6 +425,33 @@ service cloud.firestore {
           && validMonthMoney(request.resource.data.get('sales', {}))
           && validMonthMoney(request.resource.data.get('expenses', {}))
           && request.resource.data.get('saleCount', 0) is number;
+      }
+
+      // Résumé de chaque jour (chiffre d'affaires, paiements, articles, part de chaque employé), pour le graphique
+      // de l'accueil et les rapports. Mis à jour par increment() avec chaque vente ou annulation, donc par tout
+      // membre actif ; lisible par tous les membres actifs, comme les ventes dont il est tiré.
+      // `start` ({ day }) : premier jour complet, créé une seule fois et jamais modifié.
+      match /dayStats/{day} {
+        allow read: if isActive(bid);
+
+        allow create: if notBlocked(bid)
+          && isActive(bid)
+          && day == 'start'
+          && request.resource.data.keys().hasOnly(['day'])
+          && request.resource.data.day is string
+          && request.resource.data.day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+
+        allow create, update: if notBlocked(bid)
+          && isActive(bid)
+          && day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && request.resource.data.keys().hasOnly(['revenue', 'count', 'discounts', 'cash', 'mobileMoney', 'products', 'members'])
+          && request.resource.data.get('revenue', 0) is number
+          && request.resource.data.get('count', 0) is number
+          && request.resource.data.get('discounts', 0) is number
+          && request.resource.data.get('cash', 0) is number
+          && request.resource.data.get('mobileMoney', 0) is number
+          && request.resource.data.get('products', {}) is map
+          && request.resource.data.get('members', {}) is map;
       }
 
       // ---------- Inventaires ----------

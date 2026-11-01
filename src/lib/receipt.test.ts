@@ -20,6 +20,7 @@ const sale: Sale = {
   clientId: "",
   clientName: "",
   inStats: true,
+  inDayStats: true,
   status: "validee",
   cancelReason: "",
   cancelledByName: "",

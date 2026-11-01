@@ -49,6 +49,8 @@ export interface Sale {
   clientName: string;
   /** Comptée dans les compteurs mensuels (ventes créées depuis leur ajout). */
   inStats: boolean;
+  /** Comptée dans les résumés par jour (ventes créées depuis leur ajout). */
+  inDayStats: boolean;
   status: SaleStatus;
   cancelReason: string;
   cancelledByName: string;
