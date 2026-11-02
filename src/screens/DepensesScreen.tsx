@@ -1,6 +1,6 @@
 /** Dépenses : noter une sortie d'argent (transport, unités, loyer…) et voir celles du jour. */
 import { useEffect, useState, type FormEvent } from "react";
-import { Badge, Button, Group, Modal, NumberInput, Paper, SegmentedControl, Select, Stack, Switch, Text, TextInput } from "@mantine/core";
+import { Badge, Button, Group, Modal, NumberInput, Paper, SegmentedControl, Select, Stack, Switch, Text, TextInput, UnstyledButton } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import {
   IconBolt,
@@ -8,9 +8,7 @@ import {
   IconBus,
   IconDots,
   IconPackage,
-  IconPigMoney,
   IconPlus,
-  IconReceipt2,
   IconUsers,
 } from "@tabler/icons-react";
 import { useReady } from "../data/session";
@@ -19,10 +17,10 @@ import { cancelExpense, createExpense, watchExpensesOfDay } from "../data/cashda
 import { errorMessage } from "../data/errors";
 import { DayNav } from "../components/DayNav";
 import { PageTitle } from "../components/ui";
-import { Stat } from "./VentesScreen";
+import { BigMoney, MoneyLines, TillCard } from "../components/TillCard";
 import { dayKey } from "../lib/cart";
 import { EXPENSE_CATEGORIES, formatMoney2, type Expense, type ExpenseCategory } from "../lib/cashday";
-import { CURRENCIES, formatMoney, zeroMoney, type Currency } from "../lib/fx";
+import { CURRENCIES, CURRENCY_LIST, formatMoney, zeroMoney, type Currency } from "../lib/fx";
 import { currenciesOf } from "../data/boutique";
 
 const EXPENSE_ICONS: Record<ExpenseCategory, { icon: typeof IconBus; tone: string }> = {
@@ -50,12 +48,18 @@ export function DepensesScreen() {
 
   const active = expenses?.filter((e) => e.status === "validee") ?? [];
   const total = zeroMoney();
-  for (const e of active) total[e.currency] += e.amount;
+  const fromTill = zeroMoney();
+  const outside = zeroMoney();
+  for (const e of active) {
+    total[e.currency] += e.amount;
+    (e.fromTill ? fromTill : outside)[e.currency] += e.amount;
+  }
+  const onlyMain = CURRENCY_LIST.every((c) => c === boutique.currency || !total[c]);
   const time = new Intl.DateTimeFormat("fr-FR", { timeStyle: "short" });
 
   function confirmCancel(e: Expense) {
     modals.openConfirmModal({
-      title: "Annuler cette dépense ?",
+      title: `Annuler la dépense ${EXPENSE_CATEGORIES[e.category].toLowerCase()} de ${formatMoney(e.amount, e.currency)} ?`,
       children: <Text size="sm">Elle restera visible comme annulée et ne comptera plus dans la caisse.</Text>,
       labels: { confirm: "Annuler la dépense", cancel: "Garder" },
       confirmProps: { color: "red" },
@@ -79,54 +83,58 @@ export function DepensesScreen() {
 
       {expenses && (
         <>
-          <div className="kpis" data-three>
-            <Stat label="Total du jour" value={formatMoney2(total)} strong icon={<IconPigMoney size={20} />} />
-            <Stat label="Dépenses" value={String(active.length)} icon={<IconReceipt2 size={20} />} tone="violet" />
-            <Stat
-              label="Prises dans la caisse"
-              value={String(active.filter((e) => e.fromTill).length)}
-              icon={<IconBuildingStore size={20} />}
-              tone="orange"
+          <div className="screen-till">
+            <TillCard
+              label="Dépenses du jour"
+              total={onlyMain ? <BigMoney value={total[boutique.currency]} currency={boutique.currency} /> : formatMoney2(total)}
+              note={active.length ? `${active.length} dépense${active.length > 1 ? "s" : ""}` : undefined}
+              figures={[
+                { label: "Prises dans la caisse", value: <MoneyLines m={fromTill} main={boutique.currency} /> },
+                { label: "Payées hors caisse", value: <MoneyLines m={outside} main={boutique.currency} /> },
+              ]}
             />
           </div>
           <Paper p={0} px="md" style={{ overflow: "hidden" }}>
             {expenses.map((e) => {
               const { icon: Icon, tone } = EXPENSE_ICONS[e.category];
+              const cancelled = e.status === "annulee";
+              const canCancel = permissions.closeCash && !cancelled;
               return (
-                <div key={e.id} className="list-row" style={{ opacity: e.status === "annulee" ? 0.55 : 1 }}>
-                  <span className={`ico ${e.status === "annulee" ? "red" : tone}`}>
+                <UnstyledButton
+                  key={e.id}
+                  className="list-row expense-row"
+                  data-cancelled={cancelled || undefined}
+                  w="100%"
+                  disabled={!canCancel}
+                  onClick={() => canCancel && confirmCancel(e)}
+                  aria-label={canCancel ? `${EXPENSE_CATEGORIES[e.category]}, ${formatMoney(e.amount, e.currency)} : toucher pour annuler` : undefined}
+                >
+                  <span className={`ico ${cancelled ? "red" : tone}`}>
                     <Icon size={20} />
                   </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <Group gap={6} wrap="nowrap">
-                      <Text fw={600} truncate>
-                        {EXPENSE_CATEGORIES[e.category]}
-                      </Text>
-                      {!e.fromTill && (
-                        <Badge size="xs" variant="light" color="gray">
-                          Hors caisse
-                        </Badge>
-                      )}
-                      {e.status === "annulee" && (
-                        <Badge size="xs" variant="light" color="red">
-                          Annulée
-                        </Badge>
-                      )}
-                    </Group>
-                    <Text size="xs" c="dimmed" truncate>
-                      {e.createdAtMs ? time.format(e.createdAtMs) : "—"} · {e.memberName}
-                      {e.description ? ` · ${e.description}` : ""}
+                    <Text fw={600}>{EXPENSE_CATEGORIES[e.category]}</Text>
+                    <Text size="xs" c="dimmed">
+                      {e.createdAtMs ? time.format(e.createdAtMs) : "—"}, {e.memberName.split(" ")[0]}
+                      {e.fromTill ? "" : ", hors caisse"}
                     </Text>
+                    {e.description && (
+                      <Text size="xs" c="dimmed" lineClamp={2}>
+                        {e.description}
+                      </Text>
+                    )}
                   </div>
-                  <Text fw={700} className="n" td={e.status === "annulee" ? "line-through" : undefined}>
-                    {formatMoney(e.amount, e.currency)}
-                  </Text>
-                  {permissions.closeCash && e.status === "validee" && (
-                    <Button size="xs" variant="subtle" color="red" onClick={() => confirmCancel(e)}>
-                      Annuler
-                    </Button>
-                  )}
-                </div>
+                  <div className="amt">
+                    <Text fw={700} className="n">
+                      {formatMoney(e.amount, e.currency)}
+                    </Text>
+                    {cancelled && (
+                      <Badge size="sm" color="red" variant="filled">
+                        Annulée
+                      </Badge>
+                    )}
+                  </div>
+                </UnstyledButton>
               );
             })}
             {!expenses.length && (

@@ -1,4 +1,4 @@
-/** Paramètres : mon nom, taux du jour et réglages de la boutique (propriétaire seulement). */
+/** Paramètres : taux du jour en premier (on le change souvent), réglages de la boutique, ticket, imprimante, mon compte, apparence. */
 import { useState } from "react";
 import { Button, Group, NumberInput, Paper, SegmentedControl, Stack, Switch, Text, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -20,6 +20,13 @@ function saved() {
   notifications.show({ color: "teal", message: "Enregistré" });
 }
 
+/** « aujourd'hui à 08:15 », « le 12 octobre ». */
+function updatedOn(ms: number): string {
+  const d = new Date(ms);
+  if (d.toDateString() === new Date().toDateString()) return `aujourd'hui à ${new Intl.DateTimeFormat("fr-FR", { timeStyle: "short" }).format(d)}`;
+  return `le ${new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" }).format(d)}`;
+}
+
 export function SettingsScreen() {
   const { boutique, member } = useReady();
   const isOwner = member.role === "proprietaire";
@@ -37,53 +44,22 @@ export function SettingsScreen() {
       <Stack>
         <Paper p="md">
           <Title order={4} mb={4}>
-            Apparence
-          </Title>
-          <Text size="sm" c="dimmed" mb="sm">
-            L'app est en clair au départ. « Automatique » passe en sombre en même temps que le téléphone. Le mode sombre repose les yeux le soir et économise la batterie.
-          </Text>
-          <ThemeSwitch />
-        </Paper>
-        <Paper p="md">
-          <Title order={4} mb="sm">
-            Mon compte
-          </Title>
-          <Group align="flex-end">
-            <TextInput label="Mon nom" maxLength={80} value={name} onChange={(e) => setName(e.currentTarget.value)} style={{ flex: 1 }} />
-            <Button
-              disabled={!name.trim() || name === member.name}
-              onClick={() => {
-                updateOwnName(boutique.id, member.uid, name);
-                saved();
-              }}
-            >
-              Enregistrer
-            </Button>
-          </Group>
-          <Text size="sm" c="dimmed" mt="xs">
-            {member.email}
-          </Text>
-        </Paper>
-
-        <Paper p="md">
-          <Title order={4} mb={canEditRate ? "sm" : 4}>
             Taux du jour
           </Title>
-          {!canEditRate && (
-            <Text size="sm" c="dimmed" mb="sm">
-              Fixé par le propriétaire de la boutique.
-            </Text>
-          )}
+          <Text size="sm" c="dimmed" mb="sm">
+            {canEditRate ? "Pour convertir les prix quand un client paie dans une autre devise." : "Fixé par le propriétaire de la boutique."}
+          </Text>
           <Stack>
             {(
               [
-                { c: "USD", label: "FC pour 1 $", value: usdRate, set: setUsdRate, current: boutique.usdRateCdf },
-                { c: "EUR", label: "FC pour 1 € (laisser vide si vous n'utilisez pas l'euro)", value: eurRate, set: setEurRate, current: boutique.eurRateCdf },
+                { c: "USD", label: "1 $ =", hint: undefined, value: usdRate, set: setUsdRate, current: boutique.usdRateCdf, at: boutique.usdRateUpdatedAtMs },
+                { c: "EUR", label: "1 € =", hint: "Seulement si des clients paient en euros.", value: eurRate, set: setEurRate, current: boutique.eurRateCdf, at: boutique.eurRateUpdatedAtMs },
               ] as const
             ).map((r) => (
-              <Group key={r.c} align="flex-end">
+              <Group key={r.c} align="flex-end" wrap="nowrap">
                 <NumberInput
                   label={r.label}
+                  description={r.current && r.at ? `Mis à jour ${updatedOn(r.at)}` : r.hint}
                   min={1}
                   thousandSeparator=" "
                   hideControls
@@ -91,6 +67,9 @@ export function SettingsScreen() {
                   disabled={!canEditRate}
                   value={r.value}
                   onChange={r.set}
+                  rightSection={<Text c="dimmed" fw={600} size="sm">FC</Text>}
+                  rightSectionWidth={44}
+                  classNames={{ input: "n" }}
                   style={{ flex: 1 }}
                 />
                 {canEditRate && (
@@ -171,6 +150,36 @@ export function SettingsScreen() {
 
         <PrinterCard shop={{ ...boutique.receipt, name: boutique.name }} currency={boutique.currency} paperWidth={boutique.paperWidthMm} />
 
+        <Paper p="md">
+          <Title order={4} mb="sm">
+            Mon compte
+          </Title>
+          <Group align="flex-end">
+            <TextInput label="Mon nom" maxLength={80} value={name} onChange={(e) => setName(e.currentTarget.value)} style={{ flex: 1 }} />
+            <Button
+              disabled={!name.trim() || name === member.name}
+              onClick={() => {
+                updateOwnName(boutique.id, member.uid, name);
+                saved();
+              }}
+            >
+              Enregistrer
+            </Button>
+          </Group>
+          <Text size="sm" c="dimmed" mt="xs">
+            {member.email}
+          </Text>
+        </Paper>
+
+        <Paper p="md">
+          <Title order={4} mb={4}>
+            Apparence
+          </Title>
+          <Text size="sm" c="dimmed" mb="sm">
+            L'app est en clair au départ. « Automatique » passe en sombre en même temps que le téléphone. Le mode sombre repose les yeux le soir et économise la batterie.
+          </Text>
+          <ThemeSwitch />
+        </Paper>
         <Button variant="default" color="red" onClick={confirmLogout}>
           Se déconnecter
         </Button>

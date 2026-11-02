@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { convert, formatMoney, formatMoneyByCurrency, hasRate, isValidRate, roundMoney } from "./fx";
+import { convert, currenciesInUse, formatMoney, formatMoneyByCurrency, hasRate, isValidRate, roundMoney } from "./fx";
 
 const rates = { USD: 2850, EUR: 3100 };
 
@@ -36,5 +36,13 @@ describe("fx", () => {
     expect(formatMoney(3.2, "EUR")).toBe("3,20 €");
     expect(formatMoneyByCurrency({ CDF: 12500, USD: 0, EUR: 3 })).toBe("12 500 FC + 3,00 €");
     expect(formatMoneyByCurrency({ CDF: 0, USD: 0, EUR: 0 })).toBe("—");
+  });
+});
+
+describe("devises affichées", () => {
+  it("garde les devises demandées et ajoute celles qui ont un montant", () => {
+    expect(currenciesInUse(["CDF"], [{ CDF: 0, USD: 0, EUR: 0 }])).toEqual(["CDF"]);
+    expect(currenciesInUse(["CDF", "USD"], [{ EUR: 0 }, undefined])).toEqual(["CDF", "USD"]);
+    expect(currenciesInUse(["CDF"], [{ USD: 0 }, { EUR: 5 }])).toEqual(["CDF", "EUR"]);
   });
 });

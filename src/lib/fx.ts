@@ -77,3 +77,11 @@ export const BILLS: Record<Currency, number[]> = {
   USD: [1, 5, 10, 20, 50, 100],
   EUR: [5, 10, 20, 50, 100],
 };
+
+/**
+ * Devises à afficher dans un tableau d'argent : celles de `always`, plus toute devise où l'un des montants
+ * n'est pas nul (comme menuiserie-factures, qui ne montre que les devises réellement utilisées). Ordre FC, $, €.
+ */
+export function currenciesInUse(always: Currency[], amounts: (Partial<MoneyByCurrency> | undefined)[]): Currency[] {
+  return CURRENCY_LIST.filter((c) => always.includes(c) || amounts.some((m) => (m?.[c] ?? 0) !== 0));
+}

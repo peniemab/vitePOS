@@ -1,7 +1,7 @@
-/** Retrouver un appareil par son IMEI : quand un client revient, on voit la vente et la fin de garantie. */
+/** Retrouver un appareil par son IMEI (dans la fenêtre « Retrouver un appareil » des Ventes) : la vente et la fin de garantie. */
 import { useState } from "react";
 import { Link } from "react-router";
-import { Badge, Button, Group, Paper, Text, TextInput } from "@mantine/core";
+import { Badge, Button, Group, Text, TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { findSerial, type Serial } from "../data/serials";
@@ -39,10 +39,7 @@ export function SerialLookup() {
   const covered = result?.warrantyUntil ? result.warrantyUntil >= today : false;
 
   return (
-    <Paper p="md" mt="lg">
-      <Text fw={700} mb={4}>
-        Retrouver un appareil (garantie)
-      </Text>
+    <div>
       <Group align="flex-end" gap="xs" wrap="nowrap">
         <TextInput
           style={{ flex: 1 }}
@@ -104,6 +101,6 @@ export function SerialLookup() {
           )}
         </div>
       )}
-    </Paper>
+    </div>
   );
 }

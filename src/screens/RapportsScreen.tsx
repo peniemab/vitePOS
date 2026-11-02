@@ -1,8 +1,8 @@
-/** Rapports : jour, semaine ou mois — chiffre d'affaires, panier moyen, marge, dépenses, meilleurs produits. */
+/** Rapports : jour, semaine ou mois (choisi en haut) — chiffre d'affaires, panier moyen, bénéfice, dépenses, meilleurs produits ; six derniers mois en bas. */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router";
 import { ActionIcon, Group, Paper, SegmentedControl, Text, Title } from "@mantine/core";
-import { IconChevronLeft, IconChevronRight, IconPigMoney, IconReceipt2, IconShoppingBag, IconWallet } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
 import { useDays } from "../data/dayStats";
@@ -15,9 +15,9 @@ import { watchMonthStats } from "../data/monthStats";
 import { ratesOf } from "../data/boutique";
 import { lastMonths, type MonthTotals } from "../lib/monthStats";
 import { formatQty } from "../components/ProductModal";
-import { Stat } from "./VentesScreen";
+import { amount, BigMoney, MoneyLines, TillCard } from "../components/TillCard";
 import { dayKey } from "../lib/cart";
-import { formatDay, formatMoney2, type Expense } from "../lib/cashday";
+import { formatDay, type Expense } from "../lib/cashday";
 import { formatMoney, zeroMoney } from "../lib/fx";
 import { changePercent, reportFromDays, periodOf, shiftPeriod, type Period, type PeriodKind } from "../lib/reports";
 
@@ -72,12 +72,6 @@ export function RapportsScreen() {
   return (
     <>
       <PageTitle title="Rapports" />
-      <Paper p="md" mb="lg">
-        <Title order={4} mb="xs">
-          Ventes et dépenses, six derniers mois
-        </Title>
-        {months ? <MonthsChart months={months} currency={boutique.currency} rates={ratesOf(boutique)} /> : <div className="loading">Chargement…</div>}
-      </Paper>
       <SegmentedControl
         fullWidth
         mb="sm"
@@ -106,36 +100,33 @@ export function RapportsScreen() {
 
       {report && (
         <>
-          <div className="kpis">
-            <Stat
+          <div className="screen-till">
+            <TillCard
               label="Chiffre d'affaires"
-              value={formatMoney(report.revenue, c)}
-              strong
-              icon={<IconWallet size={20} />}
-              note={delta == null ? undefined : `${delta > 0 ? "+" : ""}${delta} % par rapport à la période d'avant`}
+              total={<BigMoney value={report.revenue} currency={c} />}
+              note={delta == null ? undefined : delta === 0 ? "Comme la période d'avant" : `${Math.abs(delta)} % de ${delta > 0 ? "plus" : "moins"} que la période d'avant`}
+              figures={[
+                { label: "Ventes", value: report.salesCount },
+                { label: "Panier moyen", value: amount(report.averageBasket, c) },
+                ...(report.margin != null
+                  ? [
+                      {
+                        label: "Bénéfice estimé",
+                        value: amount(report.margin, c),
+                        note: report.costCoverage < 0.98 ? `sur ${Math.round(report.costCoverage * 100)} % des ventes` : undefined,
+                      },
+                    ]
+                  : []),
+                { label: "Dépenses", value: <MoneyLines m={expenseTotal} main={c} /> },
+              ]}
             />
-            <Stat label="Ventes" value={String(report.salesCount)} icon={<IconReceipt2 size={20} />} tone="violet" />
-            <Stat label="Panier moyen" value={formatMoney(report.averageBasket, c)} icon={<IconShoppingBag size={20} />} />
-            <Stat label="Dépenses" value={formatMoney2(expenseTotal)} icon={<IconPigMoney size={20} />} tone="orange" />
+            {report.margin != null && (
+              <Text size="xs" c="dimmed" mt={6}>
+                Bénéfice estimé : ventes moins les prix d'achat actuels
+                {report.costCoverage < 0.98 ? " (des articles n'ont pas encore de prix d'achat)" : ""}.
+              </Text>
+            )}
           </div>
-
-          {report.margin != null && (
-            <Paper p="md" mb="md">
-              <Text size="sm" c="dimmed">
-                Marge brute estimée
-              </Text>
-              <Text fz={26} fw={700} className="n">
-                {formatMoney(report.margin, c)}
-              </Text>
-              <Text size="xs" c="dimmed">
-                Ventes moins prix d'achat actuels
-                {report.costCoverage < 0.98
-                  ? `, sur ${Math.round(report.costCoverage * 100)} % des ventes (des produits n'ont pas de prix d'achat)`
-                  : ""}
-                .
-              </Text>
-            </Paper>
-          )}
 
           {period.kind !== "jour" && (
             <Paper p="md" mb="md">
@@ -162,7 +153,9 @@ export function RapportsScreen() {
                   </div>
                   <span className="n v">
                     {formatMoney(p.revenue, c)}
-                    <small>{formatQty(p.quantity, unitOf.get(p.productId) ?? "u")}</small>
+                    <small>
+                      {formatQty(p.quantity, unitOf.get(p.productId) ?? "u")} vendu{p.quantity > 1 && (unitOf.get(p.productId) ?? "u") === "u" ? "s" : ""}
+                    </small>
                   </span>
                 </div>
               ))
@@ -198,6 +191,13 @@ export function RapportsScreen() {
           </Paper>
         </>
       )}
+
+      <Paper p="md" mt="md">
+        <Title order={4} mb="xs">
+          Ventes et dépenses, six derniers mois
+        </Title>
+        {months ? <MonthsChart months={months} currency={boutique.currency} rates={ratesOf(boutique)} /> : <div className="loading">Chargement…</div>}
+      </Paper>
     </>
   );
 }

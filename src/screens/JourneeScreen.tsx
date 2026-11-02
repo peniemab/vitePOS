@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
 import { Alert, Button, Group, NumberInput, Paper, Stack, Table, Text, Textarea, Title } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconDeviceMobile, IconLock, IconPigMoney, IconReceipt2, IconWallet } from "@tabler/icons-react";
+import { IconLock } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { watchSalesOfDay } from "../data/sales";
@@ -14,11 +14,11 @@ import { closeDay, setOpeningFloat, watchCashDay, watchExpensesOfDay, type CashD
 import { errorMessage } from "../data/errors";
 import { DayNav } from "../components/DayNav";
 import { PageTitle } from "../components/ui";
-import { Stat } from "./VentesScreen";
+import { BigMoney, MoneyLines, TillCard } from "../components/TillCard";
 import { dayKey } from "../lib/cart";
-import { expectedCash, formatMoney2, summarizeDay, variance, type Expense, type Money2 } from "../lib/cashday";
-import { CURRENCIES, formatMoney, zeroMoney, type Currency } from "../lib/fx";
-import { currenciesOf } from "../data/boutique";
+import { expectedCash, summarizeDay, variance, type Expense, type Money2 } from "../lib/cashday";
+import { CURRENCIES, currenciesInUse, formatMoney, hasRate, zeroMoney, type Currency } from "../lib/fx";
+import { ratesOf } from "../data/boutique";
 import type { Sale } from "../lib/sales";
 
 const num = (v: number | string) => Number(v) || 0;
@@ -52,9 +52,13 @@ export function JourneeScreen() {
   const loading = !sales || !expenses || cashDay === undefined;
   const summary = !loading ? summarizeDay(sales, expenses, boutique.currency) : undefined;
   const float: Money2 = cashDay?.openingFloat ?? zeroMoney();
-  // Colonnes affichées : les devises de la boutique, plus l'euro s'il apparaît dans les montants du jour.
-  const shown: Currency[] = currenciesOf(boutique);
-  if (!shown.includes("EUR") && summary && (summary.cash.EUR || summary.tillExpenses.EUR || float.EUR)) shown.push("EUR");
+  // Comme menuiserie-factures : seulement les devises réellement utilisées. Les champs à remplir gardent en plus
+  // la deuxième devise courante (le dollar quand on vend en francs), pour pouvoir y saisir le fond ou le compté.
+  const rates = ratesOf(boutique);
+  const pair: Currency = boutique.currency === "CDF" ? "USD" : "CDF";
+  const amounts = [float, summary?.cash, summary?.tillExpenses, cashDay?.closing?.counted];
+  const tableShown = currenciesInUse([boutique.currency], amounts);
+  const shown = currenciesInUse(hasRate(rates, pair) && hasRate(rates, boutique.currency) ? [boutique.currency, pair] : [boutique.currency], amounts);
   const expected = summary ? expectedCash(summary, float) : undefined;
   const closed = cashDay?.status === "closed";
 
@@ -67,18 +71,21 @@ export function JourneeScreen() {
 
       {summary && expected && (
         <Stack>
-          <div className="kpis" style={{ marginBottom: 0 }}>
-            <Stat label="Chiffre d'affaires" value={formatMoney(summary.revenue, boutique.currency)} strong icon={<IconWallet size={20} />} />
-            <Stat
-              label="Ventes"
-              value={String(summary.salesCount)}
-              icon={<IconReceipt2 size={20} />}
-              tone="violet"
-              note={summary.cancelledCount ? `+ ${summary.cancelledCount} annulée${summary.cancelledCount > 1 ? "s" : ""}` : undefined}
-            />
-            <Stat label="Mobile money" value={formatMoney2(summary.mobileMoney)} icon={<IconDeviceMobile size={20} />} tone="orange" />
-            <Stat label="Dépenses" value={formatMoney2(summary.allExpenses)} icon={<IconPigMoney size={20} />} tone="red" />
-          </div>
+          <TillCard
+            label="Chiffre d'affaires"
+            total={<BigMoney value={summary.revenue} currency={boutique.currency} />}
+            note={closed ? "Journée clôturée" : undefined}
+            figures={[
+              {
+                label: "Ventes",
+                value: summary.salesCount,
+                note: summary.cancelledCount ? `et ${summary.cancelledCount} annulée${summary.cancelledCount > 1 ? "s" : ""}` : undefined,
+                down: true,
+              },
+              { label: "Mobile money", value: <MoneyLines m={summary.mobileMoney} main={boutique.currency} /> },
+              { label: "Dépenses", value: <MoneyLines m={summary.allExpenses} main={boutique.currency} /> },
+            ]}
+          />
 
           <Paper p="md">
             <Title order={4} mb="xs">
@@ -88,20 +95,20 @@ export function JourneeScreen() {
             <Table.ScrollContainer minWidth={300} type="native">
               <Table fz="sm" withRowBorders={false}>
                 <Table.Thead>
-                  <HeadRow shown={shown} />
+                  <HeadRow shown={tableShown} />
                 </Table.Thead>
                 <Table.Tbody>
-                  <Row shown={shown} label="Fond de caisse" m={float} />
-                  <Row shown={shown} label="+ Espèces encaissées" m={summary.cash} />
-                  <Row shown={shown} label="− Dépenses payées en caisse" m={summary.tillExpenses} />
-                  <Row shown={shown} label="= Attendu" m={expected} strong />
+                  <Row shown={tableShown} label="Fond de caisse" m={float} />
+                  <Row shown={tableShown} label="+ Espèces encaissées" m={summary.cash} />
+                  <Row shown={tableShown} label="− Dépenses payées en caisse" m={summary.tillExpenses} />
+                  <Row shown={tableShown} label="= Attendu" m={expected} strong />
                 </Table.Tbody>
               </Table>
             </Table.ScrollContainer>
           </Paper>
 
           {closed && cashDay?.closing ? (
-            <ClosedRecap cashDay={cashDay} shown={shown} />
+            <ClosedRecap cashDay={cashDay} shown={tableShown} />
           ) : (
             <>
               <FloatForm key={`float-${day}`} shown={shown} float={float} disabled={closed || subscription.readOnly} onSave={(m) => setOpeningFloat(actor, day, m)} />
@@ -135,7 +142,7 @@ export function JourneeScreen() {
               {summary.bySeller.map((s) => (
                 <Group key={s.name} justify="space-between" py={4}>
                   <Text>
-                    {s.name} · {s.count} vente{s.count > 1 ? "s" : ""}
+                    {s.name}, {s.count} vente{s.count > 1 ? "s" : ""}
                   </Text>
                   <Text fw={600} className="n">
                     {formatMoney(s.revenue, boutique.currency)}

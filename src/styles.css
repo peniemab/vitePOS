@@ -1822,3 +1822,52 @@ body {
 .pay-bill[data-on] {
   background: var(--app-sky);
 }
+
+/* Ticket zébré en haut des écrans Ventes, Journée, Dépenses et Rapports */
+.screen-till {
+  max-width: 720px;
+  margin-bottom: 16px;
+}
+.till .till-total:not(:has(small)) {
+  font-size: clamp(2.2rem, 9vw, 3.2rem);
+}
+/* Vente ou dépense annulée : pâle et barrée, avec l'étiquette rouge bien visible */
+:is(.sale-row, .expense-row)[data-cancelled] :is(.who, .time, .ico, .amt > b, .amt > .mantine-Text-root, > div:not(.amt)) {
+  opacity: 0.5;
+}
+:is(.sale-row, .expense-row)[data-cancelled] .amt > :is(b, .mantine-Text-root) {
+  text-decoration: line-through;
+}
+.expense-row {
+  align-items: flex-start;
+}
+.expense-row .amt {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+}
+/* Codes d'article (référence, code-barres) : seulement sur ordinateur */
+@media (max-width: 61.99em) {
+  .desk-only {
+    display: none;
+  }
+}
+.money-line { display: block; }
+.till dd {
+  font-size: clamp(1.15rem, 4.8vw, 1.5rem);
+}
+.money-line {
+  white-space: nowrap;
+}
+/* Quatre chiffres sur téléphone : deux par ligne plutôt que quatre colonnes trop étroites. */
+@media (max-width: 47.99em) {
+  .till dl[data-many] {
+    grid-auto-flow: row;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 12px;
+  }
+  .till dl[data-many] div:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+}

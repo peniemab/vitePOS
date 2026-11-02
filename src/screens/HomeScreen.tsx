@@ -14,6 +14,7 @@ import { needsRestock } from "../lib/products";
 import { useLots } from "../data/lots";
 import { expiringLots } from "../lib/lots";
 import { InstallCard } from "../components/InstallCard";
+import { amount, BigMoney, TillCard } from "../components/TillCard";
 import { dayKey } from "../lib/cart";
 import { shiftDay } from "../lib/cashday";
 import {
@@ -121,41 +122,25 @@ export function HomeScreen() {
 
       <div className="home-grid">
         <div>
-          <Link to="/ventes" className="till">
-            <span className="till-head">
-              {permissions.viewReports ? "Recette du jour" : "Vos ventes du jour"}
-              <IconChevronRight size={18} />
-            </span>
-            <span className="till-total n">{loading ? "…" : <BigMoney value={t.revenue} currency={c} />}</span>
-            {!loading && <span className="till-vs">{versus(t.revenue, y.revenue)}</span>}
-            <span className="till-cut" />
-            <dl>
-              <div>
-                <dt>Ventes</dt>
-                <dd className="n">
-                  {loading ? "…" : t.salesCount}
-                  {!loading && <Delta now={t.salesCount} before={y.salesCount} count />}
-                </dd>
-              </div>
-              <div>
-                <dt>Panier moyen</dt>
-                <dd className="n">
-                  {loading ? "…" : amount(t.averageBasket, c)}
-                  {!loading && <Delta now={t.averageBasket} before={y.averageBasket} />}
-                </dd>
-              </div>
-              {permissions.viewReports && (
-                <div>
-                  <dt>Bénéfice</dt>
-                  <dd className="n">
-                    {loading ? "…" : t.margin != null ? amount(t.margin, c) : "—"}
-                    {!loading &&
-                      (t.margin == null ? <em>Prix d'achat manquants</em> : y.margin != null && <Delta now={t.margin} before={y.margin} />)}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </Link>
+          <TillCard
+            to="/ventes"
+            label={permissions.viewReports ? "Recette du jour" : "Vos ventes du jour"}
+            total={loading ? "…" : <BigMoney value={t.revenue} currency={c} />}
+            note={loading ? undefined : versus(t.revenue, y.revenue)}
+            figures={[
+              { label: "Ventes", value: loading ? "…" : t.salesCount, ...(loading ? {} : delta(t.salesCount, y.salesCount, true)) },
+              { label: "Panier moyen", value: loading ? "…" : amount(t.averageBasket, c), ...(loading ? {} : delta(t.averageBasket, y.averageBasket)) },
+              ...(permissions.viewReports
+                ? [
+                    {
+                      label: "Bénéfice estimé",
+                      value: loading ? "…" : t.margin != null ? amount(t.margin, c) : "—",
+                      ...(loading ? {} : t.margin == null ? { note: "Prix d'achat manquants" } : y.margin != null ? delta(t.margin, y.margin) : {}),
+                    },
+                  ]
+                : []),
+            ]}
+          />
 
           <Button component={Link} to="/caisse" size="xl" fullWidth className="sun-btn new-sale" leftSection={<IconPlus size={24} stroke={2.4} />}>
             Nouvelle vente
@@ -332,24 +317,9 @@ function clock(ms: number): string {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-/** Montant sans la devise, quand elle est déjà dite ailleurs. */
-function amount(n: number, currency: Currency): string {
-  return formatMoney(n, currency).replace(/\s*\S+$/, "");
-}
-
 /** Montant court des graphiques : sans « FC » pour les francs, avec le symbole pour les autres devises. */
 function shortMoney(n: number, currency: Currency): string {
   return currency === "CDF" ? compactAmount(n) : `${compactAmount(n)} ${CURRENCIES[currency].symbol}`;
-}
-
-/** « 779 950 » en grand, la devise en petit à côté. */
-function BigMoney({ value, currency }: { value: number; currency: Currency }) {
-  return (
-    <>
-      {amount(value, currency)}
-      <small>{CURRENCIES[currency].symbol}</small>
-    </>
-  );
 }
 
 /** « 6 % de moins qu'hier à la même heure ». */
@@ -361,11 +331,11 @@ function versus(now: number, before: number): string {
 }
 
 /** Petit écart sous un chiffre du ticket : « 5 de plus », « 21 % de moins ». */
-function Delta({ now, before, count }: { now: number; before: number; count?: boolean }) {
+function delta(now: number, before: number, count?: boolean): { note?: string; down?: boolean } {
   const d = count ? (now || before ? now - before : undefined) : changePercent(now, before);
-  if (d == null) return null;
+  if (d == null) return {};
   const unit = count ? "" : " %";
-  return <em data-down={d < 0 || undefined}>{d === 0 ? "comme hier" : `${Math.abs(d)}${unit} de ${d > 0 ? "plus" : "moins"}`}</em>;
+  return { note: d === 0 ? "comme hier" : `${Math.abs(d)}${unit} de ${d > 0 ? "plus" : "moins"}`, down: d < 0 };
 }
 
 /** Ventes du jour heure par heure : l'heure en cours en bleu, les heures à venir hachurées. */

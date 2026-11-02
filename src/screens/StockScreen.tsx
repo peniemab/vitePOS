@@ -257,10 +257,14 @@ function ProductRow({ product: p, currency, onOpen }: { product: Product; curren
           </Text>
         </Group>
         <Text size="xs" c="dimmed" truncate>
-          {p.sku ? <b>{p.sku}</b> : null}
-          {p.sku ? " · " : ""}
+          {/* Sur téléphone, seulement le rayon : les codes ne servent qu'à l'ordinateur. */}
+          {p.sku && (
+            <span className="desk-only">
+              <b>{p.sku}</b>,{" "}
+            </span>
+          )}
           {p.category}
-          {p.barcode ? ` · ${p.barcode}` : ""}
+          {p.barcode && <span className="desk-only">, {p.barcode}</span>}
         </Text>
       </div>
       <div style={{ textAlign: "right", flexShrink: 0 }}>

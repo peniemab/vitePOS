@@ -86,5 +86,7 @@ export const theme = createTheme({
           : { root: {} },
     }),
     Modal: { defaultProps: { centered: true } },
+    // Étiquettes en lettres normales : les majuscules se lisent moins bien (« Annulée », pas « ANNULÉE »).
+    Badge: { defaultProps: { tt: "none" } },
   },
 });
