@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useParams } from "react-router";
 import { Alert, Badge, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCash, IconCloudCheck, IconCloudUpload, IconPrinter, IconReceiptOff, IconShare } from "@tabler/icons-react";
+import { IconCash, IconCheck, IconCloudCheck, IconCloudUpload, IconPrinter, IconReceiptOff, IconShare } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { cancelSale, watchSale } from "../data/sales";
@@ -94,11 +94,19 @@ export function TicketScreen() {
         }
       />
       {justSold && sale.status === "validee" && (
-        <Alert color="teal" mb="md" title="Vente enregistrée">
-          {sale.payment.method === "especes" && sale.payment.change > 0
-            ? "N'oubliez pas de rendre la monnaie."
-            : "Le stock a été mis à jour."}
-        </Alert>
+        <div className="sale-ok" role="status">
+          <span className="check">
+            <IconCheck size={24} stroke={2.6} />
+          </span>
+          <div>
+            <b>Vente enregistrée</b>
+            <span>
+              {sale.payment.method === "especes" && sale.payment.change > 0
+                ? "N'oubliez pas de rendre la monnaie."
+                : "Le stock a été mis à jour."}
+            </span>
+          </div>
+        </div>
       )}
       {sale.status === "annulee" && (
         <Alert color="red" mb="md" title="Vente annulée">

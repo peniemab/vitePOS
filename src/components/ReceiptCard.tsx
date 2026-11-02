@@ -131,7 +131,7 @@ export function ReceiptCard({ boutique }: { boutique: Boutique }) {
               disabled={!changed || badLink}
               onClick={() => {
                 updateReceipt(boutique.id, form, onError);
-                notifications.show({ color: "navy", message: "Enregistré" });
+                notifications.show({ color: "teal", message: "Enregistré" });
               }}
             >
               Enregistrer

@@ -1,6 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { registerSW } from "virtual:pwa-register";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
@@ -22,12 +21,13 @@ import "./styles.css";
 import { theme } from "./theme";
 import { App } from "./App";
 import { listenForInstall } from "./data/install";
+import { announceUpdate, startUpdates } from "./data/update";
 
-// Met l'application en cache pour qu'elle s'ouvre sans internet, et l'actualise automatiquement.
 // Les champs de date comprennent une date tapée au clavier (« 15/03/2027 »), pas seulement le calendrier.
 dayjs.extend(customParseFormat);
 
-registerSW({ immediate: true });
+// Met l'application en cache pour qu'elle s'ouvre sans internet, et l'installe à jour sans gêner une vente.
+startUpdates();
 // Garde la proposition d'installation du navigateur pour le bouton « Installer ».
 listenForInstall();
 
@@ -43,3 +43,4 @@ createRoot(document.getElementById("root")!).render(
     </MantineProvider>
   </StrictMode>,
 );
+announceUpdate();

@@ -76,7 +76,7 @@ export function AbonnementScreen() {
           </Text>
         </Paper>
 
-        <Alert color="navy" title="Comment payer">
+        <Alert color="sky" title="Comment payer">
           {PAYMENT_CONTACT ? (
             <>
               Envoyez le paiement par mobile money puis prévenez-nous au <b>{PAYMENT_CONTACT}</b> avec le nom de votre
@@ -100,7 +100,7 @@ export function AbonnementScreen() {
             const p = PLANS[k];
             const isCurrent = k === st.plan;
             return (
-              <Paper key={k} p="md" style={isCurrent ? { borderColor: "var(--mantine-color-navy-6)", borderWidth: 2 } : undefined}>
+              <Paper key={k} p="md" style={isCurrent ? { borderColor: "var(--mantine-color-sky-6)", borderWidth: 2 } : undefined}>
                 <Group justify="space-between" mb={4}>
                   <Text fw={700} fz="lg">
                     {p.name}

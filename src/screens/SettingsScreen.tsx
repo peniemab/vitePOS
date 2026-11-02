@@ -17,7 +17,7 @@ function onError(e: unknown) {
 }
 
 function saved() {
-  notifications.show({ color: "navy", message: "Enregistré" });
+  notifications.show({ color: "teal", message: "Enregistré" });
 }
 
 export function SettingsScreen() {

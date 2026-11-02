@@ -1,3 +1,9 @@
+/* Manuel : mêmes couleurs que l'app (encre pour les titres, bleu ciel pour les repères, couverture zébrée). */
+.mag {
+  --navy: var(--ink-deep);
+  --navy-soft: var(--ice);
+  --brick: var(--sky-deep);
+}
 /* Manuel façon journal : une pleine page bleu nuit, gros titres serrés, numéros de chapitre géants,
    encadrés « Astuce » et « Attention ». S'imprime en A4 (voir @media print en bas). */
 
@@ -9,7 +15,7 @@
 
 /* Une */
 .mag-cover {
-  background: radial-gradient(120% 90% at 85% 10%, #263c66 0%, var(--navy) 50%, var(--navy-deep) 100%);
+  background: var(--zebra) 0 0 / 360px 180px, var(--sky-band);
   color: #f2f5fb;
   padding: 64px 0 72px;
   overflow: clip;
@@ -26,14 +32,14 @@
   font-size: 1rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #ffb3ac;
+  color: var(--sun);
   border-top: 2px solid currentColor;
   border-bottom: 1px solid currentColor;
   padding: 6px 0;
   display: inline-block;
 }
 .mag-masthead span {
-  color: #b6c6f0;
+  color: rgba(255, 255, 255, 0.86);
   letter-spacing: 0.12em;
 }
 .mag-cover h1 {
@@ -45,11 +51,11 @@
 }
 .mag-cover h1 em {
   font-style: normal;
-  color: #f6827a;
+  color: var(--sun);
 }
 .mag-cover-lead {
   font-size: 1.2rem;
-  color: #d8e2ff;
+  color: rgba(255, 255, 255, 0.9);
   max-width: 34em;
 }
 .mag-cover-teasers {
@@ -70,7 +76,7 @@
 .mag-cover-teasers b {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.6rem;
-  color: #f6827a;
+  color: var(--sun);
   min-width: 2ch;
 }
 .mag-cover-shot {
@@ -213,7 +219,7 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: var(--navy);
+  background: var(--sky);
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
   font-weight: 700;
@@ -300,7 +306,7 @@
 
 /* Dernière page */
 .mag-back {
-  background: var(--navy);
+  background: var(--zebra) 0 0 / 360px 180px, var(--sky-band);
   color: #f2f5fb;
   padding: 64px 0;
   text-align: center;
@@ -310,7 +316,7 @@
   margin: 16px 0 10px;
 }
 .mag-back p {
-  color: #d8e2ff;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 24px;
 }
 

@@ -21,14 +21,15 @@ const SITE_URL = "https://vitepos-rdc.web.app";
 export function AuthCard({ title, sub, children }: { title: string; sub?: ReactNode; children: ReactNode }) {
   return (
     <Box mih="100vh">
-      <Box className="app-header" py="sm" mb={32} ta="center">
+      <Box className="app-header auth-hero">
         <Group gap={10} justify="center">
-          <img src="/favicon.svg" alt="" width={34} height={34} style={{ borderRadius: 7 }} />
+          <img src="/favicon.svg" alt="" width={44} height={44} style={{ borderRadius: 9 }} />
           <span className="brand">vitePOS</span>
         </Group>
+        <p>La caisse qui marche même quand le réseau coupe</p>
       </Box>
       <Box px="md" pb="xl">
-        <Paper maw={420} mx="auto" p="lg" shadow="xs">
+        <Paper maw={420} mx="auto" p="lg" shadow="md" className="auth-card">
           <Title order={2} mb={4}>
             {title}
           </Title>
@@ -250,7 +251,7 @@ export function ForgotPasswordScreen() {
     <AuthCard title="Mot de passe oublié">
       <OfflineHint />
       {sent ? (
-        <Alert color="navy">
+        <Alert color="sky">
           Si un compte existe pour <b>{email}</b>, un e-mail vient d'être envoyé avec un lien pour choisir un nouveau
           mot de passe. Pensez à regarder dans les courriers indésirables.
         </Alert>

@@ -1,8 +1,14 @@
+/* Brochure : mêmes couleurs que l'app (encre pour les titres, bleu ciel pour les repères, bandeau zébré). */
+.sheet {
+  --navy: var(--ink-deep);
+  --navy-soft: var(--ice);
+  --brick: var(--sky-deep);
+}
 /* Brochure A5 recto-verso (148 × 210 mm). À l'écran : deux feuilles posées sur un fond gris ; à l'impression : deux pages
    pleines, sans marge (les fonds de couleur vont jusqu'au bord). */
 
 .sheets {
-  background: #dfe3ea;
+  background: var(--ice);
   padding: 32px 16px;
   display: grid;
   gap: 32px;
@@ -35,7 +41,7 @@
 .b-download {
   text-align: center;
   padding: 28px 16px 0;
-  background: #dfe3ea;
+  background: var(--ice);
 }
 .b-download p {
   margin: 10px 0 0;
@@ -168,7 +174,7 @@
 .b-cta {
   margin: auto -9mm 0;
   padding: 5mm 9mm;
-  background: var(--navy);
+  background: var(--zebra) 0 0 / 360px 180px, var(--sky-band);
   color: #fff;
   display: flex;
   align-items: center;
@@ -179,7 +185,7 @@
 }
 .b-cta p {
   margin: 0;
-  color: #d8e2ff;
+  color: rgba(255, 255, 255, 0.9);
 }
 .b-cta .b-cta-title {
   font-family: "Barlow Condensed", sans-serif;
@@ -192,7 +198,7 @@
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #f6827a;
+  color: var(--sun);
 }
 .b-qr {
   display: block;
@@ -327,7 +333,7 @@
   width: 4.8mm;
   height: 4.8mm;
   border-radius: 50%;
-  background: var(--navy);
+  background: var(--sky);
   color: #fff;
   display: grid;
   place-items: center;

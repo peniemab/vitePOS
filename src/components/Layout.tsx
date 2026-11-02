@@ -135,7 +135,7 @@ export function Layout() {
         </div>
       </AppShell.Main>
 
-      <AppShell.Footer>
+      <AppShell.Footer className="bottom-bar">
         <nav className="bottom-nav" aria-label="Sections">
           {TABS.map((t) => (
             <NavLink key={t.to} to={t.to} end={t.end}>

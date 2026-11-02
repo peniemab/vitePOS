@@ -9,7 +9,9 @@ export function getAuth(): Auth {
 }
 
 export function onAuthStateChanged(_auth: Auth, cb: (u: User | null) => void) {
-  setTimeout(() => cb(OWNER), 0);
+  // ?deconnecte : écran de connexion (pour le voir et le capturer).
+  const signedOut = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("deconnecte");
+  setTimeout(() => cb(signedOut ? null : OWNER), 0);
   return () => undefined;
 }
 

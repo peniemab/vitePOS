@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      // « prompt » : la nouvelle version attend que src/data/update.ts choisisse le bon moment pour recharger.
+      registerType: "prompt",
       injectRegister: false,
       // Icônes et logo sont déjà dans globPatterns : les déclarer aussi ici les mettrait deux fois dans la liste
       // de mise en cache, et le service worker refuserait de s'installer (« Entry already exists »).
@@ -22,7 +23,7 @@ export default defineConfig({
         display: "standalone",
         orientation: "portrait",
         background_color: "#f8f9fb",
-        theme_color: "#1a2b4c",
+        theme_color: "#3987e5",
         icons: [
           { src: "pwa-192.png", sizes: "192x192", type: "image/png" },
           { src: "pwa-512.png", sizes: "512x512", type: "image/png" },
@@ -36,7 +37,6 @@ export default defineConfig({
         navigateFallback: "index.html",
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: true,
       },
     }),
   ],
