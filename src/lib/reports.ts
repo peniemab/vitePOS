@@ -169,3 +169,40 @@ export function paymentBreakdown(sales: Pick<Sale, "status" | "total" | "payment
   }
   return [...out.values()].sort((a, b) => b.value - a.value);
 }
+
+export interface HourStat {
+  /** Heure de début (0 à 23). */
+  hour: number;
+  count: number;
+  revenue: number;
+}
+
+/**
+ * Ventes validées heure par heure, de `from` à `to` heures incluses, élargi si l'on a vendu plus tôt ou plus tard.
+ * L'heure est celle de l'appareil.
+ */
+export function salesByHour(sales: Pick<Sale, "status" | "total" | "createdAtMs">[], from = 8, to = 20): HourStat[] {
+  const valid = sales.filter((s) => s.status === "validee");
+  const hours = valid.map((s) => new Date(s.createdAtMs).getHours());
+  const first = Math.min(from, ...hours);
+  const last = Math.max(to, ...hours);
+  const out: HourStat[] = [];
+  for (let h = first; h <= last; h++) out.push({ hour: h, count: 0, revenue: 0 });
+  valid.forEach((s, i) => {
+    const slot = out[hours[i] - first];
+    slot.count += 1;
+    slot.revenue += s.total;
+  });
+  return out;
+}
+
+/** Minutes écoulées depuis minuit (heure de l'appareil). */
+export function minuteOfDay(ms: number): number {
+  const d = new Date(ms);
+  return d.getHours() * 60 + d.getMinutes();
+}
+
+/** Ventes faites avant `minute` dans leur journée : pour comparer aujourd'hui à hier à la même heure. */
+export function beforeMinute<T extends Pick<Sale, "createdAtMs">>(sales: T[], minute: number): T[] {
+  return sales.filter((s) => minuteOfDay(s.createdAtMs) <= minute);
+}

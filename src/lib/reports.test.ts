@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildReport, changePercent, compactAmount, lastDays, paymentBreakdown, periodOf, shiftPeriod } from "./reports";
+import { beforeMinute, buildReport, changePercent, compactAmount, lastDays, minuteOfDay, paymentBreakdown, periodOf, salesByHour, shiftPeriod } from "./reports";
 import { gapTotals, inventoryGaps } from "./inventory";
 import type { Sale } from "./sales";
 
@@ -150,5 +150,36 @@ describe("accueil", () => {
       ["especes", "CDF", 10000],
       ["mobile_money", "CDF", 7000],
     ]);
+  });
+});
+
+describe("ventes par heure", () => {
+  const at = (h: number, m = 0) => new Date(2026, 9, 17, h, m).getTime();
+
+  it("compte les ventes validées de 8 h à 20 h", () => {
+    const hours = salesByHour([
+      { status: "validee", total: 1000, createdAtMs: at(9, 10) },
+      { status: "validee", total: 500, createdAtMs: at(9, 50) },
+      { status: "annulee", total: 9000, createdAtMs: at(9, 30) },
+      { status: "validee", total: 2000, createdAtMs: at(16, 5) },
+    ]);
+    expect(hours).toHaveLength(13);
+    expect(hours[0].hour).toBe(8);
+    expect(hours[1]).toEqual({ hour: 9, count: 2, revenue: 1500 });
+    expect(hours[8]).toEqual({ hour: 16, count: 1, revenue: 2000 });
+  });
+
+  it("s'élargit quand on vend plus tôt ou plus tard", () => {
+    const hours = salesByHour([
+      { status: "validee", total: 1, createdAtMs: at(6, 30) },
+      { status: "validee", total: 1, createdAtMs: at(22, 15) },
+    ]);
+    expect(hours[0].hour).toBe(6);
+    expect(hours[hours.length - 1].hour).toBe(22);
+  });
+
+  it("garde les ventes faites avant la même heure", () => {
+    const sales = [{ createdAtMs: at(10, 0) }, { createdAtMs: at(17, 40) }, { createdAtMs: at(18, 0) }];
+    expect(beforeMinute(sales, minuteOfDay(at(17, 40)))).toHaveLength(2);
   });
 });

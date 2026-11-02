@@ -22,7 +22,6 @@ import {
 } from "@mantine/core";
 import {
   IconArrowBackUp,
-  IconArrowRight,
   IconCash,
   IconCheck,
   IconDeviceMobileDollar,
@@ -127,7 +126,6 @@ export function CaisseScreen() {
               </UnstyledButton>
               <UnstyledButton className="go" onClick={openPayment}>
                 Encaisser
-                <IconArrowRight size={18} />
               </UnstyledButton>
             </div>
           )}
@@ -707,7 +705,7 @@ function CartPanel({
                 aria-label="Devise payée par le client"
               />
             )}
-            <Button size="lg" className="night-btn pay-btn" leftSection={<IconCash size={22} />} onClick={onPay}>
+            <Button size="lg" className="sun-btn pay-btn" leftSection={<IconCash size={22} />} onClick={onPay}>
               Encaisser <span className="n" style={{ marginLeft: 6 }}>{formatMoney(totalIn, payIn)}</span>
             </Button>
           </div>
@@ -870,7 +868,7 @@ function PaymentModal({ opened, onClose, initialCurrency }: { opened: boolean; o
           <Button
             type="submit"
             size="xl"
-            className="night-btn pay-btn"
+            className="sun-btn pay-btn"
             leftSection={<IconCheck size={22} />}
             disabled={"error" in result || !result.ok || (method === "especes" && !(given > 0))}
           >

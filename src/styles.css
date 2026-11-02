@@ -1059,7 +1059,11 @@ body {
   }
 }
 @media (max-width: 47.99em) {
+  .home-top .hello {
+    flex-basis: 0;
+  }
   .home-search {
+    order: 2;
     max-width: none;
     flex-basis: 100%;
   }
@@ -1529,4 +1533,292 @@ body {
   .page-top:not(:has(p, button, a, input)) {
     display: none;
   }
+}
+
+/* ---------- Accueil et caisse v3 : ticket de caisse zébré, boutons Soleil ---------- */
+:root {
+  --app-sun: #ffc233;
+  --app-ink: #12233f;
+  --app-zig: 10px;
+}
+/* Bouton d'action principal : jaune Soleil, texte encre. */
+.sun-btn {
+  background: var(--app-sun) !important;
+  color: var(--app-ink) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 22px rgba(160, 110, 0, 0.22);
+}
+.sun-btn:hover {
+  background: #ffcb4d !important;
+}
+.sun-btn[data-disabled] {
+  background: color-mix(in srgb, var(--app-sun) 35%, var(--app-surface)) !important;
+  color: color-mix(in srgb, var(--app-ink) 45%, transparent) !important;
+  box-shadow: none;
+}
+[data-mantine-color-scheme="dark"] .sun-btn {
+  box-shadow: none;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+.home-grid > div {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+@media (max-width: 61.99em) {
+  .home-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* La recette du jour : un ticket de caisse bleu zébré, dentelé en bas */
+.till {
+  display: block;
+  padding: 18px 18px calc(var(--app-zig) + 16px);
+  border-radius: 14px 14px 0 0;
+  background: var(--app-glow), var(--app-night);
+  color: #fff;
+  text-decoration: none;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--app-zig)) 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--app-zig)) 100%;
+}
+.till-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+}
+.till-total {
+  display: block;
+  margin: 8px 0 6px;
+  font: 700 clamp(3rem, 13vw, 4.4rem) / 0.95 "Barlow Condensed", sans-serif;
+  white-space: normal;
+}
+.till-total small {
+  margin-left: 6px;
+  font-size: 0.42em;
+  font-weight: 600;
+  opacity: 0.9;
+}
+.till-vs {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.16);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.till-cut {
+  display: block;
+  margin: 16px -18px 0;
+  border-top: 2px dashed rgba(255, 255, 255, 0.4);
+}
+.till dl {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 0;
+  padding-top: 12px;
+}
+.till dl div + div {
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+}
+.till dt {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+.till dd {
+  margin: 2px 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  white-space: normal;
+}
+.till dd em {
+  display: block;
+  font: normal 600 0.78rem/1.3 var(--mantine-font-family);
+  color: #c8ffe4;
+}
+.till dd em[data-down] {
+  color: #ffd2cf;
+}
+.new-sale {
+  height: 60px !important;
+  font-size: 1.15rem !important;
+  border-radius: 14px !important;
+}
+@media (min-width: 62em) {
+  .new-sale {
+    width: auto !important;
+    justify-self: start;
+    padding: 0 32px !important;
+  }
+}
+
+/* Ventes du jour par heure */
+.hours {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 130px;
+}
+.hours div {
+  flex: 1;
+  border-radius: 5px 5px 2px 2px;
+  background: color-mix(in srgb, var(--app-sky) 25%, var(--app-surface));
+}
+.hours div.now {
+  background: var(--app-sky);
+}
+.hours div.later {
+  height: 18px;
+  background: repeating-linear-gradient(135deg, var(--app-soft) 0 4px, var(--app-surface) 4px 8px);
+  box-shadow: inset 0 0 0 1px var(--app-soft);
+}
+.hours-axis {
+  display: grid;
+  gap: 5px;
+  margin-top: 6px;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--mantine-color-dimmed);
+}
+.hours-peak {
+  margin: 10px 0 0;
+  font-size: 0.92rem;
+  color: var(--mantine-color-dimmed);
+}
+.hours-peak b {
+  color: var(--mantine-color-text);
+}
+
+/* À surveiller et dernières ventes : lignes de ticket */
+.panel .watch {
+  margin-bottom: 8px;
+  box-shadow: inset 0 0 0 1px var(--mantine-color-default-border);
+}
+.panel .watch:last-child {
+  margin-bottom: 0;
+}
+.sale-row {
+  border-bottom-style: dashed;
+}
+.sale-row .time {
+  width: 44px;
+  flex: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mantine-color-dimmed);
+}
+.sale-row .amt small.pay {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.sale-row .amt .pay.especes {
+  color: var(--mantine-color-teal-7);
+}
+.sale-row .amt .pay.mobile_money {
+  color: #b26b00;
+}
+[data-mantine-color-scheme="dark"] .sale-row .amt .pay.mobile_money {
+  color: #f2b10c;
+}
+
+/* Caisse : tuiles blanches, nombre déjà dans le panier en haut à droite */
+.product-tile {
+  border-top: 0;
+  border-radius: 14px;
+  box-shadow: var(--app-card-shadow);
+}
+.product-tile[data-in] {
+  background: color-mix(in srgb, var(--app-sky) 6%, var(--app-surface));
+  box-shadow: 0 0 0 2px var(--app-sky);
+}
+.product-tile .qty {
+  top: 8px;
+  left: auto;
+  right: 8px;
+  min-width: 28px;
+  height: 28px;
+  font-size: 1.05rem;
+  border: 0;
+  box-shadow: none;
+}
+.product-tile .star {
+  right: auto;
+  left: 14px;
+}
+
+/* Caisse : le panier est un ticket thermique */
+.cart-head {
+  margin: 0 16px 8px;
+  padding: 14px 0 10px;
+  border-bottom: 2px dashed var(--mantine-color-default-border);
+}
+.cart-line {
+  border-bottom: 1px dotted var(--mantine-color-default-border);
+}
+.stepper {
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--app-sky) 10%, var(--app-surface));
+}
+.cart-foot {
+  margin: 0 16px;
+  padding: 14px 0 16px;
+  background: none;
+  border-top: 2px dashed var(--mantine-color-default-border);
+}
+.cart-total {
+  padding-top: 10px;
+  border-top: 2px solid var(--mantine-color-text);
+}
+.cart-total b {
+  font-size: 2.5rem;
+}
+@media (min-width: 62em) {
+  .pos-cart {
+    padding: 16px 16px 0;
+    background: var(--app-soft);
+    border-left: 0;
+  }
+  .pos-cart .cart-inner {
+    height: calc(100% - 16px);
+    padding: calc(var(--app-zig) + 4px) 0;
+    background: var(--app-surface);
+    -webkit-mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% 0 / calc(2 * var(--app-zig)) 51% repeat-x,
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% 100% / calc(2 * var(--app-zig)) 51% repeat-x;
+    mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% 0 / calc(2 * var(--app-zig)) 51% repeat-x,
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% 100% / calc(2 * var(--app-zig)) 51% repeat-x;
+  }
+}
+
+/* Caisse sur téléphone : barre encre, bouton Soleil */
+.cart-bar {
+  background: var(--app-ink);
+  box-shadow: 0 14px 30px rgba(18, 35, 63, 0.3);
+}
+[data-mantine-color-scheme="dark"] .cart-bar {
+  background: #22314f;
+}
+.cart-bar .bag em {
+  background: var(--app-sky);
+}
+.cart-bar .go {
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: var(--app-sun);
+  color: var(--app-ink);
+  font-size: 1.05rem;
+}
+.pay-bill[data-on] {
+  background: var(--app-sky);
 }
