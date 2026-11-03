@@ -1,5 +1,9 @@
-# Mise en ligne automatique : à chaque envoi sur la branche main, on teste, on construit
-# et on publie sur Firebase Hosting. Une pull request reçoit une adresse d'aperçu temporaire.
+# Mise en ligne automatique.
+# - À chaque pull request et à chaque envoi sur main : tests, puis construction de l'app et du site.
+# - À chaque envoi sur main : publication de l'app (getvitepos) et du site (vitepos-rdc) sur Firebase Hosting,
+#   seulement si le secret FIREBASE_SERVICE_ACCOUNT_VITEPOS_BE79C existe.
+# Les règles Firestore ne sont pas publiées ici : les publier à la main AVANT d'envoyer sur main
+# quand la forme des données change (npx -y firebase-tools@latest deploy --only firestore).
 name: Mise en ligne
 
 on:
@@ -7,13 +11,17 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: mise-en-ligne-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      checks: write
-      pull-requests: write
+    env:
+      FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_VITEPOS_BE79C }}
     steps:
       - uses: actions/checkout@v4
 
@@ -21,11 +29,14 @@ jobs:
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            site/package-lock.json
 
       - run: npm ci
       - run: npm run test
 
-      - name: Construction
+      - name: Construction de l'app
         run: npm run build
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -35,10 +46,14 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
+      - name: Construction du site
+        run: |
+          npm ci --prefix site
+          npm run build --prefix site
+
       - name: Publication sur Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_VITEPOS }}
-          projectId: vitepos
-          channelId: ${{ github.event_name == 'push' && 'live' || '' }}
+        if: github.event_name == 'push' && env.FIREBASE_SA != ''
+        run: |
+          printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/compte-de-service.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/compte-de-service.json"
+          npx -y firebase-tools@latest deploy --project vitepos-be79c --only hosting:getvitepos,hosting:vitepos-rdc --non-interactive

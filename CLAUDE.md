@@ -4,7 +4,7 @@
 vitePOS : caisse offline-first pour boutiques de quartier (Kinshasa, FC + USD).
 Plusieurs boutiques dans le même projet Firebase ; chaque employé a son propre compte Firebase.
 - Spécification métier : `CDC.md` (écrite pour l'ancienne stack Dexie/Express : la logique métier reste valable, pas la technique).
-- L'ancienne implémentation (Vite + Dexie + Express) est sur `main`, la tentative Next.js sur `feat/nextjs`. On s'en sert comme référence pour porter les écrans.
+- Branche principale : `main` (version Firebase, depuis le 3 novembre 2026 ; `feat/firebase` y a été fusionnée). L'ancienne implémentation (Vite + Dexie + Express) est gardée dans la branche `ancienne-version-dexie`, la tentative Next.js dans `feat/nextjs`.
 - Même stack et mêmes conventions que `menuiserie-factures`.
 
 ## Règles de code
@@ -24,7 +24,8 @@ Plusieurs boutiques dans le même projet Firebase ; chaque employé a son propre
 - `npm run test` : tests Vitest
 - `npm run preview` : tester le build, y compris hors ligne
 - `npx -y firebase-tools@latest deploy --only firestore` : publier les règles et index (projet `vitepos-be79c`) 
-- `npm run deploy` : tests + build + publier l'app sur https://getvitepos.web.app (site `getvitepos` de `firebase.json`) (en attendant le déploiement automatique par GitHub Actions). `vitepos-be79c.web.app` et `vitepos-app.web.app` redirigent vers l'app.
+- `npm run deploy` : tests + build + publier l'app sur https://getvitepos.web.app (site `getvitepos` de `firebase.json`).
+- Publication automatique (`.github/workflows/deploy.yml`) : chaque envoi sur `main` teste, construit et publie l'app et le site, dès que le secret GitHub `FIREBASE_SERVICE_ACCOUNT_VITEPOS_BE79C` existe (sinon : tests et build seulement). Secrets nécessaires : ce compte de service et les 6 `VITE_FIREBASE_*`. Les règles Firestore restent à publier à la main, avant d'envoyer sur `main`. `vitepos-be79c.web.app` et `vitepos-app.web.app` redirigent vers l'app.
 - `npm run deploy:site` : build du site de présentation et publication sur https://vitepos-rdc.web.app (site `vitepos-rdc`). Son `public/sw.js` désinstalle l'ancienne app qui était servie à cette adresse : ne pas le supprimer.
 - Firebase : base Firestore Standard `(default)` en `europe-west1`, connexion e-mail/mot de passe et Google (bloc `auth` de `firebase.json`). Utiliser les skills du plugin Firebase pour toute tâche Firebase.
 - Administration (`/admin`, abonnements de toutes les boutiques) : réservée aux comptes qui ont un document `admins/{uid}` (à créer à la main dans la console Firebase, jamais par l'app). Dans l'aperçu, `?admin` en fait un compte de l'équipe.
