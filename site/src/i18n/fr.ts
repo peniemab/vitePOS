@@ -421,8 +421,8 @@ export const fr = {
     lead: "Tout ce qu'il faut pour tenir la caisse, le stock et les comptes de votre commerce, du matin au soir, même quand le réseau coupe.",
     teasers: [
       [4, "Recevoir 3 paquets sans compter 72 bouteilles"],
-      [6, "Encaisser en FC, $ ou € en quelques secondes"],
-      [9, "Fermer la journée sans surprise"],
+      [7, "Encaisser en FC, $ ou € en quelques secondes"],
+      [12, "Fermer la journée sans surprise"],
     ] as [number, string][],
     download: "Télécharger le PDF",
     altCover: "La caisse de vitePOS",

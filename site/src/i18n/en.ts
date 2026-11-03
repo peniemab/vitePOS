@@ -404,8 +404,8 @@ export const en: Dict = {
     lead: "Everything you need to run the till, the stock and the books of your business, from morning to night, even when the network drops.",
     teasers: [
       [4, "Receive 3 packs without counting 72 bottles"],
-      [6, "Take payment in FC, $ or € in seconds"],
-      [9, "Close the day with no surprises"],
+      [7, "Take payment in FC, $ or € in seconds"],
+      [12, "Close the day with no surprises"],
     ],
     download: "Download the PDF",
     altCover: "The vitePOS till",
