@@ -52,7 +52,7 @@ export function ImportScreen() {
           <IconArrowLeft size={16} /> Stock
         </Group>
       </Anchor>
-      <PageTitle title="Importer des produits" sub="Pour les gros catalogues : un fichier CSV, une ligne par produit." />
+      <PageTitle title="Importer des produits" sub="Pour les gros catalogues : un fichier Excel enregistré au format CSV, une ligne par produit." />
 
       {done && (
         <Alert color="teal" icon={<IconCheck size={18} />} mb="md" title="Import enregistré">

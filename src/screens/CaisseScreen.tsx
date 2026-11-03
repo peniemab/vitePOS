@@ -1,6 +1,6 @@
 /** Caisse : choisir les articles (tuiles, recherche, scan), panier, remise et encaissement. */
 import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
 import {
   ActionIcon,
@@ -42,6 +42,7 @@ import { createSale, useCart } from "../data/sales";
 import { useClients } from "../data/clients";
 import { ClientModal } from "./ClientsScreen";
 import { BarcodeField, ScanButton } from "../components/BarcodeField";
+import { EmptyState } from "../components/Help";
 import { ScanVideo } from "../components/ScanVideo";
 import { CatPill, ProductGlyph } from "../components/ProductThumb";
 import { canUseCamera, useCameraScan } from "../components/useCameraScan";
@@ -142,7 +143,7 @@ export function CaisseScreen() {
 /* ---------- Choix des articles ---------- */
 
 function ProductPicker({ wide }: { wide: boolean }) {
-  const { boutique } = useReady();
+  const { boutique, permissions } = useReady();
   const { products, error } = useCatalog();
   const cart = useCart();
   const [q, setQ] = useState("");
@@ -266,9 +267,13 @@ function ProductPicker({ wide }: { wide: boolean }) {
       {error && <Text c="red">{error}</Text>}
       {!products && !error && <div className="loading">Chargement…</div>}
       {products && !active.length && (
-        <Text c="dimmed" ta="center" py="xl">
-          Aucun produit. Ajoutez votre catalogue dans l'onglet Stock.
-        </Text>
+        <EmptyState title="La caisse est prête" text="Il ne manque que vos articles : ajoutez-les dans le stock, ils apparaîtront ici pour être vendus d'un toucher.">
+          {permissions.editPrices && (
+            <Button className="sun-btn" size="md" component={Link} to="/stock?nouveau" leftSection={<IconPlus size={18} />}>
+              Ajouter un article
+            </Button>
+          )}
+        </EmptyState>
       )}
 
       <div className="pos-grid">

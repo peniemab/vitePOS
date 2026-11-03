@@ -33,6 +33,9 @@ if (typeof window !== "undefined" && !(globalThis as { __apercuDate?: boolean })
   // Pas d'invitation à installer l'app sur les captures, sauf avec ?installer.
   if (!new URLSearchParams(window.location.search).has("installer")) localStorage.setItem("vitepos.install.dismissed", String(Date.now()));
   else localStorage.removeItem("vitepos.install.dismissed");
+  // Boutique de démonstration déjà installée : pas de « Premiers pas » sur les captures, sauf avec ?premiers-pas.
+  if (!new URLSearchParams(window.location.search).has("premiers-pas")) localStorage.setItem("vitepos.printer.mode", "browser");
+  else localStorage.removeItem("vitepos.printer.mode");
 }
 
 const DAY = 86_400_000;
@@ -109,7 +112,9 @@ export function seed(): [string, Data][] {
   const rand = rng(42);
   const pick = <T,>(list: T[]) => list[Math.floor(rand() * list.length)];
 
-  out.push(["users/proprio", { email: MEMBERS[0].email, name: MEMBERS[0].name, boutiqueId: "b1" }]);
+  // Avec ?nouveau-compte : compte tout juste créé, sans boutique (écran « Créer ma boutique »).
+  const newAccount = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("nouveau-compte");
+  out.push(["users/proprio", { email: MEMBERS[0].email, name: MEMBERS[0].name, boutiqueId: newAccount ? "" : "b1" }]);
   out.push([
     B,
     {
@@ -130,6 +135,11 @@ export function seed(): [string, Data][] {
       createdAt: ts(now - 40 * DAY),
     },
   ]);
+  // Avec ?vide : boutique toute neuve (le propriétaire seul, ni articles ni ventes), comme juste après l'inscription.
+  if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("vide")) {
+    out.push([`${B}/members/${MEMBERS[0].uid}`, { email: MEMBERS[0].email, name: MEMBERS[0].name, role: "proprietaire", status: "active", permissions: {}, createdAt: ts(now) }]);
+    return out;
+  }
   for (const m of MEMBERS)
     out.push([`${B}/members/${m.uid}`, { email: m.email, name: m.name, role: m.role, status: "active", permissions: {}, createdAt: ts(now - 39 * DAY) }]);
 

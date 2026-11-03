@@ -9,27 +9,11 @@
  * Enregistrer un paiement se fait en ligne : on attend la réponse du serveur.
  */
 import { useEffect, useState } from "react";
-import {
-  collection,
-  doc,
-  getDocFromServer,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-  Timestamp,
-  writeBatch,
-  type DocumentData,
-} from "firebase/firestore";
+import { collection, doc, getDocFromServer, onSnapshot, orderBy, query, serverTimestamp, Timestamp, writeBatch, type DocumentData } from "firebase/firestore";
 import { getDb } from "./firebase";
 import { useSession } from "./session";
 import { toBoutique, type Boutique } from "./boutique";
-import {
-  isPaymentMethod,
-  isPlan,
-  type PaymentMethod,
-  type Plan,
-} from "../lib/subscription";
+import { isPaymentMethod, isPlan, type PaymentMethod, type Plan } from "../lib/subscription";
 
 export interface SubscriptionPayment {
   id: string;
@@ -43,10 +27,7 @@ export interface SubscriptionPayment {
   createdAtMs: number;
 }
 
-const ms = (v: unknown) =>
-  v && typeof v === "object" && "toMillis" in v
-    ? (v as { toMillis(): number }).toMillis()
-    : 0;
+const ms = (v: unknown) => (v && typeof v === "object" && "toMillis" in v ? (v as { toMillis(): number }).toMillis() : 0);
 
 function toPayment(id: string, d: DocumentData): SubscriptionPayment {
   return {
@@ -61,16 +42,12 @@ function toPayment(id: string, d: DocumentData): SubscriptionPayment {
   };
 }
 
-const paymentsRef = (boutiqueId: string) =>
-  collection(getDb(), "boutiques", boutiqueId, "subscriptionPayments");
+const paymentsRef = (boutiqueId: string) => collection(getDb(), "boutiques", boutiqueId, "subscriptionPayments");
 
 /** Ce compte fait-il partie de l'équipe vitePOS ? `undefined` tant que ce n'est pas lu. */
 export function useIsAdmin(): boolean | undefined {
   const session = useSession();
-  const uid =
-    session.status === "loading" || session.status === "signedOut"
-      ? ""
-      : session.user.uid;
+  const uid = session.status === "loading" || session.status === "signedOut" ? "" : session.user.uid;
   const [admin, setAdmin] = useState<{ uid: string; yes: boolean }>({
     uid: "",
     yes: false,
@@ -88,38 +65,19 @@ export function useIsAdmin(): boolean | undefined {
 }
 
 /** Toutes les boutiques (éditeur seulement), les plus récentes d'abord. */
-export function watchAllBoutiques(
-  cb: (boutiques: Boutique[]) => void,
-  onError: (e: unknown) => void,
-) {
-  return onSnapshot(
-    query(collection(getDb(), "boutiques"), orderBy("createdAt", "desc")),
-    (s) => cb(s.docs.map((d) => toBoutique(d.id, d.data()))),
-    onError,
-  );
+export function watchAllBoutiques(cb: (boutiques: Boutique[]) => void, onError: (e: unknown) => void) {
+  return onSnapshot(query(collection(getDb(), "boutiques"), orderBy("createdAt", "desc")), (s) => cb(s.docs.map((d) => toBoutique(d.id, d.data()))), onError);
 }
 
 /** Nom et e-mail du propriétaire d'une boutique (éditeur seulement). */
-export async function getOwner(
-  b: Boutique,
-): Promise<{ name: string; email: string }> {
-  const s = await getDocFromServer(
-    doc(getDb(), "boutiques", b.id, "members", b.ownerUid),
-  );
+export async function getOwner(b: Boutique): Promise<{ name: string; email: string }> {
+  const s = await getDocFromServer(doc(getDb(), "boutiques", b.id, "members", b.ownerUid));
   const d = s.data() ?? {};
   return { name: String(d.name ?? ""), email: String(d.email ?? "") };
 }
 
-export function watchPayments(
-  boutiqueId: string,
-  cb: (payments: SubscriptionPayment[]) => void,
-  onError: (e: unknown) => void,
-) {
-  return onSnapshot(
-    query(paymentsRef(boutiqueId), orderBy("createdAt", "desc")),
-    (s) => cb(s.docs.map((d) => toPayment(d.id, d.data()))),
-    onError,
-  );
+export function watchPayments(boutiqueId: string, cb: (payments: SubscriptionPayment[]) => void, onError: (e: unknown) => void) {
+  return onSnapshot(query(paymentsRef(boutiqueId), orderBy("createdAt", "desc")), (s) => cb(s.docs.map((d) => toPayment(d.id, d.data()))), onError);
 }
 
 export interface NewPayment {
@@ -133,11 +91,7 @@ export interface NewPayment {
 }
 
 /** Enregistre un paiement reçu et prolonge l'abonnement, d'un seul coup (éditeur seulement). */
-export function recordPayment(
-  boutique: Boutique,
-  p: NewPayment,
-  adminUid: string,
-): Promise<void> {
+export function recordPayment(boutique: Boutique, p: NewPayment, adminUid: string): Promise<void> {
   const db = getDb();
   const paidUntil = Timestamp.fromMillis(p.paidUntilMs);
   const batch = writeBatch(db);
@@ -153,9 +107,7 @@ export function recordPayment(
     amountUsd: p.amountUsd,
     method: p.method,
     reference: p.reference.trim(),
-    paidUntilBefore: boutique.paidUntilMs
-      ? Timestamp.fromMillis(boutique.paidUntilMs)
-      : null,
+    paidUntilBefore: boutique.paidUntilMs ? Timestamp.fromMillis(boutique.paidUntilMs) : null,
     paidUntil,
     createdBy: adminUid,
     createdAt: serverTimestamp(),

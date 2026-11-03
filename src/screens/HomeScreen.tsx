@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router";
 import { Button, SegmentedControl, Text, TextInput } from "@mantine/core";
 import { IconAlertTriangle, IconArrowsExchange, IconCalendarExclamation, IconChevronRight, IconPlus, IconSearch } from "@tabler/icons-react";
 import { useReady } from "../data/session";
+import { FirstSteps } from "../components/FirstSteps";
 import { useCatalog } from "../data/products";
 import { watchSalesBetween } from "../data/sales";
 import { useDays } from "../data/dayStats";
@@ -119,6 +120,7 @@ export function HomeScreen() {
       </div>
 
       <InstallCard dismissible mb="md" />
+      <FirstSteps />
 
       <div className="home-grid">
         <div>

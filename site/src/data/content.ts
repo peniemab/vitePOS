@@ -22,7 +22,7 @@ export const LEGAL = {
   rccm: "",
   address: "Kinshasa, République démocratique du Congo",
   email: "",
-  whatsapp: "",
+  whatsapp: "+243 839 892 822",
   /** Date de la dernière mise à jour des deux textes. */
   updated: { fr: "26 octobre 2026", en: "26 October 2026" },
 };

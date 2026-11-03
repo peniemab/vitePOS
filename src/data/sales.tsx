@@ -94,6 +94,11 @@ export function watchSale(boutiqueId: string, saleId: string, cb: (sale: Sale | 
 }
 
 /** Les ventes d'une journée, les plus récentes d'abord. */
+/** Y a-t-il déjà eu au moins une vente dans cette boutique ? (lit un seul document) */
+export function watchHasSale(boutiqueId: string, cb: (has: boolean) => void, onError: (e: unknown) => void) {
+  return onSnapshot(query(salesCol(boutiqueId), limit(1)), (s) => cb(!s.empty), onError);
+}
+
 export function watchSalesOfDay(boutiqueId: string, day: string, cb: (sales: Sale[]) => void, onError: (e: unknown) => void) {
   return onSnapshot(
     query(salesCol(boutiqueId), where("dayKey", "==", day)),

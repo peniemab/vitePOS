@@ -19,6 +19,7 @@ import {
   IconCashRegister,
   IconDots,
   IconHome,
+  IconBrandWhatsapp,
   IconLogout,
   IconMoon,
   IconPackage,
@@ -28,6 +29,7 @@ import {
 } from "@tabler/icons-react";
 import { logout, useReady } from "../data/session";
 import { getSyncState, useSyncState } from "../data/sync";
+import { HELP_URL } from "./Help";
 import { ROLE_LABELS } from "../lib/roles";
 import { needsAttention } from "../lib/subscription";
 import { needsRestock } from "../lib/products";
@@ -264,6 +266,9 @@ function AccountMenu({ position, children }: { position: MenuProps["position"]; 
           Paramètres
         </Menu.Item>
         <DarkModeItem />
+        <Menu.Item component="a" href={HELP_URL} target="_blank" rel="noopener" leftSection={<IconBrandWhatsapp size={16} />}>
+          Aide sur WhatsApp
+        </Menu.Item>
         <Menu.Item leftSection={<IconLogout size={16} />} color="red" onClick={confirmLogout}>
           Se déconnecter
         </Menu.Item>

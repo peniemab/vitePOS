@@ -2,40 +2,13 @@
  * Administration (équipe vitePOS seulement) : toutes les boutiques, l'état de leur abonnement,
  * et l'enregistrement d'un paiement reçu par mobile money, qui prolonge l'abonnement.
  */
-import {
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Navigate } from "react-router";
-import {
-  Badge,
-  Button,
-  Chip,
-  Group,
-  Modal,
-  NumberInput,
-  Paper,
-  SegmentedControl,
-  Select,
-  Stack,
-  Text,
-  TextInput,
-  UnstyledButton,
-} from "@mantine/core";
+import { Badge, Button, Chip, Group, Modal, NumberInput, Paper, SegmentedControl, Select, Stack, Text, TextInput, UnstyledButton } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconSearch } from "@tabler/icons-react";
 import { useReady } from "../data/session";
-import {
-  getOwner,
-  recordPayment,
-  useIsAdmin,
-  watchAllBoutiques,
-  watchPayments,
-  type SubscriptionPayment,
-} from "../data/admin";
+import { getOwner, recordPayment, useIsAdmin, watchAllBoutiques, watchPayments, type SubscriptionPayment } from "../data/admin";
 import type { Boutique } from "../data/boutique";
 import { errorMessage } from "../data/errors";
 import { PageTitle } from "../components/ui";
@@ -53,16 +26,14 @@ import {
 } from "../lib/subscription";
 import { PaymentHistory, STATE_LABELS, SubscriptionMessage } from "./AbonnementScreen";
 
-const longDate = (ms: number) =>
-  new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(ms);
+const longDate = (ms: number) => new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(ms);
 const shortDate = (ms: number) =>
   new Intl.DateTimeFormat("fr-FR", {
     day: "numeric",
     month: "short",
     year: "numeric",
   }).format(ms);
-const duration = (months: number) =>
-  months === 12 ? "1 an" : `${months} mois`;
+const duration = (months: number) => (months === 12 ? "1 an" : `${months} mois`);
 
 type Filter = "tout" | SubscriptionState;
 
@@ -80,21 +51,12 @@ export function AdminScreen() {
     return watchAllBoutiques(setBoutiques, (e) => setError(errorMessage(e)));
   }, [isAdmin]);
 
-  const rows = useMemo(
-    () => (boutiques ?? []).map((b) => ({ b, st: subscriptionStatus(b) })),
-    [boutiques],
-  );
-  const count = (s: SubscriptionState) =>
-    rows.filter((r) => r.st.state === s).length;
+  const rows = useMemo(() => (boutiques ?? []).map((b) => ({ b, st: subscriptionStatus(b) })), [boutiques]);
+  const count = (s: SubscriptionState) => rows.filter((r) => r.st.state === s).length;
   const needle = query.trim().toLowerCase();
   // « En retard » regroupe la grâce et la lecture seule.
-  const inFilter = (s: SubscriptionState) =>
-    filter === "tout" || s === filter || (filter === "grace" && s === "bloque");
-  const list = rows.filter(
-    (r) =>
-      inFilter(r.st.state) &&
-      (!needle || r.b.name.toLowerCase().includes(needle)),
-  );
+  const inFilter = (s: SubscriptionState) => filter === "tout" || s === filter || (filter === "grace" && s === "bloque");
+  const list = rows.filter((r) => inFilter(r.st.state) && (!needle || r.b.name.toLowerCase().includes(needle)));
   const opened = rows.find((r) => r.b.id === openId)?.b ?? null;
 
   // Le lien n'est montré qu'à l'équipe ; une adresse tapée à la main revient à l'accueil.
@@ -103,22 +65,10 @@ export function AdminScreen() {
 
   return (
     <>
-      <PageTitle
-        title="Administration"
-        sub={
-          boutiques
-            ? `${boutiques.length} boutique${boutiques.length > 1 ? "s" : ""}`
-            : undefined
-        }
-      />
+      <PageTitle title="Administration" sub={boutiques ? `${boutiques.length} boutique${boutiques.length > 1 ? "s" : ""}` : undefined} />
       <div className="sticky-tools">
         <Stack gap="xs">
-          <TextInput
-            leftSection={<IconSearch size={18} />}
-            placeholder="Nom de la boutique"
-            value={q}
-            onChange={(e) => setQ(e.currentTarget.value)}
-          />
+          <TextInput leftSection={<IconSearch size={18} />} placeholder="Nom de la boutique" value={q} onChange={(e) => setQ(e.currentTarget.value)} />
           <Chip.Group value={filter} onChange={(v) => setFilter(v as Filter)}>
             <Group gap={6}>
               {(
@@ -142,17 +92,8 @@ export function AdminScreen() {
       {boutiques && (
         <Paper p={0} style={{ overflow: "hidden" }}>
           {list.map(({ b, st }) => (
-            <UnstyledButton
-              key={b.id}
-              className="list-row"
-              px="md"
-              onClick={() => setOpenId(b.id)}
-            >
-              <span
-                className="thumb"
-                style={{ "--c": categoryColor(b.name) } as CSSProperties}
-                aria-hidden
-              >
+            <UnstyledButton key={b.id} className="list-row" px="md" onClick={() => setOpenId(b.id)}>
+              <span className="thumb" style={{ "--c": categoryColor(b.name) } as CSSProperties} aria-hidden>
                 {initials(b.name)}
               </span>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -160,8 +101,7 @@ export function AdminScreen() {
                   {b.name}
                 </Text>
                 <Text size="xs" c="dimmed" truncate>
-                  Formule {PLANS[b.plan].name}, créée le{" "}
-                  {b.createdAtMs ? shortDate(b.createdAtMs) : "?"}
+                  Formule {PLANS[b.plan].name}, créée le {b.createdAtMs ? shortDate(b.createdAtMs) : "?"}
                 </Text>
               </div>
               <div style={{ textAlign: "right" }}>
@@ -169,9 +109,7 @@ export function AdminScreen() {
                   {STATE_LABELS[st.state].label}
                 </Badge>
                 <Text size="xs" c="dimmed" mt={4}>
-                  {st.state === "bloque"
-                    ? `depuis le ${shortDate(st.endsAtMs)}`
-                    : `jusqu'au ${shortDate(st.endsAtMs)}`}
+                  {st.state === "bloque" ? `depuis le ${shortDate(st.endsAtMs)}` : `jusqu'au ${shortDate(st.endsAtMs)}`}
                 </Text>
               </div>
             </UnstyledButton>
@@ -184,39 +122,22 @@ export function AdminScreen() {
         </Paper>
       )}
 
-      <Modal
-        opened={!!opened}
-        onClose={() => setOpenId(null)}
-        title={opened?.name}
-        size="lg"
-      >
-        {opened && (
-          <PaymentForm boutique={opened} onDone={() => setOpenId(null)} />
-        )}
+      <Modal opened={!!opened} onClose={() => setOpenId(null)} title={opened?.name} size="lg">
+        {opened && <PaymentForm boutique={opened} onDone={() => setOpenId(null)} />}
       </Modal>
     </>
   );
 }
 
 /** Fiche d'une boutique : propriétaire, état, paiements passés, et nouveau paiement. */
-function PaymentForm({
-  boutique,
-  onDone,
-}: {
-  boutique: Boutique;
-  onDone: () => void;
-}) {
+function PaymentForm({ boutique, onDone }: { boutique: Boutique; onDone: () => void }) {
   const { user } = useReady();
   const st = subscriptionStatus(boutique);
-  const [owner, setOwner] = useState<{ name: string; email: string } | null>(
-    null,
-  );
+  const [owner, setOwner] = useState<{ name: string; email: string } | null>(null);
   const [payments, setPayments] = useState<SubscriptionPayment[] | null>(null);
   const [plan, setPlan] = useState<Plan>(boutique.plan);
   const [months, setMonths] = useState(1);
-  const [amount, setAmount] = useState<number | string>(
-    priceUsd(boutique.plan, 1),
-  );
+  const [amount, setAmount] = useState<number | string>(priceUsd(boutique.plan, 1));
   const [method, setMethod] = useState<PaymentMethod>("mobile_money");
   const [reference, setReference] = useState("");
   const [saving, setSaving] = useState(false);
@@ -239,11 +160,7 @@ function PaymentForm({
   async function save() {
     setSaving(true);
     try {
-      await recordPayment(
-        boutique,
-        { plan, months, amountUsd, method, reference, paidUntilMs: newEnd },
-        user.uid,
-      );
+      await recordPayment(boutique, { plan, months, amountUsd, method, reference, paidUntilMs: newEnd }, user.uid);
       notifications.show({
         color: "teal",
         title: "Paiement enregistré",
@@ -311,11 +228,7 @@ function PaymentForm({
       </div>
       <NumberInput
         label="Montant reçu"
-        description={
-          amountUsd === expected
-            ? `Prix normal pour ${duration(months)}.`
-            : `Prix normal : ${expected} $.`
-        }
+        description={amountUsd === expected ? `Prix normal pour ${duration(months)}.` : `Prix normal : ${expected} $.`}
         rightSection={<Text size="sm">$</Text>}
         min={0}
         decimalScale={2}
@@ -340,13 +253,7 @@ function PaymentForm({
       <Text>
         Nouvelle fin d'abonnement : <b>{longDate(newEnd)}</b>
       </Text>
-      <Button
-        className="sun-btn"
-        size="md"
-        loading={saving}
-        disabled={amountUsd <= 0}
-        onClick={save}
-      >
+      <Button className="sun-btn" size="md" loading={saving} disabled={amountUsd <= 0} onClick={save}>
         Enregistrer le paiement
       </Button>
 

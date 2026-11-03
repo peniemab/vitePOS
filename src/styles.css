@@ -1879,3 +1879,34 @@ body {
   display: grid;
   gap: 6px;
 }
+
+/* Aide par WhatsApp */
+.help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #128c4a;
+}
+
+/* Accueil : premiers pas d'une boutique neuve */
+.first-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 4px;
+  border-radius: 8px;
+}
+.first-step:hover {
+  background: var(--mantine-color-default-hover);
+}
+.first-step .label {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
+.first-step[data-done] .label {
+  font-weight: 400;
+  color: var(--mantine-color-dimmed);
+  text-decoration: line-through;
+}

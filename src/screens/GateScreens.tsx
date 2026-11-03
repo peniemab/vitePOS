@@ -4,6 +4,7 @@ import {
   Alert,
   Anchor,
   Button,
+  Checkbox,
   Code,
   Group,
   Loader,
@@ -111,6 +112,9 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
   const [plan, setPlan] = useState<Plan>("boutique");
   const [rate, setRate] = useState<number | string>(2850);
   const [eurRate, setEurRate] = useState<number | string>("");
+  // L'euro et le choix de la formule restent repliés : la plupart des commerces n'en ont pas besoin pour démarrer.
+  const [usesEuro, setUsesEuro] = useState(false);
+  const [choosingPlan, setChoosingPlan] = useState(false);
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
 
@@ -119,7 +123,7 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
     setError(undefined);
     const usdRateCdf = Number(rate);
     if (!(usdRateCdf > 0)) return setError("Entrez le taux du dollar (combien de FC pour 1 $).");
-    const eurRateCdf = Number(eurRate) || 0;
+    const eurRateCdf = usesEuro || currency === "EUR" ? Number(eurRate) || 0 : 0;
     if (currency === "EUR" && !(eurRateCdf > 0)) return setError("Entrez le taux de l'euro (combien de FC pour 1 €).");
     setBusy(true);
     try {
@@ -158,34 +162,48 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
           value={rate}
           onChange={setRate}
         />
-        <NumberInput
-          label="Taux de l'euro"
-          description="Combien de FC pour 1 € (laisser vide si vous n'utilisez pas l'euro)"
-          required={currency === "EUR"}
-          min={1}
-          thousandSeparator=" "
-          hideControls
-          inputMode="decimal"
-          value={eurRate}
-          onChange={setEurRate}
-        />
-        <div>
-          <Text size="sm" fw={500} mb={4}>
-            Formule
-          </Text>
-          <SegmentedControl
-            fullWidth
-            value={plan}
-            onChange={(v) => setPlan(v as Plan)}
-            data={(Object.keys(PLANS) as Plan[]).map((k) => ({ value: k, label: PLANS[k].name }))}
+        {usesEuro || currency === "EUR" ? (
+          <NumberInput
+            label="Taux de l'euro"
+            description="Combien de FC pour 1 €"
+            required
+            min={1}
+            thousandSeparator=" "
+            hideControls
+            inputMode="decimal"
+            value={eurRate}
+            onChange={setEurRate}
           />
-          <Text size="xs" c="dimmed" mt={4}>
-            {PLANS[plan].audience}. Gratuit pendant {TRIAL_DAYS} jours, puis {PLANS[plan].monthlyUsd} $ par mois
-            {plan === "supermarche" ? " et par magasin" : ""}. Vous pourrez changer de formule pendant l'essai.
+        ) : (
+          <Checkbox label="J'accepte aussi les euros" checked={usesEuro} onChange={(e) => setUsesEuro(e.currentTarget.checked)} />
+        )}
+        <div>
+          <Text size="sm">
+            Formule <b>{PLANS[plan].name}</b> : gratuite pendant {TRIAL_DAYS} jours, puis {PLANS[plan].monthlyUsd} $ par mois
+            {plan === "supermarche" ? " et par magasin" : ""}.{" "}
+            {!choosingPlan && (
+              <Anchor component="button" type="button" size="sm" onClick={() => setChoosingPlan(true)}>
+                Changer
+              </Anchor>
+            )}
           </Text>
+          {choosingPlan && (
+            <>
+              <SegmentedControl
+                fullWidth
+                mt="xs"
+                value={plan}
+                onChange={(v) => setPlan(v as Plan)}
+                data={(Object.keys(PLANS) as Plan[]).map((k) => ({ value: k, label: PLANS[k].name }))}
+              />
+              <Text size="xs" c="dimmed" mt={4}>
+                {PLANS[plan].audience}. Vous pourrez encore changer pendant l'essai.
+              </Text>
+            </>
+          )}
         </div>
         {error && <Text c="red" size="sm">{error}</Text>}
-        <Button type="submit" fullWidth loading={busy} leftSection={<IconBuildingStore size={18} />}>
+        <Button type="submit" fullWidth size="md" className="sun-btn" loading={busy} leftSection={<IconBuildingStore size={18} />}>
           Créer la boutique
         </Button>
       </Stack>

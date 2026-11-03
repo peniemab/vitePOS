@@ -34,9 +34,9 @@ export const chapters: Chapter[] = [
     title: "Votre caisse prête en 5 minutes",
     lead: "Pas de logiciel à acheter, pas de store : vitePOS s'ouvre dans le navigateur du téléphone, puis s'installe sur l'écran d'accueil comme une vraie application.",
     steps: [
-      "Ouvrez <b>getvitepos.web.app</b> et connectez-vous avec votre e-mail ou votre compte Google.",
-      "Choisissez <b>« Créer ma boutique »</b> : le nom de la boutique, la devise de vos prix, le <b>taux du jour</b> (combien de FC pour 1 $) et, si vous l'utilisez, celui de l'euro.",
-      "Touchez <b>« Créer la boutique »</b>. Vous avez 30 jours d'essai, toutes les fonctions comprises.",
+      "Ouvrez <b>getvitepos.web.app</b> et touchez le bouton jaune <b>« Créer un compte gratuit »</b> : votre e-mail ou votre compte Google.",
+      "Choisissez <b>« Créer ma boutique »</b> : le nom de la boutique, la devise de vos prix et le <b>taux du jour</b> (combien de FC pour 1 $). Des clients paient en euros ? Cochez <b>« J'accepte aussi les euros »</b>.",
+      "Touchez <b>« Créer la boutique »</b> : 30 jours d'essai, toutes les fonctions comprises. Sur l'accueil, la liste <b>« Premiers pas »</b> vous guide jusqu'à la première vente.",
       "Sur l'accueil, la carte <b>« Installer vitePOS »</b> vous guide : bouton <b>« Installer »</b> sur Android, ou <b>Partager → « Sur l'écran d'accueil »</b> dans Safari sur iPhone.",
     ],
     shot: { name: "man-installer", alt: "Accueil de vitePOS avec la carte Installer vitePOS", caption: "La carte d'installation disparaît une fois l'app installée." },
@@ -87,7 +87,7 @@ export const chapters: Chapter[] = [
     id: "stock",
     kicker: "Le stock",
     title: "Chaque article a sa fiche",
-    lead: "Un code article pour s'y retrouver, le code-barres du fabricant pour aller vite, et les paquets ou cartons pour vendre en gros. Votre liste Excel s'importe d'un coup : Stock → « … » → « Importer un fichier CSV ».",
+    lead: "Un code article pour s'y retrouver, le code-barres du fabricant pour aller vite, et les paquets ou cartons pour vendre en gros. Votre liste Excel s'importe d'un coup : Stock → « … » → « Importer depuis Excel ».",
     steps: [
       "Dans <b>Stock</b>, touchez <b>« Ajouter »</b>. Choisissez la catégorie : le <b>code article</b> est proposé tout seul (LAI-001, LAI-002… pour les laits).",
       "Scannez le <b>code-barres</b> de l'article avec le bouton caméra du champ, ou tapez-le.",

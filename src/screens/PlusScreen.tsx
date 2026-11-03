@@ -2,9 +2,10 @@
 import { Link } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
 import { Paper, Text, ThemeIcon, UnstyledButton } from "@mantine/core";
-import { IconChevronRight } from "@tabler/icons-react";
+import { IconBrandWhatsapp, IconChevronRight } from "@tabler/icons-react";
 import { PageTitle } from "../components/ui";
 import { InstallCard } from "../components/InstallCard";
+import { HELP_URL } from "../components/Help";
 import { TABS } from "../components/Layout";
 import { useSections } from "../components/sections";
 
@@ -29,6 +30,18 @@ export function PlusScreen() {
             <IconChevronRight size={18} opacity={0.5} />
           </UnstyledButton>
         ))}
+        <UnstyledButton component="a" href={HELP_URL} target="_blank" rel="noopener" className="list-row" px="md">
+          <ThemeIcon variant="light" size="lg" color="green">
+            <IconBrandWhatsapp size={20} />
+          </ThemeIcon>
+          <div style={{ flex: 1 }}>
+            <Text>Aide sur WhatsApp</Text>
+            <Text size="xs" c="dimmed">
+              Une question, un souci : l'équipe vitePOS vous répond.
+            </Text>
+          </div>
+          <IconChevronRight size={18} opacity={0.5} />
+        </UnstyledButton>
       </Paper>
       <InstallCard mt="md" />
     </>

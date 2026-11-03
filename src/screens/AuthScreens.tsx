@@ -147,10 +147,18 @@ export function LoginScreen() {
         <Anchor component={Link} to="/mot-de-passe" size="sm">
           Mot de passe oublié ?
         </Anchor>
-        <Anchor component={Link} to="/inscription" size="sm" fw={600}>
-          Créer un compte
-        </Anchor>
       </Links>
+      {/* Un commerçant qui découvre vitePOS arrive souvent ici : l'inscription doit sauter aux yeux. */}
+      <Divider my="lg" />
+      <Text ta="center" fw={600} mb={4}>
+        Nouveau sur vitePOS ?
+      </Text>
+      <Text ta="center" size="sm" c="dimmed" mb="sm">
+        30 jours gratuits, sans carte bancaire.
+      </Text>
+      <Button component={Link} to="/inscription" className="sun-btn" size="md" fullWidth>
+        Créer un compte gratuit
+      </Button>
     </AuthCard>
   );
 }

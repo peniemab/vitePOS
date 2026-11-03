@@ -14,6 +14,7 @@ import { formatDayShort } from "../lib/serials";
 import { dayKey } from "../lib/cart";
 import { formatQty, MovementModal, ProductModal } from "../components/ProductModal";
 import { Money, PageTitle } from "../components/ui";
+import { EmptyState } from "../components/Help";
 import { exportProductsCsv } from "../lib/csv";
 import type { Currency } from "../lib/fx";
 import { collectCategories, findScan, matchProduct, needsRestock, sortByName, stockLevel, type Product } from "../lib/products";
@@ -47,7 +48,8 @@ export function StockScreen() {
   const [category, setCategory] = useState<string>("");
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [creating, setCreating] = useState<{ barcode?: string } | null>(null);
+  // « Premiers pas » ouvre directement la fiche d'un nouvel article (?nouveau).
+  const [creating, setCreating] = useState<{ barcode?: string } | null>(() => (params.has("nouveau") && permissions.editPrices ? {} : null));
   // Paquet ou carton scanné : on ouvre directement la réception, comptée en paquets.
   const [receiving, setReceiving] = useState<{ productId: string; packId: string } | null>(null);
 
@@ -100,7 +102,7 @@ export function StockScreen() {
     <>
       <PageTitle
         title="Stock"
-        sub={products ? `${active.length} produit${active.length > 1 ? "s" : ""}` : undefined}
+        sub={products ? `${active.length} article${active.length > 1 ? "s" : ""}` : undefined}
         right={
           <Group gap="xs">
             {permissions.editPrices && (
@@ -117,7 +119,7 @@ export function StockScreen() {
               <Menu.Dropdown>
                 {permissions.editPrices && (
                   <Menu.Item component={Link} to="/stock/import" leftSection={<IconUpload size={16} />}>
-                    Importer un fichier CSV
+                    Importer depuis Excel
                   </Menu.Item>
                 )}
                 {permissions.editPrices && missingSkus > 0 && (
@@ -126,7 +128,7 @@ export function StockScreen() {
                   </Menu.Item>
                 )}
                 <Menu.Item leftSection={<IconDownload size={16} />} onClick={exportCsv} disabled={!active.length}>
-                  Exporter en CSV
+                  Exporter pour Excel
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
@@ -204,15 +206,28 @@ export function StockScreen() {
           {list.slice(0, visible).map((p) => (
             <ProductRow key={p.id} product={p} currency={boutique.currency} onOpen={() => setOpenId(p.id)} />
           ))}
-          {!list.length && (
-            <Text c="dimmed" ta="center" p="xl">
-              {active.length === 0 && filter === "all"
-                ? "Aucun produit pour l'instant. Ajoutez-en un ou importez votre catalogue en CSV."
-                : filter === "alerts" && !query && !category
-                  ? "Aucune alerte : tout est en stock."
-                  : "Aucun produit ne correspond."}
-            </Text>
-          )}
+          {!list.length &&
+            (active.length === 0 && filter === "all" ? (
+              <EmptyState
+                title="Aucun article pour l'instant"
+                text="Ajoutez vos articles un par un (nom et prix suffisent), ou tout votre catalogue d'un coup depuis un fichier Excel."
+              >
+                {permissions.editPrices && (
+                  <>
+                    <Button className="sun-btn" size="md" leftSection={<IconPlus size={18} />} onClick={() => setCreating({})}>
+                      Ajouter un article
+                    </Button>
+                    <Button variant="default" size="md" component={Link} to="/stock/import" leftSection={<IconUpload size={18} />}>
+                      Importer depuis Excel
+                    </Button>
+                  </>
+                )}
+              </EmptyState>
+            ) : (
+              <Text c="dimmed" ta="center" p="xl">
+                {filter === "alerts" && !query && !category ? "Aucune alerte : tout est en stock." : "Aucun produit ne correspond."}
+              </Text>
+            ))}
           {list.length > visible && (
             <Group justify="center" p="sm">
               <Button variant="subtle" onClick={() => setVisible((n) => n + PAGE_SIZE)}>

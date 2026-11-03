@@ -11,9 +11,9 @@ export const chapters: Chapter[] = [
     title: "Your till ready in 5 minutes",
     lead: "No software to buy, no app store: vitePOS opens in your phone's browser, then installs on the home screen like a real app.",
     steps: [
-      "Open <b>getvitepos.web.app</b> and sign in with your e-mail or your Google account.",
-      "Choose <b>« Créer ma boutique »</b> (create my shop): the shop name, the currency of your prices, the <b>daily rate</b> (how many FC for 1 $) and, if you use it, the euro rate.",
-      "Tap <b>« Créer la boutique »</b>. You get a 30-day trial with every feature included.",
+      "Open <b>getvitepos.web.app</b> and tap the yellow <b>« Créer un compte gratuit »</b> button (create a free account): your e-mail or your Google account.",
+      "Choose <b>« Créer ma boutique »</b> (create my shop): the shop name, the currency of your prices and the <b>daily rate</b> (how many FC for 1 $). Customers pay in euros? Tick <b>« J'accepte aussi les euros »</b> (I also accept euros).",
+      "Tap <b>« Créer la boutique »</b>: a 30-day trial with every feature included. On the home screen, the <b>« Premiers pas »</b> list (first steps) guides you to your first sale.",
       "On the home screen, the <b>« Installer vitePOS »</b> card guides you: the <b>« Installer »</b> button on Android, or <b>Share → « Add to Home Screen »</b> in Safari on iPhone.",
     ],
     shot: { name: "man-installer", alt: "vitePOS home screen with the install card", caption: "The install card disappears once the app is installed." },
@@ -64,7 +64,7 @@ export const chapters: Chapter[] = [
     id: "stock",
     kicker: "Stock",
     title: "Every item has its own card",
-    lead: "An item code to find your way, the manufacturer's barcode to go fast, and packs or cartons to sell wholesale. Your Excel list imports in one go: Stock → « … » → « Importer un fichier CSV ».",
+    lead: "An item code to find your way, the manufacturer's barcode to go fast, and packs or cartons to sell wholesale. Your Excel list imports in one go: Stock → « … » → « Importer depuis Excel » (import from Excel).",
     steps: [
       "In <b>Stock</b>, tap <b>« Ajouter »</b> (add). Choose the category: the <b>item code</b> is suggested for you (LAI-001, LAI-002… for milks).",
       "Scan the item's <b>barcode</b> with the camera button in the field, or type it.",

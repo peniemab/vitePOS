@@ -65,6 +65,11 @@ export function getPrinterMode(): PrinterMode {
   return isPrinterMode(v) ? v : defaultMode();
 }
 
+/** Une façon d'imprimer a-t-elle été choisie sur cet appareil ? */
+export function hasChosenPrinter(): boolean {
+  return readStorage(MODE_KEY) !== null;
+}
+
 export function setPrinterMode(mode: PrinterMode) {
   writeStorage(MODE_KEY, mode);
 }
