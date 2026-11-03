@@ -1,14 +1,28 @@
 /** Mon abonnement : formule, état (essai, actif, grâce, lecture seule), prix et comment payer. */
-import { Alert, Badge, Button, Group, Paper, SimpleGrid, Stack, Text, ThemeIcon, Title } from "@mantine/core";
-import { IconCheck, IconLock } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import { Badge, Button, Group, Paper, SegmentedControl, SimpleGrid, Stack, Text, ThemeIcon, Title } from "@mantine/core";
+import { IconBrandWhatsapp, IconCheck, IconLock } from "@tabler/icons-react";
 import { useReady } from "../data/session";
 import { changePlan } from "../data/boutique";
 import { errorMessage } from "../data/errors";
 import { notifications } from "@mantine/notifications";
+import { watchPayments, type SubscriptionPayment } from "../data/admin";
 import { PageTitle } from "../components/ui";
-import { canChangePlan, GRACE_DAYS, PAYMENT_CONTACT, PLANS, type Plan, type SubscriptionStatus } from "../lib/subscription";
+import {
+  canChangePlan,
+  GRACE_DAYS,
+  PAY_MONTHS,
+  PAYMENT_CONTACT,
+  PAYMENT_METHODS,
+  paymentMessage,
+  PLANS,
+  priceUsd,
+  whatsappLink,
+  type Plan,
+  type SubscriptionStatus,
+} from "../lib/subscription";
 
-const STATE_LABELS: Record<SubscriptionStatus["state"], { label: string; color: string }> = {
+export const STATE_LABELS: Record<SubscriptionStatus["state"], { label: string; color: string }> = {
   essai: { label: "Essai gratuit", color: "blue" },
   actif: { label: "Actif", color: "teal" },
   grace: { label: "Paiement en retard", color: "orange" },
@@ -55,6 +69,9 @@ export function AbonnementScreen() {
   const isOwner = member.role === "proprietaire";
   const current = PLANS[st.plan];
   const choose = canChangePlan(st) && isOwner;
+  const [months, setMonths] = useState(1);
+  const [payments, setPayments] = useState<SubscriptionPayment[] | null>(null);
+  useEffect(() => watchPayments(boutique.id, setPayments, () => setPayments([])), [boutique.id]);
 
   return (
     <>
@@ -76,16 +93,46 @@ export function AbonnementScreen() {
           </Text>
         </Paper>
 
-        <Alert color="sky" title="Comment payer">
-          {PAYMENT_CONTACT ? (
-            <>
-              Envoyez le paiement par mobile money puis prévenez-nous au <b>{PAYMENT_CONTACT}</b> avec le nom de votre
-              boutique (« {boutique.name} »). Votre abonnement est prolongé dès réception.
-            </>
-          ) : (
-            <>Le paiement par mobile money arrive bientôt. En attendant, contactez l'équipe vitePOS pour activer votre abonnement.</>
-          )}
-        </Alert>
+        <Paper p="md">
+          <Title order={4} mb="sm">
+            Payer l'abonnement
+          </Title>
+          <Text size="sm" fw={500} mb={4}>
+            Je paie pour
+          </Text>
+          <SegmentedControl
+            fullWidth
+            mb="md"
+            value={String(months)}
+            onChange={(v) => setMonths(Number(v))}
+            data={PAY_MONTHS.map((m) => ({ value: String(m), label: m === 12 ? "1 an" : `${m} mois` }))}
+          />
+          <ol className="pay-steps">
+            <li>
+              Écrivez-nous sur WhatsApp : le message est déjà prêt, pour <b className="n">{priceUsd(st.plan, months)} $</b>
+              {months === 12 && " (2 mois offerts)"}.
+            </li>
+            <li>Nous vous répondons avec le numéro mobile money où envoyer le paiement.</li>
+            <li>Envoyez-nous la référence reçue par SMS : votre abonnement est prolongé dès que le paiement est vérifié.</li>
+          </ol>
+          <Button
+            component="a"
+            href={whatsappLink(PAYMENT_CONTACT, paymentMessage(boutique.name, st.plan, months))}
+            target="_blank"
+            rel="noopener"
+            className="sun-btn"
+            size="md"
+            fullWidth
+            leftSection={<IconBrandWhatsapp size={20} />}
+          >
+            Payer via WhatsApp
+          </Button>
+          <Text size="xs" c="dimmed" mt="xs" ta="center">
+            Une question ? WhatsApp au {PAYMENT_CONTACT}
+          </Text>
+        </Paper>
+
+        <PaymentHistory payments={payments} />
 
         <Title order={4} mt="xs">
           {choose ? "Choisir une formule" : "Les formules"}
@@ -154,5 +201,52 @@ export function AbonnementScreen() {
         </SimpleGrid>
       </Stack>
     </>
+  );
+}
+
+const shortDate = (ms: number) => new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric" }).format(ms);
+const duration = (months: number) => (months === 12 ? "1 an" : `${months} mois`);
+
+/** Paiements d'abonnement déjà reçus, les plus récents d'abord. */
+export function PaymentHistory({
+  payments,
+}: {
+  payments: SubscriptionPayment[] | null;
+}) {
+  if (!payments?.length) return null;
+  return (
+    <div>
+      <Text fw={700} mb="xs">
+        Paiements reçus
+      </Text>
+      <Paper p={0} style={{ overflow: "hidden" }}>
+        {payments.map((p) => (
+          <div
+            key={p.id}
+            className="list-row"
+            style={{ paddingInline: "var(--mantine-spacing-md)" }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Text fw={600}>
+                {PLANS[p.plan].name}, {duration(p.months)}
+              </Text>
+              <Text size="xs" c="dimmed" truncate>
+                {p.createdAtMs ? shortDate(p.createdAtMs) : "…"},{" "}
+                {PAYMENT_METHODS[p.method]}
+                {p.reference ? `, réf. ${p.reference}` : ""}
+              </Text>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <Text fw={600} className="n">
+                {p.amountUsd} $
+              </Text>
+              <Text size="xs" c="dimmed">
+                jusqu'au {shortDate(p.paidUntilMs)}
+              </Text>
+            </div>
+          </div>
+        ))}
+      </Paper>
+    </div>
   );
 }

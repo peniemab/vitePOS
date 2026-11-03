@@ -9,12 +9,14 @@ import {
   IconPackage,
   IconReceipt,
   IconSettings,
+  IconShieldCheck,
   IconUsers,
   IconUsersGroup,
   IconWallet,
   type Icon,
 } from "@tabler/icons-react";
 import { useReady } from "../data/session";
+import { useIsAdmin } from "../data/admin";
 import { canManageTeam } from "../lib/roles";
 
 export interface Section {
@@ -32,6 +34,7 @@ export interface SectionGroup {
 /** Rubriques visibles pour ce membre, rangées par groupe. */
 export function useSections(): SectionGroup[] {
   const { member, permissions } = useReady();
+  const isAdmin = useIsAdmin();
   const groups: { title: string; items: (Section & { show?: boolean })[] }[] = [
     { title: "", items: [{ to: "/", label: "Accueil", icon: IconLayoutDashboard, end: true }] },
     {
@@ -65,6 +68,8 @@ export function useSections(): SectionGroup[] {
         { to: "/parametres", label: "Paramètres", icon: IconSettings },
       ],
     },
+    // Équipe vitePOS seulement.
+    { title: "vitePOS", items: [{ to: "/admin", label: "Administration", icon: IconShieldCheck, show: isAdmin === true }] },
   ];
   return groups
     .map((g) => ({ title: g.title, items: g.items.filter((i) => i.show !== false).map(({ show: _show, ...i }) => i) }))

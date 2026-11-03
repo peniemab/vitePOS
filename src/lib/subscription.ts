@@ -6,8 +6,8 @@
 export type Plan = "boutique" | "pro" | "supermarche";
 export type BillingCycle = "mensuel" | "annuel";
 
-/** Numéro (WhatsApp) à contacter pour payer ; vide tant qu'il n'est pas fixé. */
-export const PAYMENT_CONTACT = "";
+/** Numéro WhatsApp de l'équipe vitePOS : demander à payer, poser une question. */
+export const PAYMENT_CONTACT = "0839892822";
 
 export const TRIAL_DAYS = 30;
 export const GRACE_DAYS = 7;
@@ -112,4 +112,62 @@ export function canChangePlan(st: SubscriptionStatus): boolean {
 export function canAddMember(plan: Plan, activeMembers: number): boolean {
   const max = PLANS[plan].maxMembers;
   return max == null || activeMembers < max;
+}
+
+/* ---------- Paiements ---------- */
+
+/** Durées qu'on peut payer d'un coup : 12 mois = prix annuel (2 mois offerts). */
+export const PAY_MONTHS = [1, 3, 6, 12] as const;
+
+/**
+ * Comment l'abonnement a été payé. `mobile_money` et `especes` sont saisis à la main par l'éditeur ;
+ * `flexpay` sera écrit par le serveur quand le paiement dans l'app sera branché.
+ */
+export type PaymentMethod = "mobile_money" | "especes" | "flexpay";
+
+export const PAYMENT_METHODS: Record<PaymentMethod, string> = {
+  mobile_money: "Mobile money",
+  especes: "Espèces",
+  flexpay: "FlexPay",
+};
+
+export function isPaymentMethod(v: unknown): v is PaymentMethod {
+  return v === "mobile_money" || v === "especes" || v === "flexpay";
+}
+
+/** Prix en dollars de `months` mois de la formule. */
+export function priceUsd(plan: Plan, months: number): number {
+  const p = PLANS[plan];
+  return months === 12 ? p.yearlyUsd : p.monthlyUsd * months;
+}
+
+/** Ajoute des mois de calendrier ; le 31 janvier + 1 mois donne le dernier jour de février. */
+export function addMonths(ms: number, months: number): number {
+  const d = new Date(ms);
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + months);
+  d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+  return d.getTime();
+}
+
+/**
+ * Nouvelle date « payé jusqu'au » après un paiement de `months` mois.
+ * Payé en avance (pendant l'essai ou l'abonnement) : on prolonge à partir de la fin, sans perdre de jours.
+ * Payé en retard (grâce ou lecture seule) : on repart d'aujourd'hui.
+ */
+export function extendPaidUntil(s: SubscriptionInput, months: number, now = Date.now()): number {
+  const st = subscriptionStatus(s, now);
+  return addMonths(st.state === "essai" || st.state === "actif" ? st.endsAtMs : now, months);
+}
+
+/** Lien WhatsApp vers un numéro congolais (0839… → 243839…), avec un message déjà écrit. */
+export function whatsappLink(phone: string, text: string): string {
+  return `https://wa.me/${phone.replace(/\D/g, "").replace(/^0/, "243")}?text=${encodeURIComponent(text)}`;
+}
+
+/** Message envoyé à l'équipe vitePOS pour payer l'abonnement ; elle répond avec la façon de payer. */
+export function paymentMessage(boutiqueName: string, plan: Plan, months: number): string {
+  const duration = months === 12 ? "1 an" : `${months} mois`;
+  return `Bonjour, je veux payer l'abonnement vitePOS de « ${boutiqueName} » : formule ${PLANS[plan].name}, ${duration} (${priceUsd(plan, months)} $). Comment payer ?`;
 }

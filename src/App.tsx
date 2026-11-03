@@ -29,6 +29,7 @@ const RapportsScreen = lazy(() => import("./screens/RapportsScreen").then((m) =>
 const StockScreen = lazy(() => import("./screens/StockScreen").then((m) => ({ default: m.StockScreen })));
 const ImportScreen = lazy(() => import("./screens/ImportScreen").then((m) => ({ default: m.ImportScreen })));
 const AbonnementScreen = lazy(() => import("./screens/AbonnementScreen").then((m) => ({ default: m.AbonnementScreen })));
+const AdminScreen = lazy(() => import("./screens/AdminScreen").then((m) => ({ default: m.AdminScreen })));
 const SettingsScreen = lazy(() => import("./screens/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
 
 function Gate() {
@@ -71,6 +72,7 @@ function Gate() {
             <Route path="equipe" element={<TeamScreen />} />
             <Route path="parametres" element={<SettingsScreen />} />
             <Route path="abonnement" element={<AbonnementScreen />} />
+            <Route path="admin" element={<AdminScreen />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

@@ -382,7 +382,7 @@ export const fr = {
   faqs: [
     {
       q: "Combien ça coûte ?",
-      a: "vitePOS est gratuit pour commencer. Quand votre commerce grandit (plus d'employés, plusieurs caisses ou magasins), des formules adaptées existent : contactez-nous.",
+      a: "Les 30 premiers jours sont gratuits, avec toutes les fonctions. Ensuite, l'abonnement se paie par mobile money, au mois ou à l'année (2 mois offerts). Sans paiement, vos données restent consultables et exportables : rien n'est effacé.",
     },
     {
       q: "Faut-il acheter du matériel ?",

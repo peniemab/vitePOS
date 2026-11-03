@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { canAddMember, canChangePlan, needsAttention, PLANS, subscriptionStatus, trialEnd } from "./subscription";
+import {
+  addMonths,
+  canAddMember,
+  canChangePlan,
+  extendPaidUntil,
+  needsAttention,
+  paymentMessage,
+  PLANS,
+  priceUsd,
+  subscriptionStatus,
+  trialEnd,
+  whatsappLink,
+} from "./subscription";
 
 const DAY = 86_400_000;
 const start = new Date(2026, 9, 1).getTime();
@@ -45,5 +57,39 @@ describe("formules", () => {
     expect(canAddMember("boutique", 3)).toBe(false);
     expect(canAddMember("pro", 9)).toBe(true);
     expect(canAddMember("supermarche", 500)).toBe(true);
+  });
+});
+
+describe("paiements", () => {
+  it("compte le prix annuel pour 12 mois", () => {
+    expect(priceUsd("boutique", 1)).toBe(10);
+    expect(priceUsd("pro", 3)).toBe(75);
+    expect(priceUsd("pro", 12)).toBe(250);
+  });
+
+  it("ajoute des mois de calendrier sans déborder", () => {
+    const day = (ms: number) => new Date(ms).toDateString();
+    expect(day(addMonths(new Date(2026, 0, 31).getTime(), 1))).toBe(new Date(2026, 1, 28).toDateString());
+    expect(day(addMonths(new Date(2026, 10, 15).getTime(), 3))).toBe(new Date(2027, 1, 15).toDateString());
+  });
+
+  it("prolonge après la fin de l'essai quand on paie pendant l'essai", () => {
+    expect(extendPaidUntil(base, 1, start + 10 * DAY)).toBe(addMonths(trialEnd(start), 1));
+  });
+
+  it("prolonge après la date payée quand l'abonnement court encore", () => {
+    const paid = { ...base, paidUntilMs: start + 60 * DAY };
+    expect(extendPaidUntil(paid, 12, start + 40 * DAY)).toBe(addMonths(start + 60 * DAY, 12));
+  });
+
+  it("repart d'aujourd'hui quand on paie en retard", () => {
+    const now = start + 40 * DAY;
+    expect(extendPaidUntil(base, 1, now)).toBe(addMonths(now, 1));
+  });
+
+  it("prépare le message WhatsApp", () => {
+    const link = whatsappLink("083 989 2822", paymentMessage("Chez Mado", "boutique", 12));
+    expect(link.startsWith("https://wa.me/243839892822?text=")).toBe(true);
+    expect(decodeURIComponent(link.split("text=")[1])).toContain("formule Boutique, 1 an (100 $)");
   });
 });

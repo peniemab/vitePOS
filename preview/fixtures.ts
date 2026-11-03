@@ -320,6 +320,28 @@ export function seed(): [string, Data][] {
   for (const { day, ...d } of daysFromSales(recent)) out.push([`${B}/dayStats/${day}`, d]);
   out.push([`${B}/dayStats/start`, { day: statsFrom }]);
 
+
+  // Abonnement : deux paiements reçus par mobile money.
+  out.push([`${B}/subscriptionPayments/p1`, { plan: "pro", months: 1, amountUsd: 25, method: "mobile_money", reference: "MP261007.1432.A51", paidUntilBefore: null, paidUntil: ts(now + 20 * DAY), createdBy: "equipe", createdAt: ts(now - 11 * DAY) }]);
+  out.push([`${B}/subscriptionPayments/p2`, { plan: "pro", months: 1, amountUsd: 25, method: "mobile_money", reference: "MP261016.0915.C27", paidUntilBefore: ts(now + 20 * DAY), paidUntil: ts(now + 50 * DAY), createdBy: "equipe", createdAt: ts(now - 1 * DAY) }]);
+
+  // Avec ?admin : ce compte fait partie de l'équipe vitePOS, et d'autres boutiques existent.
+  if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("admin")) {
+    out.push(["admins/proprio", { name: "Équipe vitePOS" }]);
+    const others: [string, string, string, number, number | null][] = [
+      // id, nom, formule, créée il y a (jours), payée jusqu'à (jours, null = jamais)
+      ["b2", "Quincaillerie Ya Bob", "pro", 12, null],
+      ["b3", "Pharmacie de la Paix", "boutique", 34, null],
+      ["b4", "Dépôt Simba Boissons", "boutique", 45, null],
+      ["b5", "Supermarché Kin Marché", "supermarche", 200, 120],
+      ["b6", "Phone Center Gombe", "boutique", 75, -2],
+    ];
+    for (const [id, name, plan, age, paid] of others) {
+      out.push([`boutiques/${id}`, { name, currency: "CDF", inviteCode: "ABCDEF", ownerUid: `o-${id}`, usdRateCdf: RATES.USD, plan, billingCycle: "mensuel", trialEndsAt: ts(now - (age - 30) * DAY), ...(paid == null ? {} : { paidUntil: ts(now + paid * DAY) }), createdAt: ts(now - age * DAY) }]);
+      out.push([`boutiques/${id}/members/o-${id}`, { email: `contact@${id}.cd`, name: `Propriétaire de ${name}`, role: "proprietaire", status: "active", permissions: {}, createdAt: ts(now - age * DAY) }]);
+    }
+  }
+
   return out;
 }
 

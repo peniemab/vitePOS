@@ -102,7 +102,7 @@ function toReceipt(r: unknown): ReceiptSettings {
   };
 }
 
-function toBoutique(id: string, d: DocumentData): Boutique {
+export function toBoutique(id: string, d: DocumentData): Boutique {
   return {
     id,
     name: String(d.name ?? ""),

@@ -361,7 +361,7 @@ export const en: Dict = {
   faqs: [
     {
       q: "How much does it cost?",
-      a: "vitePOS is free to start. When your business grows (more staff, several tills or shops), suitable plans are available: contact us.",
+      a: "The first 30 days are free, with every feature. After that, the subscription is paid by mobile money, monthly or yearly (2 months free). Without payment, your data stays viewable and exportable: nothing is deleted.",
     },
     {
       q: "Do I need to buy hardware?",
