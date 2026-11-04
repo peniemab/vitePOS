@@ -1984,3 +1984,195 @@
 :is(.comic-spark, .card, .device-cards li, .compat-list li, .sectors, .steps li, .faq-list details, .receipt-points li, .install-cards > li, .install-open, .install-help) {
   box-shadow: var(--d-card-shadow);
 }
+
+/* ---------- Tarifs ---------- */
+/* La formule Boutique en carte bleu ciel zébrée (classe .blue) ; à côté, la formule Pro et les besoins particuliers. */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.price-card {
+  display: grid;
+  gap: 6px;
+  padding: 32px;
+  box-shadow: 0 18px 40px rgba(31, 99, 184, 0.28);
+}
+.price-card h3 {
+  margin: 8px 0 0;
+  font-size: 1.6rem;
+}
+.price-trial {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 12px;
+  background: var(--sun);
+  color: var(--ink-deep);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.price-trial svg,
+.price-features svg,
+.price-safe svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.price-amount {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.price-amount b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: clamp(3.4rem, 8vw, 4.6rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.price-amount span,
+.price-yearly {
+  color: var(--d-muted);
+}
+.price-yearly {
+  margin: 0 0 10px;
+}
+.price-features {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--d-line);
+  display: grid;
+  gap: 10px;
+}
+.price-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.price-features svg {
+  color: var(--sun);
+}
+.price-card .btn {
+  justify-self: start;
+}
+.price-side {
+  display: grid;
+  gap: 14px;
+}
+.price-more {
+  display: grid;
+  gap: 4px;
+  padding: 20px 22px;
+  background: var(--d-card);
+  box-shadow: var(--d-card-shadow);
+  color: var(--d-muted);
+}
+.price-more b {
+  color: var(--title);
+  font-size: 1.1rem;
+}
+.price-more a {
+  justify-self: start;
+  margin-top: 6px;
+  font-weight: 700;
+  color: var(--sky-deep);
+}
+.price-safe {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 4px 4px 0;
+  color: var(--d-muted);
+}
+.price-safe svg {
+  color: var(--mint-text);
+  margin-top: 2px;
+}
+
+/* ---------- Contact ---------- */
+.contact-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 16px;
+}
+.contact-cards > li {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 8px;
+  padding: 24px 22px;
+  background: var(--d-card);
+  box-shadow: var(--d-card-shadow);
+  color: var(--d-muted);
+}
+.contact-cards b {
+  color: var(--title);
+  font-size: 1.15rem;
+}
+.contact-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: var(--icon-bg);
+  color: #fff;
+}
+.contact-main .contact-icon {
+  background: #1fa855;
+}
+.contact-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.contact-main .btn {
+  margin-top: 6px;
+}
+/* Vert WhatsApp foncé : contraste suffisant avec le texte blanc. */
+.btn-whatsapp {
+  background: #128c4a;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(18, 140, 74, 0.25);
+}
+.contact-link {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--sky-deep);
+  overflow-wrap: anywhere;
+}
+.contact-sub {
+  margin-top: 8px;
+}
+.contact-city {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.contact-city svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+@media (max-width: 900px) {
+  .pricing-grid,
+  .contact-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .price-card {
+    padding: 24px 20px;
+  }
+  .price-card .btn,
+  .contact-main .btn {
+    justify-self: stretch;
+  }
+}

@@ -1,7 +1,7 @@
 ---
 import Brand from "./Brand.astro";
 import credits from "../data/photo-credits.json";
-import { LEGAL_READY, LOGIN_URL, SIGNUP_URL } from "../data/content";
+import { CONTACT, LEGAL_READY, LOGIN_URL, SIGNUP_URL, whatsappUrl } from "../data/content";
 import { dicts, PDF, route, type Lang } from "../i18n";
 
 interface Props {
@@ -41,6 +41,12 @@ const year = new Date().getFullYear();
       <h2>{t.footer.app}</h2>
       <a href={LOGIN_URL}>{t.footer.login}</a>
       <a href={SIGNUP_URL}>{t.footer.signup}</a>
+    </nav>
+    <nav aria-label={t.footer.contact}>
+      <h2>{t.footer.contact}</h2>
+      <a href={whatsappUrl(t.home.contact.whatsapp.message)} rel="noopener">{t.footer.whatsapp}</a>
+      <a href={CONTACT.tel} translate="no">{CONTACT.phone}</a>
+      {CONTACT.email && <a href={`mailto:${CONTACT.email}`} translate="no">{CONTACT.email}</a>}
     </nav>
   </div>
   <div class="wrap foot-bottom">

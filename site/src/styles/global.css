@@ -547,7 +547,7 @@ details p {
 }
 .foot-grid {
   display: grid;
-  grid-template-columns: 1.6fr repeat(3, 1fr);
+  grid-template-columns: 1.6fr repeat(4, 1fr);
   gap: 32px;
 }
 .foot-brand p {
@@ -656,4 +656,43 @@ section[id] {
   .page-bg {
     display: none !important;
   }
+}
+
+/* Appareil réglé sur « moins de mouvement » : plus d'animations ni de fond qui bouge.
+   Le carrousel démarre en pause et le défilement vers les sections est direct (scripts de Home et Header). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .page-bg .floaters,
+  .sync-dot {
+    display: none;
+  }
+  .sync-toast {
+    opacity: 1;
+  }
+}
+
+/* Lien « Aller au contenu » : invisible, il apparaît en haut à gauche quand on arrive dessus au clavier. */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--sun);
+  color: var(--ink-deep);
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+/* Cible du lien : reçoit le focus sans cadre (ce n'est pas un élément sur lequel on agit). */
+main:focus {
+  outline: none;
 }

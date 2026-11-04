@@ -10,6 +10,7 @@ export const en: Dict = {
   langName: "English",
   switchLabel: "FR",
   switchTitle: "Lire en français",
+  skip: "Skip to content",
 
   header: {
     nav: [
@@ -17,7 +18,9 @@ export const en: Dict = {
       { id: "devices", label: "Devices" },
       { id: "audiences", label: "Who it's for" },
       { id: "offline", label: "Offline" },
+      { id: "pricing", label: "Pricing" },
       { id: "faq", label: "FAQ" },
+      { id: "contact", label: "Contact" },
     ],
     manual: "Manual",
     login: "Sign in",
@@ -37,12 +40,15 @@ export const en: Dict = {
     app: "App",
     login: "Log in",
     signup: "Create my account",
+    contact: "Contact us",
+    whatsapp: "WhatsApp",
+    call: "Call",
     credits: "Photo credits",
     creditsText: "Free-licence photos from Wikimedia Commons, cropped:",
   },
 
   home: {
-    ids: { gallery: "preview", features: "features", devices: "devices", audiences: "who-its-for", offline: "offline", faq: "faq" },
+    ids: { gallery: "preview", features: "features", devices: "devices", audiences: "who-its-for", offline: "offline", pricing: "pricing", faq: "faq", contact: "contact" },
     title: "vitePOS · Sell faster. Lose less. Even offline.",
     description:
       "vitePOS: the till on your phone. Take payment in FC, $ or €, while stock and profit are worked out as you sell, even without network. Free to start.",
@@ -282,6 +288,33 @@ export const en: Dict = {
       alt: "vitePOS receipt with logo, details, barcode and QR code",
     },
 
+    pricing: {
+      eyebrow: "Pricing",
+      title: "One simple price, after 30 free days",
+      lead: "Try everything free for 30 days, no credit card needed. After that, pay by mobile money, monthly or yearly.",
+      plan: "Boutique plan",
+      price: "$10",
+      per: "per month",
+      yearly: "or $100 per year: 2 months free",
+      features: ["Checkout in FC, $, € and mobile money", "Stock, alerts and Excel import", "Sales, customers and expenses", "Cash day, stocktake and reports", "3 accounts: you and two employees"],
+      cta: "Start for free",
+      trial: "30 days free, every feature",
+      pro: { title: "More than 3 employees?", text: "The Pro plan: $25 per month, up to 10 accounts." },
+      more: { title: "Something specific?", text: "Several points of sale, more than 10 accounts: write to us." },
+      safe: "If you don't pay at the end of the trial, nothing is deleted: your sales and stock stay available to view.",
+    },
+
+    contact: {
+      eyebrow: "Contact",
+      title: "A question? Write to us",
+      lead: "Our team in Kinshasa answers on WhatsApp: questions, help getting started, a demo in your business.",
+      whatsapp: { title: "WhatsApp", text: "The fastest way. Write to us, even just “hello”.", cta: "Write on WhatsApp", message: "Hello, I have a question about vitePOS." },
+      call: { title: "Phone", cta: "Call" },
+      email: { title: "Email", cta: "Send an email" },
+      demo: { title: "A demo at your place", text: "We come to your business to set everything up and show you how to sell.", cta: "Ask for a demo", message: "Hello, I would like a vitePOS demo in my business." },
+      city: "Kinshasa, Democratic Republic of the Congo",
+    },
+
     install: {
       eyebrow: "Install",
       title: "Nothing to download",
@@ -289,6 +322,7 @@ export const en: Dict = {
       yours: "Your device",
       open: "Open vitePOS",
       scan: "Or scan with your phone",
+      qrAlt: "QR code to open vitePOS",
       help: { title: "We can set it up for you", text: "Our team can come to you to install everything and show you how to sell." },
       devices: [
         { name: "Android", where: "Chrome", steps: ["Open getvitepos.web.app in Chrome", "Tap the three dots at the top, then “Install app”", "The vitePOS icon appears on your home screen"] },
@@ -361,7 +395,7 @@ export const en: Dict = {
   faqs: [
     {
       q: "How much does it cost?",
-      a: "The first 30 days are free, with every feature. After that, the subscription is paid by mobile money, monthly or yearly (2 months free). Without payment, your data stays viewable and exportable: nothing is deleted.",
+      a: "The first 30 days are free, with every feature. After that, the Boutique plan costs $10 per month, or $100 per year (2 months free), paid by mobile money. Without payment, your data stays viewable and exportable: nothing is deleted.",
     },
     {
       q: "Do I need to buy hardware?",

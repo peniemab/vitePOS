@@ -18,10 +18,10 @@ const sections = t.header.nav.map((n) => ({ ...n, anchor: t.home.ids[n.id] }));
   <div class="wrap top-inner">
     <Brand lang={lang} />
     <nav class="nav" aria-label="Sections">
-      {/* « Hors ligne » reste dans le pied de page et le menu du téléphone, mais pas dans la barre du haut. */}
+      {/* « Appareils » et « Hors ligne » restent dans le pied de page et le menu du téléphone, mais pas dans la barre du haut. */}
       {
         sections
-          .filter((n) => n.id !== "offline")
+          .filter((n) => n.id !== "offline" && n.id !== "devices")
           .map((n) => (
             <a href={`${home}#${n.anchor}`} data-spy={n.anchor}>
               {n.label}
@@ -94,10 +94,17 @@ const sections = t.header.nav.map((n) => ({ ...n, anchor: t.home.ids[n.id] }));
     });
 
     // Défilement doux vers une section (molo molo) : environ une seconde, qui démarre et finit en douceur.
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const glideTo = (target: HTMLElement, hash: string) => {
       const offset = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
       const from = window.scrollY;
       const to = target.getBoundingClientRect().top + from - offset;
+      // « Moins de mouvement » : saut direct.
+      if (reduced.matches) {
+        window.scrollTo(0, to);
+        history.pushState(null, "", hash);
+        return;
+      }
       const distance = to - from;
       const duration = Math.min(1600, Math.max(800, Math.abs(distance) * 0.35));
       const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);

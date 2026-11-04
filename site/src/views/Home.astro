@@ -4,8 +4,8 @@ import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import Photo from "../components/Photo.astro";
 import ComicPanel from "../components/ComicPanel.astro";
-import { APP_URL, SIGNUP_URL } from "../data/content";
-import { alertIcon, deviceIcons, icons, moreIcons, navIcons } from "../data/icons";
+import { APP_URL, CONTACT, SIGNUP_URL, whatsappUrl } from "../data/content";
+import { alertIcon, contactIcons, deviceIcons, icons, moreIcons, navIcons } from "../data/icons";
 import { dicts, PDF, route, type Lang } from "../i18n";
 import "../styles/home.css";
 import { existsSync } from "node:fs";
@@ -472,6 +472,41 @@ function toToast(text: string) {
     </div>
   </section>
 
+  <!-- Tarifs : la formule Boutique en avant ; la formule Pro et les besoins particuliers en dessous. -->
+  <section id={ids.pricing} class="section pricing">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="kicker">{h.pricing.eyebrow}</p>
+        <h2>{h.pricing.title}</h2>
+        <p class="section-lead">{h.pricing.lead}</p>
+      </header>
+      <div class="pricing-grid">
+        <article class="price-card blue">
+          <p class="price-trial"><span set:html={moreIcons.check} />{h.pricing.trial}</p>
+          <h3>{h.pricing.plan}</h3>
+          <p class="price-amount"><b>{h.pricing.price}</b> <span>{h.pricing.per}</span></p>
+          <p class="price-yearly">{h.pricing.yearly}</p>
+          <ul class="price-features">
+            {h.pricing.features.map((f) => <li><span set:html={moreIcons.check} />{f}</li>)}
+          </ul>
+          <a class="btn btn-lg" href={SIGNUP_URL}>{h.pricing.cta} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
+        </article>
+        <div class="price-side">
+          <div class="price-more">
+            <b>{h.pricing.pro.title}</b>
+            <span>{h.pricing.pro.text}</span>
+          </div>
+          <div class="price-more">
+            <b>{h.pricing.more.title}</b>
+            <span>{h.pricing.more.text}</span>
+            <a href={`#${ids.contact}`}>{h.contact.whatsapp.cta}</a>
+          </div>
+          <p class="price-safe"><span set:html={moreIcons.shieldCheck} />{h.pricing.safe}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Installer : la carte de l'appareil du visiteur est mise en avant (petit script en bas de page). -->
   <section class="section install" data-install>
     <div class="wrap">
@@ -498,7 +533,7 @@ function toToast(text: string) {
         </ul>
         <div class="install-open">
           <a class="btn btn-lg" href={APP_URL}>{h.install.open} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
-          <img src="/qr-app.svg" alt="" width="132" height="132" loading="lazy" />
+          <img src="/qr-app.svg" alt={h.install.qrAlt} width="132" height="132" loading="lazy" />
           <small>{h.install.scan}</small>
         </div>
       </div>
@@ -531,6 +566,46 @@ function toToast(text: string) {
           ))
         }
       </div>
+    </div>
+  </section>
+
+  <!-- Contact : WhatsApp d'abord ; appel ; e-mail dès qu'il est rempli (content.ts) ; démonstration sur place. -->
+  <section id={ids.contact} class="section section-tint contact">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="kicker">{h.contact.eyebrow}</p>
+        <h2>{h.contact.title}</h2>
+        <p class="section-lead">{h.contact.lead}</p>
+      </header>
+      <ul class="contact-cards">
+        <li class="contact-main">
+          <span class="contact-icon" set:html={contactIcons.whatsapp} />
+          <b>{h.contact.whatsapp.title}</b>
+          <span>{h.contact.whatsapp.text}</span>
+          <a class="btn btn-lg btn-whatsapp" href={whatsappUrl(h.contact.whatsapp.message)} rel="noopener">
+            <span class="btn-icon" set:html={contactIcons.whatsapp} />{h.contact.whatsapp.cta}
+          </a>
+          <small class="n" translate="no">{CONTACT.phone}</small>
+        </li>
+        <li>
+          <span class="contact-icon" set:html={contactIcons.phone} />
+          <b>{h.contact.call.title}</b>
+          <a class="contact-link n" href={CONTACT.tel} translate="no">{CONTACT.phone}</a>
+          {CONTACT.email && (
+            <>
+              <b class="contact-sub">{h.contact.email.title}</b>
+              <a class="contact-link" href={`mailto:${CONTACT.email}`} translate="no">{CONTACT.email}</a>
+            </>
+          )}
+          <small class="contact-city"><span set:html={moreIcons.mapPin} />{h.contact.city}</small>
+        </li>
+        <li>
+          <span class="contact-icon" set:html={moreIcons.store} />
+          <b>{h.contact.demo.title}</b>
+          <span>{h.contact.demo.text}</span>
+          <a class="btn btn-light" href={whatsappUrl(h.contact.demo.message)} rel="noopener">{h.contact.demo.cta}</a>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -584,7 +659,9 @@ function toToast(text: string) {
     let current = 0;
     let timer = 0;
     // Le défilement ne s'arrête jamais tout seul : seul le bouton pause l'arrête.
-    let playing = true;
+    // « Moins de mouvement » : on démarre en pause (les flèches et les onglets restent utilisables).
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let playing = !reduced;
 
     root.querySelectorAll<HTMLElement>("[data-controls]").forEach((c) => (c.hidden = false));
     root.classList.add("is-ready");
@@ -615,12 +692,17 @@ function toToast(text: string) {
       clearTimeout(toastTimer);
       root!.querySelectorAll(".toast").forEach((el) => el.classList.remove("in", "out"));
       const list = [...slides[current].querySelectorAll<HTMLElement>(".toast")];
+      const max = matchMedia("(max-width: 860px)").matches ? 2 : 3;
+      if (reduced) {
+        // Pas d'apparition une à une : les premières notifications sont affichées d'emblée.
+        list.slice(0, max).forEach((el) => el.classList.add("in"));
+        return;
+      }
       let n = 0;
       const next = () => {
         if (n < list.length) {
           list[n].classList.add("in");
           // Sur téléphone, deux notifications à la fois suffisent pour laisser voir l'écran de l'app.
-          const max = matchMedia("(max-width: 860px)").matches ? 2 : 3;
           if (n >= max) list[n - max].classList.add("out");
           root!.classList.remove("is-beat");
           void root!.offsetWidth;

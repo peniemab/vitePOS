@@ -6,7 +6,7 @@ import type { IconName } from "../data/icons";
 import { chapters as manualChapters, type Chapter } from "../data/manuel";
 
 /** Sections de la page d'accueil, pour les liens du menu. */
-export type SectionId = "features" | "devices" | "audiences" | "offline" | "faq";
+export type SectionId = "features" | "devices" | "audiences" | "offline" | "pricing" | "faq" | "contact";
 
 /** Une ligne de la BD : le problème (sans vitePOS) à gauche, la solution (avec vitePOS) à droite. */
 export type ComicBubble = { who: string; text: string; side: "left" | "right"; tail?: "left" | "right" };
@@ -18,6 +18,7 @@ export const fr = {
   langName: "Français",
   switchLabel: "EN",
   switchTitle: "Read in English",
+  skip: "Aller au contenu",
 
   header: {
     nav: [
@@ -25,7 +26,9 @@ export const fr = {
       { id: "devices", label: "Appareils" },
       { id: "audiences", label: "Pour qui" },
       { id: "offline", label: "Hors ligne" },
+      { id: "pricing", label: "Tarifs" },
       { id: "faq", label: "Questions" },
+      { id: "contact", label: "Contact" },
     ] as { id: SectionId; label: string }[],
     manual: "Manuel",
     login: "Se connecter",
@@ -45,13 +48,16 @@ export const fr = {
     app: "Application",
     login: "Se connecter",
     signup: "Créer mon compte",
+    contact: "Nous contacter",
+    whatsapp: "WhatsApp",
+    call: "Appeler",
     credits: "Crédits photos",
     creditsText: "Photos libres de droits de Wikimedia Commons, recadrées :",
   },
 
   home: {
     /** Ancres des sections (dans l'adresse : /#fonctions). */
-    ids: { gallery: "apercu", features: "fonctions", devices: "appareils", audiences: "pour-qui", offline: "hors-ligne", faq: "questions" },
+    ids: { gallery: "apercu", features: "fonctions", devices: "appareils", audiences: "pour-qui", offline: "hors-ligne", pricing: "tarifs", faq: "questions", contact: "contact" },
     title: "vitePOS · Vendez plus vite. Perdez moins. Même sans réseau.",
     description:
       "vitePOS : la caisse sur votre téléphone. Encaissez en FC, $ ou €, le stock et le bénéfice se calculent pendant que vous vendez, même sans réseau. Gratuit pour commencer.",
@@ -300,6 +306,35 @@ export const fr = {
       alt: "Ticket vitePOS avec logo, coordonnées, code-barres et QR code",
     },
 
+    /** Tarifs : la formule Boutique en avant, la formule Pro en une ligne. */
+    pricing: {
+      eyebrow: "Tarifs",
+      title: "Un prix simple, après 30 jours gratuits",
+      lead: "Essayez tout gratuitement pendant 30 jours, sans carte bancaire. Ensuite, payez par mobile money, au mois ou à l'année.",
+      plan: "Formule Boutique",
+      price: "10 $",
+      per: "par mois",
+      yearly: "ou 100 $ par an : 2 mois offerts",
+      features: ["Caisse en FC, $, € et mobile money", "Stock, alertes et import Excel", "Ventes, clients et dépenses", "Journée de caisse, inventaire et rapports", "3 comptes : vous et deux employés"],
+      cta: "Commencer gratuitement",
+      trial: "30 jours gratuits, toutes les fonctions",
+      pro: { title: "Plus de 3 employés ?", text: "La formule Pro : 25 $ par mois, jusqu'à 10 comptes." },
+      more: { title: "Un besoin particulier ?", text: "Plusieurs points de vente, plus de 10 comptes : écrivez-nous." },
+      safe: "Sans paiement à la fin de l'essai, rien n'est effacé : vos ventes et votre stock restent consultables.",
+    },
+
+    /** Contact : WhatsApp d'abord, puis appel et e-mail. */
+    contact: {
+      eyebrow: "Contact",
+      title: "Une question ? Écrivez-nous",
+      lead: "Notre équipe à Kinshasa répond sur WhatsApp : questions, aide pour démarrer, démonstration dans votre commerce.",
+      whatsapp: { title: "WhatsApp", text: "Le plus rapide. Écrivez-nous, même un simple « bonjour ».", cta: "Écrire sur WhatsApp", message: "Bonjour, j'ai une question sur vitePOS." },
+      call: { title: "Téléphone", cta: "Appeler" },
+      email: { title: "E-mail", cta: "Envoyer un e-mail" },
+      demo: { title: "Démonstration chez vous", text: "On passe dans votre commerce pour tout installer et vous montrer comment vendre.", cta: "Demander une démonstration", message: "Bonjour, je voudrais une démonstration de vitePOS dans mon commerce." },
+      city: "Kinshasa, République démocratique du Congo",
+    },
+
     /** Installation : selon l'appareil du visiteur. */
     install: {
       eyebrow: "Installer",
@@ -308,6 +343,7 @@ export const fr = {
       yours: "Votre appareil",
       open: "Ouvrir vitePOS",
       scan: "Ou scannez avec votre téléphone",
+      qrAlt: "QR code pour ouvrir vitePOS",
       help: { title: "On l'installe pour vous", text: "Nos équipes peuvent passer chez vous pour tout installer et vous montrer comment vendre." },
       devices: [
         { name: "Android", where: "Chrome", steps: ["Ouvrez getvitepos.web.app dans Chrome", "Touchez les trois points en haut, puis « Installer l'application »", "L'icône vitePOS apparaît sur l'écran d'accueil"] },
@@ -382,7 +418,7 @@ export const fr = {
   faqs: [
     {
       q: "Combien ça coûte ?",
-      a: "Les 30 premiers jours sont gratuits, avec toutes les fonctions. Ensuite, l'abonnement se paie par mobile money, au mois ou à l'année (2 mois offerts). Sans paiement, vos données restent consultables et exportables : rien n'est effacé.",
+      a: "Les 30 premiers jours sont gratuits, avec toutes les fonctions. Ensuite, la formule Boutique coûte 10 $ par mois, ou 100 $ par an (2 mois offerts), payés par mobile money. Sans paiement, vos données restent consultables et exportables : rien n'est effacé.",
     },
     {
       q: "Faut-il acheter du matériel ?",
