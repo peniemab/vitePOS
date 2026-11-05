@@ -78,7 +78,7 @@ export const fr = {
     devicesLead: "Téléphone, tablette, ordinateur ou terminal de caisse : vitePOS fonctionne sur l'appareil que vous avez déjà. Et tout reste synchronisé : une vente faite au comptoir apparaît aussitôt sur les autres écrans.",
     /** Les appareils où l'on utilise vitePOS (cœur de la section), et la scène qui montre la synchronisation. */
     deviceCards: [
-      { name: "Téléphone", systems: "Android · iPhone", text: "Pour vendre partout et suivre votre commerce à distance." },
+      { name: "Téléphone", systems: "Android · iPhone", text: "Pour vendre partout et suivre votre activité à distance." },
       { name: "Tablette", systems: "Android · iPad", text: "Idéale au comptoir : les articles à gauche, le panier à droite." },
       { name: "Ordinateur", systems: "Windows · Mac", text: "Pour la gestion, le stock et les rapports." },
       { name: "Terminal de caisse", systems: "Android avec Chrome", text: "Pour les caisses fixes, avec imprimante et douchette." },
@@ -97,7 +97,7 @@ export const fr = {
       ordiJournee: { alt: "La journée de caisse : argent attendu dans le tiroir en FC, $ et €", title: "Journée de caisse", text: "L'argent attendu dans le tiroir en FC, $ et €, puis la clôture." },
       telTicket: { alt: "Un ticket de vente avec la monnaie rendue", title: "Le ticket", text: "Imprimé, ou envoyé au client par WhatsApp." },
       telStock: { alt: "Le stock avec ses alertes de rupture", title: "Le stock", text: "Recherche, catégories, alertes de rupture." },
-      telAccueil: { alt: "Les ventes du jour comparées à hier", title: "Votre commerce à distance", text: "Les ventes du jour comparées à hier, où que vous soyez." },
+      telAccueil: { alt: "Les ventes du jour comparées à hier", title: "Votre business à distance", text: "Les ventes du jour comparées à hier, où que vous soyez." },
       ordiVentes: { alt: "Les ventes du jour, ticket par ticket", title: "Les ventes du jour", text: "Chaque ticket, qui l'a vendu et comment il a été payé." },
       ordiStock: { alt: "Le stock sur ordinateur", title: "Le stock sur ordinateur", text: "Tout le catalogue, les prix et les quantités." },
     },
@@ -107,10 +107,10 @@ export const fr = {
       "La caisse qui encaisse en quelques secondes, en FC, $ ou €, et compte votre stock pour vous. Les outils d'une grande surface, simples comme une calculatrice.",
 
     audiencesTitle: "Pour tous les secteurs d'activité",
-    audiencesLead: "vitePOS grandit avec votre commerce.",
+    audiencesLead: "vitePOS grandit avec votre business.",
 
     hardwareTitle: "Le matériel que vous avez déjà suffit",
-    hardwareLead: "Commencez avec votre téléphone, ajoutez du matériel quand votre commerce grandit.",
+    hardwareLead: "Commencez avec votre téléphone, ajoutez du matériel quand votre activité grandit.",
     hardware: [
       {
         title: "Appareils",
@@ -145,7 +145,7 @@ export const fr = {
     stepsTitle: "Prêt en trois étapes",
     faqTitle: "Questions fréquentes",
     finalTitle: "Votre caisse est prête en 5 minutes.",
-    finalText: "Gratuit pour commencer, sans carte bancaire.",
+    finalText: "Gratuit pour commencer.",
     finalCta: "Créer mon compte",
 
     /** Carrousel du haut de page : une diapositive par type de commerce (la première porte le titre principal). */
@@ -183,7 +183,7 @@ export const fr = {
         pops: ["Trouvé · Tuyau PVC 32 mm", "Vente · 2 sacs de ciment · 40 $", "Vendu au carton · 4 boîtes de vis", "Alerte · Peinture 20 L bientôt en rupture"],
       },
       {
-        tag: "Commerçants et entrepreneurs",
+        tag: "Vendeurs et entrepreneurs",
         short: "Entrepreneurs",
         line: "Vos vendeurs encaissent, vous suivez chaque vente depuis votre téléphone.",
         title: "Votre business dans la poche.",
@@ -232,7 +232,7 @@ export const fr = {
         },
         {
           topic: "Le suivi",
-          problem: { art: 7, caption: "Loin de son commerce", bubbles: [{ who: "Maman Ngalula", text: "Grâce, on a vendu combien aujourd'hui ? Il reste du riz ?", side: "left", tail: "right" }] },
+          problem: { art: 7, caption: "Loin de son magasin", bubbles: [{ who: "Maman Ngalula", text: "Grâce, on a vendu combien aujourd'hui ? Il reste du riz ?", side: "left", tail: "right" }] },
           solution: {
             art: 6,
             caption: "Où qu'elle soit",
@@ -267,8 +267,8 @@ export const fr = {
     devicesEyebrow: "Appareils",
     audiencesEyebrow: "Pour qui",
     sectorsAll: "Tous les secteurs",
-    galleryTitle: "Pensé pour les commerces de la RDC",
-    galleryText: "Du petit commerce au supermarché, vitePOS s'adapte à la façon dont on vend ici : plusieurs devises, coupures de réseau, vente au carton ou à la pièce.",
+    galleryTitle: "Pensé pour les business de la RDC",
+    galleryText: "Du petit magasin à la grande équipe, vitePOS s'adapte à la façon dont on vend ici : plusieurs devises, coupures de réseau, vente au carton ou à la pièce.",
     hardwareEyebrow: "Matériel",
     offlineEyebrow: "Hors ligne",
     stepsEyebrow: "Mise en route",
@@ -306,20 +306,13 @@ export const fr = {
       alt: "Ticket vitePOS avec logo, coordonnées, code-barres et QR code",
     },
 
-    /** Tarifs : la formule Boutique en avant, la formule Pro en une ligne. */
+    /** Tarifs : trois formules selon le nombre de téléphones (liste dans `plans`), Pro mise en avant ; Sur mesure en dessous. */
     pricing: {
       eyebrow: "Tarifs",
-      title: "Un prix simple, après 30 jours gratuits",
-      lead: "Essayez tout gratuitement pendant 30 jours, sans carte bancaire. Ensuite, payez par mobile money, au mois ou à l'année.",
-      plan: "Formule Boutique",
-      price: "10 $",
-      per: "par mois",
-      yearly: "ou 100 $ par an : 2 mois offerts",
-      features: ["Caisse en FC, $, € et mobile money", "Stock, alertes et import Excel", "Ventes, clients et dépenses", "Journée de caisse, inventaire et rapports", "3 comptes : vous et deux employés"],
+      title: "Payez selon le nombre de téléphones",
+      lead: "Essai gratuit : plus votre formule est grande, plus l'essai est long. Ensuite, payez par mobile money, au mois ou à l'année (2 mois offerts).",
       cta: "Commencer gratuitement",
-      trial: "30 jours gratuits, toutes les fonctions",
-      pro: { title: "Plus de 3 employés ?", text: "La formule Pro : 25 $ par mois, jusqu'à 10 comptes." },
-      more: { title: "Un besoin particulier ?", text: "Plusieurs points de vente, plus de 10 comptes : écrivez-nous." },
+      more: { title: "Sur mesure", text: "Plus de 10 téléphones ou plusieurs magasins : prix sur devis, 30 jours d'essai." },
       safe: "Sans paiement à la fin de l'essai, rien n'est effacé : vos ventes et votre stock restent consultables.",
     },
 
@@ -327,11 +320,11 @@ export const fr = {
     contact: {
       eyebrow: "Contact",
       title: "Une question ? Écrivez-nous",
-      lead: "Notre équipe à Kinshasa répond sur WhatsApp : questions, aide pour démarrer, démonstration dans votre commerce.",
+      lead: "Notre équipe à Kinshasa répond sur WhatsApp : questions, aide pour démarrer, démonstration dans votre magasin.",
       whatsapp: { title: "WhatsApp", text: "Le plus rapide. Écrivez-nous, même un simple « bonjour ».", cta: "Écrire sur WhatsApp", message: "Bonjour, j'ai une question sur vitePOS." },
       call: { title: "Téléphone", cta: "Appeler" },
       email: { title: "E-mail", cta: "Envoyer un e-mail" },
-      demo: { title: "Démonstration chez vous", text: "On passe dans votre commerce pour tout installer et vous montrer comment vendre.", cta: "Demander une démonstration", message: "Bonjour, je voudrais une démonstration de vitePOS dans mon commerce." },
+      demo: { title: "Démonstration chez vous", text: "On passe dans votre magasin pour tout installer et vous montrer comment vendre.", cta: "Demander une démonstration", message: "Bonjour, je voudrais une démonstration de vitePOS dans mon magasin." },
       city: "Kinshasa, République démocratique du Congo",
     },
 
@@ -369,7 +362,7 @@ export const fr = {
       text: "Chaque vente est notée, le stock se compte tout seul, et le soir vous savez exactement ce qui doit être dans la caisse.",
     },
     {
-      title: "Votre commerce dans votre poche.",
+      title: "Votre business dans votre poche.",
       text: "Vos vendeurs encaissent, vous voyez chaque vente et chaque article manquant en direct, même quand vous n'êtes pas là.",
     },
   ],
@@ -386,11 +379,50 @@ export const fr = {
   ] as { icon: IconName; title: string; text: string }[],
 
   audiences: [
-    { title: "Commerces de quartier", text: "Alimentation, cosmétiques, téléphonie, boulangeries. Une caisse simple sur le téléphone du patron ou du vendeur." },
+    { title: "Magasins de quartier", text: "Alimentation, cosmétiques, téléphonie, boulangeries. Une caisse simple sur le téléphone du patron ou du vendeur." },
     { title: "Quincailleries, grossistes et pièces de rechange", text: "Gros catalogues, recherche par code article, ventes à la pièce, au kilo, au litre ou au carton, plusieurs vendeurs." },
     { title: "Pharmacies et dépôts de boissons", text: "Recherche rapide par nom ou code-barres, vente au casier ou au carton, alertes de rupture, inventaires réguliers." },
     { title: "Supérettes et supermarchés", text: "Plusieurs caisses qui vendent en même temps, clôture par jour, rapports pour le gérant et le propriétaire." },
   ],
+
+  /** Formules : mêmes prix que PLANS dans src/lib/subscription.ts (app). Pro est mise en avant. */
+  plans: {
+    popular: "Le plus choisi",
+    per: "par mois",
+    list: [
+      {
+        name: "Solo",
+        phones: "1 téléphone",
+        price: "5 $",
+        yearly: "ou 50 $ par an",
+        trial: "7 jours gratuits",
+        note: "Vous vendez seul",
+        featured: false,
+        features: ["Caisse en cash ($, €, FC) et mobile money", "Stock, alertes et import Excel", "Ventes, clients et dépenses", "Clôture de la journée et rapports"],
+      },
+      {
+        name: "Équipe",
+        phones: "Jusqu'à 3 téléphones",
+        price: "13,99 $",
+        yearly: "ou 139,90 $ par an",
+        trial: "14 jours gratuits",
+        note: "Vous et vos vendeurs",
+        featured: false,
+        features: ["Tout de la formule Solo", "Vous et deux employés", "Chaque vente au nom du vendeur", "Droits réglés pour chaque employé"],
+      },
+      {
+        name: "Pro",
+        phones: "Jusqu'à 10 téléphones",
+        price: "20,99 $",
+        yearly: "ou 209,90 $ par an",
+        trial: "21 jours gratuits",
+        note: "Une équipe, plusieurs caisses",
+        featured: true,
+        features: ["Tout de la formule Équipe", "Jusqu'à 10 comptes", "Installation et formation offertes", "Aide prioritaire sur WhatsApp"],
+      },
+    ],
+    custom: { name: "Sur mesure", phones: "Plus de 10 téléphones", price: "Sur devis" },
+  },
 
   /** Liste courte des secteurs, pour la brochure. */
   sectors: [
@@ -418,7 +450,7 @@ export const fr = {
   faqs: [
     {
       q: "Combien ça coûte ?",
-      a: "Les 30 premiers jours sont gratuits, avec toutes les fonctions. Ensuite, la formule Boutique coûte 10 $ par mois, ou 100 $ par an (2 mois offerts), payés par mobile money. Sans paiement, vos données restent consultables et exportables : rien n'est effacé.",
+      a: "Cela dépend du nombre de téléphones : Solo 5 $ par mois (1 téléphone), Équipe 13,99 $ (jusqu'à 3), Pro 20,99 $ (jusqu'à 10), Sur mesure au-delà. L'essai est gratuit : 7, 14, 21 ou 30 jours selon la formule, avec toutes les fonctions. À l'année, 2 mois sont offerts. Paiement par mobile money. Sans paiement, vos données restent consultables et exportables : rien n'est effacé.",
     },
     {
       q: "Faut-il acheter du matériel ?",
@@ -438,7 +470,7 @@ export const fr = {
     },
     {
       q: "Mes données sont-elles en sécurité ?",
-      a: "Chaque commerce est séparé des autres et sauvegardé en ligne. Chaque employé a son propre compte et ne voit que ce que vous lui autorisez.",
+      a: "Chaque business est séparé des autres et sauvegardé en ligne. Chaque employé a son propre compte et ne voit que ce que vous lui autorisez.",
     },
   ],
 
@@ -448,13 +480,13 @@ export const fr = {
   },
 
   manual: {
-    title: "Le journal de votre commerce · Manuel vitePOS",
+    title: "Le journal de votre business · Manuel vitePOS",
     description:
       "Le manuel de vitePOS, pas à pas : créer son compte, préparer le stock, vendre en FC, $ ou €, fermer la journée et suivre ses chiffres, même sans réseau.",
-    masthead: "Le journal de votre commerce",
+    masthead: "Le journal de votre business",
     edition: "Édition 2026",
     h1: ["vitePOS,", "mode d'emploi"],
-    lead: "Tout ce qu'il faut pour tenir la caisse, le stock et les comptes de votre commerce, du matin au soir, même quand le réseau coupe.",
+    lead: "Tout ce qu'il faut pour tenir la caisse, le stock et les comptes de votre activité, du matin au soir, même quand le réseau coupe.",
     teasers: [
       [4, "Recevoir 3 paquets sans compter 72 bouteilles"],
       [7, "Encaisser en FC, $ ou € en quelques secondes"],
@@ -475,23 +507,70 @@ export const fr = {
     chapters: manualChapters as Chapter[],
   },
 
+  /** Dépliant A4 plié en trois (3 volets recto, 3 volets verso). */
+  trifold: {
+    title: "Dépliant vitePOS",
+    description: "Le dépliant de vitePOS, à imprimer sur une feuille A4 recto-verso et à plier en trois.",
+    download: "Télécharger le dépliant (PDF)",
+    screenNote: "Une feuille A4 recto-verso, pliée en trois. À l'impression : recto-verso, retourner sur le bord court.",
+    outsideLabel: "Extérieur (couverture à droite)",
+    insideLabel: "Intérieur",
+    coverKicker: "La caisse de votre business",
+    coverLead: "Sur le téléphone que vous avez déjà. Vous vendez, vitePOS compte.",
+    flapTitle: "Fini les comptes de tête à la fermeture",
+    flapEnd: "Le soir, vous savez exactement ce qui doit être dans la caisse. Même quand vous n'êtes pas là.",
+    backTitle: "Commencez aujourd'hui",
+    backLead: "Scannez, créez votre compte, vendez. Essai gratuit.",
+    howKicker: "Comment ça marche",
+    howTitle: "Une vente en 3 gestes",
+    how: [
+      { title: "Scannez ou touchez", text: "Scannez le code-barres avec la caméra du téléphone ou une douchette, ou touchez l'article à l'écran." },
+      { title: "Encaissez", text: "En cash ($, €, FC) ou en mobile money : la monnaie à rendre s'affiche." },
+      { title: "Donnez le ticket", text: "Imprimé, ou envoyé au client par WhatsApp. Le stock baisse tout seul." },
+    ],
+    featuresKicker: "Fonctions",
+    devicesTitle: "Sur l'appareil de votre choix",
+    devices: ["Téléphone", "Tablette", "Ordinateur", "Imprimante de tickets"],
+    priceKicker: "Tarifs",
+  },
+
   brochure: {
     title: "Brochure vitePOS",
-    description: "La brochure de vitePOS, à imprimer ou à partager : la caisse qui vend plus vite, perd moins et marche même sans réseau.",
-    tag: "Caisse · Stock · Ventes",
-    lead: "La caisse de votre commerce, sur votre téléphone. Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.",
-    altHome: "Accueil de vitePOS",
-    altCaisse: "La caisse de vitePOS",
-    ctaTitle: "Gratuit pour commencer",
-    ctaText: "Sans matériel à acheter · prêt en 5 minutes · même sans réseau",
-    qrLabel: "Scannez pour ouvrir l'app",
-    featuresTitle: "Tout pour tenir votre commerce",
-    sectorsTitle: "Pour tous les secteurs d'activité",
-    stepsTitle: "Prêt en trois étapes",
-    contactTitle: "Essayez vitePOS dès aujourd'hui",
-    website: "Site web :",
+    description: "La brochure de vitePOS, à imprimer ou à partager : la caisse qui vend plus vite, perd moins et marche même sans réseau.",
     download: "Télécharger la brochure (PDF)",
     screenNote: "Une feuille A5 recto-verso, à imprimer ou à envoyer par WhatsApp.",
+    altHome: "Accueil de vitePOS",
+    altCaisse: "La caisse de vitePOS",
+    tag: "Caisse · Stock · Ventes",
+    sticker: ["Essai", "gratuit"],
+    lead: "La caisse de votre business, sur le téléphone que vous avez déjà. Vous vendez, vitePOS compte.",
+    ctaTitle: "Essayez vitePOS gratuitement",
+    ctaText: "Sans matériel à acheter · prêt en 5 minutes · même sans réseau",
+    priceFrom: "Ensuite, dès",
+    pricePer: "par mois",
+    qrLabel: "Scannez pour commencer",
+    askLabel: "Questions, démonstration",
+    storyTitle: "Fini les comptes de tête à la fermeture",
+    before: { label: "Avant", text: "Le soir, on recompte le cahier… et il manque toujours quelque chose.", alt: "Une marchande et sa vendeuse, perdues dans le cahier de caisse" },
+    after: { label: "Avec vitePOS", text: "Chaque vente est notée, le stock se compte seul, la caisse tombe juste.", alt: "La marchande et sa vendeuse, contentes de leur journée" },
+    benefitsTitle: "Ce que vitePOS fait pour vous",
+    benefits: [
+      { title: "Plus d'erreur de monnaie", text: "Le client paie en $, €, FC ou mobile money : la monnaie est calculée." },
+      { title: "Jamais bloqué par le réseau", text: "Internet coupe ? Vous vendez quand même ; tout se met à jour au retour." },
+      { title: "Jamais en rupture", text: "Alerte avant la rupture et la péremption. Vente au carton ou à la pièce." },
+      { title: "Plus de vol ni d'oubli", text: "Un compte par vendeur, aucune vente effacée, prix d'achat cachés." },
+      { title: "La caisse tombe juste", text: "Le soir, la clôture compare le tiroir à ce qui était attendu." },
+      { title: "Votre bénéfice, partout", text: "Ventes, dépenses et marge du jour, même loin du magasin." },
+    ],
+    priceTitle: "Payez selon vos téléphones",
+    otherPlans: "Les autres formules",
+    stepsTitle: "Démarrez en 3 étapes",
+    steps: ["Scannez le QR code, ou ouvrez", "Créez votre compte gratuit", "Ajoutez vos articles et vendez"],
+    contactTitle: "On vient chez vous",
+    contactText: "Nous passons chez vous pour tout installer et vous montrer comment vendre.",
+    phoneLabel: "WhatsApp et appels",
+    emailLabel: "E-mail",
+    siteLabel: "Site",
   },
 };
 

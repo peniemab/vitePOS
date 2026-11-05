@@ -472,7 +472,7 @@ function toToast(text: string) {
     </div>
   </section>
 
-  <!-- Tarifs : la formule Boutique en avant ; la formule Pro et les besoins particuliers en dessous. -->
+  <!-- Tarifs : trois formules selon le nombre de téléphones, Pro mise en avant ; Sur mesure en dessous. -->
   <section id={ids.pricing} class="section pricing">
     <div class="wrap">
       <header class="section-head">
@@ -481,28 +481,31 @@ function toToast(text: string) {
         <p class="section-lead">{h.pricing.lead}</p>
       </header>
       <div class="pricing-grid">
-        <article class="price-card blue">
-          <p class="price-trial"><span set:html={moreIcons.check} />{h.pricing.trial}</p>
-          <h3>{h.pricing.plan}</h3>
-          <p class="price-amount"><b>{h.pricing.price}</b> <span>{h.pricing.per}</span></p>
-          <p class="price-yearly">{h.pricing.yearly}</p>
-          <ul class="price-features">
-            {h.pricing.features.map((f) => <li><span set:html={moreIcons.check} />{f}</li>)}
-          </ul>
-          <a class="btn btn-lg" href={SIGNUP_URL}>{h.pricing.cta} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
-        </article>
-        <div class="price-side">
-          <div class="price-more">
-            <b>{h.pricing.pro.title}</b>
-            <span>{h.pricing.pro.text}</span>
-          </div>
-          <div class="price-more">
-            <b>{h.pricing.more.title}</b>
-            <span>{h.pricing.more.text}</span>
-            <a href={`#${ids.contact}`}>{h.contact.whatsapp.cta}</a>
-          </div>
-          <p class="price-safe"><span set:html={moreIcons.shieldCheck} />{h.pricing.safe}</p>
+        {
+          t.plans.list.map((p) => (
+            <article class:list={["price-card", { blue: p.featured, featured: p.featured }]}>
+              {p.featured && <p class="price-popular">{t.plans.popular}</p>}
+              <h3>{p.name}</h3>
+              <p class="price-phones">{p.phones}</p>
+              <p class="price-amount"><b>{p.price}</b> <span>{t.plans.per}</span></p>
+              <p class="price-yearly">{p.yearly}</p>
+              <p class="price-note">{p.note}</p>
+              <p class="price-trial"><span set:html={moreIcons.check} />{p.trial}</p>
+              <ul class="price-features">
+                {p.features.map((f) => <li><span set:html={moreIcons.check} />{f}</li>)}
+              </ul>
+              <a class:list={["btn", { "btn-dark": !p.featured }]} href={SIGNUP_URL}>{h.pricing.cta}</a>
+            </article>
+          ))
+        }
+      </div>
+      <div class="price-bottom">
+        <div class="price-more">
+          <b>{h.pricing.more.title}</b>
+          <span>{h.pricing.more.text}</span>
+          <a href={`#${ids.contact}`}>{h.contact.whatsapp.cta}</a>
         </div>
+        <p class="price-safe"><span set:html={moreIcons.shieldCheck} />{h.pricing.safe}</p>
       </div>
     </div>
   </section>

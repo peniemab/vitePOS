@@ -15,10 +15,11 @@ import {
   PAYMENT_CONTACT,
   PAYMENT_METHODS,
   paymentMessage,
+  formatUsd,
+  PLAN_ORDER,
   PLANS,
   priceUsd,
   whatsappLink,
-  type Plan,
   type SubscriptionStatus,
 } from "../lib/subscription";
 
@@ -88,8 +89,10 @@ export function AbonnementScreen() {
             <SubscriptionMessage st={st} />
           </Text>
           <Text size="sm" c="dimmed">
-            {current.monthlyUsd} $ par mois{st.plan === "supermarche" ? " et par magasin" : ""}, ou {current.yearlyUsd} $ par an
-            (2 mois offerts). Après la fin, vous gardez {GRACE_DAYS} jours pour payer avant le passage en lecture seule.
+            {current.monthlyUsd == null || current.yearlyUsd == null
+              ? "Prix sur devis, selon votre équipe et vos magasins."
+              : `${formatUsd(current.monthlyUsd)} $ par mois, ou ${formatUsd(current.yearlyUsd)} $ par an (2 mois offerts).`}{" "}
+            Après la fin, vous gardez {GRACE_DAYS} jours pour payer avant le passage en lecture seule.
           </Text>
         </Paper>
 
@@ -109,8 +112,16 @@ export function AbonnementScreen() {
           />
           <ol className="pay-steps">
             <li>
-              Écrivez-nous sur WhatsApp : le message est déjà prêt, pour <b className="n">{priceUsd(st.plan, months)} $</b>
-              {months === 12 && " (2 mois offerts)"}.
+              Écrivez-nous sur WhatsApp : le message est déjà prêt
+              {priceUsd(st.plan, months) == null ? (
+                " ; nous vous donnons le prix selon vos besoins"
+              ) : (
+                <>
+                  , pour <b className="n">{formatUsd(priceUsd(st.plan, months) ?? 0)} $</b>
+                  {months === 12 && " (2 mois offerts)"}
+                </>
+              )}
+              .
             </li>
             <li>Nous vous répondons avec le numéro mobile money où envoyer le paiement.</li>
             <li>Envoyez-nous la référence reçue par SMS : votre abonnement est prolongé dès que le paiement est vérifié.</li>
@@ -142,8 +153,8 @@ export function AbonnementScreen() {
             Pendant l'essai, vous pouvez changer de formule à tout moment.
           </Text>
         )}
-        <SimpleGrid cols={{ base: 1, sm: 3 }}>
-          {(Object.keys(PLANS) as Plan[]).map((k) => {
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
+          {PLAN_ORDER.map((k) => {
             const p = PLANS[k];
             const isCurrent = k === st.plan;
             return (
@@ -159,14 +170,23 @@ export function AbonnementScreen() {
                   )}
                 </Group>
                 <Text fz={28} fw={700} className="n" lh={1.1}>
-                  {p.monthlyUsd} $
-                  <Text span size="sm" c="dimmed" fw={400}>
-                    {" "}
-                    / mois{k === "supermarche" ? " / magasin" : ""}
-                  </Text>
+                  {p.monthlyUsd == null ? (
+                    "Sur devis"
+                  ) : (
+                    <>
+                      {formatUsd(p.monthlyUsd)} $
+                      <Text span size="sm" c="dimmed" fw={400}>
+                        {" "}
+                        / mois
+                      </Text>
+                    </>
+                  )}
                 </Text>
                 <Text size="xs" c="dimmed" mb="sm">
-                  ou {p.yearlyUsd} $ par an
+                  {p.yearlyUsd == null ? "Selon votre équipe et vos magasins" : `ou ${formatUsd(p.yearlyUsd)} $ par an`}
+                </Text>
+                <Text size="sm" fw={600}>
+                  {p.phones}
                 </Text>
                 <Text size="sm" mb="xs">
                   {p.audience}
@@ -238,7 +258,7 @@ export function PaymentHistory({
             </div>
             <div style={{ textAlign: "right" }}>
               <Text fw={600} className="n">
-                {p.amountUsd} $
+                {formatUsd(p.amountUsd)} $
               </Text>
               <Text size="xs" c="dimmed">
                 jusqu'au {shortDate(p.paidUntilMs)}

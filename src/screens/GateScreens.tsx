@@ -22,7 +22,7 @@ import { createBoutique, joinBoutique, leaveBoutique, type Boutique, type Member
 import { errorMessage } from "../data/errors";
 import { useSyncState } from "../data/sync";
 import { CURRENCIES, CURRENCY_LIST, type Currency } from "../lib/fx";
-import { PLANS, TRIAL_DAYS, type Plan } from "../lib/subscription";
+import { PLAN_ORDER, planPriceLabel, PLANS, type Plan } from "../lib/subscription";
 
 export function LoadingScreen({ text = "Chargement…" }: { text?: string }) {
   return (
@@ -109,7 +109,8 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
   const [name, setName] = useState("");
   const [ownerName, setOwnerName] = useState(profile.name);
   const [currency, setCurrency] = useState<Currency>("CDF");
-  const [plan, setPlan] = useState<Plan>("boutique");
+  // Essai sur la formule Pro par défaut : l'essai le plus long et toute l'équipe dès le départ.
+  const [plan, setPlan] = useState<Plan>("pro");
   const [rate, setRate] = useState<number | string>(2850);
   const [eurRate, setEurRate] = useState<number | string>("");
   // L'euro et le choix de la formule restent repliés : la plupart des commerces n'en ont pas besoin pour démarrer.
@@ -179,8 +180,8 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
         )}
         <div>
           <Text size="sm">
-            Formule <b>{PLANS[plan].name}</b> : gratuite pendant {TRIAL_DAYS} jours, puis {PLANS[plan].monthlyUsd} $ par mois
-            {plan === "supermarche" ? " et par magasin" : ""}.{" "}
+            Formule <b>{PLANS[plan].name}</b> ({PLANS[plan].phones.toLowerCase()}) : gratuite pendant {PLANS[plan].trialDays} jours,
+            puis {planPriceLabel(plan)}.{" "}
             {!choosingPlan && (
               <Anchor component="button" type="button" size="sm" onClick={() => setChoosingPlan(true)}>
                 Changer
@@ -194,7 +195,7 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
                 mt="xs"
                 value={plan}
                 onChange={(v) => setPlan(v as Plan)}
-                data={(Object.keys(PLANS) as Plan[]).map((k) => ({ value: k, label: PLANS[k].name }))}
+                data={PLAN_ORDER.map((k) => ({ value: k, label: PLANS[k].name }))}
               />
               <Text size="xs" c="dimmed" mt={4}>
                 {PLANS[plan].audience}. Vous pourrez encore changer pendant l'essai.

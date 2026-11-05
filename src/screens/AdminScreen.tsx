@@ -17,6 +17,9 @@ import {
   extendPaidUntil,
   PAY_MONTHS,
   PAYMENT_METHODS,
+  formatUsd,
+  PLAN_ORDER,
+  planPriceLabel,
   PLANS,
   priceUsd,
   subscriptionStatus,
@@ -137,7 +140,7 @@ function PaymentForm({ boutique, onDone }: { boutique: Boutique; onDone: () => v
   const [payments, setPayments] = useState<SubscriptionPayment[] | null>(null);
   const [plan, setPlan] = useState<Plan>(boutique.plan);
   const [months, setMonths] = useState(1);
-  const [amount, setAmount] = useState<number | string>(priceUsd(boutique.plan, 1));
+  const [amount, setAmount] = useState<number | string>(priceUsd(boutique.plan, 1) ?? "");
   const [method, setMethod] = useState<PaymentMethod>("mobile_money");
   const [reference, setReference] = useState("");
   const [saving, setSaving] = useState(false);
@@ -154,7 +157,7 @@ function PaymentForm({ boutique, onDone }: { boutique: Boutique; onDone: () => v
   function choose(nextPlan: Plan, nextMonths: number) {
     setPlan(nextPlan);
     setMonths(nextMonths);
-    setAmount(priceUsd(nextPlan, nextMonths));
+    setAmount(priceUsd(nextPlan, nextMonths) ?? "");
   }
 
   async function save() {
@@ -204,9 +207,9 @@ function PaymentForm({ boutique, onDone }: { boutique: Boutique; onDone: () => v
       </Text>
       <Select
         label="Formule"
-        data={(Object.keys(PLANS) as Plan[]).map((k) => ({
+        data={PLAN_ORDER.map((k) => ({
           value: k,
-          label: `${PLANS[k].name} (${PLANS[k].monthlyUsd} $ par mois)`,
+          label: `${PLANS[k].name} (${planPriceLabel(k)})`,
         }))}
         value={plan}
         allowDeselect={false}
@@ -228,7 +231,13 @@ function PaymentForm({ boutique, onDone }: { boutique: Boutique; onDone: () => v
       </div>
       <NumberInput
         label="Montant reçu"
-        description={amountUsd === expected ? `Prix normal pour ${duration(months)}.` : `Prix normal : ${expected} $.`}
+        description={
+          expected == null
+            ? "Formule sur devis : saisir le montant convenu."
+            : amountUsd === expected
+              ? `Prix normal pour ${duration(months)}.`
+              : `Prix normal : ${formatUsd(expected)} $.`
+        }
         rightSection={<Text size="sm">$</Text>}
         min={0}
         decimalScale={2}

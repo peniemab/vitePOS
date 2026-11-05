@@ -154,7 +154,7 @@ export function LoginScreen() {
         Nouveau sur vitePOS ?
       </Text>
       <Text ta="center" size="sm" c="dimmed" mb="sm">
-        30 jours gratuits, sans carte bancaire.
+        Essai gratuit jusqu'à 30 jours.
       </Text>
       <Button component={Link} to="/inscription" className="sun-btn" size="md" fullWidth>
         Créer un compte gratuit

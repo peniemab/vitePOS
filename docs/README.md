@@ -12,6 +12,7 @@ Documents courts, écrits pour le lancement commercial du **9 novembre 2026**. L
 | [BACKEND_SCHEMA.md](BACKEND_SCHEMA.md) | La base Firestore : collections, champs, qui peut lire et écrire. |
 | [PLAN_LANCEMENT.md](PLAN_LANCEMENT.md) | Ce qu'il reste à faire, jour par jour, jusqu'au 9 novembre, puis après. |
 | [AUDIT_UI.md](AUDIT_UI.md) | Relecture de l'app et du site avec les règles d'interface de Vercel. |
+| [CAMPAGNE_RESEAUX.md](CAMPAGNE_RESEAUX.md) | Textes Facebook, Instagram et WhatsApp du lancement, calendrier du 6 au 15 novembre. |
 
 ## Vercel et les autres outils : ce qu'on garde, ce qu'on remplace
 

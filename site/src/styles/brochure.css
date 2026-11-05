@@ -1,11 +1,5 @@
-/* Brochure : mêmes couleurs que l'app (encre pour les titres, bleu ciel pour les repères, bandeau zébré). */
-.sheet {
-  --navy: var(--ink-deep);
-  --navy-soft: var(--ice);
-  --brick: var(--sky-deep);
-}
-/* Brochure A5 recto-verso (148 × 210 mm). À l'écran : deux feuilles posées sur un fond gris ; à l'impression : deux pages
-   pleines, sans marge (les fonds de couleur vont jusqu'au bord). */
+/* Brochure A5 recto-verso (148 × 210 mm), couleurs de l'app : bleu ciel zébré, soleil pour l'action, encre pour les titres.
+   À l'écran : deux feuilles posées sur un fond bleu pâle ; à l'impression : deux pages pleines, sans marge. */
 
 .sheets {
   background: var(--ice);
@@ -13,7 +7,7 @@
   display: grid;
   gap: 32px;
   justify-content: center;
-  /* Sur téléphone, la feuille A4 défile sur place au lieu d'élargir la page. */
+  /* Sur téléphone, la feuille défile sur place au lieu d'élargir la page. */
   overflow-x: auto;
 }
 .sheet {
@@ -25,12 +19,17 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  font-size: 10.2px;
-  line-height: 1.4;
-  color: var(--ink);
+  font-size: 10px;
+  line-height: 1.38;
+  color: var(--d-text);
 }
-
-/* Écran plus étroit qu'une feuille A5 : alignée à gauche, sinon son bord gauche serait hors d'atteinte. */
+/* Marges du navigateur remises à zéro sans priorité (:where), pour que les marges des classes s'appliquent. */
+.sheet :where(h1, h2, p, ul, ol, figure, dl, dd) {
+  margin: 0;
+}
+.sheet svg {
+  display: block;
+}
 @media (max-width: 860px) {
   .sheets {
     justify-content: start;
@@ -48,319 +47,550 @@
   color: var(--muted);
 }
 
-/* ---------- Recto ---------- */
+/* Bloc QR code commun aux deux faces. */
+.b-qr-box {
+  display: grid;
+  justify-items: center;
+  gap: 1.2mm;
+}
+.b-qr {
+  display: block;
+  background: #fff;
+  padding: 1.6mm;
+}
+.b-qr-box figcaption {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-align: center;
+  max-width: 26mm;
+  line-height: 1.15;
+}
+
+/* ================= Recto ================= */
 .recto {
-  background: linear-gradient(180deg, var(--navy-soft) 0%, #fff 46%);
+  background: #fff;
+}
+/* Haut de page bleu ciel zébré, qui finit en biais. */
+.r-cover {
+  position: relative;
   padding: 8mm 9mm 0;
+  height: 116mm;
+  color: #fff;
+  background-color: var(--sky);
+  background-image: var(--zebra), var(--sky-band);
+  background-size: 300px 150px, auto;
+  clip-path: polygon(0 0, 100% 0, 100% 84%, 0 100%);
 }
 .b-top {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 2.4mm;
+}
+.b-logo {
+  display: grid;
+  place-items: center;
+  width: 9mm;
+  height: 9mm;
+  background: #fff;
+  border-radius: 2mm;
+}
+.b-logo img {
+  width: 6mm;
+  height: auto;
 }
 .b-brand {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.45rem;
-  font-weight: 600;
-  color: var(--navy);
-}
-.b-brand b {
+  font-size: 1.75rem;
   font-weight: 700;
+  line-height: 1;
 }
 .b-tag {
   margin-left: auto;
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--brick);
+  opacity: 0.92;
 }
-.b-hero {
+.r-hero {
   display: grid;
   grid-template-columns: 1fr 50mm;
-  gap: 4mm;
-  align-items: center;
-  margin-top: 5mm;
+  gap: 2mm;
+  margin-top: 7mm;
 }
 .recto h1 {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 2.25rem;
-  line-height: 0.98;
-  color: var(--navy);
-  margin: 0;
+  font-size: 2.6rem;
+  line-height: 0.95;
+  font-weight: 700;
+  color: #fff;
 }
 .recto h1 span {
   display: block;
 }
 .recto h1 .accent {
-  color: var(--brick);
+  color: var(--sun);
 }
-.b-lead {
-  font-size: 0.95rem;
-  color: var(--muted);
-  margin: 3mm 0 3.5mm;
+.r-lead {
+  margin-top: 4mm;
+  font-size: 1rem;
+  line-height: 1.35;
+  max-width: 60mm;
 }
-.b-strengths {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 1.5mm;
-}
-.b-strengths li {
-  padding-left: 5mm;
+/* Deux téléphones qui débordent du bleu sur le blanc. */
+.r-phones {
   position: relative;
+  height: 100mm;
+  margin-top: -4mm;
 }
-.b-strengths li::before {
-  content: "✓";
+.r-phones .frame-phone {
+  max-width: none;
+  box-shadow: 0 16px 34px rgba(10, 30, 70, 0.35);
+}
+.r-phones .back {
   position: absolute;
-  left: 0;
-  color: var(--ok);
+  width: 34mm;
+  right: 17mm;
+  top: 4mm;
+  transform: rotate(-6deg);
+}
+.r-phones .front {
+  position: absolute;
+  width: 38mm;
+  right: -1mm;
+  top: 18mm;
+  transform: rotate(5deg);
+}
+/* Pastille soleil « 30 jours gratuits ». */
+.r-sticker {
+  position: absolute;
+  right: 46mm;
+  top: 86mm;
+  width: 25mm;
+  height: 25mm;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: var(--sun);
+  color: var(--ink-deep);
+  transform: rotate(-12deg);
+  box-shadow: 0 8px 18px rgba(120, 80, 0, 0.3);
+  font-family: "Barlow Condensed", sans-serif;
+  line-height: 0.95;
+  z-index: 2;
+}
+.r-sticker b {
+  font-size: 1.55rem;
+}
+.r-sticker span {
+  font-size: 1.15rem;
   font-weight: 700;
 }
-.b-strengths b {
-  color: var(--navy);
-}
-.b-phones {
-  position: relative;
-  height: 80mm;
-}
-.b-phones .frame-phone {
-  max-width: none;
-}
-.b-phones .back,
-.b-phones .front {
-  position: absolute;
-  width: 31mm;
-}
-.b-phones .back {
-  left: 0;
-  top: 0;
-  transform: rotate(-5deg);
-}
-.b-phones .front {
-  right: 0;
-  top: 10mm;
-  transform: rotate(4deg);
-}
-.b-promises {
+
+/* Trois points forts, sous le bleu. */
+.r-strengths {
   list-style: none;
-  padding: 0;
-  margin: 5mm 0 0;
+  padding: 0 9mm;
+  margin-top: 2mm;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 3.5mm;
+  gap: 6mm;
 }
-.b-promises li {
-  border-top: 2px solid var(--navy);
-  padding-top: 2mm;
+.r-strengths li {
+  display: grid;
+  align-content: start;
+  gap: 0.6mm;
 }
-.b-promises .num {
-  font-family: "Barlow Condensed", sans-serif;
-  font-weight: 700;
-  color: var(--brick);
-}
-.b-promises h2 {
-  font-size: 1.05rem;
-  line-height: 1.05;
-  color: var(--navy);
-  margin: 0.5mm 0 1.5mm;
-}
-.b-promises p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-.b-cta {
-  margin: auto -9mm 0;
-  padding: 5mm 9mm;
-  background: var(--zebra) 0 0 / 360px 180px, var(--sky-band);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 8mm;
-}
-.b-cta div {
-  flex: 1;
-}
-.b-cta p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.9);
-}
-.b-cta .b-cta-title {
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.45rem;
-  font-weight: 700;
-  color: #fff;
-}
-.b-cta .b-url {
-  margin-top: 1.5mm;
+.r-strengths b {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.2rem;
+  line-height: 1.05;
+  color: var(--title);
+}
+.r-strengths li > span:last-child {
+  font-size: 0.82rem;
+  color: var(--d-muted);
+  line-height: 1.25;
+}
+.r-icon {
+  display: grid;
+  place-items: center;
+  width: 8mm;
+  height: 8mm;
+  margin-bottom: 1mm;
+  background: var(--icon-bg);
+  color: #fff;
+}
+.r-icon svg {
+  width: 4.8mm;
+  height: 4.8mm;
+}
+
+/* Appel à l'action : bandeau encre en bas de page. */
+.r-cta {
+  margin-top: auto;
+  background: var(--ink-deep);
+  color: #fff;
+  padding: 6mm 9mm 5.5mm;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 6mm;
+  row-gap: 4mm;
+  align-items: center;
+}
+.r-cta-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--sun);
+}
+.r-cta-text {
+  margin-top: 1.6mm;
+  font-size: 0.82rem;
+  opacity: 0.88;
+}
+.r-price {
+  margin-top: 2.4mm;
+  font-size: 0.95rem;
+}
+.r-price b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.r-cta .b-qr-box figcaption {
+  color: #fff;
+}
+.r-wa {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2mm;
+  padding-top: 3.5mm;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.9rem;
+}
+.r-wa-icon {
+  display: grid;
+  place-items: center;
+  width: 7mm;
+  height: 7mm;
+  border-radius: 50%;
+  background: #128c4a;
+}
+.r-wa-icon svg {
+  width: 4.4mm;
+  height: 4.4mm;
+}
+.r-wa b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.45rem;
+  line-height: 1;
+}
+.r-url {
+  margin-left: auto;
   font-weight: 700;
   color: var(--sun);
 }
-.b-qr {
-  display: block;
-  background: #fff;
-  padding: 1.5mm;
-  border-radius: 2mm;
-}
-.b-qr-box {
-  margin: 0;
-  text-align: center;
-}
-.b-qr-box figcaption {
-  margin-top: 1mm;
-  font-size: 0.6rem;
-  font-weight: 600;
-}
 
-/* ---------- Verso ---------- */
+/* ================= Verso ================= */
 .verso {
   padding: 8mm 9mm 0;
+  background-color: #fff;
+  background-image: var(--zebra-pale);
+  background-size: 300px 150px;
 }
-.b-title {
+.v-title {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.45rem;
-  color: var(--navy);
-  border-bottom: 2px solid var(--navy);
-  padding-bottom: 1.5mm;
-  margin: 0 0 3mm;
+  font-size: 1.85rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--title);
 }
-.b-title.small {
-  font-size: 1.15rem;
+.v-title.small {
+  font-size: 1.3rem;
 }
-.b-features {
+
+/* Avant / Avec vitePOS : deux cases de la BD, reliées par une flèche. */
+.v-story {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2.5mm 5mm;
+  grid-template-columns: 1fr 6mm 1fr;
+  align-items: start;
+  gap: 1.5mm;
+  margin: 3.5mm 0 4mm;
 }
-.b-features article {
+.v-panel img {
+  display: block;
+  width: 100%;
+  height: 22mm;
+  object-fit: cover;
+  border: 0.6mm solid var(--ink-deep);
+  box-sizing: border-box;
+}
+.v-panel figcaption {
+  margin-top: 1.5mm;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+.v-panel figcaption b {
+  display: inline-block;
+  margin-right: 1mm;
+  padding: 0.3mm 1.6mm;
+  color: #fff;
+  font-size: 0.8rem;
+}
+.v-panel.before figcaption b {
+  background: var(--brick);
+}
+.v-panel.after figcaption b {
+  background: var(--mint-text);
+}
+.v-arrow {
+  align-self: center;
+  margin-top: -8mm;
+  color: var(--sky);
+}
+.v-arrow svg {
+  width: 6mm;
+  height: 6mm;
+}
+
+/* Six avantages, en deux colonnes. */
+.v-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 2.2mm 0 4mm;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2mm 5mm;
+}
+.v-benefits li {
   display: flex;
-  gap: 2mm;
+  gap: 2.4mm;
   align-items: flex-start;
 }
-.b-icon {
-  flex-shrink: 0;
-  width: 6.5mm;
-  height: 6.5mm;
-  border-radius: 1.8mm;
-  background: var(--navy-soft);
-  color: var(--navy);
+.v-benefits b {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--title);
+  line-height: 1.15;
+}
+.v-benefits span:not(.v-icon) {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--d-muted);
+  line-height: 1.28;
+  margin-top: 0.4mm;
+}
+.v-icon {
+  flex: none;
   display: grid;
   place-items: center;
+  width: 7.5mm;
+  height: 7.5mm;
+  background: var(--ice);
+  color: var(--sky-deep);
 }
-.b-icon svg {
-  width: 3.8mm;
-  height: 3.8mm;
+.v-icon svg {
+  width: 4.6mm;
+  height: 4.6mm;
 }
-.b-features h3 {
-  font-size: 0.85rem;
-  color: var(--navy);
-  margin: 0;
-}
-.b-features p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.32;
-}
-.b-split {
+
+/* Prix (carte bleue) et étapes. */
+.v-bottom {
   display: grid;
-  /* A5 : les secteurs sur toute la largeur, puis les trois étapes côte à côte. */
-  grid-template-columns: 1fr;
-  gap: 4mm;
-  margin-top: 4mm;
+  grid-template-columns: 60mm 1fr;
+  gap: 6mm;
+  align-items: start;
 }
-.b-split .b-steps {
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3mm;
+.v-price {
+  padding: 3.5mm 4.5mm 4mm;
+  color: #fff;
+  background-color: var(--sky);
+  background-image: var(--zebra), var(--sky-band);
+  background-size: 240px 120px, auto;
 }
-.b-sectors {
+.v-price-trial {
+  display: inline-block;
+  padding: 0.6mm 2mm;
+  background: var(--sun);
+  color: var(--ink-deep);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.v-plan {
+  margin-top: 1.6mm;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.v-amount {
+  font-size: 0.95rem;
+}
+.v-amount b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-right: 1mm;
+}
+.v-yearly,
+.v-note {
+  font-size: 0.8rem;
+  opacity: 0.92;
+}
+.v-note {
+  margin-top: 1mm;
+  font-weight: 700;
+}
+.v-trial {
+  margin-top: 1.4mm;
+  font-weight: 700;
+  color: var(--sun);
+  font-size: 0.86rem;
+}
+.v-pay {
+  font-size: 0.74rem;
+  color: var(--d-muted);
+}
+.v-plan span {
+  font-family: "Barlow", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-left: 1mm;
+  opacity: 0.92;
+}
+/* Les autres formules : nom, téléphones, prix sur une ligne. */
+.v-others-title {
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: var(--title);
+}
+.v-others {
   list-style: none;
   padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
+  margin: 1mm 0 3mm;
+  display: grid;
+  gap: 0.8mm;
+  font-size: 0.78rem;
+}
+.v-others li {
+  display: grid;
+  grid-template-columns: 17mm 1fr auto;
+  gap: 1.5mm;
+  align-items: baseline;
+  padding-bottom: 0.8mm;
+  border-bottom: 1px solid #e3e8f0;
+}
+.v-others span {
+  color: var(--d-muted);
+}
+.v-others em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--ink-deep);
+}
+.v-steps {
+  list-style: none;
+  counter-reset: s;
+  padding: 0;
+  margin-top: 1.6mm;
+  display: grid;
   gap: 1.4mm;
 }
-.b-sectors li {
-  padding: 0.8mm 2.2mm;
-  font-size: 0.78rem;
-  border-radius: 99px;
-  background: var(--navy-soft);
-  color: var(--navy);
-  font-weight: 600;
-}
-.b-cities {
-  margin: 2.5mm 0 0;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--navy);
-}
-.b-audiences,
-.b-steps {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 2mm;
-}
-.b-audiences b,
-.b-steps b {
-  display: block;
-  color: var(--navy);
-}
-.b-audiences li,
-.b-steps li {
-  color: var(--muted);
-  font-size: 0.82rem;
-}
-.b-steps {
-  counter-reset: s;
-}
-.b-steps li {
+.v-steps li {
   counter-increment: s;
-  padding-left: 6.5mm;
-  position: relative;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 1mm;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--title);
 }
-.b-steps li::before {
+.v-steps li::before {
   content: counter(s);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 4.8mm;
-  height: 4.8mm;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 5.2mm;
+  height: 5.2mm;
+  margin-right: 1mm;
   border-radius: 50%;
   background: var(--sky);
   color: #fff;
-  display: grid;
-  place-items: center;
-  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.8rem;
   font-weight: 700;
+  transform: translateY(1mm);
 }
-.b-contact {
-  margin: auto -9mm 0;
-  padding: 4mm 9mm;
-  background: var(--navy-soft);
+.v-steps b {
+  color: var(--sky-deep);
+}
+.v-safe {
   display: flex;
   align-items: center;
-  gap: 6mm;
-  color: var(--navy);
+  gap: 1.6mm;
+  margin-top: 2.6mm;
+  font-size: 0.8rem;
+  color: var(--d-muted);
 }
-.b-contact div {
-  flex: 1;
-}
-.b-contact .b-contact-title {
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.15rem;
-}
-.b-contact p {
-  margin: 1mm 0 0;
+.v-safe svg {
+  width: 4mm;
+  height: 4mm;
+  color: var(--mint-text);
 }
 
-/* ---------- Impression : deux pages A4 pleines ---------- */
+/* Contacts : bandeau encre en bas de page. */
+.v-contact {
+  margin: auto -9mm 0;
+  padding: 4.5mm 9mm;
+  background: var(--ink-deep);
+  color: #fff;
+}
+.v-contact-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--sun);
+}
+.v-contact-text > p:not(.v-contact-title) {
+  margin-top: 1.2mm;
+  font-size: 0.84rem;
+  opacity: 0.9;
+}
+.v-contact dl {
+  margin-top: 2.6mm;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  justify-content: start;
+  gap: 1mm 7mm;
+}
+.v-contact dt,
+.v-contact dd {
+  white-space: nowrap;
+}
+.v-contact dt {
+  display: flex;
+  align-items: center;
+  gap: 1.4mm;
+  font-size: 0.74rem;
+  opacity: 0.85;
+}
+.v-contact dt svg {
+  width: 4mm;
+  height: 4mm;
+}
+.v-contact dd {
+  margin-top: 0.4mm;
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+.v-contact .b-qr-box figcaption {
+  color: #fff;
+}
+
+/* ---------- Impression : deux pages A5 pleines ---------- */
 @page {
   size: A5;
   margin: 0;
@@ -368,7 +598,8 @@
 @media print {
   body > header,
   body > footer,
-  .b-noprint {
+  .b-noprint,
+  .skip-link {
     display: none !important;
   }
   * {

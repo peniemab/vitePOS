@@ -25,8 +25,8 @@ export const terms: LegalDoc = {
     {
       title: "4. Trial, plans and payment",
       paras: [
-        "Each new shop gets a <b>30-day trial</b> with every feature of the chosen plan. A free version with limited features may also be offered.",
-        "After the trial, the shop continues with a paid subscription (Boutique, Pro or Supermarché plan), paid monthly or yearly. Prices are given on request and confirmed before any payment.",
+        "Each new business gets a <b>free trial</b> with every feature of the chosen plan; its length depends on the plan (7 days for Solo, 14 for Équipe, 21 for Pro, 30 for Custom). A free version with limited features may also be offered.",
+        "After the trial, the business continues with a paid subscription (Solo, Équipe, Pro or Custom plan), paid monthly or yearly. Prices are shown on the website (Custom: on request) and confirmed before any payment.",
         "Without payment on the due date, the shop has <b>7 days of grace</b>, then switches to <b>read-only</b>: you can view and export your data, but you can no longer record sales. Nothing is deleted; everything is available again as soon as payment is made.",
       ],
     },

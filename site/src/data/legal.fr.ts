@@ -45,8 +45,8 @@ export const terms: LegalDoc = {
     {
       title: "4. Essai, formules et paiement",
       paras: [
-        "Chaque nouvelle boutique bénéficie de <b>30 jours d'essai</b> avec toutes les fonctions de la formule choisie. Une version gratuite, aux possibilités limitées, peut aussi être proposée.",
-        "Après l'essai, la boutique continue avec un abonnement payant (formules Boutique, Pro ou Supermarché), payé chaque mois ou chaque année. Les prix sont communiqués sur demande et confirmés avant tout paiement.",
+        "Chaque nouvelle activité bénéficie d'un <b>essai gratuit</b> avec toutes les fonctions de la formule choisie, dont la durée dépend de la formule (7 jours en Solo, 14 jours en Équipe, 21 jours en Pro, 30 jours en Sur mesure). Une version gratuite, aux possibilités limitées, peut aussi être proposée.",
+        "Après l'essai, l'activité continue avec un abonnement payant (formules Solo, Équipe, Pro ou Sur mesure), payé chaque mois ou chaque année. Les prix sont affichés sur le site (Sur mesure : sur devis) et confirmés avant tout paiement.",
         "Sans paiement à l'échéance, la boutique dispose de <b>7 jours de grâce</b>, puis passe en <b>lecture seule</b> : vous consultez et exportez vos données, mais vous ne pouvez plus enregistrer de ventes. Rien n'est supprimé ; tout redevient disponible dès le paiement.",
       ],
     },

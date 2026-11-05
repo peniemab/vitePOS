@@ -3,57 +3,91 @@
  * La formule et les dates de paiement sont fixées par l'éditeur de vitePOS, jamais par le client.
  */
 
-export type Plan = "boutique" | "pro" | "supermarche";
+export type Plan = "solo" | "boutique" | "pro" | "supermarche";
 export type BillingCycle = "mensuel" | "annuel";
 
 /** Numéro WhatsApp de l'équipe vitePOS : demander à payer, poser une question. */
 export const PAYMENT_CONTACT = "0839892822";
 
-export const TRIAL_DAYS = 30;
 export const GRACE_DAYS = 7;
 const DAY = 86_400_000;
 
 export interface PlanInfo {
+  /** Nom affiché (les clés `boutique` et `supermarche` sont gardées pour les données déjà enregistrées). */
   name: string;
-  /** Prix en dollars par mois (par magasin pour Supermarché). */
-  monthlyUsd: number;
-  /** Prix annuel : 12 mois pour le prix de 10. */
-  yearlyUsd: number;
-  /** Comptes (employés) actifs au plus ; `null` = illimité. */
+  /** Prix en dollars par mois ; `null` = sur devis (formule Sur mesure). */
+  monthlyUsd: number | null;
+  /** Prix annuel : 12 mois pour le prix de 10 ; `null` = sur devis. */
+  yearlyUsd: number | null;
+  /** Comptes (téléphones) actifs au plus ; `null` = illimité. */
   maxMembers: number | null;
+  /** Durée de l'essai gratuit : plus la formule est grande, plus l'essai est long. */
+  trialDays: number;
+  /** Ce que la formule permet, en une phrase courte. */
+  phones: string;
   audience: string;
   features: string[];
 }
 
+/** Ordre d'affichage des formules, de la plus petite à la plus grande. */
+export const PLAN_ORDER: Plan[] = ["solo", "boutique", "pro", "supermarche"];
+
 export const PLANS: Record<Plan, PlanInfo> = {
+  solo: {
+    name: "Solo",
+    monthlyUsd: 5,
+    yearlyUsd: 50,
+    maxMembers: 1,
+    trialDays: 7,
+    phones: "1 téléphone",
+    audience: "Vous vendez seul",
+    features: ["Caisse en cash ($, €, FC) et mobile money", "Stock, alertes, import Excel", "Ventes, clients, dépenses", "Journée de caisse, inventaire, rapports", "1 compte : le vôtre"],
+  },
   boutique: {
-    name: "Boutique",
-    monthlyUsd: 10,
-    yearlyUsd: 100,
+    name: "Équipe",
+    monthlyUsd: 13.99,
+    yearlyUsd: 139.9,
     maxMembers: 3,
-    audience: "Boutique de quartier, alimentation, cosmétiques, téléphonie",
-    features: ["Caisse FC, $ et mobile money", "Stock, alertes, import Excel", "Ventes, clients, dépenses", "Journée de caisse, inventaire, rapports", "3 comptes"],
+    trialDays: 14,
+    phones: "Jusqu'à 3 téléphones",
+    audience: "Vous et un ou deux vendeurs",
+    features: ["Tout de la formule Solo", "3 comptes : vous et deux employés", "Chaque vente au nom du vendeur", "Droits réglés pour chaque employé"],
   },
   pro: {
     name: "Pro",
-    monthlyUsd: 25,
-    yearlyUsd: 250,
+    monthlyUsd: 20.99,
+    yearlyUsd: 209.9,
     maxMembers: 10,
-    audience: "Quincaillerie, pharmacie, grossiste, grande boutique",
-    features: ["Tout de la formule Boutique", "10 comptes", "Crédit clients (bientôt)", "Fournisseurs et achats (bientôt)", "Devis et factures (bientôt)"],
+    trialDays: 21,
+    phones: "Jusqu'à 10 téléphones",
+    audience: "Une équipe, plusieurs caisses",
+    features: ["Tout de la formule Équipe", "10 comptes", "Installation et formation offertes", "Aide prioritaire sur WhatsApp", "Nouveautés en premier (crédit clients, fournisseurs)"],
   },
   supermarche: {
-    name: "Supermarché",
-    monthlyUsd: 80,
-    yearlyUsd: 800,
+    name: "Sur mesure",
+    monthlyUsd: null,
+    yearlyUsd: null,
     maxMembers: null,
-    audience: "Supermarché, supérette, chaîne de magasins",
-    features: ["Tout de la formule Pro", "Comptes illimités", "Plusieurs magasins (bientôt)", "Promotions et balances (bientôt)", "Installation et formation sur devis"],
+    trialDays: 30,
+    phones: "Plus de 10 téléphones",
+    audience: "Grande équipe, plusieurs magasins",
+    features: ["Tout de la formule Pro", "Comptes illimités", "Plusieurs magasins (bientôt)", "Installation et formation sur place", "Prix sur devis"],
   },
 };
 
+/** Montant en dollars à la française : 5, 13,99, 139,90. */
+export function formatUsd(n: number): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(".", ",");
+}
+
+/** Prix d'une formule en texte : « 13,99 $ par mois » ou « sur devis ». */
+export function planPriceLabel(plan: Plan): string {
+  const m = PLANS[plan].monthlyUsd;
+  return m == null ? "sur devis" : `${formatUsd(m)} $ par mois`;
+}
+
 export function isPlan(v: unknown): v is Plan {
-  return v === "boutique" || v === "pro" || v === "supermarche";
+  return v === "solo" || v === "boutique" || v === "pro" || v === "supermarche";
 }
 
 export interface SubscriptionInput {
@@ -79,13 +113,14 @@ export interface SubscriptionStatus {
   readOnly: boolean;
 }
 
-export function trialEnd(createdAtMs: number): number {
-  return createdAtMs + TRIAL_DAYS * DAY;
+/** Fin de l'essai gratuit d'une formule commencée à `createdAtMs`. */
+export function trialEnd(createdAtMs: number, plan: Plan): number {
+  return createdAtMs + PLANS[plan].trialDays * DAY;
 }
 
 export function subscriptionStatus(s: SubscriptionInput, now = Date.now()): SubscriptionStatus {
   // Boutique créée avant les abonnements : l'essai court depuis sa création ; sans date, on ne bloque pas.
-  const trialEndsAt = s.trialEndsAtMs || (s.createdAtMs ? trialEnd(s.createdAtMs) : now + TRIAL_DAYS * DAY);
+  const trialEndsAt = s.trialEndsAtMs || (s.createdAtMs ? trialEnd(s.createdAtMs, s.plan) : now + PLANS[s.plan].trialDays * DAY);
   const endsAt = Math.max(trialEndsAt, s.paidUntilMs);
   const days = (t: number) => Math.max(0, Math.ceil((t - now) / DAY));
 
@@ -135,10 +170,11 @@ export function isPaymentMethod(v: unknown): v is PaymentMethod {
   return v === "mobile_money" || v === "especes" || v === "flexpay";
 }
 
-/** Prix en dollars de `months` mois de la formule. */
-export function priceUsd(plan: Plan, months: number): number {
+/** Prix en dollars de `months` mois de la formule, arrondi au centime ; `null` = sur devis. */
+export function priceUsd(plan: Plan, months: number): number | null {
   const p = PLANS[plan];
-  return months === 12 ? p.yearlyUsd : p.monthlyUsd * months;
+  if (p.monthlyUsd == null || p.yearlyUsd == null) return null;
+  return months === 12 ? p.yearlyUsd : Math.round(p.monthlyUsd * 100 * months) / 100;
 }
 
 /** Ajoute des mois de calendrier ; le 31 janvier + 1 mois donne le dernier jour de février. */
@@ -169,5 +205,7 @@ export function whatsappLink(phone: string, text: string): string {
 /** Message envoyé à l'équipe vitePOS pour payer l'abonnement ; elle répond avec la façon de payer. */
 export function paymentMessage(boutiqueName: string, plan: Plan, months: number): string {
   const duration = months === 12 ? "1 an" : `${months} mois`;
-  return `Bonjour, je veux payer l'abonnement vitePOS de « ${boutiqueName} » : formule ${PLANS[plan].name}, ${duration} (${priceUsd(plan, months)} $). Comment payer ?`;
+  const price = priceUsd(plan, months);
+  const amount = price == null ? "prix sur devis" : `${formatUsd(price)} $`;
+  return `Bonjour, je veux payer l'abonnement vitePOS de « ${boutiqueName} » : formule ${PLANS[plan].name}, ${duration} (${amount}). Comment payer ?`;
 }

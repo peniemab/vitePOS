@@ -237,8 +237,8 @@ export async function createBoutique(user: User, input: NewBoutique): Promise<st
       autoPrintTicket: false,
       plan: input.plan,
       billingCycle: "mensuel",
-      // Les règles vérifient que l'essai dure bien 30 jours à partir de maintenant.
-      trialEndsAt: Timestamp.fromMillis(trialEnd(Date.now())),
+      // Les règles vérifient que l'essai a bien la durée de la formule (7, 14, 21 ou 30 jours).
+      trialEndsAt: Timestamp.fromMillis(trialEnd(Date.now(), input.plan)),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });

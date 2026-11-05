@@ -68,7 +68,7 @@ export function TeamScreen() {
 
       {members && !roomLeft && !subscription.readOnly && (
         <Alert color="orange" mb="md">
-          La formule {PLANS[boutique.plan].name} permet {max} comptes actifs. Pour en ajouter,{" "}
+          La formule {PLANS[boutique.plan].name} permet {max === 1 ? "un seul compte actif" : `${max} comptes actifs`}. Pour en ajouter,{" "}
           <Anchor component={Link} to="/abonnement">
             passez à une formule supérieure
           </Anchor>{" "}

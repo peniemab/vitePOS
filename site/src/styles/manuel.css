@@ -359,7 +359,8 @@
 @media print {
   body > header,
   body > footer,
-  .mag-noprint {
+  .mag-noprint,
+  .skip-link {
     display: none !important;
   }
   html,

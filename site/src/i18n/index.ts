@@ -6,19 +6,19 @@ import { fr, type Dict } from "./fr";
 import { en } from "./en";
 
 export type Lang = "fr" | "en";
-export type PageKey = "home" | "manual" | "brochure" | "terms" | "privacy";
+export type PageKey = "home" | "manual" | "brochure" | "trifold" | "terms" | "privacy";
 
 export const dicts: Record<Lang, Dict> = { fr, en };
 
 const ROUTES: Record<Lang, Record<PageKey, string>> = {
-  fr: { home: "/", manual: "/manuel", brochure: "/brochure", terms: "/conditions", privacy: "/confidentialite" },
-  en: { home: "/en/", manual: "/en/manual", brochure: "/en/brochure", terms: "/en/terms", privacy: "/en/privacy" },
+  fr: { home: "/", manual: "/manuel", brochure: "/brochure", trifold: "/depliant", terms: "/conditions", privacy: "/confidentialite" },
+  en: { home: "/en/", manual: "/en/manual", brochure: "/en/brochure", trifold: "/en/leaflet", terms: "/en/terms", privacy: "/en/privacy" },
 };
 
 /** Fichiers PDF, un par langue. */
-export const PDF: Record<Lang, { manual: string; brochure: string }> = {
-  fr: { manual: "/manuel-vitepos.pdf", brochure: "/brochure-vitepos.pdf" },
-  en: { manual: "/vitepos-manual-en.pdf", brochure: "/vitepos-brochure-en.pdf" },
+export const PDF: Record<Lang, { manual: string; brochure: string; trifold: string }> = {
+  fr: { manual: "/manuel-vitepos.pdf", brochure: "/brochure-vitepos.pdf", trifold: "/depliant-vitepos.pdf" },
+  en: { manual: "/vitepos-manual-en.pdf", brochure: "/vitepos-brochure-en.pdf", trifold: "/vitepos-leaflet-en.pdf" },
 };
 
 export function route(lang: Lang, page: PageKey): string {

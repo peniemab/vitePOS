@@ -332,8 +332,8 @@ export function seed(): [string, Data][] {
 
 
   // Abonnement : deux paiements reçus par mobile money.
-  out.push([`${B}/subscriptionPayments/p1`, { plan: "pro", months: 1, amountUsd: 25, method: "mobile_money", reference: "MP261007.1432.A51", paidUntilBefore: null, paidUntil: ts(now + 20 * DAY), createdBy: "equipe", createdAt: ts(now - 11 * DAY) }]);
-  out.push([`${B}/subscriptionPayments/p2`, { plan: "pro", months: 1, amountUsd: 25, method: "mobile_money", reference: "MP261016.0915.C27", paidUntilBefore: ts(now + 20 * DAY), paidUntil: ts(now + 50 * DAY), createdBy: "equipe", createdAt: ts(now - 1 * DAY) }]);
+  out.push([`${B}/subscriptionPayments/p1`, { plan: "pro", months: 1, amountUsd: 20.99, method: "mobile_money", reference: "MP261007.1432.A51", paidUntilBefore: null, paidUntil: ts(now + 20 * DAY), createdBy: "equipe", createdAt: ts(now - 11 * DAY) }]);
+  out.push([`${B}/subscriptionPayments/p2`, { plan: "pro", months: 1, amountUsd: 20.99, method: "mobile_money", reference: "MP261016.0915.C27", paidUntilBefore: ts(now + 20 * DAY), paidUntil: ts(now + 50 * DAY), createdBy: "equipe", createdAt: ts(now - 1 * DAY) }]);
 
   // Avec ?admin : ce compte fait partie de l'équipe vitePOS, et d'autres boutiques existent.
   if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("admin")) {

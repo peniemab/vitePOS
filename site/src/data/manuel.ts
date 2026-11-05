@@ -36,7 +36,7 @@ export const chapters: Chapter[] = [
     steps: [
       "Ouvrez <b>getvitepos.web.app</b> et touchez le bouton jaune <b>« Créer un compte gratuit »</b> : votre e-mail ou votre compte Google.",
       "Choisissez <b>« Créer ma boutique »</b> : le nom de la boutique, la devise de vos prix et le <b>taux du jour</b> (combien de FC pour 1 $). Des clients paient en euros ? Cochez <b>« J'accepte aussi les euros »</b>.",
-      "Touchez <b>« Créer la boutique »</b> : 30 jours d'essai, toutes les fonctions comprises. Sur l'accueil, la liste <b>« Premiers pas »</b> vous guide jusqu'à la première vente.",
+      "Touchez <b>« Créer la boutique »</b> : essai gratuit, toutes les fonctions comprises. Sur l'accueil, la liste <b>« Premiers pas »</b> vous guide jusqu'à la première vente.",
       "Sur l'accueil, la carte <b>« Installer vitePOS »</b> vous guide : bouton <b>« Installer »</b> sur Android, ou <b>Partager → « Sur l'écran d'accueil »</b> dans Safari sur iPhone.",
     ],
     shot: { name: "man-installer", alt: "Accueil de vitePOS avec la carte Installer vitePOS", caption: "La carte d'installation disparaît une fois l'app installée." },

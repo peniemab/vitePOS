@@ -4,8 +4,10 @@ import {
   canAddMember,
   canChangePlan,
   extendPaidUntil,
+  formatUsd,
   needsAttention,
   paymentMessage,
+  planPriceLabel,
   PLANS,
   priceUsd,
   subscriptionStatus,
@@ -15,7 +17,7 @@ import {
 
 const DAY = 86_400_000;
 const start = new Date(2026, 9, 1).getTime();
-const base = { plan: "boutique" as const, trialEndsAtMs: trialEnd(start), paidUntilMs: 0, createdAtMs: start };
+const base = { plan: "supermarche" as const, trialEndsAtMs: trialEnd(start, "supermarche"), paidUntilMs: 0, createdAtMs: start };
 
 describe("abonnement", () => {
   it("est en essai pendant 30 jours", () => {
@@ -49,10 +51,30 @@ describe("abonnement", () => {
 
 describe("formules", () => {
   it("offre 2 mois sur l'annuel", () => {
-    for (const p of Object.values(PLANS)) expect(p.yearlyUsd).toBe(p.monthlyUsd * 10);
+    for (const p of Object.values(PLANS)) {
+      if (p.monthlyUsd == null) expect(p.yearlyUsd).toBeNull();
+      else expect(p.yearlyUsd).toBe(Math.round(p.monthlyUsd * 1000) / 100);
+    }
+  });
+
+  it("donne un essai plus long aux grandes formules", () => {
+    expect(trialEnd(start, "solo")).toBe(start + 7 * DAY);
+    expect(trialEnd(start, "boutique")).toBe(start + 14 * DAY);
+    expect(trialEnd(start, "pro")).toBe(start + 21 * DAY);
+    expect(trialEnd(start, "supermarche")).toBe(start + 30 * DAY);
+  });
+
+  it("affiche les prix à la française", () => {
+    expect(formatUsd(5)).toBe("5");
+    expect(formatUsd(13.99)).toBe("13,99");
+    expect(formatUsd(139.9)).toBe("139,90");
+    expect(planPriceLabel("pro")).toBe("20,99 $ par mois");
+    expect(planPriceLabel("supermarche")).toBe("sur devis");
   });
 
   it("limite les comptes selon la formule", () => {
+    expect(canAddMember("solo", 0)).toBe(true);
+    expect(canAddMember("solo", 1)).toBe(false);
     expect(canAddMember("boutique", 2)).toBe(true);
     expect(canAddMember("boutique", 3)).toBe(false);
     expect(canAddMember("pro", 9)).toBe(true);
@@ -62,9 +84,11 @@ describe("formules", () => {
 
 describe("paiements", () => {
   it("compte le prix annuel pour 12 mois", () => {
-    expect(priceUsd("boutique", 1)).toBe(10);
-    expect(priceUsd("pro", 3)).toBe(75);
-    expect(priceUsd("pro", 12)).toBe(250);
+    expect(priceUsd("solo", 1)).toBe(5);
+    expect(priceUsd("boutique", 3)).toBe(41.97);
+    expect(priceUsd("pro", 6)).toBe(125.94);
+    expect(priceUsd("pro", 12)).toBe(209.9);
+    expect(priceUsd("supermarche", 1)).toBeNull();
   });
 
   it("ajoute des mois de calendrier sans déborder", () => {
@@ -74,7 +98,7 @@ describe("paiements", () => {
   });
 
   it("prolonge après la fin de l'essai quand on paie pendant l'essai", () => {
-    expect(extendPaidUntil(base, 1, start + 10 * DAY)).toBe(addMonths(trialEnd(start), 1));
+    expect(extendPaidUntil(base, 1, start + 10 * DAY)).toBe(addMonths(trialEnd(start, "supermarche"), 1));
   });
 
   it("prolonge après la date payée quand l'abonnement court encore", () => {
@@ -90,6 +114,7 @@ describe("paiements", () => {
   it("prépare le message WhatsApp", () => {
     const link = whatsappLink("083 989 2822", paymentMessage("Chez Mado", "boutique", 12));
     expect(link.startsWith("https://wa.me/243839892822?text=")).toBe(true);
-    expect(decodeURIComponent(link.split("text=")[1])).toContain("formule Boutique, 1 an (100 $)");
+    expect(decodeURIComponent(link.split("text=")[1])).toContain("formule Équipe, 1 an (139,90 $)");
+    expect(paymentMessage("Chez Mado", "supermarche", 1)).toContain("formule Sur mesure, 1 mois (prix sur devis)");
   });
 });

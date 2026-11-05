@@ -1,0 +1,673 @@
+/* Dépliant A4 à l'italienne (297 × 210 mm), recto-verso, plié en trois.
+   Couleurs de l'app : bleu ciel zébré, soleil pour l'action, encre pour les titres et les bandeaux.
+   À l'écran : les deux faces l'une sous l'autre sur fond bleu pâle ; à l'impression : deux pages A4 pleines, sans marge. */
+
+.t-sheets {
+  background: var(--ice);
+  padding: 24px 16px 40px;
+  display: grid;
+  gap: 12px;
+  justify-content: center;
+  overflow-x: auto;
+}
+.t-label {
+  margin: 12px 0 0;
+  font-weight: 700;
+  color: var(--muted);
+}
+.t-sheet {
+  width: 297mm;
+  height: 210mm;
+  display: grid;
+  background: #fff;
+  box-shadow: 0 10px 40px rgba(26, 43, 76, 0.18);
+  overflow: hidden;
+  font-size: 9.6px;
+  line-height: 1.38;
+  color: var(--d-text);
+}
+/* Le volet qui se rabat à l'intérieur fait 97 mm : à gauche à l'extérieur, à droite à l'intérieur. */
+.outside {
+  grid-template-columns: 97mm 100mm 100mm;
+}
+.inside {
+  grid-template-columns: 100mm 100mm 97mm;
+}
+.t-sheet :where(h1, h2, p, ul, ol, figure) {
+  margin: 0;
+}
+.t-sheet svg {
+  display: block;
+}
+@media (max-width: 1180px) {
+  .t-sheets {
+    justify-content: start;
+  }
+}
+
+.t-download {
+  text-align: center;
+  padding: 28px 16px 0;
+  background: var(--ice);
+}
+.t-download p {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+/* ---------- Commun aux volets ---------- */
+.panel {
+  position: relative;
+  padding: 9mm 8mm;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.p-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--sky-deep);
+  margin-bottom: 1.2mm;
+}
+.p-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.75rem;
+  line-height: 1.02;
+  font-weight: 700;
+  color: var(--title);
+}
+.t-logo {
+  display: grid;
+  place-items: center;
+  width: 8.5mm;
+  height: 8.5mm;
+  background: #fff;
+  border-radius: 2mm;
+}
+.t-logo img {
+  width: 5.6mm;
+  height: auto;
+}
+.t-brand {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.panel .frame-phone {
+  max-width: none;
+}
+
+/* ---------- Couverture ---------- */
+.cover {
+  color: #fff;
+  background-color: var(--sky);
+  background-image: var(--zebra), var(--sky-band);
+  background-size: 280px 140px, auto;
+}
+.cover-top {
+  display: flex;
+  align-items: center;
+  gap: 2.4mm;
+}
+.cover-kicker {
+  margin-top: 10mm;
+  font-size: 0.95rem;
+  font-weight: 700;
+  opacity: 0.92;
+}
+.cover h1 {
+  margin-top: 1.5mm;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 2.75rem;
+  line-height: 0.95;
+  font-weight: 700;
+  color: #fff;
+}
+.cover h1 span {
+  display: block;
+}
+.cover h1 .accent {
+  color: var(--sun);
+}
+.cover-lead {
+  margin-top: 4mm;
+  font-size: 1rem;
+  max-width: 70mm;
+}
+/* Le téléphone sort par le bas du volet. Il s'arrête pile au bord de la page : une image qui déborde
+   sous la page n'est pas imprimée par Chrome (cadre noir dans le PDF). */
+.cover-phone {
+  position: absolute;
+  width: 56mm;
+  right: 9mm;
+  bottom: 0;
+}
+.cover-phone .frame-phone {
+  height: 96mm;
+  padding-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: 0 10px 24px rgba(10, 30, 70, 0.35);
+}
+.cover-phone img {
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.cover-sticker {
+  position: absolute;
+  left: 9mm;
+  bottom: 44mm;
+  width: 28mm;
+  height: 28mm;
+  z-index: 2;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: var(--sun);
+  color: var(--ink-deep);
+  transform: rotate(-12deg);
+  box-shadow: 0 8px 18px rgba(120, 80, 0, 0.3);
+  font-family: "Barlow Condensed", sans-serif;
+  line-height: 0.95;
+}
+.cover-sticker b {
+  font-size: 1.6rem;
+}
+.cover-sticker span {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.cover-tag {
+  margin-top: 4mm;
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* ---------- Volet rabattu : avant / avec vitePOS ---------- */
+.flap {
+  background-color: #fff;
+  background-image: var(--zebra-pale);
+  background-size: 280px 140px;
+}
+.flap .p-title {
+  margin-bottom: 5mm;
+}
+.story img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 0.6mm solid var(--ink-deep);
+  box-sizing: border-box;
+}
+.story img {
+  aspect-ratio: 4 / 2.7;
+  object-fit: cover;
+}
+.story figcaption {
+  margin-top: 2mm;
+  font-size: 0.9rem;
+  line-height: 1.32;
+}
+.story figcaption b {
+  display: inline-block;
+  margin-right: 1mm;
+  padding: 0.3mm 1.6mm;
+  color: #fff;
+  font-size: 0.82rem;
+}
+.story.before figcaption b {
+  background: var(--brick);
+}
+.story.after figcaption b {
+  background: var(--mint-text);
+}
+.story-arrow {
+  align-self: center;
+  margin: 2.5mm 0;
+  color: var(--sky);
+  transform: rotate(90deg);
+}
+.story-arrow svg {
+  width: 6mm;
+  height: 6mm;
+}
+.flap-end {
+  margin-top: auto;
+  transform: translateY(0);
+  padding: 3.5mm 4mm;
+  background: var(--ink-deep);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.92rem;
+  box-shadow: inset 1mm 0 0 var(--sun);
+}
+
+/* ---------- Dos : QR code et contacts ---------- */
+.back {
+  background: #fff;
+}
+.back-brand {
+  display: flex;
+  align-items: center;
+  gap: 2.4mm;
+  color: var(--title);
+  margin-bottom: 7mm;
+}
+.back-brand .t-logo {
+  background: var(--ice);
+}
+.back-lead {
+  margin-top: 2mm;
+  font-size: 0.95rem;
+  color: var(--d-muted);
+}
+.back-qr {
+  margin-top: 5mm;
+  align-self: center;
+  display: grid;
+  justify-items: center;
+  gap: 2mm;
+  padding: 5mm 7mm 4mm;
+  background: var(--sun);
+}
+.back-qr img {
+  display: block;
+  width: 36mm;
+  height: 36mm;
+  background: #fff;
+  padding: 2mm;
+}
+.back-qr figcaption {
+  font-size: 1rem;
+  color: var(--ink-deep);
+}
+.back-price {
+  margin-top: 3mm;
+  align-self: center;
+  font-size: 0.95rem;
+  color: var(--d-muted);
+}
+.back-price b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.5rem;
+  color: var(--title);
+}
+.visit {
+  margin-top: 6mm;
+}
+.visit b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.3rem;
+  color: var(--title);
+}
+.visit p {
+  margin-top: 0.8mm;
+  font-size: 0.88rem;
+  color: var(--d-muted);
+}
+.contacts {
+  list-style: none;
+  padding: 0;
+  margin-top: 4mm;
+  display: grid;
+  gap: 2.4mm;
+}
+.contacts li {
+  display: flex;
+  align-items: center;
+  gap: 2.6mm;
+}
+.contacts small {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--d-muted);
+}
+.contacts b {
+  font-size: 1.05rem;
+  color: var(--title);
+}
+.c-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 7.5mm;
+  height: 7.5mm;
+  border-radius: 50%;
+  background: var(--ice);
+  color: var(--sky-deep);
+}
+.c-icon.wa {
+  background: #128c4a;
+  color: #fff;
+}
+.c-icon svg {
+  width: 4.4mm;
+  height: 4.4mm;
+}
+.back-city {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.4mm;
+  font-size: 0.78rem;
+  color: var(--d-muted);
+}
+.back-city svg {
+  flex: none;
+  width: 3.6mm;
+  height: 3.6mm;
+}
+
+/* ---------- Intérieur 1 : une vente en 3 gestes ---------- */
+.how {
+  background: #fff;
+}
+.how-steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin-top: 5mm;
+  display: grid;
+  gap: 3.5mm;
+}
+.how-steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 10mm;
+  display: grid;
+  gap: 0.6mm;
+}
+.how-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 7mm;
+  height: 7mm;
+  border-radius: 50%;
+  background: var(--sky);
+  color: #fff;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.how-steps b {
+  font-size: 1.05rem;
+  color: var(--title);
+}
+.how-steps span {
+  font-size: 0.88rem;
+  color: var(--d-muted);
+}
+.how-phones {
+  position: relative;
+  flex: 1;
+  margin-top: 4mm;
+  margin-bottom: -9mm;
+}
+.how-phones > div {
+  position: absolute;
+}
+.how-phones .back-phone {
+  width: 36mm;
+  left: 6mm;
+  top: 6mm;
+  transform: rotate(-6deg);
+}
+.how-phones .front-phone {
+  width: 38mm;
+  right: 6mm;
+  top: 0;
+  transform: rotate(5deg);
+}
+.how-phones .frame-phone {
+  box-shadow: 0 14px 30px rgba(15, 28, 54, 0.3);
+}
+
+/* ---------- Intérieur 2 : fonctions ---------- */
+.features {
+  background: var(--ice);
+}
+.feat-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 6mm;
+  display: grid;
+  gap: 4.6mm;
+}
+.feat-list li {
+  display: flex;
+  gap: 3mm;
+  align-items: flex-start;
+}
+.feat-list b {
+  display: block;
+  font-size: 1rem;
+  color: var(--title);
+  line-height: 1.15;
+}
+.feat-list span:not(.f-icon) {
+  display: block;
+  margin-top: 0.4mm;
+  font-size: 0.86rem;
+  color: var(--d-muted);
+}
+.f-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 8mm;
+  height: 8mm;
+  background: var(--icon-bg);
+  color: #fff;
+}
+.f-icon svg {
+  width: 4.8mm;
+  height: 4.8mm;
+}
+.devices {
+  margin-top: auto;
+  padding: 3.5mm 4mm;
+  background: #fff;
+  box-shadow: var(--d-card-shadow);
+}
+.devices b {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--title);
+  margin-bottom: 2mm;
+}
+.devices ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5mm;
+}
+.devices li {
+  display: grid;
+  justify-items: center;
+  gap: 1mm;
+  text-align: center;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  color: var(--d-muted);
+}
+.devices li svg {
+  width: 6mm;
+  height: 6mm;
+  color: var(--sky-deep);
+}
+
+/* ---------- Intérieur 3 : prix ---------- */
+.price {
+  background: #fff;
+}
+.price-card {
+  margin-top: 4mm;
+  padding: 4.5mm 5mm;
+  color: #fff;
+  background-color: var(--sky);
+  background-image: var(--zebra), var(--sky-band);
+  background-size: 240px 120px, auto;
+  box-shadow: 0 12px 26px rgba(31, 99, 184, 0.28);
+}
+.price-trial {
+  display: inline-block;
+  padding: 0.6mm 2mm;
+  background: var(--sun);
+  color: var(--ink-deep);
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+.price-plan {
+  margin-top: 2mm;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.price-amount {
+  font-size: 0.95rem;
+}
+.price-amount b {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 3rem;
+  line-height: 1;
+  margin-right: 1mm;
+}
+.price-yearly {
+  font-size: 0.82rem;
+  opacity: 0.92;
+}
+.price-card ul {
+  list-style: none;
+  padding: 2.5mm 0 0;
+  margin-top: 2.5mm;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  display: grid;
+  gap: 1.2mm;
+}
+.price-card li {
+  display: flex;
+  align-items: center;
+  gap: 1.6mm;
+  font-size: 0.84rem;
+}
+.price-card li svg {
+  flex: none;
+  width: 3.6mm;
+  height: 3.6mm;
+  color: var(--sun);
+}
+.price-plan span {
+  font-family: "Barlow", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 1mm;
+  opacity: 0.92;
+}
+/* Les autres formules : nom, téléphones et essai, prix. */
+.others {
+  margin-top: 4mm;
+}
+.others b {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--title);
+  margin-bottom: 1.4mm;
+}
+.others ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1.2mm;
+}
+.others li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 2mm;
+  padding: 1.2mm 2.4mm;
+  background: var(--ice);
+  color: var(--ink-deep);
+}
+.others strong {
+  font-size: 0.9rem;
+}
+.others span {
+  grid-column: 1;
+  font-size: 0.74rem;
+  color: var(--d-muted);
+}
+.others em {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-style: normal;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.price-cta {
+  margin: auto -8mm -9mm;
+  padding: 4mm 8mm;
+  display: flex;
+  align-items: center;
+  gap: 3.5mm;
+  background: var(--ink-deep);
+  color: #fff;
+}
+.price-cta img {
+  display: block;
+  width: 17mm;
+  height: 17mm;
+  background: #fff;
+  padding: 1.2mm;
+}
+.price-cta b {
+  display: block;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.05;
+  color: var(--sun);
+}
+.price-cta span {
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+/* ---------- Impression : deux pages A4 à l'italienne, sans marge ---------- */
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+@media print {
+  body > header,
+  body > footer,
+  .t-noprint,
+  .skip-link {
+    display: none !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .t-sheets {
+    background: none;
+    padding: 0;
+    gap: 0;
+    display: block;
+    overflow: visible;
+  }
+  .t-sheet {
+    box-shadow: none;
+    break-after: page;
+  }
+}

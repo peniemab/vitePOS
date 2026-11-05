@@ -18,7 +18,7 @@ Qui : **C** = Claude (code, textes, captures) ; **P** = propriétaire du projet 
 
 ## Vendredi 6 novembre : mise en production
 
-- [ ] P : publier les règles Firestore (`npx -y firebase-tools@latest deploy --only firestore`).
+- [ ] P : publier les règles Firestore (`npx -y firebase-tools@latest deploy --only firestore`) : elles contiennent les nouvelles formules (Solo et essais de 7 à 30 jours) ; à publier **avant** l'app, sinon la création d'un compte échoue.
 - [ ] P : créer son document `admins/<son uid>` dans la console Firebase.
 - [ ] P : régler la facturation GitHub, ajouter les secrets (`FIREBASE_SERVICE_ACCOUNT_VITEPOS_BE79C` et les 6 `VITE_FIREBASE_*`).
 - [ ] P : `npm run deploy` puis `npm run deploy:site`.
@@ -33,9 +33,10 @@ Qui : **C** = Claude (code, textes, captures) ; **P** = propriétaire du projet 
 
 ## Dimanche 8 novembre : campagne prête
 
-- [ ] C : textes des publications Facebook et Instagram (5 à 7 publications, FR + lingala si souhaité), légendes, image de partage.
+- [x] C : textes des publications Facebook et Instagram ([CAMPAGNE_RESEAUX.md](CAMPAGNE_RESEAUX.md)), image de partage, brochure A5 marketing refaite (FR + EN), dépliant A4 en trois volets (FR + EN).
+- [ ] C : images carrées pour Instagram, si souhaité.
 - [ ] P : page Facebook et compte Instagram vitePOS, numéro WhatsApp Business avec message d'accueil.
-- [ ] P : imprimer les brochures (A5 recto-verso) pour la tournée des commerces.
+- [ ] P : imprimer les brochures (A5 recto-verso) et les dépliants (A4 recto-verso, retourner sur le bord court, plier en trois) pour la tournée des commerces, de préférence après le changement de domaine (QR code).
 - [ ] Gel du code : plus de nouvelle fonction avant le lancement, seulement des corrections.
 
 ## Lundi 9 novembre : lancement
