@@ -12,8 +12,8 @@ export const chapters: Chapter[] = [
     lead: "No software to buy, no app store: vitePOS opens in your phone's browser, then installs on the home screen like a real app.",
     steps: [
       "Open <b>getvitepos.web.app</b> and tap the yellow <b>« Créer un compte gratuit »</b> button (create a free account): your e-mail or your Google account.",
-      "Choose <b>« Créer ma boutique »</b> (create my shop): the shop name, the currency of your prices and the <b>daily rate</b> (how many FC for 1 $). Customers pay in euros? Tick <b>« J'accepte aussi les euros »</b> (I also accept euros).",
-      "Tap <b>« Créer la boutique »</b>: a free trial, every feature included. On the home screen, the <b>« Premiers pas »</b> list (first steps) guides you to your first sale.",
+      "Choose <b>« Gérer mon activité »</b> (manage my business): the business name, the currency of your prices and the <b>daily rate</b> (how many FC for 1 $). Customers pay in euros? Tick <b>« J'accepte aussi les euros »</b> (I also accept euros).",
+      "Tap <b>« Créer mon activité »</b> (create my business): a free trial, every feature included. On the home screen, the <b>« Premiers pas »</b> list (first steps) guides you to your first sale.",
       "On the home screen, the <b>« Installer vitePOS »</b> card guides you: the <b>« Installer »</b> button on Android, or <b>Share → « Add to Home Screen »</b> in Safari on iPhone.",
     ],
     shot: { name: "man-installer", alt: "vitePOS home screen with the install card", caption: "The install card disappears once the app is installed." },
@@ -113,11 +113,11 @@ export const chapters: Chapter[] = [
       "<b>« Recette du jour »</b> (today's takings): total sales since this morning, in large type. A seller sees <b>« Vos ventes du jour »</b> (your sales today): only their own.",
       "Just below, the comparison <b>« … % de plus qu'hier à la même heure »</b> (… % more than yesterday at the same time): at 11 am it compares with yesterday at 11 am, not with the whole of yesterday.",
       "Under the dotted line: the number of <b>Ventes</b> (sales), the <b>Panier moyen</b> (average basket: what a customer spends on average) and the <b>Bénéfice estimé</b> (estimated profit), each with its change.",
-      "<b>« Quand la boutique vend »</b> (when the shop sells): one bar per hour, the current hour in blue. The sentence below gives your busiest hour.",
+      "<b>« Quand vous vendez »</b> (when you sell): one bar per hour, the current hour in blue. The sentence below gives your busiest hour.",
       "Further down, <b>« À surveiller »</b> (to watch: items to reorder, batches about to expire) and <b>« Dernières ventes »</b> (latest sales) with time, customer and amount.",
     ],
     shot: { name: "man-accueil", alt: "Home screen: the day's takings as a blue zebra ticket", caption: "The yellow « Nouvelle vente » (new sale) button opens the till." },
-    tip: { title: "When to add staff?", text: "« Quand la boutique vend » shows your busy hours: that is when two people at the counter pay off." },
+    tip: { title: "When to add staff?", text: "« Quand vous vendez » shows your busy hours: that is when two people at the counter pay off." },
   },
   {
     id: "sell",
@@ -157,7 +157,7 @@ export const chapters: Chapter[] = [
     steps: [
       "In <b>Plus → Paramètres → Imprimante de cet appareil</b> (this device's printer), choose <b>« Imprimer les tickets avec »</b> (print receipts with): Bluetooth printer, USB printer (computer), the <b>RawBT</b> app on Android or <b>Thermer</b> on iPhone.",
       "Switch the printer on, tap <b>« Choisir l'imprimante »</b> (choose the printer) and select it. Then <b>« Imprimer un ticket de test »</b> (print a test receipt).",
-      "Under <b>Boutique</b> (shop), choose the <b>paper width</b> (58 mm or 80 mm) and, if you like, <b>« Imprimer le ticket automatiquement après chaque vente »</b> (print automatically after each sale).",
+      "Under <b>Mon activité</b> (my business), choose the <b>paper width</b> (58 mm or 80 mm) and, if you like, <b>« Imprimer le ticket automatiquement après chaque vente »</b> (print automatically after each sale).",
       "Under <b>Ticket de caisse</b> (receipt): <b>« Ajouter un logo »</b> (add a logo), address, phone, RCCM, ID NAT, tax number, a <b>QR code</b> (WhatsApp, Facebook…) and the <b>closing message</b>. The preview updates as you type.",
     ],
     shot: { name: "man-imprimante", alt: "Settings: receipt and printer", caption: "Each phone or computer picks its own printer." },
@@ -225,7 +225,7 @@ export const chapters: Chapter[] = [
     title: "Stocktaking, shelf by shelf",
     lead: "Count what is really on the shelves, see what is missing and what it costs, before correcting the stock.",
     steps: [
-      "In <b>Plus → Inventaire</b> (stocktake), give it a name, choose the whole shop or one category, then <b>« Commencer »</b> (start).",
+      "In <b>Plus → Inventaire</b> (stocktake), give it a name, choose the whole store or one category, then <b>« Commencer »</b> (start).",
       "Scan or search each item and enter the quantity counted. Several people can count at the same time.",
       "Tap <b>« Vérifier et valider »</b>: the app shows the gaps and their value. <b>« Valider l'inventaire »</b> corrects the stock.",
     ],
@@ -254,7 +254,7 @@ export const chapters: Chapter[] = [
     steps: [
       "Tap your <b>badge</b> (your initials, top right): <b>« En ligne, tout est envoyé »</b> (online, all sent), <b>« Hors ligne »</b> (offline) or <b>« Envoi en cours »</b> (sending) with the number of entries waiting.",
       "Two tills offline at the same time? Their sales add up without overwriting each other.",
-      "You only need the network to create an account, join a shop and manage the team.",
+      "You only need the network to create an account, join a business and manage the team.",
     ],
     warn: {
       title: "Do not log out with sales waiting",

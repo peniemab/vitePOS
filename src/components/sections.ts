@@ -61,7 +61,7 @@ export function useSections(): SectionGroup[] {
       ],
     },
     {
-      title: "Boutique",
+      title: "Mon activité",
       items: [
         { to: "/equipe", label: "Équipe", icon: IconUsersGroup, show: canManageTeam(member.role) },
         { to: "/abonnement", label: "Mon abonnement", icon: IconCreditCard, show: member.role === "proprietaire" },

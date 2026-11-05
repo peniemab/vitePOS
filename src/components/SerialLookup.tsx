@@ -67,7 +67,7 @@ export function SerialLookup() {
       )}
       {result === null && (
         <Text size="sm" c="dimmed" mt="xs">
-          Aucun appareil avec ce numéro dans la boutique.
+          Aucun appareil avec ce numéro dans votre stock.
         </Text>
       )}
       {result && (

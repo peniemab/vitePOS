@@ -249,7 +249,7 @@ function ProductForm({
           <Autocomplete label="Catégorie" readOnly={readOnly} data={categories} value={category} onChange={setCategory} maxLength={60} />
           <TextInput
             label="Code article"
-            description={skuTouched ? "Unique dans la boutique" : "Proposé automatiquement, modifiable"}
+            description={skuTouched ? "Unique dans votre activité" : "Proposé automatiquement, modifiable"}
             required
             readOnly={readOnly}
             maxLength={SKU_MAX}

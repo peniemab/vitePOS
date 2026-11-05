@@ -35,8 +35,8 @@ export const chapters: Chapter[] = [
     lead: "Pas de logiciel à acheter, pas de store : vitePOS s'ouvre dans le navigateur du téléphone, puis s'installe sur l'écran d'accueil comme une vraie application.",
     steps: [
       "Ouvrez <b>getvitepos.web.app</b> et touchez le bouton jaune <b>« Créer un compte gratuit »</b> : votre e-mail ou votre compte Google.",
-      "Choisissez <b>« Créer ma boutique »</b> : le nom de la boutique, la devise de vos prix et le <b>taux du jour</b> (combien de FC pour 1 $). Des clients paient en euros ? Cochez <b>« J'accepte aussi les euros »</b>.",
-      "Touchez <b>« Créer la boutique »</b> : essai gratuit, toutes les fonctions comprises. Sur l'accueil, la liste <b>« Premiers pas »</b> vous guide jusqu'à la première vente.",
+      "Choisissez <b>« Gérer mon activité »</b> : le nom de votre activité, la devise de vos prix et le <b>taux du jour</b> (combien de FC pour 1 $). Des clients paient en euros ? Cochez <b>« J'accepte aussi les euros »</b>.",
+      "Touchez <b>« Créer mon activité »</b> : essai gratuit, toutes les fonctions comprises. Sur l'accueil, la liste <b>« Premiers pas »</b> vous guide jusqu'à la première vente.",
       "Sur l'accueil, la carte <b>« Installer vitePOS »</b> vous guide : bouton <b>« Installer »</b> sur Android, ou <b>Partager → « Sur l'écran d'accueil »</b> dans Safari sur iPhone.",
     ],
     shot: { name: "man-installer", alt: "Accueil de vitePOS avec la carte Installer vitePOS", caption: "La carte d'installation disparaît une fois l'app installée." },
@@ -136,11 +136,11 @@ export const chapters: Chapter[] = [
       "<b>« Recette du jour »</b> : le total des ventes depuis ce matin, en grand. Un vendeur voit <b>« Vos ventes du jour »</b> : seulement les siennes.",
       "Juste dessous, la comparaison <b>« … % de plus qu'hier à la même heure »</b> : à 11 h, on compare avec hier à 11 h, pas avec toute la journée d'hier.",
       "Sous la ligne pointillée : le nombre de <b>Ventes</b>, le <b>Panier moyen</b> (ce qu'un client dépense en moyenne) et le <b>Bénéfice estimé</b>, chacun avec son écart.",
-      "<b>« Quand la boutique vend »</b> : une barre par heure, l'heure en cours en bleu. La phrase dessous donne l'heure où vous vendez le plus.",
+      "<b>« Quand vous vendez »</b> : une barre par heure, l'heure en cours en bleu. La phrase dessous donne l'heure où vous vendez le plus.",
       "Plus bas, <b>« À surveiller »</b> (articles à commander, lots bientôt périmés) et les <b>« Dernières ventes »</b> avec l'heure, le client et le montant.",
     ],
     shot: { name: "man-accueil", alt: "Accueil : la recette du jour en ticket bleu zébré", caption: "Le bouton jaune « Nouvelle vente » ouvre la caisse." },
-    tip: { title: "Où mettre plus de monde ?", text: "« Quand la boutique vend » montre vos heures fortes : c'est le moment d'avoir deux personnes au comptoir." },
+    tip: { title: "Où mettre plus de monde ?", text: "« Quand vous vendez » montre vos heures fortes : c'est le moment d'avoir deux personnes au comptoir." },
   },
   {
     id: "vendre",
@@ -180,7 +180,7 @@ export const chapters: Chapter[] = [
     steps: [
       "Dans <b>Plus → Paramètres → Imprimante de cet appareil</b>, choisissez <b>« Imprimer les tickets avec »</b> : imprimante Bluetooth, imprimante USB (ordinateur), l'app <b>RawBT</b> sur Android ou <b>Thermer</b> sur iPhone.",
       "Allumez l'imprimante, touchez <b>« Choisir l'imprimante »</b> et sélectionnez-la. Puis <b>« Imprimer un ticket de test »</b>.",
-      "Dans <b>Boutique</b>, choisissez la <b>largeur du papier</b> (58 mm ou 80 mm) et, si vous voulez, <b>« Imprimer le ticket automatiquement après chaque vente »</b>.",
+      "Dans <b>Mon activité</b>, choisissez la <b>largeur du papier</b> (58 mm ou 80 mm) et, si vous voulez, <b>« Imprimer le ticket automatiquement après chaque vente »</b>.",
       "Dans <b>Ticket de caisse</b> : <b>« Ajouter un logo »</b>, l'adresse, le téléphone, le RCCM, l'ID NAT, le N° impôt, un <b>QR code</b> (WhatsApp, Facebook…) et le <b>message de fin</b>. L'aperçu se met à jour pendant que vous tapez.",
     ],
     shot: { name: "man-imprimante", alt: "Paramètres : ticket de caisse et imprimante", caption: "Chaque téléphone ou ordinateur choisit sa propre imprimante." },
@@ -277,7 +277,7 @@ export const chapters: Chapter[] = [
     steps: [
       "Touchez votre <b>pastille</b> (vos initiales, en haut à droite) : <b>« En ligne, tout est envoyé »</b>, <b>« Hors ligne »</b> ou <b>« Envoi en cours »</b> avec le nombre de saisies en attente.",
       "Deux caisses hors ligne en même temps ? Leurs ventes s'additionnent sans s'écraser.",
-      "Il faut seulement du réseau pour créer un compte, rejoindre une boutique et gérer l'équipe.",
+      "Il faut seulement du réseau pour créer un compte, rejoindre une activité et gérer l'équipe.",
     ],
     warn: {
       title: "Ne vous déconnectez pas avec des ventes en attente",

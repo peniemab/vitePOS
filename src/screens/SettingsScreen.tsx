@@ -47,7 +47,7 @@ export function SettingsScreen() {
             Taux du jour
           </Title>
           <Text size="sm" c="dimmed" mb="sm">
-            {canEditRate ? "Pour convertir les prix quand un client paie dans une autre devise." : "Fixé par le propriétaire de la boutique."}
+            {canEditRate ? "Pour convertir les prix quand un client paie dans une autre devise." : "Fixé par le propriétaire."}
           </Text>
           <Stack>
             {(
@@ -91,12 +91,12 @@ export function SettingsScreen() {
         {isOwner && (
           <Paper p="md">
             <Title order={4} mb="sm">
-              Boutique
+              Mon activité
             </Title>
             <Stack>
               <Group align="flex-end">
                 <TextInput
-                  label="Nom de la boutique"
+                  label="Nom de votre activité"
                   maxLength={80}
                   value={shopName}
                   onChange={(e) => setShopName(e.currentTarget.value)}

@@ -59,7 +59,6 @@ export const en: Dict = {
     ctaBrochure: "Download the brochure",
     ctaSee: "See the app",
     ctaStartShort: "Start free",
-    kicker: "The till that works even when the network drops",
     brochureLink: "Brochure (PDF)",
     ticks: ["Free to start", "Nothing to buy", "Works offline", "FC, $ and €"],
     altHome: "vitePOS home screen: today's sales and stock alerts",

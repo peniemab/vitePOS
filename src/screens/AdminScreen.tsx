@@ -68,10 +68,10 @@ export function AdminScreen() {
 
   return (
     <>
-      <PageTitle title="Administration" sub={boutiques ? `${boutiques.length} boutique${boutiques.length > 1 ? "s" : ""}` : undefined} />
+      <PageTitle title="Administration" sub={boutiques ? `${boutiques.length} activité${boutiques.length > 1 ? "s" : ""}` : undefined} />
       <div className="sticky-tools">
         <Stack gap="xs">
-          <TextInput leftSection={<IconSearch size={18} />} placeholder="Nom de la boutique" value={q} onChange={(e) => setQ(e.currentTarget.value)} />
+          <TextInput leftSection={<IconSearch size={18} />} placeholder="Nom de l'activité" value={q} onChange={(e) => setQ(e.currentTarget.value)} />
           <Chip.Group value={filter} onChange={(v) => setFilter(v as Filter)}>
             <Group gap={6}>
               {(
@@ -119,7 +119,7 @@ export function AdminScreen() {
           ))}
           {!list.length && (
             <Text c="dimmed" ta="center" p="xl">
-              Aucune boutique ne correspond.
+              Aucune activité ne correspond.
             </Text>
           )}
         </Paper>

@@ -98,7 +98,7 @@ export function ReceiptCard({ boutique }: { boutique: Boutique }) {
           </SimpleGrid>
 
           <TextInput
-            label="Lien du QR code de la boutique"
+            label="Lien du QR code de votre activité"
             description="Votre WhatsApp (https://wa.me/243…), page Facebook, TikTok ou site. Laisser vide pour ne pas l'imprimer."
             placeholder="https://wa.me/243…"
             maxLength={300}

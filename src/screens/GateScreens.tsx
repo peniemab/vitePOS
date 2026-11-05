@@ -95,7 +95,7 @@ export function OnboardingScreen({ user, profile }: { user: User; profile: Profi
         value={mode}
         onChange={(v) => setMode(v as "create" | "join")}
         data={[
-          { value: "create", label: "Créer ma boutique" },
+          { value: "create", label: "Gérer mon activité" },
           { value: "join", label: "Rejoindre" },
         ]}
       />
@@ -139,7 +139,7 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
   return (
     <form onSubmit={submit}>
       <Stack>
-        <TextInput label="Nom de la boutique" required maxLength={80} value={name} onChange={(e) => setName(e.currentTarget.value)} />
+        <TextInput label="Nom de votre activité" required maxLength={80} value={name} onChange={(e) => setName(e.currentTarget.value)} />
         <TextInput label="Votre nom" required maxLength={80} value={ownerName} onChange={(e) => setOwnerName(e.currentTarget.value)} />
         <div>
           <Text size="sm" fw={500} mb={4}>
@@ -205,7 +205,7 @@ function CreateForm({ user, profile }: { user: User; profile: Profile }) {
         </div>
         {error && <Text c="red" size="sm">{error}</Text>}
         <Button type="submit" fullWidth size="md" className="sun-btn" loading={busy} leftSection={<IconBuildingStore size={18} />}>
-          Créer la boutique
+          Créer mon activité
         </Button>
       </Stack>
     </form>
@@ -235,7 +235,7 @@ function JoinForm({ user, profile }: { user: User; profile: Profile }) {
       <Stack>
         <TextInput
           label="Code d'invitation"
-          description="6 caractères, donnés par le propriétaire de la boutique"
+          description="6 caractères, donnés par votre patron"
           required
           autoCapitalize="characters"
           autoComplete="off"
@@ -258,7 +258,7 @@ function ChooseAnotherLink({ uid }: { uid: string }) {
   return (
     <>
       <Anchor component="button" size="sm" mt="md" onClick={() => leaveBoutique(uid).catch((e) => setError(errorMessage(e)))}>
-        Rejoindre ou créer une autre boutique
+        Rejoindre ou créer une autre activité
       </Anchor>
       {error && <Text c="red" size="sm">{error}</Text>}
     </>
@@ -269,7 +269,7 @@ export function PendingScreen({ member, boutique }: { member: Member; boutique: 
   return (
     <AuthCard title="Demande envoyée">
       <Text>
-        Votre demande pour rejoindre <b>{boutique?.name || "la boutique"}</b> est bien envoyée. Le propriétaire doit
+        Votre demande pour rejoindre <b>{boutique?.name || "l'activité"}</b> est bien envoyée. Le propriétaire doit
         maintenant la valider depuis l'écran Équipe.
       </Text>
       <Text c="dimmed" size="sm" mt="sm">
@@ -285,7 +285,7 @@ export function DisabledScreen({ member, boutique }: { member: Member; boutique:
   return (
     <AuthCard title="Accès désactivé">
       <Text>
-        Votre accès à <b>{boutique?.name || "la boutique"}</b> a été désactivé par le propriétaire. Contactez-le si vous
+        Votre accès à <b>{boutique?.name || "l'activité"}</b> a été désactivé par le propriétaire. Contactez-le si vous
         pensez qu'il s'agit d'une erreur.
       </Text>
       <ChooseAnotherLink uid={member.uid} />

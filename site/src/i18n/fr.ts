@@ -68,7 +68,6 @@ export const fr = {
     ctaBrochure: "Télécharger la brochure",
     ctaSee: "Voir l'app",
     ctaStartShort: "Commencer",
-    kicker: "La caisse qui marche même quand le réseau coupe",
     brochureLink: "Brochure (PDF)",
     ticks: ["Gratuit pour commencer", "Rien à acheter", "Marche sans réseau", "FC, $ et €"],
     altHome: "Accueil de vitePOS : ventes du jour et alertes de stock",

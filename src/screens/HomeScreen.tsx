@@ -150,7 +150,7 @@ export function HomeScreen() {
 
           <section className="panel">
             <div className="panel-h">
-              <h3>Quand la boutique vend</h3>
+              <h3>Quand vous vendez</h3>
             </div>
             <HourBars hours={hours} nowHour={new Date(now).getHours()} currency={c} />
           </section>

@@ -17,7 +17,7 @@ export function SubscriptionBanner() {
           Voir mon abonnement
         </Anchor>
       ) : (
-        "Prévenez le propriétaire de la boutique."
+        "Prévenez le propriétaire."
       )}
     </Alert>
   );

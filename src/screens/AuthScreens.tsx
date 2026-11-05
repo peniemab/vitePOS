@@ -26,7 +26,6 @@ export function AuthCard({ title, sub, children }: { title: string; sub?: ReactN
           <img src="/favicon.svg" alt="" width={44} height={44} style={{ borderRadius: 9 }} />
           <span className="brand">vitePOS</span>
         </Group>
-        <p>La caisse qui marche même quand le réseau coupe</p>
       </Box>
       <Box px="md" pb="xl">
         <Paper maw={420} mx="auto" p="lg" shadow="md" className="auth-card">
@@ -187,7 +186,7 @@ export function SignupScreen() {
   return (
     <AuthCard
       title="Créer un compte"
-      sub="Après l'inscription, vous pourrez créer votre boutique ou rejoindre celle de votre patron avec son code d'invitation."
+      sub="Après l'inscription, vous pourrez gérer votre activité ou rejoindre celle de votre patron avec son code d'invitation."
     >
       <OfflineHint />
       <form onSubmit={submit}>
