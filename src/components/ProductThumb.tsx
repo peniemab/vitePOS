@@ -1,7 +1,7 @@
 /** Vignette d'article (icône ou initiales sur la couleur du rayon) et pastilles de rayon, partagées par la caisse et le stock. */
 import type { CSSProperties, ReactNode } from "react";
 import { UnstyledButton } from "@mantine/core";
-import { IconBeer, IconBottle, IconBread, IconCandle, IconDeviceMobile, IconDroplet, IconEgg, IconGrain } from "@tabler/icons-react";
+import { IconBeer, IconBottle, IconBread, IconCandle, IconDeviceMobile, IconDroplet, IconEgg, IconGrain } from "./icons";
 import { categoryColor, initials, productIcon, type ProductIcon } from "../lib/products";
 
 const ICONS: Record<ProductIcon, typeof IconBottle> = {

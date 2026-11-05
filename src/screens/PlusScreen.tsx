@@ -2,7 +2,7 @@
 import { Link } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
 import { Paper, Text, ThemeIcon, UnstyledButton } from "@mantine/core";
-import { IconBrandWhatsapp, IconChevronRight } from "@tabler/icons-react";
+import { IconBrandWhatsapp, IconChevronRight } from "../components/icons";
 import { PageTitle } from "../components/ui";
 import { InstallCard } from "../components/InstallCard";
 import { HELP_URL } from "../components/Help";

@@ -18,7 +18,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconArchive, IconArrowsExchange, IconArchiveOff, IconDeviceFloppy } from "@tabler/icons-react";
+import { IconArchive, IconArrowsExchange, IconArchiveOff, IconDeviceFloppy } from "./icons";
 import { useReady } from "../data/session";
 import {
   adjustStock,

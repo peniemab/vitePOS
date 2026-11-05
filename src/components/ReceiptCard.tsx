@@ -5,7 +5,7 @@
 import { useMemo, useState } from "react";
 import { Alert, Button, FileButton, Group, Image, Paper, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconPhotoUp, IconTrash } from "@tabler/icons-react";
+import { IconPhotoUp, IconTrash } from "./icons";
 import { updateReceipt, type Boutique } from "../data/boutique";
 import { bitmapDataUrl, logoFromFile } from "../data/bitmapCanvas";
 import { errorMessage } from "../data/errors";

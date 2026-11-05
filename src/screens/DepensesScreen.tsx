@@ -10,7 +10,7 @@ import {
   IconPackage,
   IconPlus,
   IconUsers,
-} from "@tabler/icons-react";
+} from "../components/icons";
 import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { cancelExpense, createExpense, watchExpensesOfDay } from "../data/cashday";

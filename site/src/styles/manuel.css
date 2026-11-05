@@ -27,7 +27,7 @@
   align-items: center;
 }
 .mag-masthead {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: 0.22em;
@@ -43,7 +43,7 @@
   letter-spacing: 0.12em;
 }
 .mag-cover h1 {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: clamp(3.2rem, 9vw, 6.4rem);
   line-height: 0.92;
   margin: 22px 0 18px;
@@ -74,7 +74,7 @@
   font-weight: 600;
 }
 .mag-cover-teasers b {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.6rem;
   color: var(--sun);
   min-width: 2ch;
@@ -128,7 +128,7 @@
   color: var(--muted);
 }
 .mag-toc-num {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-weight: 700;
   font-size: 2rem;
   color: var(--brick);
@@ -150,7 +150,7 @@
   padding-bottom: 12px;
 }
 .mag-num {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-weight: 700;
   font-size: clamp(4.5rem, 12vw, 8rem);
   line-height: 0.8;
@@ -179,7 +179,7 @@
   margin: 20px 0 28px;
 }
 .mag-lead::first-letter {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-weight: 700;
   font-size: 3.2em;
   float: left;
@@ -221,7 +221,7 @@
   place-items: center;
   background: var(--sky);
   color: #fff;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-weight: 700;
   font-size: 1.15rem;
 }
@@ -243,7 +243,7 @@
 }
 .mag-figure b {
   display: block;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: clamp(2.6rem, 7vw, 4rem);
   line-height: 1;
   color: var(--brick);
@@ -257,7 +257,7 @@
   border-left: 5px solid;
 }
 .mag-box b {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.15rem;
 }
 .mag-box p {
@@ -365,7 +365,7 @@
   }
   html,
   body {
-    font-size: 16.5px;
+    font-size: 15.5px;
     background: #fff;
   }
   * {

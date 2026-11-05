@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router";
 import { ActionIcon, Group, Paper, SegmentedControl, Text, Title } from "@mantine/core";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight } from "../components/icons";
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
 import { useDays } from "../data/dayStats";

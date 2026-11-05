@@ -2,7 +2,7 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { Badge, Button, Group, Menu, Paper, ScrollArea, SegmentedControl, Text, UnstyledButton } from "@mantine/core";
-import { IconAlertTriangle, IconDots, IconDownload, IconPlus, IconStarFilled, IconTag, IconUpload } from "@tabler/icons-react";
+import { IconAlertTriangle, IconDots, IconDownload, IconPlus, IconStarFilled, IconTag, IconUpload } from "../components/icons";
 import { useReady } from "../data/session";
 import { assignMissingSkus, useActor, useCatalog } from "../data/products";
 import { CatPill, ProductThumb } from "../components/ProductThumb";

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Badge, Button, Modal, Text, UnstyledButton } from "@mantine/core";
-import { IconCloudUpload, IconDeviceMobileSearch } from "@tabler/icons-react";
+import { IconCloudUpload, IconDeviceMobileSearch } from "../components/icons";
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
 import { watchSalesOfDay } from "../data/sales";

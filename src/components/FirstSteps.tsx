@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Anchor, Group, Paper, Progress, Text, ThemeIcon, UnstyledButton } from "@mantine/core";
-import { IconCheck, IconChevronRight } from "@tabler/icons-react";
+import { IconCheck, IconChevronRight } from "./icons";
 import { useReady } from "../data/session";
 import { useCatalog } from "../data/products";
 import { watchHasSale } from "../data/sales";

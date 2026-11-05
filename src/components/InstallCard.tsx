@@ -1,7 +1,7 @@
 /** Invitation à installer vitePOS sur l'écran d'accueil, adaptée au téléphone utilisé. */
 import { useState } from "react";
 import { Button, CloseButton, Group, Paper, Text, ThemeIcon } from "@mantine/core";
-import { IconDeviceMobileDown, IconDotsVertical, IconShare2 } from "@tabler/icons-react";
+import { IconDeviceMobileDown, IconDotsVertical, IconShare2 } from "./icons";
 import { promptInstall, useInstallMode } from "../data/install";
 
 const DISMISS_KEY = "vitepos.install.dismissed";

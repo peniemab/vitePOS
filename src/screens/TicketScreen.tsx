@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useParams } from "react-router";
 import { Alert, Badge, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCash, IconCheck, IconCloudCheck, IconCloudUpload, IconPrinter, IconReceiptOff, IconShare } from "@tabler/icons-react";
+import { IconCash, IconCheck, IconCloudCheck, IconCloudUpload, IconPrinter, IconReceiptOff, IconShare } from "../components/icons";
 import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { cancelSale, watchSale } from "../data/sales";

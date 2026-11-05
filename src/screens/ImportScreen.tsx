@@ -2,7 +2,7 @@
 import { useMemo, useRef, useState } from "react";
 import { Link, Navigate } from "react-router";
 import { Alert, Anchor, Button, FileButton, Group, Paper, Stack, Table, Text, Textarea, Title } from "@mantine/core";
-import { IconArrowLeft, IconCheck, IconDownload, IconFileUpload } from "@tabler/icons-react";
+import { IconArrowLeft, IconCheck, IconDownload, IconFileUpload } from "../components/icons";
 import { useReady } from "../data/session";
 import { importProducts, useActor, useCatalog } from "../data/products";
 import { Money, PageTitle } from "../components/ui";

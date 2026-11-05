@@ -26,7 +26,7 @@ import {
   IconSettings,
   IconReceipt,
   IconSun,
-} from "@tabler/icons-react";
+} from "./icons";
 import { logout, useReady } from "../data/session";
 import { getSyncState, useSyncState } from "../data/sync";
 import { HELP_URL } from "./Help";
@@ -141,8 +141,12 @@ export function Layout() {
         <nav className="bottom-nav" aria-label="Sections">
           {TABS.map((t) => (
             <NavLink key={t.to} to={t.to} end={t.end}>
-              <t.icon size={22} stroke={1.8} />
-              {t.label}
+              {({ isActive }) => (
+                <>
+                  <t.icon size={22} filled={isActive} />
+                  {t.label}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -180,12 +184,16 @@ function SideNav({ mini }: { mini: boolean }) {
               const badge = i.to === "/stock" ? alerts : 0;
               const link = (
                 <NavLink to={i.to} end={i.end} className="side-item" aria-label={mini ? i.label : undefined}>
-                  <i.icon size={20} stroke={1.8} aria-hidden="true" />
-                  {!mini && <span>{i.label}</span>}
-                  {badge > 0 && (
-                    <span className="side-badge" title={`${badge} article${badge > 1 ? "s" : ""} à racheter`}>
-                      {badge}
-                    </span>
+                  {({ isActive }) => (
+                    <>
+                      <i.icon size={20} filled={isActive} aria-hidden="true" />
+                      {!mini && <span>{i.label}</span>}
+                      {badge > 0 && (
+                        <span className="side-badge" title={`${badge} article${badge > 1 ? "s" : ""} à racheter`}>
+                          {badge}
+                        </span>
+                      )}
+                    </>
                   )}
                 </NavLink>
               );

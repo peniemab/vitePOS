@@ -41,9 +41,9 @@ body {
   }
 }
 
-/* Chiffres : Barlow Condensed à chasse fixe */
+/* Chiffres : Google Sans à chasse fixe */
 .n {
-  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-family: "Google Sans", Roboto, sans-serif;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -113,7 +113,7 @@ body {
   color: #a9b6d2;
 }
 .brand {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-weight: 700;
   font-size: 1.35rem;
   white-space: nowrap;
@@ -150,14 +150,14 @@ body {
 .side-brand b,
 .side-me b {
   display: block;
-  font: 700 1.15rem/1.1 "Barlow Condensed", sans-serif;
+  font: 700 1.15rem/1.1 "Google Sans", sans-serif;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .side-me b {
-  font: 600 0.92rem/1.2 Barlow, sans-serif;
+  font: 600 0.92rem/1.2 "Google Sans", sans-serif;
 }
 .side-brand small,
 .side-me small {
@@ -339,7 +339,7 @@ body {
 }
 .sale-ok b {
   display: block;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.35rem;
   line-height: 1.1;
 }
@@ -433,7 +433,7 @@ body {
   place-items: center;
   background: color-mix(in srgb, var(--c) 13%, var(--app-surface));
   color: var(--c);
-  font: 700 1.4rem/1 "Barlow Condensed", sans-serif;
+  font: 700 1.4rem/1 "Google Sans", sans-serif;
 }
 .product-tile .name {
   font-weight: 600;
@@ -453,7 +453,7 @@ body {
   margin-top: auto;
 }
 .product-tile .price {
-  font: 700 1.2rem/1.1 "Barlow Condensed", sans-serif;
+  font: 700 1.2rem/1.1 "Google Sans", sans-serif;
   white-space: nowrap;
 }
 .product-tile .stock {
@@ -525,7 +525,7 @@ body {
 }
 .cart-head h3 {
   margin: 0;
-  font: 700 1.3rem "Barlow Condensed", sans-serif;
+  font: 700 1.3rem "Google Sans", sans-serif;
 }
 .cart-count {
   padding: 2px 9px;
@@ -546,7 +546,7 @@ body {
   border-bottom: 1px dashed var(--mantine-color-default-border);
 }
 .cart-line .tot {
-  font: 700 1.1rem "Barlow Condensed", sans-serif;
+  font: 700 1.1rem "Google Sans", sans-serif;
   text-align: right;
 }
 .stepper {
@@ -568,7 +568,7 @@ body {
   background: color-mix(in srgb, var(--mantine-color-body) 60%, var(--app-surface));
 }
 .cart-total b {
-  font: 700 2.2rem/1 "Barlow Condensed", sans-serif;
+  font: 700 2.2rem/1 "Google Sans", sans-serif;
 }
 .pay-btn {
   height: 58px !important;
@@ -630,7 +630,7 @@ body {
   font-size: 0.8rem;
 }
 .cart-bar b {
-  font: 700 1.35rem "Barlow Condensed", sans-serif;
+  font: 700 1.35rem "Google Sans", sans-serif;
 }
 .cart-bar .go {
   display: flex;
@@ -662,7 +662,7 @@ body {
 }
 .pay-due b {
   display: block;
-  font: 700 2.6rem/1.05 "Barlow Condensed", sans-serif;
+  font: 700 2.6rem/1.05 "Google Sans", sans-serif;
 }
 .pay-methods {
   display: grid;
@@ -693,7 +693,7 @@ body {
   border-radius: 10px;
   text-align: center;
   background: var(--app-soft);
-  font: 700 1rem "Barlow Condensed", sans-serif;
+  font: 700 1rem "Google Sans", sans-serif;
 }
 .pay-bill[data-on] {
   background: #0f1f42;
@@ -715,7 +715,7 @@ body {
   color: var(--app-due);
 }
 .pay-change b {
-  font: 700 1.9rem "Barlow Condensed", sans-serif;
+  font: 700 1.9rem "Google Sans", sans-serif;
 }
 
 /* Ticket de caisse */
@@ -795,7 +795,7 @@ body {
 
 /* Code d'invitation bien lisible */
 .invite-code {
-  font-family: "Barlow Condensed", monospace;
+  font-family: "Google Sans", monospace;
   font-weight: 700;
   font-size: 2rem;
   letter-spacing: 0.25em;
@@ -1018,7 +1018,7 @@ body {
 }
 .home-top h1 {
   margin: 0;
-  font: 700 1.9rem/1.1 "Barlow Condensed", sans-serif;
+  font: 700 1.9rem/1.1 "Google Sans", sans-serif;
 }
 .home-top .sub {
   color: var(--mantine-color-dimmed);
@@ -1099,7 +1099,7 @@ body {
 .kpi .val {
   display: block;
   margin: 10px 0 4px;
-  font: 700 2rem/1 "Barlow Condensed", sans-serif;
+  font: 700 2rem/1 "Google Sans", sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -1193,7 +1193,7 @@ body {
 }
 .panel-h h3 {
   margin: 0;
-  font: 700 1.2rem "Barlow Condensed", sans-serif;
+  font: 700 1.2rem "Google Sans", sans-serif;
 }
 .see-all {
   color: var(--app-sky);
@@ -1512,7 +1512,7 @@ body {
   place-items: center;
   background: color-mix(in srgb, var(--c) 16%, var(--app-surface));
   color: var(--c);
-  font: 700 0.95rem/1 "Barlow Condensed", sans-serif;
+  font: 700 0.95rem/1 "Google Sans", sans-serif;
   letter-spacing: 0.02em;
 }.ico.gray {
   background: color-mix(in srgb, #7a8599 14%, var(--app-surface));
@@ -1599,7 +1599,7 @@ body {
 .till-total {
   display: block;
   margin: 8px 0 6px;
-  font: 700 clamp(3rem, 13vw, 4.4rem) / 0.95 "Barlow Condensed", sans-serif;
+  font: 700 clamp(3rem, 13vw, 4.4rem) / 0.95 "Google Sans", sans-serif;
   white-space: normal;
 }
 .till-total small {

@@ -2,7 +2,7 @@
 import { useDeferredValue, useEffect, useMemo, useState, type FormEvent, type CSSProperties } from "react";
 import { useNavigate } from "react-router";
 import { Anchor, Badge, Button, Group, Modal, Paper, Stack, Tabs, Text, TextInput, Textarea, UnstyledButton } from "@mantine/core";
-import { IconPhone, IconPlus, IconSearch } from "@tabler/icons-react";
+import { IconPhone, IconPlus, IconSearch } from "../components/icons";
 import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { createClient, updateClient, useClients } from "../data/clients";

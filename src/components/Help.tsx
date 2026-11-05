@@ -1,7 +1,7 @@
 /** Aide directe par WhatsApp, et écran vide qui guide vers le premier geste. */
 import type { ReactNode } from "react";
 import { Anchor, Group, Stack, Text } from "@mantine/core";
-import { IconBrandWhatsapp } from "@tabler/icons-react";
+import { IconBrandWhatsapp } from "./icons";
 import { PAYMENT_CONTACT, whatsappLink } from "../lib/subscription";
 
 export const HELP_URL = whatsappLink(PAYMENT_CONTACT, "Bonjour, j'ai besoin d'aide avec vitePOS : ");

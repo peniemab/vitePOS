@@ -1,6 +1,6 @@
 ---
 import Brand from "./Brand.astro";
-import { LOGIN_URL, SIGNUP_URL } from "../data/content";
+import { LOGIN_URL } from "../data/content";
 import { navIcons } from "../data/icons";
 import { dicts, otherLang, route, type Lang, type PageKey } from "../i18n";
 
@@ -24,16 +24,17 @@ const sections = t.header.nav.map((n) => ({ ...n, anchor: t.home.ids[n.id] }));
           .filter((n) => n.id !== "offline" && n.id !== "devices")
           .map((n) => (
             <a href={`${home}#${n.anchor}`} data-spy={n.anchor}>
+              <span class="nav-icon" set:html={navIcons[n.id]} />
               {n.label}
             </a>
           ))
       }
-      <a href={route(lang, "manual")} aria-current={page === "manual" ? "page" : undefined}>{t.header.manual}</a>
+      <a href={route(lang, "equipment")} aria-current={page === "equipment" ? "page" : undefined}><span class="nav-icon" set:html={navIcons.equipment} />{t.header.equipment}</a>
+      <a href={route(lang, "manual")} aria-current={page === "manual" ? "page" : undefined}><span class="nav-icon" set:html={navIcons.book} />{t.header.manual}</a>
     </nav>
     <div class="top-actions">
       <a class="lang-switch" href={route(otherLang(lang), page)} hreflang={otherLang(lang)} title={t.switchTitle}>{t.switchLabel}</a>
-      <a class="link" href={LOGIN_URL}>{t.header.login}</a>
-      <a class="btn btn-small" href={SIGNUP_URL}>{t.header.signup}</a>
+      <a class="login-icon" href={LOGIN_URL} aria-label={t.header.login} title={t.header.login}><span set:html={navIcons.login} /></a>
       <button
         type="button"
         class="menu-btn"
@@ -54,13 +55,15 @@ const sections = t.header.nav.map((n) => ({ ...n, anchor: t.home.ids[n.id] }));
       {
         sections.map((n) => (
           <a href={`${home}#${n.anchor}`} data-spy={n.anchor}>
+            <span class="nav-icon" set:html={navIcons[n.id]} />
             {n.label}
           </a>
         ))
       }
-      <a href={route(lang, "manual")}>{t.header.manual}</a>
-      <a href={LOGIN_URL}>{t.header.login}</a>
-      <a href={route(otherLang(lang), page)} hreflang={otherLang(lang)}>{t.switchTitle}</a>
+      <a href={route(lang, "equipment")}><span class="nav-icon" set:html={navIcons.equipment} />{t.header.equipment}</a>
+      <a href={route(lang, "manual")}><span class="nav-icon" set:html={navIcons.book} />{t.header.manual}</a>
+      <a href={LOGIN_URL}><span class="nav-icon" set:html={navIcons.login} />{t.header.login}</a>
+      <a href={route(otherLang(lang), page)} hreflang={otherLang(lang)}><span class="nav-icon" set:html={navIcons.language} />{t.switchTitle}</a>
     </div>
   </nav>
 </header>

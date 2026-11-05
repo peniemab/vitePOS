@@ -5,7 +5,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Button, SegmentedControl, Text, TextInput } from "@mantine/core";
-import { IconAlertTriangle, IconArrowsExchange, IconCalendarExclamation, IconChevronRight, IconPlus, IconSearch } from "@tabler/icons-react";
+import { IconAlertTriangle, IconArrowsExchange, IconCalendarExclamation, IconChevronRight, IconPlus, IconSearch } from "../components/icons";
 import { useReady } from "../data/session";
 import { FirstSteps } from "../components/FirstSteps";
 import { useCatalog } from "../data/products";
@@ -410,10 +410,10 @@ function Donut({ slices, count }: { slices: { color: string; value: number }[]; 
         offset -= pct;
         return el;
       })}
-      <text x="21" y="21" textAnchor="middle" fontFamily="Barlow Condensed" fontWeight="700" fontSize="8" fill="currentColor">
+      <text x="21" y="21" textAnchor="middle" fontFamily="Google Sans" fontWeight="700" fontSize="8" fill="currentColor">
         {count}
       </text>
-      <text x="21" y="27" textAnchor="middle" fontFamily="Barlow" fontSize="3.4" fill="var(--mantine-color-dimmed)">
+      <text x="21" y="27" textAnchor="middle" fontFamily="Google Sans" fontSize="3.4" fill="var(--mantine-color-dimmed)">
         vente{count > 1 ? "s" : ""}
       </text>
     </svg>

@@ -4,7 +4,7 @@
  */
 import { useState } from "react";
 import { ActionIcon, Autocomplete, Button, Group, NumberInput, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconPlus, IconTrash } from "./icons";
 import { ScanButton } from "./BarcodeField";
 import { ScanVideo } from "./ScanVideo";
 import { canUseCamera, useCameraScan } from "./useCameraScan";

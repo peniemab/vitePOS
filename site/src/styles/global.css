@@ -1,33 +1,27 @@
 /* Site de présentation vitePOS : mêmes couleurs et polices que l'application. */
 @font-face {
-  font-family: "Barlow";
+  font-family: "Google Sans";
   font-weight: 400;
   font-display: swap;
-  src: url("/fonts/barlow-latin-400-normal.woff2") format("woff2");
+  src: url("/fonts/google-sans-latin-400-normal.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Barlow";
+  font-family: "Google Sans";
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/google-sans-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Google Sans";
   font-weight: 600;
   font-display: swap;
-  src: url("/fonts/barlow-latin-600-normal.woff2") format("woff2");
+  src: url("/fonts/google-sans-latin-600-normal.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Barlow";
+  font-family: "Google Sans";
   font-weight: 700;
   font-display: swap;
-  src: url("/fonts/barlow-latin-700-normal.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Barlow Condensed";
-  font-weight: 600;
-  font-display: swap;
-  src: url("/fonts/barlow-condensed-latin-600-normal.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Barlow Condensed";
-  font-weight: 700;
-  font-display: swap;
-  src: url("/fonts/barlow-condensed-latin-700-normal.woff2") format("woff2");
+  src: url("/fonts/google-sans-latin-700-normal.woff2") format("woff2");
 }
 
 :root {
@@ -107,7 +101,7 @@ body {
 }
 body {
   margin: 0;
-  font-family: "Barlow", "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: "Google Sans", "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.55;
   color: var(--d-text);
@@ -247,7 +241,7 @@ a {
 h1,
 h2,
 h3 {
-  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-family: "Google Sans", sans-serif;
   line-height: 1.1;
   margin: 0 0 12px;
 }
@@ -345,10 +339,12 @@ p {
   align-items: center;
   gap: 8px;
   text-decoration: none;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.6rem;
   font-weight: 600;
   color: #fff;
+  flex: none;
+  white-space: nowrap;
 }
 /* Le « V » bleu nuit disparaîtrait sur le fond sombre : pastille blanche derrière. */
 .brand img {
@@ -366,6 +362,10 @@ p {
   margin-left: 8px;
 }
 .nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
   text-decoration: none;
   color: rgba(255, 255, 255, 0.86);
   font-weight: 600;
@@ -373,11 +373,64 @@ p {
 .nav a:hover {
   color: #fff;
 }
+/* Icône Google devant chaque lien du menu. */
+.nav-icon {
+  display: inline-grid;
+  flex: none;
+}
+.nav-icon svg {
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+}
+/* Écran moyen : la place manque, on garde les mots sans les icônes. */
+@media (max-width: 1440px) {
+  .nav {
+    gap: 16px;
+  }
+  .nav .nav-icon {
+    display: none;
+  }
+}
+.top-actions .btn-small,
+.top-actions .link {
+  white-space: nowrap;
+}
+.mobile-nav .nav-icon {
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
+.mobile-nav .nav-icon svg {
+  width: 22px;
+  height: 22px;
+  opacity: 1;
+}
 .top-actions {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 16px;
+}
+/* Se connecter : une icône seule (son nom s'affiche au survol et est lu par les lecteurs d'écran). */
+.login-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.login-icon:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.login-icon svg {
+  width: 24px;
+  height: 24px;
 }
 /* Bouton de langue FR / EN */
 .lang-switch {
@@ -479,6 +532,29 @@ p {
     font-size: 1.4rem;
   }
 }
+/* Petit téléphone : logo et bouton plus compacts, pour qu'ils ne se chevauchent pas (Google Sans est large). */
+@media (max-width: 400px) {
+  .top-inner {
+    gap: 8px;
+  }
+  .top-actions {
+    gap: 8px;
+  }
+  .brand {
+    gap: 6px;
+    font-size: 1.2rem;
+  }
+  .brand img {
+    width: 30px;
+  }
+  .top-actions .btn-small {
+    padding: 0 10px;
+    font-size: 0.82rem;
+  }
+  .menu-btn {
+    width: 40px;
+  }
+}
 
 /* Sections (accueil et pages de texte) */
 .section {
@@ -564,7 +640,7 @@ details p {
   gap: 10px;
 }
 .foot h2 {
-  font-family: "Barlow", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.1em;

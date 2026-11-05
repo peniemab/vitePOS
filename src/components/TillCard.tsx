@@ -4,7 +4,7 @@
  */
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import { IconChevronRight } from "@tabler/icons-react";
+import { IconChevronRight } from "./icons";
 import { CURRENCIES, CURRENCY_LIST, formatMoney, type Currency, type MoneyByCurrency } from "../lib/fx";
 
 export interface TillFigure {

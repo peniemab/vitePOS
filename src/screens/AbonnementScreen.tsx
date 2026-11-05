@@ -1,7 +1,7 @@
 /** Mon abonnement : formule, état (essai, actif, grâce, lecture seule), prix et comment payer. */
 import { useEffect, useState } from "react";
 import { Badge, Button, Group, Paper, SegmentedControl, SimpleGrid, Stack, Text, ThemeIcon, Title } from "@mantine/core";
-import { IconBrandWhatsapp, IconCheck, IconLock } from "@tabler/icons-react";
+import { IconBrandWhatsapp, IconCheck, IconLock } from "../components/icons";
 import { useReady } from "../data/session";
 import { changePlan } from "../data/boutique";
 import { errorMessage } from "../data/errors";

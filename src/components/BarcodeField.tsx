@@ -6,7 +6,7 @@
  */
 import { useRef } from "react";
 import { ActionIcon, Button, TextInput, Tooltip, type MantineSize } from "@mantine/core";
-import { IconBarcode, IconScan, IconSearch, IconX } from "@tabler/icons-react";
+import { IconBarcode, IconScan, IconSearch, IconX } from "./icons";
 import { ScanVideo } from "./ScanVideo";
 import { canUseCamera, useCameraScan } from "./useCameraScan";
 

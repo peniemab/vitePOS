@@ -14,7 +14,7 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { IconBuildingStore, IconUsersPlus, IconWifiOff } from "@tabler/icons-react";
+import { IconBuildingStore, IconUsersPlus, IconWifiOff } from "../components/icons";
 import type { User } from "firebase/auth";
 import { AuthCard } from "./AuthScreens";
 import { logout } from "../data/session";

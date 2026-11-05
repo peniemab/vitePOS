@@ -1,6 +1,6 @@
 /** Choix du jour affiché : précédent, suivant, retour à aujourd'hui (jamais au-delà d'aujourd'hui). */
 import { ActionIcon, Button, Group, Text } from "@mantine/core";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight } from "./icons";
 import { dayKey } from "../lib/cart";
 import { formatDay, shiftDay } from "../lib/cashday";
 

@@ -3,7 +3,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { Link, Navigate } from "react-router";
 import { ActionIcon, Alert, Anchor, Badge, Button, CopyButton, Group, Paper, Select, Stack, Text, Title, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconCopy } from "@tabler/icons-react";
+import { IconCheck, IconCopy } from "../components/icons";
 import { useReady } from "../data/session";
 import { updateMember, watchMembers, type Member } from "../data/boutique";
 import { errorMessage } from "../data/errors";

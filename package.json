@@ -13,14 +13,12 @@
     "deploy:site": "npm run build --prefix site && npx -y firebase-tools@latest deploy --only hosting:vitepos-rdc"
   },
   "dependencies": {
-    "@fontsource/barlow": "^5.3.0",
-    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/google-sans": "^5.3.2",
     "@mantine/core": "^9.6.3",
     "@mantine/dates": "^9.6.3",
     "@mantine/hooks": "^9.6.3",
     "@mantine/modals": "^9.6.3",
     "@mantine/notifications": "^9.6.3",
-    "@tabler/icons-react": "^3.48.0",
     "barcode-detector": "3.2.2",
     "dayjs": "^1.11.23",
     "firebase": "^12.19.0",
@@ -30,6 +28,7 @@
     "react-router": "^8.4.0"
   },
   "devDependencies": {
+    "@material-symbols/svg-400": "^0.48.3",
     "@resvg/resvg-js": "^2.6.2",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19.3.0",
@@ -38,6 +37,7 @@
     "postcss": "^8.5.28",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",
+    "simple-icons": "^16.36.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.2",
     "vite-plugin-pwa": "^2.0.0",

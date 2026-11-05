@@ -1,4 +1,4 @@
-/** Thème Mantine aux couleurs de vitePOS : bleu nuit, accent rouge, Barlow. */
+/** Thème Mantine aux couleurs de vitePOS : bleu nuit, accent rouge, Google Sans (la police des apps Google). */
 import { Button, createTheme, type MantineColorsTuple } from "@mantine/core";
 
 const navy: MantineColorsTuple = [
@@ -60,9 +60,9 @@ export const theme = createTheme({
   primaryShade: { light: 6, dark: 5 },
   autoContrast: true,
   colors: { navy, brick, sky, teal },
-  fontFamily: '"Barlow", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily: '"Google Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   headings: {
-    fontFamily: '"Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif',
+    fontFamily: '"Google Sans", Roboto, "Segoe UI", sans-serif',
     fontWeight: "700",
   },
   defaultRadius: "md",

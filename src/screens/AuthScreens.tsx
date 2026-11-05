@@ -2,7 +2,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router";
 import { Alert, Anchor, Box, Button, Divider, Group, Paper, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
-import { IconBrandGoogle, IconWifiOff } from "@tabler/icons-react";
+import { IconBrandGoogle, IconWifiOff } from "../components/icons";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,

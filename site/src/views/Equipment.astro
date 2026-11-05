@@ -1,0 +1,73 @@
+---
+/**
+ * Store « Matériel vitePOS » : le matériel vendu par l'équipe, dans la langue demandée.
+ * Pas encore de prix ni de photos : « Prix sur demande » et commande par WhatsApp (message déjà écrit avec le nom du produit).
+ * Textes dans `equipment` (i18n/fr.ts et en.ts).
+ */
+import Base from "../layouts/Base.astro";
+import { whatsappUrl } from "../data/content";
+import { contactIcons, icons, moreIcons } from "../data/icons";
+import { dicts, type Lang } from "../i18n";
+import "../styles/home.css";
+import "../styles/equipment.css";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = dicts[lang];
+const e = t.equipment;
+const art: Record<string, string> = {
+  pack: icons.package,
+  printer: moreIcons.printer,
+  barcode: moreIcons.barcode,
+  drawer: moreIcons.drawer,
+  tablet: moreIcons.tablet,
+  paper: moreIcons.receiptRoll,
+};
+const orderUrl = (name: string) => whatsappUrl(e.message.replace("{item}", name));
+---
+
+<Base title={e.title} description={e.description} lang={lang} page="equipment">
+  <section class="section shop">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="kicker">{e.eyebrow}</p>
+        <h1>{e.h1}</h1>
+        <p class="section-lead">{e.lead}</p>
+      </header>
+
+      <ul class="shop-grid">
+        {
+          e.items.map((item) => (
+            <li class:list={["shop-card", { featured: item.featured }]}>
+              {item.featured && <span class="shop-popular">{e.popular}</span>}
+              <span class="shop-art" set:html={art[item.icon]} />
+              <h2>{item.name}</h2>
+              <p>{item.text}</p>
+              <div class="shop-foot">
+                <span class="shop-price">{e.price}</span>
+                <a class="btn btn-whatsapp btn-small" href={orderUrl(item.name)} rel="noopener" aria-label={`${e.orderLabel} ${item.name}`}>
+                  <span class="btn-icon" set:html={contactIcons.whatsapp} />
+                  {e.order}
+                </a>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="shop-already">
+        <span class="shop-already-icon" set:html={moreIcons.shieldCheck} />
+        <div>
+          <h2>{e.already.title}</h2>
+          <p>{e.already.text}</p>
+        </div>
+        <a class="btn btn-light" href={whatsappUrl(e.alreadyMessage)} rel="noopener">
+          <span class="btn-icon" set:html={contactIcons.whatsapp} />
+          {e.ask}
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

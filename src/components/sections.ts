@@ -14,7 +14,7 @@ import {
   IconUsersGroup,
   IconWallet,
   type Icon,
-} from "@tabler/icons-react";
+} from "./icons";
 import { useReady } from "../data/session";
 import { useIsAdmin } from "../data/admin";
 import { canManageTeam } from "../lib/roles";

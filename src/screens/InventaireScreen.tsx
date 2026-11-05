@@ -6,7 +6,7 @@ import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router";
 import { Alert, Badge, Button, Group, Modal, NumberInput, Paper, Progress, ScrollArea, SegmentedControl, Stack, Table, Text, TextInput } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconCheck, IconClipboardCheck } from "@tabler/icons-react";
+import { IconCheck, IconClipboardCheck } from "../components/icons";
 import { useReady } from "../data/session";
 import { useActor, useCatalog } from "../data/products";
 import { cancelInventory, countProduct, startInventory, validateInventory, watchCountLines, watchInventories, type Inventory } from "../data/inventory";

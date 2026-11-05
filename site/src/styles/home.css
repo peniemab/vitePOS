@@ -631,7 +631,7 @@
   line-height: 1.25;
 }
 .toast-value {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.3rem;
   line-height: 1.1;
   color: var(--ink-deep);
@@ -755,7 +755,7 @@
 }
 .strength strong {
   display: block;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.3rem;
   line-height: 1.1;
   color: var(--title);
@@ -785,7 +785,7 @@
 /* Titres des deux colonnes, au-dessus de la première ligne. */
 .comic-cols {
   margin-bottom: 12px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.35rem;
   font-weight: 700;
 }
@@ -864,7 +864,7 @@
   color: rgba(255, 255, 255, 0.18);
 }
 .panel-placeholder span {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 6rem;
   font-weight: 700;
   line-height: 1;
@@ -1010,7 +1010,7 @@
 }
 .comic-spark-text p {
   margin: 0 0 18px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: clamp(1.6rem, 3vw, 2.2rem);
   font-weight: 700;
   line-height: 1.05;
@@ -1195,7 +1195,7 @@
   font-size: 0.78rem;
 }
 .sync-sale b {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.5rem;
   line-height: 1;
   color: var(--ink-deep);
@@ -1350,6 +1350,12 @@
   background: var(--d-card);
   color: var(--d-text);
   font-weight: 600;
+}
+.compat-shop {
+  margin-top: 20px;
+}
+.install-ask {
+  margin-top: 20px;
 }
 .compat-list svg {
   width: 20px;
@@ -1510,7 +1516,7 @@
   border-radius: 50%;
   background: var(--sky);
   color: #fff;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   box-shadow: 0 0 0 6px rgba(57, 135, 229, 0.2);
@@ -2040,7 +2046,7 @@
   gap: 8px;
 }
 .price-amount b {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Google Sans", sans-serif;
   font-size: clamp(2.8rem, 6vw, 3.6rem);
   line-height: 1;
   font-variant-numeric: tabular-nums;

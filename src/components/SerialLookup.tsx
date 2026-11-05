@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { Badge, Button, Group, Text, TextInput } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { IconSearch } from "./icons";
 import { useReady } from "../data/session";
 import { findSerial, type Serial } from "../data/serials";
 import { ScanButton } from "./BarcodeField";

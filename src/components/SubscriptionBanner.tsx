@@ -1,7 +1,7 @@
 /** Bandeau en haut des écrans : fin d'essai proche, retard de paiement ou lecture seule. */
 import { Link } from "react-router";
 import { Alert, Anchor } from "@mantine/core";
-import { IconAlertTriangle, IconLock } from "@tabler/icons-react";
+import { IconAlertTriangle, IconLock } from "./icons";
 import { useReady } from "../data/session";
 import { SubscriptionMessage } from "../screens/AbonnementScreen";
 

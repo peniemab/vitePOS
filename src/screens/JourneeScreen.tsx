@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
 import { Alert, Button, Group, NumberInput, Paper, Stack, Table, Text, Textarea, Title } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconLock } from "@tabler/icons-react";
+import { IconLock } from "../components/icons";
 import { useReady } from "../data/session";
 import { useActor } from "../data/products";
 import { watchSalesOfDay } from "../data/sales";

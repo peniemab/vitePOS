@@ -31,6 +31,7 @@ export const fr = {
       { id: "contact", label: "Contact" },
     ] as { id: SectionId; label: string }[],
     manual: "Manuel",
+    equipment: "Matériel",
     login: "Se connecter",
     signup: "Essayer gratuitement",
     menu: "Ouvrir le menu",
@@ -40,6 +41,7 @@ export const fr = {
   footer: {
     tagline: "Point de vente rapide et hors ligne, conçu à Kinshasa.",
     manual: "Manuel de l'utilisateur",
+    equipment: "Matériel vitePOS",
     brochure: "Brochure (PDF)",
     terms: "Conditions d'utilisation",
     privacy: "Confidentialité",
@@ -90,6 +92,7 @@ export const fr = {
     },
     syncTitle: "Et tout reste synchronisé",
     compatTitle: "Accessoires compatibles",
+    compatShop: "Voir le matériel vitePOS",
     compatHardware: ["Douchette code-barres USB ou Bluetooth", "Imprimante de tickets 58 ou 80 mm", "Caméra du téléphone pour scanner"],
     shots: {
       tabletteCaisse: { alt: "La caisse sur tablette : articles à gauche, panier à droite", title: "Caisse sur tablette", text: "Les articles à gauche, le panier à droite : idéal au comptoir." },
@@ -103,7 +106,7 @@ export const fr = {
 
     featuresTitle: "Tout votre business sur un seul écran",
     featuresLead:
-      "La caisse qui encaisse en quelques secondes, en FC, $ ou €, et compte votre stock pour vous. Les outils d'une grande surface, simples comme une calculatrice.",
+      "La caisse qui encaisse en quelques secondes, en FC, $ ou €, et compte votre stock pour vous. Simple comme une calculatrice.",
 
     audiencesTitle: "Pour tous les secteurs d'activité",
     audiencesLead: "vitePOS grandit avec votre business.",
@@ -150,8 +153,8 @@ export const fr = {
     /** Carrousel du haut de page : une diapositive par type de commerce (la première porte le titre principal). */
     slides: [
       {
-        tag: "Supermarchés et supérettes",
-        short: "Supérettes",
+        tag: "Plusieurs caisses",
+        short: "Plusieurs caisses",
         line: "Plusieurs caisses en même temps, le stock se met à jour tout seul.",
         title: "",
         text: "",
@@ -330,13 +333,14 @@ export const fr = {
     /** Installation : selon l'appareil du visiteur. */
     install: {
       eyebrow: "Installer",
-      title: "Rien à télécharger",
-      lead: "vitePOS s'ouvre dans le navigateur. Ajoutez son icône sur l'écran d'accueil : elle s'ouvre ensuite comme une application, même sans réseau.",
+      ask: "Demander l'installation",
+      askMessage: "Bonjour, je voudrais que vous passiez installer vitePOS chez moi.",
+      title: "On l'installe pour vous",
+      lead: "Nos équipes peuvent passer chez vous pour tout installer et vous montrer comment vendre.",
       yours: "Votre appareil",
       open: "Ouvrir vitePOS",
       scan: "Ou scannez avec votre téléphone",
       qrAlt: "QR code pour ouvrir vitePOS",
-      help: { title: "On l'installe pour vous", text: "Nos équipes peuvent passer chez vous pour tout installer et vous montrer comment vendre." },
       devices: [
         { name: "Android", where: "Chrome", steps: ["Ouvrez getvitepos.web.app dans Chrome", "Touchez les trois points en haut, puis « Installer l'application »", "L'icône vitePOS apparaît sur l'écran d'accueil"] },
         { name: "iPhone et iPad", where: "Safari ou Chrome", steps: ["Ouvrez getvitepos.web.app dans Safari ou Chrome", "Touchez le bouton Partager", "Choisissez « Sur l'écran d'accueil »"] },
@@ -381,8 +385,34 @@ export const fr = {
     { title: "Magasins de quartier", text: "Alimentation, cosmétiques, téléphonie, boulangeries. Une caisse simple sur le téléphone du patron ou du vendeur." },
     { title: "Quincailleries, grossistes et pièces de rechange", text: "Gros catalogues, recherche par code article, ventes à la pièce, au kilo, au litre ou au carton, plusieurs vendeurs." },
     { title: "Pharmacies et dépôts de boissons", text: "Recherche rapide par nom ou code-barres, vente au casier ou au carton, alertes de rupture, inventaires réguliers." },
-    { title: "Supérettes et supermarchés", text: "Plusieurs caisses qui vendent en même temps, clôture par jour, rapports pour le gérant et le propriétaire." },
+    { title: "Magasins à plusieurs caisses", text: "Plusieurs caisses qui vendent en même temps, clôture par jour, rapports pour le gérant et le propriétaire." },
   ],
+
+  /** Store « Matériel vitePOS » : le matériel vendu par l'équipe, prix sur demande (commande par WhatsApp). */
+  equipment: {
+    title: "Matériel vitePOS : imprimantes, douchettes, tiroirs-caisses",
+    description: "Le matériel qui marche avec vitePOS : imprimantes de tickets, douchettes, tiroirs-caisses, tablettes et papier. Prix sur demande, commande sur WhatsApp.",
+    eyebrow: "Matériel",
+    h1: "Le matériel pour bien vendre",
+    lead: "Tout ce qui va avec vitePOS, déjà testé par notre équipe. Écrivez-nous sur WhatsApp : on vous donne le prix et on s'organise pour vous le remettre.",
+    price: "Prix sur demande",
+    order: "Commander",
+    orderLabel: "Commander sur WhatsApp :",
+    message: "Bonjour, je voudrais commander : {item}. Quel est le prix ?",
+    popular: "Le plus demandé",
+    items: [
+      { id: "pack", icon: "pack", name: "Pack caisse complet", text: "Tablette avec support, imprimante de tickets, douchette et tiroir-caisse. On l'installe chez vous et on vous montre comment vendre.", featured: true },
+      { id: "printer58", icon: "printer", name: "Imprimante de tickets Bluetooth 58 mm", text: "Petite et sans fil : elle imprime le ticket depuis le téléphone, même sans réseau." },
+      { id: "printer80", icon: "printer", name: "Imprimante de tickets 80 mm", text: "Pour le comptoir : tickets plus larges, branchée à l'ordinateur ou à la tablette." },
+      { id: "scanner", icon: "barcode", name: "Douchette (lecteur de codes-barres)", text: "Bip ! le produit est dans le panier, sans rien taper. En USB ou en Bluetooth." },
+      { id: "drawer", icon: "drawer", name: "Tiroir-caisse", text: "Il s'ouvre tout seul à chaque vente, branché à l'imprimante 80 mm." },
+      { id: "tablet", icon: "tablet", name: "Tablette avec support", text: "Un grand écran posé sur le comptoir, prêt pour encaisser." },
+      { id: "paper", icon: "paper", name: "Rouleaux de papier thermique", text: "En 58 mm et en 80 mm, à l'unité ou par carton." },
+    ],
+    already: { title: "Vous avez déjà du matériel ?", text: "vitePOS marche aussi avec la plupart des imprimantes de tickets USB ou Bluetooth et des douchettes. Envoyez-nous la marque sur WhatsApp, on vous dit si ça va." },
+    alreadyMessage: "Bonjour, j'ai déjà du matériel. Est-ce qu'il marche avec vitePOS ? Voici la marque : ",
+    ask: "Poser une question",
+  },
 
   /** Formules : mêmes prix que PLANS dans src/lib/subscription.ts (app). Pro est mise en avant. */
   plans: {
@@ -425,8 +455,8 @@ export const fr = {
 
   /** Liste courte des secteurs, pour la brochure. */
   sectors: [
-    "Alimentation et supérettes",
-    "Supermarchés",
+    "Alimentation",
+    "Cosmétiques et mode",
     "Quincailleries et matériaux",
     "Pharmacies et parapharmacies",
     "Dépôts de boissons",

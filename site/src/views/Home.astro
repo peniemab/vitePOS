@@ -416,6 +416,7 @@ function toToast(text: string) {
         <ul class="compat-list">
           {h.compatHardware.map((x, i) => <li><span set:html={[moreIcons.barcode, moreIcons.printer, moreIcons.deviceMobile][i]} />{x}</li>)}
         </ul>
+        <a class="btn btn-dark compat-shop" href={route(lang, "equipment")}><span class="btn-icon" set:html={moreIcons.printer} />{h.compatShop}</a>
       </div>
     </div>
   </section>
@@ -516,6 +517,7 @@ function toToast(text: string) {
         <p class="kicker">{h.install.eyebrow}</p>
         <h2>{h.install.title}</h2>
         <p class="section-lead">{h.install.lead}</p>
+        <a class="btn btn-whatsapp install-ask" href={whatsappUrl(h.install.askMessage)} rel="noopener"><span class="btn-icon" set:html={contactIcons.whatsapp} />{h.install.ask}</a>
       </header>
       <div class="install-grid">
         <ul class="install-cards">
@@ -539,10 +541,6 @@ function toToast(text: string) {
           <small>{h.install.scan}</small>
         </div>
       </div>
-      <p class="install-help">
-        <span class="install-help-icon" set:html={icons.users} />
-        <span><b>{h.install.help.title}</b> {h.install.help.text}</span>
-      </p>
     </div>
   </section>
 

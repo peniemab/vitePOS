@@ -23,6 +23,7 @@ export const en: Dict = {
       { id: "contact", label: "Contact" },
     ],
     manual: "Manual",
+    equipment: "Equipment",
     login: "Sign in",
     signup: "Try it free",
     menu: "Open menu",
@@ -32,6 +33,7 @@ export const en: Dict = {
   footer: {
     tagline: "A fast point of sale that works offline, made in Kinshasa.",
     manual: "User manual",
+    equipment: "vitePOS equipment",
     brochure: "Brochure (PDF)",
     terms: "Terms of use",
     privacy: "Privacy",
@@ -80,6 +82,7 @@ export const en: Dict = {
     },
     syncTitle: "And everything stays in sync",
     compatTitle: "Compatible accessories",
+    compatShop: "See vitePOS equipment",
     compatHardware: ["USB or Bluetooth barcode scanner", "58 or 80 mm receipt printer", "Phone camera for scanning"],
     shots: {
       tabletteCaisse: { alt: "The till on a tablet: items on the left, cart on the right", title: "Till on a tablet", text: "Items on the left, cart on the right: perfect at the counter." },
@@ -93,7 +96,7 @@ export const en: Dict = {
 
     featuresTitle: "Your whole business on one screen",
     featuresLead:
-      "The till that takes payment in seconds, in FC, $ or €, and counts your stock for you. Supermarket tools, as simple as a calculator.",
+      "The till that takes payment in seconds, in FC, $ or €, and counts your stock for you. As simple as a calculator.",
 
     audiencesTitle: "For every line of business",
     audiencesLead: "vitePOS grows with your business.",
@@ -139,8 +142,8 @@ export const en: Dict = {
 
     slides: [
       {
-        tag: "Supermarkets and convenience stores",
-        short: "Grocery",
+        tag: "Several tills",
+        short: "Several tills",
         line: "Several tills at once, the stock updates itself.",
         title: "",
         text: "",
@@ -309,13 +312,14 @@ export const en: Dict = {
 
     install: {
       eyebrow: "Install",
-      title: "Nothing to download",
-      lead: "vitePOS opens in the browser. Add its icon to your home screen: it then opens like an app, even without network.",
+      ask: "Ask for setup",
+      askMessage: "Hello, I would like you to come and set up vitePOS for me.",
+      title: "We can set it up for you",
+      lead: "Our team can come to you to install everything and show you how to sell.",
       yours: "Your device",
       open: "Open vitePOS",
       scan: "Or scan with your phone",
       qrAlt: "QR code to open vitePOS",
-      help: { title: "We can set it up for you", text: "Our team can come to you to install everything and show you how to sell." },
       devices: [
         { name: "Android", where: "Chrome", steps: ["Open getvitepos.web.app in Chrome", "Tap the three dots at the top, then “Install app”", "The vitePOS icon appears on your home screen"] },
         { name: "iPhone and iPad", where: "Safari or Chrome", steps: ["Open getvitepos.web.app in Safari or Chrome", "Tap the Share button", "Choose “Add to Home Screen”"] },
@@ -360,8 +364,33 @@ export const en: Dict = {
     { title: "Neighbourhood businesses", text: "Grocery, cosmetics, phones, bakeries. A simple till on the owner's or the seller's phone." },
     { title: "Hardware, wholesale and spare parts", text: "Large catalogues, search by item code, sales by the piece, kilo, litre or carton, several sellers." },
     { title: "Pharmacies and drinks depots", text: "Quick search by name or barcode, sales by the crate or carton, out-of-stock alerts, regular stocktaking." },
-    { title: "Minimarkets and supermarkets", text: "Several tills selling at the same time, daily closing, reports for the manager and the owner." },
+    { title: "Stores with several tills", text: "Several tills selling at the same time, daily closing, reports for the manager and the owner." },
   ],
+
+  equipment: {
+    title: "vitePOS equipment: printers, scanners, cash drawers",
+    description: "Equipment that works with vitePOS: receipt printers, barcode scanners, cash drawers, tablets and paper. Price on request, order on WhatsApp.",
+    eyebrow: "Equipment",
+    h1: "The equipment to sell with ease",
+    lead: "Everything that goes with vitePOS, already tested by our team. Message us on WhatsApp: we give you the price and arrange how to get it to you.",
+    price: "Price on request",
+    order: "Order",
+    orderLabel: "Order on WhatsApp:",
+    message: "Hello, I would like to order: {item}. What is the price?",
+    popular: "Most requested",
+    items: [
+      { id: "pack", icon: "pack", name: "Complete checkout pack", text: "Tablet with stand, receipt printer, barcode scanner and cash drawer. We set it up for you and show you how to sell.", featured: true },
+      { id: "printer58", icon: "printer", name: "58 mm Bluetooth receipt printer", text: "Small and wireless: it prints the receipt from the phone, even without network." },
+      { id: "printer80", icon: "printer", name: "80 mm receipt printer", text: "For the counter: wider receipts, plugged into the computer or the tablet." },
+      { id: "scanner", icon: "barcode", name: "Barcode scanner", text: "Beep! The product is in the cart, no typing. USB or Bluetooth." },
+      { id: "drawer", icon: "drawer", name: "Cash drawer", text: "Opens by itself at every sale, plugged into the 80 mm printer." },
+      { id: "tablet", icon: "tablet", name: "Tablet with stand", text: "A big screen on the counter, ready to take payments." },
+      { id: "paper", icon: "paper", name: "Thermal paper rolls", text: "58 mm and 80 mm, single rolls or by the box." },
+    ],
+    already: { title: "Already have equipment?", text: "vitePOS also works with most USB or Bluetooth receipt printers and barcode scanners. Send us the brand on WhatsApp and we'll tell you if it works." },
+    alreadyMessage: "Hello, I already have equipment. Does it work with vitePOS? Here is the brand: ",
+    ask: "Ask a question",
+  },
 
   plans: {
     popular: "Most popular",
@@ -402,8 +431,8 @@ export const en: Dict = {
   },
 
   sectors: [
-    "Grocery and minimarkets",
-    "Supermarkets",
+    "Grocery stores",
+    "Cosmetics and fashion",
     "Hardware and building materials",
     "Pharmacies and parapharmacies",
     "Drinks depots",

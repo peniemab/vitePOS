@@ -6,7 +6,7 @@ import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties } fr
 import { Navigate } from "react-router";
 import { Badge, Button, Chip, Group, Modal, NumberInput, Paper, SegmentedControl, Select, Stack, Text, TextInput, UnstyledButton } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconSearch } from "@tabler/icons-react";
+import { IconSearch } from "../components/icons";
 import { useReady } from "../data/session";
 import { getOwner, recordPayment, useIsAdmin, watchAllBoutiques, watchPayments, type SubscriptionPayment } from "../data/admin";
 import type { Boutique } from "../data/boutique";

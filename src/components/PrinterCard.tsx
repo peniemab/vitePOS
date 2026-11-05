@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { Alert, Button, Group, Paper, Select, Stack, Text, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconBluetooth, IconPrinter } from "@tabler/icons-react";
+import { IconBluetooth, IconPrinter } from "./icons";
 import {
   bluetoothUnavailableMessage,
   canUseBluetooth,

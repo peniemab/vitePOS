@@ -34,7 +34,7 @@ import {
   IconTrash,
   IconUserPlus,
   IconX,
-} from "@tabler/icons-react";
+} from "../components/icons";
 import { useReady } from "../data/session";
 import { useActor, useCatalog } from "../data/products";
 import { currenciesOf, ratesOf } from "../data/boutique";

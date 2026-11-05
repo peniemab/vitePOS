@@ -26,6 +26,7 @@ const year = new Date().getFullYear();
     </nav>
     <nav aria-label={t.footer.legal}>
       <h2>{t.footer.legal}</h2>
+      <a href={route(lang, "equipment")}>{t.footer.equipment}</a>
       <a href={route(lang, "manual")}>{t.footer.manual}</a>
       <a href={PDF[lang].brochure} download>{t.footer.brochure}</a>
       {
