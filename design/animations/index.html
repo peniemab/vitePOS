@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fond animé vitePOS · essais</title>
+    <!-- Page de travail : trois essais d'animation pour le fond du site, sur le même bleu nuit. Pas publiée. -->
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: "Barlow", "Segoe UI", sans-serif; background: #0a142a; color: #e8edf7; }
+      .page { max-width: 1240px; margin: 0 auto; padding: 32px 16px 64px; }
+      h1 { font-size: 2rem; margin: 0 0 6px; }
+      .intro { color: #a9b6d2; margin: 0 0 28px; max-width: 60em; }
+      .demo { margin-bottom: 36px; }
+      .demo h2 { font-size: 1.35rem; margin: 0 0 4px; }
+      .demo p { color: #a9b6d2; margin: 0 0 12px; }
+      .stage {
+        position: relative; height: 440px; overflow: hidden; border-radius: 14px;
+        background: linear-gradient(180deg, #0a142a 0%, #0f1f42 50%, #0d1b3a 100%);
+      }
+      .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+      /* Faux contenu par-dessus, pour juger si l'animation gêne la lecture. */
+      .fake { position: absolute; left: 6%; top: 50%; transform: translateY(-50%); z-index: 2; max-width: 460px; }
+      .fake b { display: block; font-size: clamp(1.6rem, 4vw, 2.6rem); line-height: 1.05; color: #fff; }
+      .fake span { display: block; margin-top: 10px; color: #c9d3e8; }
+      .fake i { display: inline-block; margin-top: 18px; padding: 12px 20px; background: #b6171e; color: #fff; font-style: normal; font-weight: 700; border-radius: 2px; }
+
+      /* Icônes flottantes */
+      .floaters { position: absolute; inset: 0; pointer-events: none; }
+      .floater {
+        position: absolute; bottom: -60px; display: grid; place-items: center;
+        width: var(--s); height: var(--s); border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.55);
+        animation: rise var(--d) linear infinite; animation-delay: var(--delay);
+        will-change: transform, opacity;
+      }
+      .floater svg { width: 55%; height: 55%; }
+      .floater.red { background: rgba(182, 23, 30, 0.22); color: #ff8a80; }
+      .floater.txt { font-weight: 800; font-size: calc(var(--s) * 0.34); }
+      @keyframes rise {
+        0% { transform: translate(0, 0) rotate(-8deg); opacity: 0; }
+        10% { opacity: 1; }
+        50% { transform: translate(var(--dx), -260px) rotate(6deg); }
+        90% { opacity: 1; }
+        100% { transform: translate(0, -560px) rotate(-6deg); opacity: 0; }
+      }
+      .dim .floater { background: rgba(255, 255, 255, 0.04); color: rgba(255, 255, 255, 0.35); }
+      .dim .floater.red { background: rgba(182, 23, 30, 0.16); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1>Fond animé : les essais</h1>
+      <p class="intro">
+        Trois essais sur le même bleu nuit, avec un faux texte par-dessus pour juger si ça gêne la lecture.
+        Passez la souris sur le premier et le troisième : le réseau réagit.
+      </p>
+
+      <section class="demo">
+        <h2>A · Réseau de boutiques connectées</h2>
+        <p>Des points (les boutiques) qui dérivent et se relient quand ils sont proches. Quelques points rouges, comme le point du logo.</p>
+        <div class="stage" data-net="1">
+          <canvas></canvas>
+          <div class="fake"><b>Vendez plus vite. Perdez moins.</b><span>Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.</span><i>Commencer gratuitement</i></div>
+        </div>
+      </section>
+
+      <section class="demo">
+        <h2>B · Icônes qui flottent</h2>
+        <p>Billets FC et $, codes-barres, tickets, cartons, paniers qui montent doucement, comme une journée de vente.</p>
+        <div class="stage">
+          <div class="floaters" data-float="18"></div>
+          <div class="fake"><b>Vendez plus vite. Perdez moins.</b><span>Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.</span><i>Commencer gratuitement</i></div>
+        </div>
+      </section>
+
+      <section class="demo">
+        <h2>C · Les deux ensemble</h2>
+        <p>Le réseau plus discret, et moins d'icônes, plus pâles, pour que le texte reste lisible.</p>
+        <div class="stage dim" data-net="0.55">
+          <canvas></canvas>
+          <div class="floaters" data-float="10"></div>
+          <div class="fake"><b>Vendez plus vite. Perdez moins.</b><span>Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.</span><i>Commencer gratuitement</i></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // ---------- A : réseau de points reliés ----------
+      function network(stage, strength) {
+        const canvas = stage.querySelector("canvas");
+        const ctx = canvas.getContext("2d");
+        let w = 0, h = 0, dpr = 1, points = [], mouse = null, running = true;
+        const resize = () => {
+          dpr = Math.min(2, window.devicePixelRatio || 1);
+          w = stage.clientWidth; h = stage.clientHeight;
+          canvas.width = w * dpr; canvas.height = h * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          // Densité selon la surface : moins de points sur téléphone.
+          const n = Math.round(Math.min(70, (w * h) / 14000));
+          points = Array.from({ length: n }, (_, i) => ({
+            x: Math.random() * w, y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+            r: i % 9 === 0 ? 3.2 : 1.8, red: i % 9 === 0,
+          }));
+        };
+        const LINK = 130;
+        const frame = () => {
+          if (!running) return;
+          ctx.clearRect(0, 0, w, h);
+          for (const p of points) {
+            p.x += p.vx; p.y += p.vy;
+            if (p.x < 0 || p.x > w) p.vx *= -1;
+            if (p.y < 0 || p.y > h) p.vy *= -1;
+          }
+          for (let i = 0; i < points.length; i++) {
+            for (let j = i + 1; j < points.length; j++) {
+              const a = points[i], b = points[j];
+              const d = Math.hypot(a.x - b.x, a.y - b.y);
+              if (d < LINK) {
+                ctx.strokeStyle = `rgba(120, 160, 230, ${(1 - d / LINK) * 0.35 * strength})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+              }
+            }
+            if (mouse) {
+              const a = points[i];
+              const d = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+              if (d < 170) {
+                ctx.strokeStyle = `rgba(255, 90, 95, ${(1 - d / 170) * 0.6 * strength})`;
+                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+              }
+            }
+          }
+          for (const p of points) {
+            ctx.fillStyle = p.red ? `rgba(255, 77, 82, ${0.9 * strength})` : `rgba(200, 215, 245, ${0.7 * strength})`;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+          }
+          requestAnimationFrame(frame);
+        };
+        resize();
+        window.addEventListener("resize", resize);
+        stage.addEventListener("pointermove", (e) => { const r = stage.getBoundingClientRect(); mouse = { x: e.clientX - r.left, y: e.clientY - r.top }; });
+        stage.addEventListener("pointerleave", () => (mouse = null));
+        // Hors de l'écran, on arrête de dessiner (batterie des téléphones).
+        new IntersectionObserver(([e]) => { const was = running; running = e.isIntersecting; if (running && !was) requestAnimationFrame(frame); }).observe(stage);
+        requestAnimationFrame(frame);
+      }
+      document.querySelectorAll("[data-net]").forEach((s) => network(s, Number(s.dataset.net)));
+
+      // ---------- B : icônes qui flottent ----------
+      const tabler = (paths) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths.map((d) => `<path d="${d}"/>`).join("")}</svg>`;
+      const ICONS = [
+        { svg: tabler(["M4 7v-1a2 2 0 0 1 2 -2h2", "M4 17v1a2 2 0 0 0 2 2h2", "M16 4h2a2 2 0 0 1 2 2v1", "M16 20h2a2 2 0 0 0 2 -2v-1", "M5 11h1v2h-1z", "M10 11v2", "M14 11h1v2h-1z", "M19 11v2"]) },
+        { svg: tabler(["M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2m4 -14h6m-6 4h6m-2 4h2"]) },
+        { svg: tabler(["M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5", "M12 12l8 -4.5", "M12 12v9", "M12 12l-8 -4.5"]) },
+        { svg: tabler(["M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M17 17h-11v-14h-2", "M6 5l14 1l-1 7h-13"]) },
+        { svg: tabler(["M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14", "M11 4h2", "M12 17v.01"]) },
+        { text: "FC", red: true },
+        { text: "$" },
+        { text: "€" },
+      ];
+      document.querySelectorAll("[data-float]").forEach((box) => {
+        const n = Number(box.dataset.float);
+        for (let i = 0; i < n; i++) {
+          const ic = ICONS[i % ICONS.length];
+          const el = document.createElement("span");
+          el.className = "floater" + (ic.red || i % 7 === 3 ? " red" : "") + (ic.text ? " txt" : "");
+          if (ic.text) el.textContent = ic.text; else el.innerHTML = ic.svg;
+          el.style.left = `${(i / n) * 100 + Math.random() * (60 / n)}%`;
+          el.style.setProperty("--s", `${34 + Math.round(Math.random() * 22)}px`);
+          el.style.setProperty("--d", `${16 + Math.random() * 12}s`);
+          el.style.setProperty("--delay", `${-Math.random() * 24}s`);
+          el.style.setProperty("--dx", `${(Math.random() - 0.5) * 80}px`);
+          box.appendChild(el);
+        }
+      });
+    </script>
+  </body>
+</html>

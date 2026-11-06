@@ -21,10 +21,10 @@ Prix (au 5 novembre 2026), par nombre de téléphones :
 | **Nom de la page** | vitePOS RDC |
 | **Description Facebook** (courte) | La caisse de votre business sur votre téléphone. Ventes, stock et bénéfice calculés pour vous, en cash ($, €, FC) et mobile money, même sans réseau. Essai gratuit. |
 | **Bio Instagram** (150 caractères max.) | La caisse de votre business sur votre téléphone 📱 $ · € · FC · mobile money · même sans réseau. Essai gratuit 👇 |
-| **Lien** (bio et bouton de la page) | https://vitepos-rdc.web.app (puis vitepos-rdc.com) |
+| **Lien** (bio et bouton de la page) | https://viteposrdc.com |
 | **Bouton de la page Facebook** | « Envoyer un message WhatsApp » vers +243 839 892 822 |
-| **Message d'accueil WhatsApp Business** | Bonjour et bienvenue chez vitePOS 👋 Dites-nous quelle activité vous tenez et ce que vous voulez savoir : nous vous répondons vite. Pour essayer tout de suite (essai gratuit) : https://getvitepos.web.app |
-| **Message d'absence WhatsApp Business** | Merci pour votre message ! Nous sommes absents pour le moment et vous répondons dès notre retour. En attendant, vous pouvez déjà essayer vitePOS gratuitement : https://getvitepos.web.app |
+| **Message d'accueil WhatsApp Business** | Bonjour et bienvenue chez vitePOS 👋 Dites-nous quelle activité vous tenez et ce que vous voulez savoir : nous vous répondons vite. Pour essayer tout de suite (essai gratuit) : https://app.viteposrdc.com |
+| **Message d'absence WhatsApp Business** | Merci pour votre message ! Nous sommes absents pour le moment et vous répondons dès notre retour. En attendant, vous pouvez déjà essayer vitePOS gratuitement : https://app.viteposrdc.com |
 
 **Images disponibles** (dans le dépôt) :
 - Image de partage : `site/public/og-fr.jpg`.
@@ -34,11 +34,27 @@ Prix (au 5 novembre 2026), par nombre de téléphones :
 
 Instagram veut des images **carrées (1080 × 1080)** ou **verticales (1080 × 1350)**. Je peux les préparer à partir de ces images.
 
+## Visuels prêts (1080 × 1350, pour Instagram et Facebook)
+
+Dans `design/pubs/out/` (refaits par `python design/pubs/gen.py`) :
+
+| Publication | Image |
+| --- | --- |
+| 0. Présentation (le tout premier post, 6 nov.) | `00-presentation.png` |
+| 1. Teaser (6 nov.) | `01-teaser.png` |
+| 2. Demain, on lance (8 nov.) | `02-demain.png` |
+| 3. Lancement (9 nov.) | `03-lancement.png` (post) et `03-lancement-story.png` (story 1080 × 1920) |
+| 4. Avant / après (10 nov.) | carrousel `04-avant.png` puis `04-apres.png` |
+| 5. Même sans réseau (11 nov.) | `05-sans-reseau.png` |
+
+Pas d'émoji dans les images (ils s'affichent mal) : ils restent dans les textes ci-dessous. Story : rien d'important dans les 250 px du haut ni les 340 px du bas (cachés par Instagram). Lien de la bio : https://viteposrdc.com ; lien de l'app : https://app.viteposrdc.com.
+
 ## Calendrier
 
 | Date | Publication | But |
 | --- | --- | --- |
-| Ven. 6 nov. | 1. Teaser « Le cahier, c'est fini » | Créer l'attente |
+| Ven. 6 nov. | 0. Présentation (le tout premier post) | Dire qui on est |
+| Ven. 6 nov. (le soir) | 1. Teaser « Le cahier, c'est fini » | Créer l'attente |
 | Dim. 8 nov. | 2. « Demain, on lance » | Rappel |
 | **Lun. 9 nov.** | 3. **Lancement officiel** | Inscriptions |
 | Mar. 10 nov. | 4. Avant / après (les dessins) | Montrer le problème résolu |
@@ -49,6 +65,32 @@ Instagram veut des images **carrées (1080 × 1080)** ou **verticales (1080 × 1
 | Dim. 15 nov. | 9. On vient chez vous | Obtenir des démonstrations |
 
 Heure conseillée : **entre 18 h et 20 h** (après la fermeture des magasins) ou **vers 12 h 30**.
+
+---
+
+## 0. Présentation : le tout premier post (6 novembre)
+
+**Visuel** : `design/pubs/out/00-presentation.png`. C'est le post qu'on voit en arrivant sur le profil (par exemple avec le QR code « Suivez-nous » de la brochure) : il dit qui on est avant tout le reste.
+
+**Facebook**
+> Bonjour Kinshasa ! 👋 Voici vitePOS : la caisse de votre business, sur le téléphone que vous avez déjà.
+>
+> ✅ Ventes, stock et bénéfice calculés pour vous
+> ✅ Cash ($, €, FC) et mobile money
+> ✅ Même quand le réseau coupe
+>
+> Conçu à Kinshasa, pour les magasins d'ici. Lancement le lundi 9 novembre : abonnez-vous à la page pour nous soutenir et ne rien rater. 🔔
+
+**Instagram**
+> Bonjour Kinshasa 👋 Voici vitePOS 📱
+> La caisse de votre business, sur votre téléphone.
+> 💵 Cash ($, €, FC) et mobile money
+> 📦 Stock calculé tout seul
+> 📶 Même sans réseau
+>
+> Conçu à Kinshasa 🇨🇩 Lancement le 9 novembre : abonnez-vous pour nous soutenir 🔔
+>
+> #vitePOS #Kinshasa #RDC #Business #Entrepreneur
 
 ---
 
@@ -111,7 +153,7 @@ Heure conseillée : **entre 18 h et 20 h** (après la fermeture des magasins) ou
 > 📊 Le soir, vous savez exactement ce qui doit être dans la caisse.
 >
 > 🎁 **Essai gratuit**, sans matériel à acheter : jusqu'à 21 jours avec la formule Pro.
-> 👉 Commencez ici : https://vitepos-rdc.web.app
+> 👉 Commencez ici : https://viteposrdc.com
 > 💬 Une question ? WhatsApp : +243 839 892 822
 
 **Instagram**
@@ -138,7 +180,7 @@ Heure conseillée : **entre 18 h et 20 h** (après la fermeture des magasins) ou
 >
 > Le soir, plus de comptes de tête : vous ouvrez votre téléphone et tout est là. Ventes du jour, dépenses, bénéfice.
 >
-> Essayez gratuitement 👉 https://vitepos-rdc.web.app
+> Essayez gratuitement 👉 https://viteposrdc.com
 
 **Instagram**
 > Avant ➡️ Avec vitePOS 🙌
@@ -159,7 +201,7 @@ Heure conseillée : **entre 18 h et 20 h** (après la fermeture des magasins) ou
 > Les ventes, le stock et les dépenses sont enregistrés dans le téléphone. Dès qu'internet revient, tout se met à jour, et vous le voyez depuis chez vous.
 >
 > Pas de vente perdue, pas de client qui attend. 💪
-> 👉 https://vitepos-rdc.web.app
+> 👉 https://viteposrdc.com
 
 **Instagram**
 > Réseau coupé ? Vous vendez quand même. 💪
@@ -179,7 +221,7 @@ Heure conseillée : **entre 18 h et 20 h** (après la fermeture des magasins) ou
 > vitePOS fait le calcul pour vous, au taux du jour que vous fixez. Cash en $, € ou FC, ou mobile money : la monnaie à rendre est juste, à chaque vente.
 >
 > Fini les erreurs de monnaie au comptoir. ✅
-> 👉 Essayez gratuitement : https://vitepos-rdc.web.app
+> 👉 Essayez gratuitement : https://viteposrdc.com
 
 **Instagram**
 > Payé en $, rendu en FC ? 💵➡️💴
@@ -200,7 +242,7 @@ Heure conseillée : **entre 18 h et 20 h** (après la fermeture des magasins) ou
 >
 > Faites confiance, et vérifiez quand vous voulez. 🤝
 > Avec la formule Pro, jusqu'à 10 téléphones, installation et formation de vos employés offertes.
-> 👉 https://vitepos-rdc.web.app
+> 👉 https://viteposrdc.com
 
 **Instagram**
 > Absent du magasin ? Vous voyez tout quand même 👀
@@ -227,7 +269,7 @@ Heure conseillée : **entre 18 h et 20 h** (après la fermeture des magasins) ou
 > ✅ Si vous arrêtez, rien n'est effacé.
 >
 > Plus de 10 téléphones ou plusieurs magasins ? Formule Sur mesure : écrivez-nous.
-> 👉 https://vitepos-rdc.web.app
+> 👉 https://viteposrdc.com
 
 **Instagram**
 > Dès 5 $ par mois 🎁
@@ -263,7 +305,7 @@ Heure conseillée : **entre 18 h et 20 h** (après la fermeture des magasins) ou
 > Bonjour 👋 Je vous présente **vitePOS** : la caisse de votre business sur votre téléphone.
 > 💵 Cash ($, €, FC) et mobile money · 📦 stock calculé tout seul · 📶 marche même sans réseau.
 > 🎁 Essai gratuit, puis dès 5 $ par mois (Pro : 10 téléphones pour 20,99 $).
-> Essayez ici 👉 https://vitepos-rdc.web.app
+> Essayez ici 👉 https://viteposrdc.com
 > La brochure en PDF est jointe. Questions : +243 839 892 822
 
 (Joindre `brochure-vitepos.pdf` ou `depliant-vitepos.pdf`.)

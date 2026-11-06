@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>vitePOS · Nouvelle accroche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+<style>
+  :root {
+    --night: #0a142a;
+    --navy: #1a2b4c;
+    --brick: #b6171e;
+    --red: #d42a2f;
+    --ink: #172033;
+    --soft: #a9b6d2;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Barlow, system-ui, sans-serif; color: var(--ink); background: #d9dee8; }
+  .page-title { max-width: 1440px; margin: 32px auto 12px; padding: 0 16px; font-size: 1.1rem; color: #3b4660; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .page-title small { display: block; text-transform: none; letter-spacing: 0; font-weight: 500; color: #6b7489; margin-top: 2px; }
+
+  /* ---------- Accroche (commune ordinateur / téléphone) ---------- */
+  .hero { position: relative; overflow: hidden; color: #fff; background: var(--night); }
+  .hero .bg { position: absolute; inset: 0; background: url(comptoir-960.webp) center / cover; opacity: .16; filter: saturate(.6); }
+  .hero .shade { position: absolute; inset: 0; background:
+      radial-gradient(circle at 78% 30%, rgba(57, 135, 229, .28), transparent 55%),
+      linear-gradient(90deg, rgba(10, 20, 42, .96) 0%, rgba(10, 20, 42, .82) 48%, rgba(15, 31, 66, .55) 100%); }
+  /* Trait rouge du logo : derrière le texte, fin et transparent (point 1) */
+  .hero .stroke { position: absolute; z-index: 1; top: -20%; left: 38%; width: 70px; height: 150%; transform: rotate(28deg);
+      background: linear-gradient(90deg, transparent, rgba(212, 42, 47, .22), transparent); animation: sweep 9s linear infinite; }
+  @keyframes sweep { from { left: -15%; } to { left: 115%; } }
+  .hero .wm { position: absolute; z-index: 1; right: 4%; top: 6%; height: 92%; opacity: .05; filter: brightness(10); }
+
+  .nav { position: relative; z-index: 3; display: flex; align-items: center; gap: 28px; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 700 1.5rem "Barlow Condensed"; }
+  .brand i { width: 34px; height: 34px; display: grid; place-items: center; background: #fff; }
+  .brand img { width: 26px; }
+  .nav .links { display: flex; gap: 22px; color: #dfe6f5; font-weight: 600; font-size: .95rem; }
+  .nav .end { margin-left: auto; display: flex; align-items: center; gap: 14px; font-weight: 700; }
+  .lang { background: rgba(255,255,255,.1); padding: 6px 9px; font-size: .85rem; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 0 22px; height: 52px; font: 700 1.05rem Barlow; color: #fff; background: var(--red); text-decoration: none; white-space: nowrap; }
+  .btn.small { height: 42px; padding: 0 16px; font-size: .95rem; }
+  .btn.ghost { background: #fff; color: var(--navy); }
+
+  .kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--soft); font-weight: 600; letter-spacing: .02em; }
+  .kicker .dot { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 4px rgba(61,220,132,.18); }
+  h1 { margin: 0; font: 800 4.6rem/0.98 "Barlow Condensed"; letter-spacing: -.01em; }
+  h1 span { display: block; }
+  h1 .red { color: #ff4a4f; }
+  .lead { color: #c9d3e8; font-size: 1.2rem; line-height: 1.5; margin: 0; }
+
+  /* Ligne propre à chaque secteur : seule elle change (point 2) */
+  .sector { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; background: rgba(255,255,255,.06); border-left: 3px solid var(--red); }
+  .sector i { font-size: 22px; color: #ff6b6f; margin-top: 1px; }
+  .sector b { display: block; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--soft); }
+  .sector span { display: block; font-weight: 600; font-size: 1.02rem; }
+  .sector .txt { transition: opacity .35s; }
+  .sector .txt.out { opacity: 0; }
+
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  /* Réassurance (point 3) */
+  .trust { display: flex; flex-wrap: wrap; gap: 8px 22px; color: #dfe6f5; font-weight: 600; font-size: .95rem; margin: 0; padding: 0; list-style: none; }
+  .trust li { display: inline-flex; align-items: center; gap: 7px; }
+  .trust i { color: #3ddc84; font-size: 18px; }
+
+  /* Téléphone droit, caisse à l'écran, notifications sur le bord (point 4) */
+  .device { position: relative; }
+  .phone { position: relative; z-index: 2; padding: 11px; border-radius: 44px; background: #11161f; box-shadow: 0 40px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.08); }
+  .phone img { display: block; width: 100%; border-radius: 34px; }
+  .toast { position: absolute; z-index: 3; display: flex; align-items: center; gap: 12px; padding: 12px 16px 12px 12px; min-width: 240px;
+      background: rgba(15, 28, 54, .88); backdrop-filter: blur(10px); box-shadow: 0 16px 40px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.1); }
+  .toast .ic { width: 38px; height: 38px; flex: none; display: grid; place-items: center; font-size: 20px; }
+  .toast .ic.ok { background: rgba(61,220,132,.16); color: #3ddc84; }
+  .toast .ic.warn { background: rgba(232,137,12,.18); color: #ffb03b; }
+  .toast small { display: block; color: var(--soft); font-size: .78rem; }
+  .toast b { font: 700 1.15rem "Barlow Condensed"; }
+
+  .progress { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, #1a2b4c, var(--red)); }
+  .progress::after { content: ""; position: absolute; top: -5px; left: 22%; width: 13px; height: 13px; border-radius: 50%; background: var(--red); box-shadow: 0 0 12px var(--red); }
+
+  /* Repères numérotés : renvoient aux points de la proposition */
+  .pin { position: absolute; z-index: 9; width: 26px; height: 26px; border-radius: 50%; background: #ffd43b; color: #1a1a1a; font: 800 .95rem/26px Barlow; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+
+  /* ---------- Ordinateur ---------- */
+  .desk { max-width: 1440px; margin: 0 auto 8px; box-shadow: 0 20px 60px rgba(10, 20, 42, .25); }
+  .desk .hero { height: 820px; }
+  .desk .nav { padding: 18px 88px; }
+  .desk .grid { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 460px; gap: 40px; align-items: center; padding: 34px 88px 0 88px; height: calc(100% - 140px); }
+  .desk .copy { display: grid; gap: 22px; max-width: 640px; }
+  .desk .device { justify-self: center; width: 300px; margin-top: -40px; }
+  .desk .t1 { left: -150px; top: 120px; }
+  .desk .t2 { right: -120px; bottom: 120px; }
+  .desk .benefits { position: absolute; z-index: 3; left: 88px; right: 588px; bottom: 26px; display: flex; gap: 10px; align-items: center; color: var(--soft); font-weight: 600; font-size: .9rem; }
+  .desk .benefits .tabs { display: flex; gap: 6px; }
+  .desk .benefits .tabs span { padding: 6px 12px; background: rgba(255,255,255,.06); color: #dfe6f5; }
+  .desk .benefits .tabs span.on { background: #fff; color: var(--navy); }
+
+  /* ---------- Téléphone ---------- */
+  .phones { max-width: 1440px; margin: 0 auto 60px; padding: 0 16px; display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-start; }
+  .mob { width: 390px; height: 844px; flex: none; border-radius: 36px; overflow: hidden; box-shadow: 0 20px 60px rgba(10, 20, 42, .3); position: relative; }
+  .mob .hero { height: 100%; }
+  .mob .nav { padding: 14px 16px; gap: 10px; }
+  .mob .nav .end { gap: 8px; }
+  .mob .menu { width: 42px; height: 42px; display: grid; place-items: center; background: rgba(255,255,255,.1); font-size: 22px; }
+  .mob .copy { position: relative; z-index: 2; display: grid; gap: 14px; padding: 10px 16px 0; }
+  .mob h1 { font-size: 2.85rem; }
+  .mob .lead { font-size: 1rem; }
+  .mob .sector { padding: 10px 12px; }
+  .mob .sector span { font-size: .95rem; }
+  .mob .ctas { display: grid; grid-template-columns: 1.25fr 1fr; gap: 8px; }
+  .mob .ctas .btn { height: 50px; padding: 0 12px; justify-content: center; font-size: .98rem; }
+  .mob .trust { gap: 6px 14px; font-size: .86rem; }
+  .mob .device { width: 250px; margin: 22px auto 0; }
+  .mob .t1 { left: -46px; top: 64px; min-width: 0; padding: 9px 12px 9px 9px; }
+  .mob .t1 .ic { width: 32px; height: 32px; }
+
+  .notes { flex: 1; min-width: 320px; max-width: 560px; background: #fff; padding: 22px 26px; box-shadow: 0 10px 30px rgba(10,20,42,.12); }
+  .notes h2 { font: 700 1.35rem "Barlow Condensed"; margin: 0 0 12px; color: var(--navy); }
+  .notes ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+  .notes li { display: grid; grid-template-columns: 30px 1fr; gap: 8px; line-height: 1.45; color: #3b4660; }
+  .notes li b { color: var(--ink); }
+  .notes .pin { position: static; }
+  .notes p { color: #6b7489; font-size: .92rem; margin: 16px 0 0; }
+</style>
+</head>
+<body>
+
+<div class="page-title">1 · Accroche sur ordinateur <small>Titre fixe, une ligne par secteur qui change, réassurance sous les boutons, téléphone droit sur la caisse</small></div>
+<div class="desk">
+  <section class="hero">
+    <div class="bg"></div><div class="shade"></div><div class="stroke"></div>
+    <img class="wm" src="logo.svg" alt="" />
+    <nav class="nav">
+      <div class="brand"><i><img src="logo.svg" alt="" /></i>vitePOS</div>
+      <div class="links"><span>Fonctions</span><span>Appareils</span><span>Pour qui</span><span>Questions</span><span>Manuel</span></div>
+      <div class="end"><span class="lang">EN</span><span>Se connecter</span><a class="btn small">Essayer gratuitement</a></div>
+    </nav>
+    <div class="grid">
+      <div class="copy">
+        <span class="kicker"><span class="dot"></span>La caisse qui marche même quand le réseau coupe</span>
+        <h1><span>Vendez plus vite.</span><span>Perdez moins.</span><span class="red">Même sans réseau.</span></h1>
+        <p class="lead">Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez. Fini les comptes de tête à la fermeture.</p>
+        <div class="sector" data-sector>
+          <i class="ti ti-building-store"></i>
+          <div class="txt"><b>Supérettes et alimentations</b><span>Plusieurs caisses en même temps, le stock se met à jour tout seul.</span></div>
+        </div>
+        <div class="ctas">
+          <a class="btn">Commencer gratuitement <i class="ti ti-arrow-right"></i></a>
+          <a class="btn ghost"><i class="ti ti-device-mobile"></i> Voir l'app</a>
+        </div>
+        <ul class="trust">
+          <li><i class="ti ti-circle-check-filled"></i>Gratuit pour commencer</li>
+          <li><i class="ti ti-circle-check-filled"></i>Rien à acheter</li>
+          <li><i class="ti ti-circle-check-filled"></i>Marche sans réseau</li>
+          <li><i class="ti ti-circle-check-filled"></i>FC, $ et €</li>
+        </ul>
+      </div>
+      <div class="device">
+        <div class="phone"><img data-shot src="tel-caisse.webp" alt="La caisse vitePOS" /></div>
+        <div class="toast t1"><span class="ic ok"><i class="ti ti-check"></i></span><div><small>Vente encaissée · à l'instant</small><b>21 100 FC</b></div></div>
+        <div class="toast t2"><span class="ic warn"><i class="ti ti-cash"></i></span><div><small>Payé en $, monnaie rendue</small><b>900 FC</b></div></div>
+      </div>
+    </div>
+    <div class="benefits">
+      <div class="tabs" data-tabs><span class="on">Supérettes</span><span>Pharmacies</span><span>Téléphonie</span><span>Quincailleries</span><span>Entrepreneurs</span></div>
+      <span style="margin-left:auto;white-space:nowrap"><i class="ti ti-download"></i> Brochure (PDF)</span>
+    </div>
+    <div class="progress"></div>
+
+    <span class="pin" style="left:62%;top:110px">1</span>
+    <span class="pin" style="left:58px;top:250px">2</span>
+    <span class="pin" style="left:58px;top:545px">2</span>
+    <span class="pin" style="left:58px;top:680px">3</span>
+    <span class="pin" style="left:1290px;top:200px">4</span>
+    <span class="pin" style="left:490px;top:595px">6</span>
+  </section>
+</div>
+
+<div class="page-title">2 · Accroche sur téléphone <small>Boutons côte à côte et moins d'espace en haut : le téléphone apparaît dès l'arrivée</small></div>
+<div class="phones">
+  <div class="mob">
+    <section class="hero">
+      <div class="bg"></div><div class="shade"></div><div class="stroke"></div>
+      <nav class="nav">
+        <div class="brand"><i><img src="logo.svg" alt="" /></i>vitePOS</div>
+        <div class="end"><a class="btn small">Essayer</a><span class="menu"><i class="ti ti-menu-2"></i></span></div>
+      </nav>
+      <div class="copy">
+        <h1><span>Vendez plus vite.</span><span>Perdez moins.</span><span class="red">Même sans réseau.</span></h1>
+        <p class="lead">Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez.</p>
+        <div class="sector" data-sector>
+          <i class="ti ti-building-store"></i>
+          <div class="txt"><b>Supérettes et alimentations</b><span>Plusieurs caisses en même temps, le stock se met à jour tout seul.</span></div>
+        </div>
+        <div class="ctas">
+          <a class="btn">Commencer <i class="ti ti-arrow-right"></i></a>
+          <a class="btn ghost">Voir l'app</a>
+        </div>
+        <ul class="trust">
+          <li><i class="ti ti-circle-check-filled"></i>Gratuit pour commencer</li>
+          <li><i class="ti ti-circle-check-filled"></i>Sans réseau</li>
+          <li><i class="ti ti-circle-check-filled"></i>FC, $ et €</li>
+        </ul>
+      </div>
+      <div class="device">
+        <div class="phone"><img data-shot src="tel-caisse.webp" alt="" /></div>
+        <div class="toast t1"><span class="ic ok"><i class="ti ti-check"></i></span><div><small>Vente encaissée</small><b>21 100 FC</b></div></div>
+      </div>
+      <div class="progress"></div>
+      <span class="pin" style="right:14px;top:64px">5</span>
+    </section>
+  </div>
+
+  <div class="notes">
+    <h2>Ce qui change</h2>
+    <ol>
+      <li><span class="pin">1</span><span><b>Le trait rouge passe derrière le texte</b>, plus fin et transparent : il ne cache plus jamais le titre ni les boutons.</span></li>
+      <li><span class="pin">2</span><span><b>Le titre ne bouge plus</b> : « Vendez plus vite. Perdez moins. Même sans réseau. » Seule la ligne encadrée de rouge change avec le secteur (supérettes, pharmacies, téléphonie, quincailleries, entrepreneurs), avec la capture du téléphone. Les onglets en bas permettent de choisir un secteur.</span></li>
+      <li><span class="pin">3</span><span><b>Réassurance sous les boutons</b> : gratuit pour commencer, rien à acheter, marche sans réseau, FC, $ et €.</span></li>
+      <li><span class="pin">4</span><span><b>Téléphone droit qui montre la caisse</b>, deux notifications posées sur le bord (plus en travers de l'écran), plus de grand rond rouge.</span></li>
+      <li><span class="pin">5</span><span><b>Sur téléphone</b> : moins d'espace en haut, boutons côte à côte, le haut de l'app est visible sans faire défiler.</span></li>
+      <li><span class="pin">6</span><span><b>« Voir l'app »</b> descend jusqu'à la galerie de captures ; la brochure devient un lien discret en bas de l'accroche.</span></li>
+    </ol>
+    <p>Pas de coins arrondis ni de bordures sur les boutons, comme sur le reste du site. Les ventes affichées dans les notifications changent avec le secteur, comme aujourd'hui.</p>
+  </div>
+</div>
+
+<script>
+  // Aperçu du défilement : seule la ligne du secteur (et la capture) change.
+  const SECTORS = [
+    ["ti-building-store", "Supérettes et alimentations", "Plusieurs caisses en même temps, le stock se met à jour tout seul.", "tel-caisse.webp"],
+    ["ti-pill", "Pharmacies et dépôts", "Alerte 30 jours avant la péremption : plus aucun produit oublié en rayon.", "tel-caisse.webp"],
+    ["ti-device-mobile", "Téléphonie et accessoires", "Chaque téléphone vendu avec son IMEI et sa garantie.", "man-encaisser.webp"],
+    ["ti-tools", "Quincailleries et matériaux", "Des milliers d'articles retrouvés en un instant, vente à la pièce ou au carton.", "tel-caisse.webp"],
+    ["ti-briefcase", "Commerçants et entrepreneurs", "Vos vendeurs encaissent, vous suivez chaque vente depuis votre téléphone.", "tel-accueil.webp"],
+  ];
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % SECTORS.length;
+    const [icon, tag, text, shot] = SECTORS[i];
+    document.querySelectorAll("[data-sector]").forEach((el) => {
+      const txt = el.querySelector(".txt");
+      txt.classList.add("out");
+      setTimeout(() => {
+        el.querySelector("i").className = `ti ${icon}`;
+        txt.innerHTML = `<b>${tag}</b><span>${text}</span>`;
+        txt.classList.remove("out");
+      }, 350);
+    });
+    document.querySelectorAll("[data-shot]").forEach((img) => (img.src = shot));
+    document.querySelectorAll("[data-tabs] span").forEach((s, k) => s.classList.toggle("on", k === i));
+  }, 4500);
+</script>
+</body>
+</html>

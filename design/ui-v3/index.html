@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquettes v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; font-family: "Barlow", sans-serif; color: #12233f; background: #f3f6fa; }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 28px 16px 60px; }
+  h1 { margin: 0 0 4px; font-size: 1.9rem; }
+  h2 { margin: 40px 0 4px; font-size: 1.4rem; }
+  p { margin: 0 0 14px; color: #4a5263; max-width: 70ch; }
+  .row { display: flex; gap: 24px; align-items: flex-start; overflow-x: auto; padding-bottom: 8px; }
+  figure { margin: 0; flex: none; }
+  figcaption { font-weight: 700; margin-bottom: 6px; }
+  .phone { width: 390px; height: 844px; border: 10px solid #12233f; border-radius: 38px; overflow: hidden; background: #fff; }
+  .desk { width: 1000px; height: 700px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #d8dee8, 0 20px 40px rgba(20,60,120,.12); background: #fff; }
+  .desk iframe { width: 1280px; height: 896px; transform: scale(.78125); transform-origin: 0 0; }
+  iframe { border: 0; width: 100%; height: 100%; display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Accueil et caisse, nouvelle version</h1>
+  <p>Maquettes seulement : l'app n'est pas encore modifiée. Chaque cadre se fait défiler et les liens Accueil / Caisse fonctionnent.</p>
+
+  <h2>Accueil</h2>
+  <p>La recette du jour s'affiche comme un ticket de caisse bleu zébré, avec les ventes, le panier moyen et le bénéfice dedans. Puis le gros bouton « Nouvelle vente », ce qu'il faut surveiller, les heures où l'on vend le plus et les dernières ventes.</p>
+  <div class="row">
+    <figure><figcaption>Téléphone</figcaption><div class="phone"><iframe src="accueil.html" title="Accueil téléphone"></iframe></div></figure>
+    <figure><figcaption>Ordinateur</figcaption><div class="desk"><iframe src="accueil.html" title="Accueil ordinateur"></iframe></div></figure>
+  </div>
+
+  <h2>Caisse</h2>
+  <p>De grosses tuiles d'articles faciles à toucher, avec le nombre déjà mis dans le panier. Sur ordinateur, le panier est un vrai ticket qui s'allonge à chaque article ; sur téléphone, une barre en bas montre le total et ouvre le ticket.</p>
+  <div class="row">
+    <figure><figcaption>Téléphone</figcaption><div class="phone"><iframe src="caisse.html" title="Caisse téléphone"></iframe></div></figure>
+    <figure><figcaption>Ordinateur</figcaption><div class="desk"><iframe src="caisse.html" title="Caisse ordinateur"></iframe></div></figure>
+  </div>
+</div>
+</body>
+</html>

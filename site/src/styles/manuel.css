@@ -319,6 +319,43 @@
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 24px;
 }
+/* Dernière page : QR code de l'app et QR code « Suivez-nous » (Instagram, Facebook). */
+.mag-qrs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 28px;
+}
+.mag-qrs .follow-qr {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 8px;
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--title);
+}
+.mag-qrs .follow-qr img {
+  display: block;
+  width: 132px;
+  height: 132px;
+}
+.mag-qrs .follow-qr b {
+  font-size: 1rem;
+}
+.mag-qrs .follow-qr-icons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.mag-qrs .follow-qr-icons svg {
+  width: 18px;
+  height: 18px;
+}
 
 @media (max-width: 860px) {
   .mag-cover-grid,

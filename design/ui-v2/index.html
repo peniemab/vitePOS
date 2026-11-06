@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>vitePOS · Nouvelle interface</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+<style>
+  :root {
+    --night: linear-gradient(160deg, #0a142a 0%, #0f1f42 55%, #14306a 100%);
+    --glow: radial-gradient(circle at 90% 0%, rgba(57, 135, 229, 0.35) 0%, rgba(57, 135, 229, 0) 55%);
+    --navy: #1a2b4c;
+    --sky: #3987e5;
+    --brick: #b6171e;
+    --ink: #172033;
+    --muted: #6b7489;
+    --line: #e4e8f0;
+    --bg: #f3f5f9;
+    --card: #ffffff;
+    --ok: #1f9d55;
+    --warn: #e8890c;
+    --r: 10px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Barlow, system-ui, sans-serif; color: var(--ink); background: #d9dee8; }
+  .n { font-family: "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; }
+  h1, h2, h3 { margin: 0; }
+  .page-title { max-width: 1440px; margin: 32px auto 12px; padding: 0 16px; font-size: 1.1rem; color: #3b4660; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .page-title small { display: block; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--muted); margin-top: 2px; }
+
+  /* ---------- Cadre ordinateur ---------- */
+  .desk { max-width: 1440px; height: 880px; margin: 0 auto 8px; display: flex; background: var(--bg); box-shadow: 0 20px 60px rgba(10, 20, 42, .25); overflow: hidden; }
+  .side { width: 244px; flex: none; background: var(--glow), var(--night); color: #dfe6f5; display: flex; flex-direction: column; padding: 18px 14px; }
+  .side.mini { width: 76px; align-items: center; padding: 18px 10px; }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; }
+  .logo { width: 36px; height: 36px; display: grid; place-items: center; background: #fff; color: var(--navy); font: 800 22px "Barlow Condensed"; position: relative; border-radius: 8px; }
+  .logo::after { content: ""; position: absolute; right: 5px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--brick); }
+  .brand b { font: 700 1.15rem "Barlow Condensed"; color: #fff; line-height: 1.1; }
+  .brand small { display: block; font-size: .78rem; color: #93a3c4; }
+  .grp { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: #7f90b4; margin: 16px 10px 6px; font-weight: 700; }
+  .item { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 8px; color: #c9d3e8; font-weight: 600; font-size: .95rem; position: relative; }
+  .item i { font-size: 20px; }
+  .item.on { background: rgba(255, 255, 255, .1); color: #fff; }
+  .item.on::before { content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 3px; background: var(--sky); border-radius: 0 3px 3px 0; }
+  .item .badge { margin-left: auto; background: var(--brick); color: #fff; font-size: .72rem; padding: 1px 7px; border-radius: 99px; }
+  .mini .item { justify-content: center; padding: 11px; width: 48px; }
+  .mini .item.on::before { left: -10px; }
+  .side-foot { margin-top: auto; display: grid; gap: 10px; }
+  .sync { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: #b5c2dd; padding: 8px 12px; background: rgba(255, 255, 255, .06); border-radius: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #40c057; box-shadow: 0 0 0 4px rgba(64, 192, 87, .18); }
+  .me { display: flex; align-items: center; gap: 10px; padding: 4px 8px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--brick); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: .85rem; flex: none; }
+  .me b { color: #fff; font-size: .92rem; display: block; }
+  .me small { color: #93a3c4; font-size: .78rem; }
+
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .top { height: 68px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 28px; background: var(--card); border-bottom: 1px solid var(--line); }
+  .top h1 { font: 700 1.6rem "Barlow Condensed"; }
+  .top .sub { color: var(--muted); font-size: .9rem; }
+  .search { flex: 1; max-width: 420px; margin-left: auto; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 14px; background: var(--bg); border-radius: 8px; color: var(--muted); }
+  .chip-rate { display: flex; align-items: center; gap: 6px; height: 42px; padding: 0 14px; border-radius: 8px; background: #eaf2fd; color: #1f5fb4; font-weight: 700; white-space: nowrap; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 8px; border: 0; font: 700 1rem Barlow; cursor: pointer; white-space: nowrap; }
+  .btn-night { background: var(--glow), var(--night); color: #fff; box-shadow: 0 6px 16px rgba(15, 31, 66, .3); }
+  .btn-light { background: var(--bg); color: var(--ink); }
+  .content { flex: 1; overflow: hidden; padding: 24px 28px; display: grid; gap: 20px; align-content: start; }
+
+  /* Cartes de chiffres */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .kpi { background: var(--card); border-radius: var(--r); padding: 18px; display: grid; gap: 6px; position: relative; overflow: hidden; box-shadow: 0 1px 2px rgba(16, 24, 40, .05); }
+  .kpi.hero { background: var(--glow), var(--night); color: #fff; }
+  .kpi .lbl { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--muted); font-size: .92rem; }
+  .kpi.hero .lbl { color: #a9b6d2; }
+  .ico { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; font-size: 20px; flex: none; }
+  .ico.blue { background: #e7f0fd; color: #1f6fd1; }
+  .ico.green { background: #e3f6eb; color: var(--ok); }
+  .ico.orange { background: #fff1de; color: #c46f00; }
+  .ico.red { background: #fde7e8; color: var(--brick); }
+  .ico.violet { background: #efeafd; color: #6741d9; }
+  .ico.glass { background: rgba(255, 255, 255, .12); color: #fff; }
+  .kpi .val { font: 700 2.1rem/1.05 "Barlow Condensed"; }
+  .trend { font-size: .85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+  .trend.up { color: var(--ok); }
+  .kpi.hero .trend.up { color: #69db7c; }
+  .trend.down { color: var(--brick); }
+  .trend span { color: var(--muted); font-weight: 500; }
+  .kpi.hero .trend span { color: #a9b6d2; }
+
+  .row { display: grid; gap: 16px; }
+  .row-2 { grid-template-columns: 1.7fr 1fr; }
+  .row-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .panel { background: var(--card); border-radius: var(--r); padding: 18px 20px; box-shadow: 0 1px 2px rgba(16, 24, 40, .05); min-width: 0; }
+  .panel-h { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .panel-h h3 { font: 700 1.15rem "Barlow Condensed"; }
+  .panel-h .more { margin-left: auto; color: var(--sky); font-weight: 600; font-size: .88rem; }
+  .seg { margin-left: auto; display: flex; background: var(--bg); border-radius: 8px; padding: 3px; font-size: .82rem; font-weight: 700; }
+  .seg span { padding: 4px 10px; border-radius: 6px; color: var(--muted); }
+  .seg .on { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+
+  .bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; height: 190px; align-items: end; padding-top: 10px; }
+  .bar { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; }
+  .bar div { width: 100%; max-width: 46px; border-radius: 6px 6px 2px 2px; background: #cfe0f8; flex: none; }
+  .bar.today div { background: linear-gradient(180deg, #3987e5, #1a2b4c); }
+  .bar small { color: var(--muted); font-size: .8rem; font-weight: 600; }
+  .bar b { font: 600 .82rem "Barlow Condensed"; color: var(--muted); }
+  .bar.today b { color: var(--ink); }
+
+  .donut-wrap { display: flex; align-items: center; gap: 22px; }
+  .legend { display: grid; gap: 12px; flex: 1; }
+  .legend div { display: grid; grid-template-columns: 12px 1fr auto; gap: 10px; align-items: center; font-size: .92rem; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; }
+  .legend b { font: 700 1.05rem "Barlow Condensed"; }
+
+  .list { display: grid; }
+  .li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .li:last-child { border-bottom: 0; }
+  .li .t { flex: 1; min-width: 0; }
+  .li .t b { display: block; font-size: .95rem; }
+  .li .t small { color: var(--muted); font-size: .82rem; }
+  .li .amt { font: 700 1.05rem "Barlow Condensed"; white-space: nowrap; }
+  .rank { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: .85rem; background: var(--bg); color: var(--muted); flex: none; }
+  .progress { height: 6px; background: var(--bg); border-radius: 9px; margin-top: 6px; overflow: hidden; }
+  .progress div { height: 100%; background: var(--sky); border-radius: 9px; }
+  .pill { font-size: .75rem; font-weight: 700; padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
+  .pill.cash { background: #e3f6eb; color: var(--ok); }
+  .pill.mm { background: #fff1de; color: #b36500; }
+  .alert { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 9px; margin-bottom: 10px; }
+  .alert.o { background: #fff6ea; }
+  .alert.r { background: #fdeeee; }
+  .alert b { display: block; font-size: .95rem; }
+  .alert small { color: var(--muted); }
+  .alert .go { margin-left: auto; color: var(--muted); font-size: 18px; }
+
+  /* ---------- Caisse ---------- */
+  .pos { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 400px; min-height: 0; }
+  .pos-left { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; min-height: 0; overflow: hidden; }
+  .scan { display: flex; gap: 10px; }
+  .scan .search { max-width: none; margin: 0; height: 52px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--line); font-size: 1.05rem; }
+  .scan .search i { font-size: 22px; }
+  .scan .btn { height: 52px; }
+  .cats { display: flex; gap: 8px; overflow: hidden; }
+  .cat { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 99px; background: #fff; font-weight: 600; font-size: .92rem; white-space: nowrap; box-shadow: inset 0 0 0 1px var(--line); }
+  .cat i.d { width: 9px; height: 9px; border-radius: 50%; }
+  .cat.on { background: var(--navy); color: #fff; box-shadow: none; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; overflow: hidden; }
+  .prod { background: #fff; border-radius: var(--r); padding: 12px; display: grid; gap: 8px; position: relative; box-shadow: 0 1px 2px rgba(16, 24, 40, .06); border-top: 4px solid var(--c); }
+  .prod .ph { height: 64px; border-radius: 8px; display: grid; place-items: center; background: var(--cb); color: var(--c); font: 700 1.5rem "Barlow Condensed"; }
+  .prod .ph i { font-size: 30px; }
+  .prod b { font-size: .95rem; line-height: 1.2; min-height: 2.3em; }
+  .prod .pr { display: flex; align-items: baseline; justify-content: space-between; }
+  .prod .pr span { font: 700 1.25rem "Barlow Condensed"; }
+  .prod .pr small { color: var(--muted); font-size: .78rem; }
+  .prod .pr small.low { color: var(--brick); font-weight: 700; }
+  .prod .star { position: absolute; top: 14px; right: 14px; color: #f2b10c; font-size: 16px; }
+  .prod .qty { position: absolute; top: -10px; left: -6px; background: var(--sky); color: #fff; font-weight: 700; font-size: .82rem; min-width: 26px; height: 26px; border-radius: 99px; display: grid; place-items: center; box-shadow: 0 4px 10px rgba(57, 135, 229, .45); border: 2px solid #fff; }
+  .prod.in { box-shadow: 0 0 0 2px var(--sky), 0 6px 16px rgba(57, 135, 229, .18); }
+
+  .cart { background: #fff; border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .cart-h { padding: 18px 20px 12px; display: flex; align-items: center; gap: 10px; }
+  .cart-h h3 { font: 700 1.3rem "Barlow Condensed"; }
+  .cart-h .count { background: var(--bg); padding: 2px 9px; border-radius: 99px; font-weight: 700; font-size: .85rem; color: var(--muted); }
+  .cart-h .clear { margin-left: auto; color: var(--muted); font-weight: 600; font-size: .88rem; display: flex; gap: 4px; align-items: center; }
+  .client { margin: 0 20px 6px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px; background: var(--bg); color: var(--muted); font-weight: 600; font-size: .92rem; }
+  .client i { font-size: 18px; }
+  .lines { flex: 1; overflow: hidden; padding: 0 20px; }
+  .line { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .line b { font-size: .97rem; }
+  .line .unit { color: var(--muted); font-size: .84rem; }
+  .line .tot { font: 700 1.1rem "Barlow Condensed"; text-align: right; }
+  .step { display: inline-flex; align-items: center; background: var(--bg); border-radius: 8px; overflow: hidden; justify-self: end; }
+  .step span { width: 32px; height: 30px; display: grid; place-items: center; color: var(--ink); font-size: 16px; }
+  .step b { min-width: 30px; text-align: center; font: 700 1rem "Barlow Condensed"; }
+  .cart-f { padding: 16px 20px 20px; border-top: 1px solid var(--line); display: grid; gap: 10px; background: #fbfcfe; }
+  .sum { display: flex; justify-content: space-between; color: var(--muted); font-size: .95rem; }
+  .sum.total { color: var(--ink); align-items: baseline; }
+  .sum.total b { font: 700 2.3rem/1 "Barlow Condensed"; }
+  .sum.total small { display: block; color: var(--muted); font-size: .85rem; font-weight: 600; }
+  .cur { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--bg); border-radius: 9px; padding: 3px; }
+  .cur span { text-align: center; padding: 7px; border-radius: 7px; font-weight: 700; color: var(--muted); font-size: .92rem; }
+  .cur .on { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .1); }
+  .pay { height: 60px; font-size: 1.2rem; border-radius: 10px; }
+
+  /* ---------- Téléphones ---------- */
+  .phones { max-width: 1440px; margin: 0 auto 60px; padding: 0 16px; display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+  .phone { width: 390px; height: 820px; background: var(--bg); border-radius: 44px; border: 12px solid #0d1526; overflow: hidden; position: relative; display: flex; flex-direction: column; box-shadow: 0 30px 60px rgba(10, 20, 42, .3); }
+  .p-top { background: var(--glow), var(--night); color: #fff; padding: 46px 18px 16px; }
+  .p-top .r { display: flex; align-items: center; gap: 10px; }
+  .p-top .r b { font: 700 1.25rem "Barlow Condensed"; flex: 1; }
+  .p-top .chip { background: rgba(255, 255, 255, .12); padding: 5px 10px; border-radius: 99px; font-size: .8rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .p-search { margin-top: 14px; height: 46px; border-radius: 10px; background: #fff; display: flex; align-items: center; gap: 10px; padding: 0 12px; color: var(--muted); }
+  .p-search i { font-size: 20px; }
+  .p-search .sc { margin-left: auto; width: 34px; height: 34px; border-radius: 8px; background: var(--navy); color: #fff; display: grid; place-items: center; }
+  .p-body { flex: 1; overflow: hidden; padding: 12px 14px; display: grid; gap: 12px; align-content: start; }
+  .p-body .cats { overflow: hidden; }
+  .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .p-grid .prod { padding: 10px; gap: 6px; }
+  .p-grid .prod .ph { height: 52px; }
+  .p-cartbar { margin: 0 12px 12px; padding: 12px 14px; border-radius: 14px; background: var(--glow), var(--night); color: #fff; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 24px rgba(15, 31, 66, .35); }
+  .p-cartbar .bag { width: 42px; height: 42px; border-radius: 10px; background: rgba(255, 255, 255, .12); display: grid; place-items: center; font-size: 22px; position: relative; }
+  .p-cartbar .bag em { position: absolute; top: -6px; right: -6px; background: var(--brick); font-style: normal; font-size: .72rem; font-weight: 700; min-width: 20px; height: 20px; border-radius: 99px; display: grid; place-items: center; }
+  .p-cartbar small { display: block; color: #a9b6d2; font-size: .8rem; }
+  .p-cartbar b { font: 700 1.35rem "Barlow Condensed"; }
+  .p-cartbar .go { margin-left: auto; background: #fff; color: var(--navy); font-weight: 700; padding: 10px 14px; border-radius: 10px; display: flex; align-items: center; gap: 6px; }
+  .p-nav { height: 70px; background: #fff; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: 8px; }
+  .p-nav span { display: grid; justify-items: center; align-content: center; gap: 2px; font-size: .72rem; font-weight: 600; color: var(--muted); }
+  .p-nav i { font-size: 22px; }
+  .p-nav .on { color: var(--navy); }
+  .p-nav .on i { background: #e7eefb; padding: 3px 14px; border-radius: 99px; }
+
+  /* Paiement (feuille du bas) */
+  .phone.dim::after { content: ""; position: absolute; inset: 0; background: rgba(10, 20, 42, .45); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: #fff; border-radius: 22px 22px 0 0; padding: 10px 18px 22px; display: grid; gap: 14px; }
+  .sheet .grab { width: 44px; height: 5px; border-radius: 9px; background: #d6dbe6; justify-self: center; }
+  .due { text-align: center; padding: 14px; border-radius: 14px; background: var(--glow), var(--night); color: #fff; }
+  .due small { color: #a9b6d2; font-weight: 600; }
+  .due b { display: block; font: 700 2.6rem/1.05 "Barlow Condensed"; }
+  .due em { font-style: normal; color: #a9b6d2; font-size: .88rem; }
+  .methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .method { padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 10px; font-weight: 700; box-shadow: inset 0 0 0 1.5px var(--line); }
+  .method i { font-size: 22px; }
+  .method.on { box-shadow: inset 0 0 0 2px var(--sky); background: #f1f7fe; color: #1f5fb4; }
+  .recv label { font-weight: 700; font-size: .9rem; color: var(--muted); }
+  .recv .in { margin-top: 6px; height: 54px; border-radius: 12px; box-shadow: inset 0 0 0 2px var(--navy); display: flex; align-items: center; padding: 0 14px; font: 700 1.6rem "Barlow Condensed"; justify-content: space-between; }
+  .recv .in small { font: 600 1rem Barlow; color: var(--muted); }
+  .bills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .bills span { text-align: center; padding: 9px 0; border-radius: 10px; background: var(--bg); font: 700 1rem "Barlow Condensed"; }
+  .bills .on { background: var(--navy); color: #fff; }
+  .change { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: #e3f6eb; color: #146c3b; font-weight: 700; }
+  .change b { font: 700 1.9rem "Barlow Condensed"; }
+
+  .notes { max-width: 1440px; margin: 0 auto 80px; padding: 0 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .note { background: #fff; border-radius: var(--r); padding: 18px; }
+  .note b { display: block; margin-bottom: 6px; font: 700 1.1rem "Barlow Condensed"; }
+  .note p { margin: 0; color: var(--muted); font-size: .95rem; }
+</style>
+</head>
+<body>
+
+<p class="page-title">1 · Accueil (ordinateur)<small>Menu latéral rangé par thèmes, cartes de chiffres colorées, graphiques de la semaine.</small></p>
+<div class="desk">
+  <aside class="side">
+    <div class="brand"><div class="logo">V</div><div><b>Alimentation Mama</b><small>Propriétaire</small></div></div>
+    <div class="item on"><i class="ti ti-layout-dashboard"></i>Accueil</div>
+    <div class="grp">Vendre</div>
+    <div class="item"><i class="ti ti-cash-register"></i>Caisse</div>
+    <div class="item"><i class="ti ti-receipt"></i>Ventes</div>
+    <div class="item"><i class="ti ti-users"></i>Clients</div>
+    <div class="grp">Stock</div>
+    <div class="item"><i class="ti ti-package"></i>Articles<span class="badge">3</span></div>
+    <div class="item"><i class="ti ti-truck-delivery"></i>Réceptions</div>
+    <div class="item"><i class="ti ti-clipboard-check"></i>Inventaire</div>
+    <div class="grp">Argent</div>
+    <div class="item"><i class="ti ti-wallet"></i>Dépenses</div>
+    <div class="item"><i class="ti ti-calendar-check"></i>Journée</div>
+    <div class="item"><i class="ti ti-chart-bar"></i>Rapports</div>
+    <div class="side-foot">
+      <div class="sync"><span class="dot"></span>Tout est envoyé</div>
+      <div class="me"><div class="avatar">MN</div><div><b>Mama Ngalula</b><small>Paramètres</small></div></div>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <div><h1>Bonjour Mama</h1><div class="sub">Samedi 31 octobre</div></div>
+      <div class="search"><i class="ti ti-search"></i>Chercher un article, une vente, un client…</div>
+      <div class="chip-rate"><i class="ti ti-arrows-exchange"></i>1 $ = 2 850 FC</div>
+      <button class="btn btn-night"><i class="ti ti-cash-register"></i>Nouvelle vente</button>
+    </header>
+    <div class="content">
+      <div class="kpis">
+        <div class="kpi hero"><div class="lbl"><span class="ico glass"><i class="ti ti-coins"></i></span>Ventes d'aujourd'hui</div><div class="val n">779 950 FC</div><div class="trend up"><i class="ti ti-trending-up"></i>+12 % <span>par rapport à hier</span></div></div>
+        <div class="kpi"><div class="lbl"><span class="ico blue"><i class="ti ti-receipt"></i></span>Nombre de ventes</div><div class="val n">32</div><div class="trend up"><i class="ti ti-trending-up"></i>+4 <span>par rapport à hier</span></div></div>
+        <div class="kpi"><div class="lbl"><span class="ico violet"><i class="ti ti-shopping-bag"></i></span>Panier moyen</div><div class="val n">24 373 FC</div><div class="trend down"><i class="ti ti-trending-down"></i>-3 % <span>par rapport à hier</span></div></div>
+        <div class="kpi"><div class="lbl"><span class="ico green"><i class="ti ti-pig-money"></i></span>Bénéfice estimé</div><div class="val n">186 400 FC</div><div class="trend up"><i class="ti ti-trending-up"></i>+9 % <span>par rapport à hier</span></div></div>
+      </div>
+      <div class="row row-2">
+        <div class="panel">
+          <div class="panel-h"><h3>Ventes de la semaine</h3><div class="seg"><span class="on">7 jours</span><span>30 jours</span><span>Mois</span></div></div>
+          <div class="bars">
+            <div class="bar"><b>512 k</b><div style="height:77px"></div><small>Dim</small></div>
+            <div class="bar"><b>640 k</b><div style="height:95px"></div><small>Lun</small></div>
+            <div class="bar"><b>588 k</b><div style="height:87px"></div><small>Mar</small></div>
+            <div class="bar"><b>701 k</b><div style="height:105px"></div><small>Mer</small></div>
+            <div class="bar"><b>655 k</b><div style="height:98px"></div><small>Jeu</small></div>
+            <div class="bar"><b>696 k</b><div style="height:104px"></div><small>Ven</small></div>
+            <div class="bar today"><b>780 k</b><div style="height:118px"></div><small>Aujourd'hui</small></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h3>Paiements du jour</h3></div>
+          <div class="donut-wrap">
+            <svg width="140" height="140" viewBox="0 0 42 42"><circle cx="21" cy="21" r="15.9" fill="none" stroke="#eef1f6" stroke-width="6"/><circle cx="21" cy="21" r="15.9" fill="none" stroke="#1f9d55" stroke-width="6" stroke-dasharray="68 32" stroke-dashoffset="25"/><circle cx="21" cy="21" r="15.9" fill="none" stroke="#e8890c" stroke-width="6" stroke-dasharray="24 76" stroke-dashoffset="57"/><circle cx="21" cy="21" r="15.9" fill="none" stroke="#3987e5" stroke-width="6" stroke-dasharray="8 92" stroke-dashoffset="33"/><text x="21" y="20" text-anchor="middle" font-family="Barlow Condensed" font-weight="700" font-size="7">32</text><text x="21" y="26" text-anchor="middle" font-family="Barlow" font-size="3.4" fill="#6b7489">ventes</text></svg>
+            <div class="legend">
+              <div><i style="background:#1f9d55"></i>Espèces FC<b class="n">530 k</b></div>
+              <div><i style="background:#e8890c"></i>Mobile money<b class="n">187 k</b></div>
+              <div><i style="background:#3987e5"></i>Espèces $<b class="n">22 $</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row row-3">
+        <div class="panel">
+          <div class="panel-h"><h3>Meilleurs articles</h3><span class="more">Tout voir</span></div>
+          <div class="list">
+            <div class="li"><span class="rank">1</span><div class="t"><b>Huile Mama 5 L</b><div class="progress"><div style="width:92%"></div></div></div><span class="amt">210 000</span></div>
+            <div class="li"><span class="rank">2</span><div class="t"><b>Lait Nido 400 g</b><div class="progress"><div style="width:70%"></div></div></div><span class="amt">156 000</span></div>
+            <div class="li"><span class="rank">3</span><div class="t"><b>Riz parfumé 1 kg</b><div class="progress"><div style="width:48%"></div></div></div><span class="amt">98 000</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h3>À surveiller</h3></div>
+          <div class="alert o"><span class="ico orange"><i class="ti ti-alert-triangle"></i></span><div><b>3 articles à commander</b><small>Rupture ou sous le seuil</small></div><i class="ti ti-chevron-right go"></i></div>
+          <div class="alert r"><span class="ico red"><i class="ti ti-calendar-exclamation"></i></span><div><b>1 lot bientôt périmé</b><small>Dans les 30 prochains jours</small></div><i class="ti ti-chevron-right go"></i></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h3>Dernières ventes</h3><span class="more">Tout voir</span></div>
+          <div class="list">
+            <div class="li"><span class="ico blue"><i class="ti ti-receipt"></i></span><div class="t"><b>7KQ2-M4 · Grâce</b><small>Il y a 3 min · 4 articles</small></div><div style="text-align:right"><div class="amt">21 100 FC</div><span class="pill cash">Espèces</span></div></div>
+            <div class="li"><span class="ico blue"><i class="ti ti-receipt"></i></span><div class="t"><b>9PX1-A7 · Patrick</b><small>Il y a 11 min · 2 articles</small></div><div style="text-align:right"><div class="amt">36 000 FC</div><span class="pill mm">Mobile money</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="page-title">2 · Caisse (ordinateur, tablette)<small>Menu réduit pour laisser la place. Articles en couleurs par rayon, stock visible, panier toujours ouvert à droite.</small></p>
+<div class="desk">
+  <aside class="side mini">
+    <div class="brand" style="padding:4px 0 18px"><div class="logo">V</div></div>
+    <div class="item"><i class="ti ti-layout-dashboard"></i></div>
+    <div class="item on"><i class="ti ti-cash-register"></i></div>
+    <div class="item"><i class="ti ti-receipt"></i></div>
+    <div class="item"><i class="ti ti-users"></i></div>
+    <div class="item"><i class="ti ti-package"></i></div>
+    <div class="item"><i class="ti ti-wallet"></i></div>
+    <div class="item"><i class="ti ti-chart-bar"></i></div>
+    <div class="side-foot" style="justify-items:center"><span class="dot"></span><div class="avatar">GR</div></div>
+  </aside>
+  <div class="main">
+    <div class="pos">
+      <div class="pos-left">
+        <div class="scan">
+          <div class="search"><i class="ti ti-search"></i>Nom de l'article ou scannez le code-barres</div>
+          <button class="btn btn-light" style="height:52px"><i class="ti ti-scan"></i>Scanner</button>
+        </div>
+        <div class="cats">
+          <span class="cat on">Tout</span>
+          <span class="cat"><i class="ti ti-star-filled" style="color:#f2b10c"></i>Favoris</span>
+          <span class="cat"><i class="d" style="background:#1f9d55"></i>Alimentation</span>
+          <span class="cat"><i class="d" style="background:#3987e5"></i>Boissons</span>
+          <span class="cat"><i class="d" style="background:#e8890c"></i>Huile</span>
+          <span class="cat"><i class="d" style="background:#9c36b5"></i>Hygiène</span>
+          <span class="cat"><i class="d" style="background:#0ca678"></i>Lait</span>
+          <span class="cat"><i class="d" style="background:#e03131"></i>Téléphonie</span>
+        </div>
+        <div class="grid">
+          <div class="prod in" style="--c:#3987e5;--cb:#e7f0fd"><span class="qty">2</span><i class="ti ti-star-filled star"></i><div class="ph"><i class="ti ti-bottle"></i></div><b>Coca-Cola 33 cl</b><div class="pr"><span>1 000 FC</span><small>148 en stock</small></div></div>
+          <div class="prod" style="--c:#3987e5;--cb:#e7f0fd"><i class="ti ti-star-filled star"></i><div class="ph"><i class="ti ti-droplet"></i></div><b>Eau 1,5 L</b><div class="pr"><span>1 500 FC</span><small>60 en stock</small></div></div>
+          <div class="prod in" style="--c:#e8890c;--cb:#fff1de"><span class="qty">1</span><i class="ti ti-star-filled star"></i><div class="ph">HM</div><b>Huile Mama 1 L</b><div class="pr"><span>6 500 FC</span><small class="low">4 restants</small></div></div>
+          <div class="prod" style="--c:#0ca678;--cb:#e2f7f1"><i class="ti ti-star-filled star"></i><div class="ph">LN</div><b>Lait Nido 400 g</b><div class="pr"><span>12 000 FC</span><small>22 en stock</small></div></div>
+          <div class="prod in" style="--c:#1f9d55;--cb:#e3f6eb"><span class="qty">3</span><div class="ph"><i class="ti ti-grain"></i></div><b>Riz parfumé 1 kg</b><div class="pr"><span>2 800 FC</span><small>85 en stock</small></div></div>
+          <div class="prod" style="--c:#9c36b5;--cb:#f6e8fb"><div class="ph">SM</div><b>Savon Monganga</b><div class="pr"><span>1 500 FC</span><small>40 en stock</small></div></div>
+          <div class="prod" style="--c:#1f9d55;--cb:#e3f6eb"><div class="ph">SU</div><b>Sucre 1 kg</b><div class="pr"><span>3 200 FC</span><small>31 en stock</small></div></div>
+          <div class="prod" style="--c:#e03131;--cb:#fde7e8"><div class="ph"><i class="ti ti-device-mobile"></i></div><b>Crédit Vodacom 1 $</b><div class="pr"><span>2 850 FC</span><small>Illimité</small></div></div>
+          <div class="prod" style="--c:#9c36b5;--cb:#f6e8fb"><div class="ph">DS</div><b>Dentifrice Signal</b><div class="pr"><span>3 500 FC</span><small>18 en stock</small></div></div>
+          <div class="prod" style="--c:#3987e5;--cb:#e7f0fd"><div class="ph"><i class="ti ti-bottle"></i></div><b>Fanta 33 cl</b><div class="pr"><span>1 000 FC</span><small>96 en stock</small></div></div>
+          <div class="prod" style="--c:#1f9d55;--cb:#e3f6eb"><div class="ph">FM</div><b>Farine de maïs 1 kg</b><div class="pr"><span>2 500 FC</span><small>50 en stock</small></div></div>
+          <div class="prod" style="--c:#e8890c;--cb:#fff1de"><div class="ph">HM</div><b>Huile Mama 5 L</b><div class="pr"><span>30 000 FC</span><small>12 en stock</small></div></div>
+        </div>
+      </div>
+      <aside class="cart">
+        <div class="cart-h"><h3>Vente en cours</h3><span class="count">6 articles</span><span class="clear"><i class="ti ti-trash"></i>Vider</span></div>
+        <div class="client"><i class="ti ti-user-plus"></i>Ajouter un client (fidélité, crédit)</div>
+        <div class="lines">
+          <div class="line"><b>Coca-Cola 33 cl</b><span class="tot">2 000 FC</span><span class="unit">1 000 FC l'unité</span><span class="step"><span><i class="ti ti-minus"></i></span><b>2</b><span><i class="ti ti-plus"></i></span></span></div>
+          <div class="line"><b>Huile Mama 1 L</b><span class="tot">6 500 FC</span><span class="unit">6 500 FC l'unité</span><span class="step"><span><i class="ti ti-trash"></i></span><b>1</b><span><i class="ti ti-plus"></i></span></span></div>
+          <div class="line"><b>Riz parfumé 1 kg</b><span class="tot">8 400 FC</span><span class="unit">2 800 FC l'unité</span><span class="step"><span><i class="ti ti-minus"></i></span><b>3</b><span><i class="ti ti-plus"></i></span></span></div>
+        </div>
+        <div class="cart-f">
+          <div class="sum"><span>Sous-total</span><span class="n" style="font-weight:700">16 900 FC</span></div>
+          <div class="sum"><span style="color:var(--sky);font-weight:600"><i class="ti ti-discount"></i> Ajouter une remise</span></div>
+          <div class="sum total"><div><small>Total à payer</small>≈ 5,93 $</div><b>16 900 FC</b></div>
+          <div class="cur"><span class="on">FC</span><span>$</span><span>€</span></div>
+          <button class="btn btn-night pay"><i class="ti ti-cash"></i>Encaisser 16 900 FC</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<p class="page-title">3 · Caisse et paiement (téléphone)<small>Le panier devient une barre en bas ; le paiement s'ouvre en feuille avec les billets les plus courants et la monnaie à rendre en grand.</small></p>
+<div class="phones">
+  <div class="phone">
+    <div class="p-top">
+      <div class="r"><div class="logo" style="width:32px;height:32px;font-size:19px">V</div><b>Caisse</b><span class="chip"><span class="dot"></span>Hors ligne : ventes gardées</span></div>
+      <div class="p-search"><i class="ti ti-search"></i>Article ou code-barres<span class="sc"><i class="ti ti-scan"></i></span></div>
+    </div>
+    <div class="p-body">
+      <div class="cats"><span class="cat on">Tout</span><span class="cat"><i class="ti ti-star-filled" style="color:#f2b10c"></i>Favoris</span><span class="cat"><i class="d" style="background:#1f9d55"></i>Alimentation</span><span class="cat"><i class="d" style="background:#3987e5"></i>Boissons</span></div>
+      <div class="p-grid">
+        <div class="prod in" style="--c:#3987e5;--cb:#e7f0fd"><span class="qty">2</span><div class="ph"><i class="ti ti-bottle"></i></div><b>Coca-Cola 33 cl</b><div class="pr"><span>1 000 FC</span></div></div>
+        <div class="prod" style="--c:#3987e5;--cb:#e7f0fd"><div class="ph"><i class="ti ti-droplet"></i></div><b>Eau 1,5 L</b><div class="pr"><span>1 500 FC</span></div></div>
+        <div class="prod in" style="--c:#e8890c;--cb:#fff1de"><span class="qty">1</span><div class="ph">HM</div><b>Huile Mama 1 L</b><div class="pr"><span>6 500 FC</span><small class="low">4 restants</small></div></div>
+        <div class="prod" style="--c:#0ca678;--cb:#e2f7f1"><div class="ph">LN</div><b>Lait Nido 400 g</b><div class="pr"><span>12 000 FC</span></div></div>
+        <div class="prod in" style="--c:#1f9d55;--cb:#e3f6eb"><span class="qty">3</span><div class="ph"><i class="ti ti-grain"></i></div><b>Riz parfumé 1 kg</b><div class="pr"><span>2 800 FC</span></div></div>
+        <div class="prod" style="--c:#9c36b5;--cb:#f6e8fb"><div class="ph">SM</div><b>Savon Monganga</b><div class="pr"><span>1 500 FC</span></div></div>
+      </div>
+    </div>
+    <div class="p-cartbar"><div class="bag"><i class="ti ti-shopping-bag"></i><em>6</em></div><div><small>Panier</small><b>16 900 FC</b></div><span class="go">Encaisser<i class="ti ti-arrow-right"></i></span></div>
+    <nav class="p-nav"><span><i class="ti ti-home"></i>Accueil</span><span class="on"><i class="ti ti-cash-register"></i>Caisse</span><span><i class="ti ti-package"></i>Stock</span><span><i class="ti ti-receipt"></i>Ventes</span><span><i class="ti ti-dots"></i>Plus</span></nav>
+  </div>
+
+  <div class="phone dim">
+    <div class="p-top">
+      <div class="r"><div class="logo" style="width:32px;height:32px;font-size:19px">V</div><b>Caisse</b></div>
+      <div class="p-search"><i class="ti ti-search"></i>Article ou code-barres<span class="sc"><i class="ti ti-scan"></i></span></div>
+    </div>
+    <div class="p-body"></div>
+    <div class="sheet">
+      <span class="grab"></span>
+      <div class="due"><small>À payer</small><b>16 900 FC</b><em>soit 5,93 $ au taux du jour</em></div>
+      <div class="methods"><div class="method on"><i class="ti ti-cash"></i>Espèces</div><div class="method"><i class="ti ti-device-mobile-dollar"></i>Mobile money</div></div>
+      <div class="cur"><span class="on">Payé en FC</span><span>en $</span><span>en €</span></div>
+      <div class="recv"><label>Le client donne</label><div class="in">20 000<small>FC</small></div></div>
+      <div class="bills"><span>17 000</span><span class="on">20 000</span><span>25 000</span><span>50 000</span></div>
+      <div class="change"><span><i class="ti ti-arrow-back-up"></i> Monnaie à rendre</span><b>3 100 FC</b></div>
+      <button class="btn btn-night pay"><i class="ti ti-check"></i>Valider la vente</button>
+    </div>
+  </div>
+</div>
+
+<div class="notes">
+  <div class="note"><b>Ce qui change partout</b><p>Le bleu nuit du site pour la barre de menu, les cartes importantes et les boutons principaux. Des pastilles d'icônes en couleur douce pour repérer chaque chiffre et chaque alerte d'un coup d'œil.</p></div>
+  <div class="note"><b>Plus rapide à la caisse</b><p>Couleur par rayon, stock visible sur chaque article (et en rouge quand il en reste peu), quantité déjà au panier en pastille bleue. Plus de codes article à l'écran du vendeur.</p></div>
+  <div class="note"><b>Paiement sans erreur</b><p>Le montant à payer en très grand, les billets les plus probables en un toucher, la monnaie à rendre en vert. Le même écran pour les FC, les $ et les €.</p></div>
+</div>
+</body>
+</html>

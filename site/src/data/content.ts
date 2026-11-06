@@ -3,13 +3,13 @@
  * Les textes, eux, sont dans `src/i18n/` (français et anglais).
  */
 
-export const APP_URL = "https://getvitepos.web.app";
+export const APP_URL = "https://app.viteposrdc.com";
 export const SIGNUP_URL = `${APP_URL}/inscription`;
 export const LOGIN_URL = `${APP_URL}/connexion`;
 
 /** Adresses écrites en clair (brochure, manuel) : sans « https:// ». */
-export const APP_HOST = "getvitepos.web.app";
-export const SITE_HOST = "vitepos-rdc.web.app";
+export const APP_HOST = "app.viteposrdc.com";
+export const SITE_HOST = "viteposrdc.com";
 
 /**
  * Éditeur de vitePOS, cité dans les conditions d'utilisation et la politique de confidentialité.
@@ -43,3 +43,12 @@ export const CONTACT = {
 export function whatsappUrl(text: string): string {
   return `https://wa.me/${LEGAL.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
 }
+
+/**
+ * Réseaux sociaux de vitePOS : page « Suivez vitePOS » (QR code de la brochure) et pied de page.
+ * Un lien vide = bouton caché.
+ */
+export const SOCIAL = {
+  instagram: "https://www.instagram.com/viteposrdc",
+  facebook: "https://www.facebook.com/people/Vitepos-RDC/61596177243160/",
+};

@@ -1,0 +1,73 @@
+/* Maquette v3 : accueil et caisse. Palette commune app et site. */
+:root {
+  --sky: #3987e5;
+  --sky-deep: #1f63b8;
+  --sun: #ffc233;
+  --mint: #1fb57a;
+  --mint-text: #11915e;
+  --ice: #eaf4ff;
+  --ink: #12233f;
+  --text: #2a3346;
+  --muted: #5b6270;
+  --line: #e4e8ef;
+  --red: #d6453d;
+  --band: linear-gradient(115deg, #2c6fc6 0%, #3987e5 55%, #4b96ee 100%);
+  --zebra: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cg fill='%23fff' fill-opacity='0.09'%3E%3Cpath d='M0 8C50 0 90 26 140 18S210 2 240 8V22C205 16 175 34 135 32S55 14 0 22Z'/%3E%3Cpath d='M0 52C60 44 110 66 170 58C200 54 220 60 240 52V64C215 70 195 66 165 72C110 80 55 60 0 64Z'/%3E%3Cpath d='M60 36C90 33 120 44 155 41C120 50 90 47 60 36Z'/%3E%3Cpath d='M0 94C40 88 80 104 120 98C160 92 200 108 240 94V108C200 118 160 104 120 112C80 118 40 102 0 108Z'/%3E%3Cpath d='M150 80C175 78 200 86 225 82C200 92 175 90 150 80Z'/%3E%3C/g%3E%3C/svg%3E");
+  --zig: 10px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: "Barlow", system-ui, sans-serif;
+  color: var(--text);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+.num, .cond { font-family: "Barlow Condensed", "Barlow", sans-serif; font-variant-numeric: tabular-nums; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+
+.blue { background: var(--zebra) 0 0 / 300px 150px, var(--band); color: #fff; }
+
+/* Bords en dents de scie du papier thermique */
+.zigzag-bottom { -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zig)) 100%; mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zig)) 100%; padding-bottom: calc(var(--zig) + 14px) !important; }
+.zigzag-top { -webkit-mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zig)) 100%; mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zig)) 100%; padding-top: calc(var(--zig) + 14px) !important; }
+
+/* ---------- Coque de l'app ---------- */
+.app { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr); }
+.top { display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
+.top img { width: 30px; height: 30px; border-radius: 7px; background: #fff; padding: 3px; }
+.top .shop { font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.2rem; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.online { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 600; background: rgba(255,255,255,.18); padding: 4px 10px; border-radius: 99px; }
+.online i { width: 8px; height: 8px; border-radius: 50%; background: #7cf0b9; box-shadow: 0 0 0 3px rgba(124,240,185,.25); }
+
+.side { display: none; }
+.bottom { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(5, 1fr); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); z-index: 5; }
+.bottom a { display: flex; flex-direction: column; align-items: center; gap: 2px; color: rgba(255,255,255,.8); font-size: .72rem; font-weight: 600; text-decoration: none; }
+.bottom a svg { width: 22px; height: 22px; padding: 3px 14px; box-sizing: content-box; border-radius: 99px; }
+.bottom a.on { color: #fff; }
+.bottom a.on svg { background: rgba(255,255,255,.24); }
+main { padding: 16px 16px 96px; }
+
+@media (min-width: 900px) {
+  .app { grid-template-columns: 232px minmax(0, 1fr); }
+  .side { display: flex; flex-direction: column; gap: 4px; padding: 18px 14px; position: sticky; top: 0; height: 100vh; }
+  .side .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .side .brand img { width: 34px; height: 34px; border-radius: 8px; background: #fff; padding: 3px; }
+  .side .brand b { font-family: "Barlow Condensed"; font-size: 1.15rem; line-height: 1.1; }
+  .side .brand small { display: block; color: rgba(255,255,255,.8); font-weight: 600; }
+  .side a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; color: rgba(255,255,255,.88); text-decoration: none; font-weight: 600; }
+  .side a svg { width: 20px; height: 20px; }
+  .side a.on { background: rgba(255,255,255,.22); color: #fff; }
+  .side .grow { flex: 1; }
+  .bottom, .top.phone-only { display: none; }
+  main { padding: 28px 32px 40px; }
+}
+
+/* Ticket dentelé en haut et en bas */
+.zigzag-top.zigzag-bottom {
+  --m-top: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% 0 / calc(2 * var(--zig)) 51% repeat-x;
+  --m-bot: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% 100% / calc(2 * var(--zig)) 51% repeat-x;
+  -webkit-mask: var(--m-top), var(--m-bot);
+  mask: var(--m-top), var(--m-bot);
+}

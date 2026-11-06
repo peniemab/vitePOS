@@ -320,12 +320,12 @@
   grid-template-columns: 1fr 6mm 1fr;
   align-items: start;
   gap: 1.5mm;
-  margin: 2.5mm 0 3mm;
+  margin: 2mm 0 2.2mm;
 }
 .v-panel img {
   display: block;
   width: 100%;
-  height: 19mm;
+  height: 16mm;
   object-fit: cover;
   border: 0.6mm solid var(--ink-deep);
   box-sizing: border-box;
@@ -362,10 +362,10 @@
 .v-benefits {
   list-style: none;
   padding: 0;
-  margin: 2mm 0 3mm;
+  margin: 1.6mm 0 2.6mm;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2mm 5mm;
+  gap: 1.2mm 5mm;
 }
 .v-benefits li {
   display: flex;
@@ -544,8 +544,11 @@
 
 /* Contacts : bandeau encre en bas de page. */
 .v-contact {
+  display: flex;
+  align-items: center;
+  gap: 5mm;
   margin: auto -9mm 0;
-  padding: 4.5mm 9mm;
+  padding: 3.5mm 9mm;
   background: var(--ink-deep);
   color: #fff;
 }
@@ -558,15 +561,15 @@
 }
 .v-contact-text > p:not(.v-contact-title) {
   margin-top: 1.2mm;
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   opacity: 0.9;
 }
 .v-contact dl {
-  margin-top: 2.6mm;
+  margin-top: 1.8mm;
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto auto;
   justify-content: start;
-  gap: 1mm 7mm;
+  gap: 0.6mm 6mm;
 }
 .v-contact dt,
 .v-contact dd {
@@ -587,6 +590,38 @@
   margin-top: 0.4mm;
   font-weight: 700;
   font-size: 0.98rem;
+}
+/* QR code « Rejoignez la communauté » à droite du bandeau. */
+.v-community {
+  flex: none;
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 1.4mm;
+  text-align: center;
+}
+.v-community img {
+  width: 21mm;
+  height: 21mm;
+  padding: 1.5mm;
+  background: #fff;
+  border-radius: 2mm;
+}
+.v-community b {
+  display: block;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  max-width: 28mm;
+}
+.v-community-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1.6mm;
+  margin-top: 0.8mm;
+}
+.v-community-icons svg {
+  width: 3.6mm;
+  height: 3.6mm;
 }
 .v-contact .b-qr-box figcaption {
   color: #fff;

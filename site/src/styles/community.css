@@ -1,0 +1,106 @@
+/* Page « Communauté » : une colonne étroite, pensée pour le téléphone (on y arrive en scannant la brochure). */
+.hub {
+  padding-top: 120px;
+}
+.hub-wrap {
+  max-width: 520px;
+  text-align: center;
+}
+.hub-logo {
+  width: 64px;
+  height: auto;
+  padding: 8px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--d-card-shadow);
+}
+.hub h1 {
+  margin: 20px 0 12px;
+  color: var(--title);
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.hub-lead {
+  margin: 0 0 28px;
+  color: var(--d-muted);
+  font-size: 1.05rem;
+}
+.hub-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  text-align: left;
+}
+.hub-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 76px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  color: #fff;
+  text-decoration: none;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+.hub-link:hover {
+  filter: brightness(1.08);
+}
+.hub-link:active {
+  transform: scale(0.98);
+}
+/* Couleurs des marques, assez foncées pour un texte blanc lisible. */
+.hub-link.whatsapp {
+  background: #128c4a;
+}
+.hub-link.instagram {
+  background: linear-gradient(115deg, #7a2fd0 0%, #c1307f 55%, #e0583a 100%);
+}
+.hub-link.facebook {
+  background: #1565d8;
+}
+.hub-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.18);
+}
+.hub-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.hub-text {
+  font-size: 1.2rem;
+}
+.hub-arrow {
+  margin-left: auto;
+  display: grid;
+  flex: none;
+}
+.hub-arrow svg {
+  width: 24px;
+  height: 24px;
+}
+.hub-app {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 28px;
+  font-weight: 700;
+  color: var(--sky-deep);
+  text-decoration: none;
+}
+.hub-app svg {
+  width: 18px;
+  height: 18px;
+}
+@media (max-width: 600px) {
+  .hub {
+    padding-top: 96px;
+  }
+}

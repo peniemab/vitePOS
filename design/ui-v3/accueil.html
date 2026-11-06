@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accueil v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .hello { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 4px 0 14px; }
+  .hello h1 { font-family: "Barlow Condensed"; font-size: 1.9rem; color: var(--ink); margin: 0; line-height: 1; }
+  .hello span { color: var(--muted); font-weight: 500; }
+  .rate { font-weight: 700; color: var(--sky-deep); background: var(--ice); padding: 6px 10px; border-radius: 8px; white-space: nowrap; font-size: .9rem; }
+
+  /* La recette du jour : un ticket de caisse bleu zébré */
+  .till { border-radius: 14px 14px 0 0; padding: 18px 18px 0; position: relative; }
+  .till .head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: rgba(255,255,255,.88); }
+  .till .head b { color: #fff; font-weight: 700; }
+  .till .total { font-family: "Barlow Condensed"; font-weight: 700; font-size: clamp(3.4rem, 15vw, 4.6rem); line-height: .95; letter-spacing: -.01em; margin: 10px 0 2px; font-variant-numeric: tabular-nums; }
+  .till .total small { font-size: .42em; font-weight: 600; margin-left: 6px; opacity: .9; }
+  .till .vs { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: .92rem; background: rgba(255,255,255,.16); padding: 3px 10px; border-radius: 99px; }
+  .till .vs.down::before { content: ""; width: 0; height: 0; border: 5px solid transparent; border-top: 6px solid #ffd2cf; margin-top: 5px; }
+  .till .cut { border-top: 2px dashed rgba(255,255,255,.4); margin: 16px -18px 0; }
+  .till dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 12px 0 0; }
+  .till dl div + div { border-left: 1px solid rgba(255,255,255,.22); padding-left: 12px; }
+  .till dt { font-size: .82rem; color: rgba(255,255,255,.85); font-weight: 600; }
+  .till dd { margin: 2px 0 0; font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+  .till dd em { font-style: normal; display: block; font-family: "Barlow"; font-size: .78rem; font-weight: 600; color: #c8ffe4; }
+  .till dd em.down { color: #ffd2cf; }
+
+  .new-sale { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin: 16px 0 22px; padding: 16px; border: 0; border-radius: 14px; background: var(--sun); color: var(--ink); font-weight: 700; font-size: 1.15rem; box-shadow: 0 10px 24px rgba(160, 110, 0, .22); }
+  .new-sale svg { width: 24px; height: 24px; }
+
+  h2 { font-family: "Barlow Condensed"; font-size: 1.35rem; color: var(--ink); margin: 0 0 10px; }
+  section { margin-bottom: 24px; }
+
+  .watch { display: grid; gap: 8px; }
+  .watch a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; text-decoration: none; color: var(--ink); background: #fff; box-shadow: 0 0 0 1px var(--line); }
+  .watch a .dot { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+  .watch a .dot svg { width: 20px; height: 20px; }
+  .watch .stock .dot { background: #fff4d6; color: #a86b00; }
+  .watch .exp .dot { background: #ffe7e5; color: var(--red); }
+  .watch b { display: block; }
+  .watch small { color: var(--muted); }
+  .watch a::after { content: "›"; margin-left: auto; color: var(--muted); font-size: 1.4rem; }
+
+  /* Ventes par heure : quand la boutique vend */
+  .hours { display: grid; grid-template-columns: repeat(13, 1fr); align-items: end; gap: 5px; height: 130px; padding: 0 2px; }
+  .hours div { background: #cfe3fb; border-radius: 5px 5px 2px 2px; position: relative; }
+  .hours div.now { background: var(--sky); }
+  .hours div.now::after { content: "maintenant"; position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-size: .7rem; font-weight: 700; color: var(--sky-deep); white-space: nowrap; }
+  .hours div.later { background: repeating-linear-gradient(135deg, #eef3fa 0 4px, #fff 4px 8px); box-shadow: inset 0 0 0 1px #e3eaf4; height: 18px !important; }
+  .axis { display: grid; grid-template-columns: repeat(13, 1fr); gap: 5px; font-size: .72rem; color: var(--muted); margin-top: 6px; text-align: center; }
+  .peak { color: var(--muted); font-size: .92rem; margin: 10px 0 0; }
+  .peak b { color: var(--ink); }
+
+  /* Dernières ventes : comme des lignes de ticket */
+  .tape { background: #fff; border-radius: 12px; box-shadow: 0 0 0 1px var(--line); padding: 4px 14px; }
+  .tape a { display: grid; grid-template-columns: auto 1fr auto; gap: 2px 12px; align-items: center; padding: 11px 0; text-decoration: none; color: var(--text); }
+  .tape a + a { border-top: 1px dashed var(--line); }
+  .tape .t { font-family: "Barlow Condensed"; font-weight: 600; color: var(--muted); font-size: 1rem; width: 44px; }
+  .tape .who b { color: var(--ink); }
+  .tape .who small { display: block; color: var(--muted); }
+  .tape .amt { text-align: right; font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.2rem; color: var(--ink); }
+  .tape .amt small { display: block; font-family: "Barlow"; font-size: .75rem; font-weight: 600; }
+  .pay-cash { color: var(--mint-text); }
+  .pay-mm { color: #b26b00; }
+  .tape a.fresh { animation: arrive 1.2s ease-out 1; }
+  @keyframes arrive { from { background: #fff8e1; } to { background: transparent; } }
+  @media (prefers-reduced-motion: reduce) { .tape a.fresh { animation: none; } }
+
+  @media (min-width: 900px) {
+    .grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+    .hello h1 { font-size: 2.3rem; }
+    .new-sale { width: auto; padding: 14px 28px; margin-top: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side blue">
+    <div class="brand"><img src="logo.svg" alt=""><div><b>Alimentation Mama Ngalula</b><small>Propriétaire</small></div></div>
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l-2 0l9-9l9 9l-2 0M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Accueil</a>
+    <a href="caisse.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="8" rx="2"/><path d="M6 21h12l-1-10H7z"/></svg>Caisse</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z M12 12l8-4.5 M12 12v9 M12 12L4 7.5"/></svg>Articles</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-3-2-2 2-2-2-2 2-2-2z M9 7h6 M9 11h6"/></svg>Ventes</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16 M7 16V10 M12 16V5 M17 16v-4"/></svg>Rapports</a>
+    <div class="grow"></div>
+    <span class="online"><i></i>En ligne · tout est envoyé</span>
+  </aside>
+
+  <div>
+    <header class="top blue phone-only">
+      <img src="logo.svg" alt="">
+      <span class="shop">Alimentation Mama Ngalula</span>
+      <span class="online"><i></i>En ligne</span>
+    </header>
+
+    <main>
+      <div class="hello">
+        <h1>Bonjour Mama <span>samedi 17 octobre</span></h1>
+        <span class="rate">1 $ = 2 850 FC</span>
+      </div>
+
+      <div class="grid">
+        <div>
+          <div class="till blue zigzag-bottom" role="group" aria-label="Recette du jour">
+            <div class="head"><span>Recette du jour</span><b>17:40</b></div>
+            <div class="total">779 950<small>FC</small></div>
+            <span class="vs down">6 % de moins qu'hier à la même heure</span>
+            <div class="cut"></div>
+            <dl>
+              <div><dt>Ventes</dt><dd>32<em>5 de plus</em></dd></div>
+              <div><dt>Panier moyen</dt><dd>24 373<em class="down">21 % de moins</em></dd></div>
+              <div><dt>Bénéfice</dt><dd>147 300<em class="down">4 % de moins</em></dd></div>
+            </dl>
+          </div>
+
+          <button class="new-sale"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14 M5 12h14"/></svg>Nouvelle vente</button>
+
+          <section>
+            <h2>Quand la boutique vend</h2>
+            <div class="hours" aria-label="Ventes par heure">
+              <div style="height:14%"></div><div style="height:30%"></div><div style="height:52%"></div><div style="height:41%"></div><div style="height:35%"></div><div style="height:62%"></div><div style="height:78%"></div><div style="height:55%"></div><div style="height:100%"></div><div class="now" style="height:58%"></div><div class="later"></div><div class="later"></div><div class="later"></div>
+            </div>
+            <div class="axis"><span>8h</span><span></span><span>10h</span><span></span><span>12h</span><span></span><span>14h</span><span></span><span>16h</span><span></span><span>18h</span><span></span><span>20h</span></div>
+            <p class="peak">Le plus de ventes vers <b>16 h</b> : 9 ventes, 168 000 FC.</p>
+          </section>
+        </div>
+
+        <div>
+          <section>
+            <h2>À surveiller</h2>
+            <div class="watch">
+              <a href="#" class="stock"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4 M12 17h.01 M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><div><b>3 articles à commander</b><small>Huile Mama 1 L, Sucre 1 kg, Bougies ×6</small></div></a>
+              <a href="#" class="exp"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4 M8 3v4 M4 11h16 M12 15h.01"/></svg></span><div><b>2 lots périment dans 30 jours</b><small>Lait Nido 400 g, Paracétamol 500 mg</small></div></a>
+            </div>
+          </section>
+
+          <section>
+            <h2>Dernières ventes</h2>
+            <div class="tape">
+              <a href="#" class="fresh"><span class="t">17:28</span><span class="who"><b>Maman Nsimba</b><small>4 articles · Grâce</small></span><span class="amt">28 100 FC<small class="pay-cash">Espèces</small></span></a>
+              <a href="#"><span class="t">17:21</span><span class="who"><b>Sans client</b><small>2 articles · Joël</small></span><span class="amt">7 500 FC<small class="pay-mm">Mobile money</small></span></a>
+              <a href="#"><span class="t">17:09</span><span class="who"><b>Papa Mukendi</b><small>1 article · Grâce</small></span><span class="amt">40 $<small class="pay-cash">Espèces en $</small></span></a>
+              <a href="#"><span class="t">16:52</span><span class="who"><b>Sans client</b><small>6 articles · Grâce</small></span><span class="amt">13 000 FC<small class="pay-cash">Espèces</small></span></a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <nav class="bottom blue" aria-label="Sections">
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l-2 0l9-9l9 9l-2 0M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Accueil</a>
+    <a href="caisse.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="8" rx="2"/><path d="M6 21h12l-1-10H7z"/></svg>Caisse</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z M12 12l8-4.5 M12 12v9 M12 12L4 7.5"/></svg>Stock</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-3-2-2 2-2-2-2 2-2-2z M9 7h6 M9 11h6"/></svg>Ventes</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h.01 M12 12h.01 M19 12h.01"/></svg>Plus</a>
+  </nav>
+</div>
+</body>
+</html>

@@ -146,6 +146,14 @@ const benefitIcons = [moreIcons.cash, moreIcons.wifiOff, icons.package, icons.us
             <div><dt><span set:html={moreIcons.store} />{b.siteLabel}</dt><dd translate="no">{SITE_HOST}</dd></div>
           </dl>
         </div>
+        <!-- « Suivez-nous » : le QR code ouvre /communaute (Instagram, Facebook), pas directement les réseaux. -->
+        <figure class="v-community">
+          <img src={lang === "fr" ? "/qr-communaute.svg" : "/qr-community-en.svg"} alt={t.community.qrAlt} width="96" height="96" />
+          <figcaption>
+            <b>{t.community.qrTitle}</b>
+            <span class="v-community-icons"><span set:html={contactIcons.instagram} /><span set:html={contactIcons.facebook} /></span>
+          </figcaption>
+        </figure>
       </footer>
     </section>
   </div>

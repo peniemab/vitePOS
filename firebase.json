@@ -104,7 +104,7 @@
       "redirects": [
         {
           "regex": "^/(.*)$",
-          "destination": "https://getvitepos.web.app/:1",
+          "destination": "https://app.viteposrdc.com/:1",
           "type": 301
         }
       ]
@@ -115,7 +115,7 @@
       "redirects": [
         {
           "regex": "^/(.*)$",
-          "destination": "https://getvitepos.web.app/:1",
+          "destination": "https://app.viteposrdc.com/:1",
           "type": 301
         }
       ]

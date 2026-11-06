@@ -1,6 +1,6 @@
 # APP FLOW : les parcours de vitePOS
 
-Adresses : site `vitepos-rdc.web.app`, app `getvitepos.web.app` (plus tard `vitepos-rdc.com` et `app.vitepos-rdc.com`).
+Adresses : site `viteposrdc.com`, app `app.viteposrdc.com` (anciennes adresses en secours : `vitepos-rdc.web.app`, `getvitepos.web.app`).
 
 ## 1. Du site à la première vente (nouveau commerçant)
 

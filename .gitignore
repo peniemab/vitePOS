@@ -9,3 +9,6 @@ coverage/
 .DS_Store
 *.tsbuildinfo
 .env
+
+# Copies prêtes à publier (refaites depuis design/pubs/out et site/public)
+A_PUBLIER/

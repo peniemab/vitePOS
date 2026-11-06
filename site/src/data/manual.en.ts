@@ -11,7 +11,7 @@ export const chapters: Chapter[] = [
     title: "Your till ready in 5 minutes",
     lead: "No software to buy, no app store: vitePOS opens in your phone's browser, then installs on the home screen like a real app.",
     steps: [
-      "Open <b>getvitepos.web.app</b> and tap the yellow <b>« Créer un compte gratuit »</b> button (create a free account): your e-mail or your Google account.",
+      "Open <b>app.viteposrdc.com</b> and tap the yellow <b>« Créer un compte gratuit »</b> button (create a free account): your e-mail or your Google account.",
       "Choose <b>« Gérer mon activité »</b> (manage my business): the business name, the currency of your prices and the <b>daily rate</b> (how many FC for 1 $). Customers pay in euros? Tick <b>« J'accepte aussi les euros »</b> (I also accept euros).",
       "Tap <b>« Créer mon activité »</b> (create my business): a free trial, every feature included. On the home screen, the <b>« Premiers pas »</b> list (first steps) guides you to your first sale.",
       "On the home screen, the <b>« Installer vitePOS »</b> card guides you: the <b>« Installer »</b> button on Android, or <b>Share → « Add to Home Screen »</b> in Safari on iPhone.",

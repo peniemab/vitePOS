@@ -1,0 +1,69 @@
+/* Maquette B : comme l'app en mode clair. Page blanche ; l'accroche, la barre du haut, le bandeau « sans réseau »,
+   l'appel final et le pied de page en bleu ciel zébré. */
+:root {
+  --zebra: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cg fill='%23fff' fill-opacity='0.09'%3E%3Cpath d='M0 8C50 0 90 26 140 18S210 2 240 8V22C205 16 175 34 135 32S55 14 0 22Z'/%3E%3Cpath d='M0 52C60 44 110 66 170 58C200 54 220 60 240 52V64C215 70 195 66 165 72C110 80 55 60 0 64Z'/%3E%3Cpath d='M60 36C90 33 120 44 155 41C120 50 90 47 60 36Z'/%3E%3Cpath d='M0 94C40 88 80 104 120 98C160 92 200 108 240 94V108C200 118 160 104 120 112C80 118 40 102 0 108Z'/%3E%3Cpath d='M150 80C175 78 200 86 225 82C200 92 175 90 150 80Z'/%3E%3C/g%3E%3C/svg%3E");
+  --zebra-blue: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cg fill='%233987e5' fill-opacity='0.07'%3E%3Cpath d='M0 8C50 0 90 26 140 18S210 2 240 8V22C205 16 175 34 135 32S55 14 0 22Z'/%3E%3Cpath d='M0 52C60 44 110 66 170 58C200 54 220 60 240 52V64C215 70 195 66 165 72C110 80 55 60 0 64Z'/%3E%3Cpath d='M60 36C90 33 120 44 155 41C120 50 90 47 60 36Z'/%3E%3Cpath d='M0 94C40 88 80 104 120 98C160 92 200 108 240 94V108C200 118 160 104 120 112C80 118 40 102 0 108Z'/%3E%3Cpath d='M150 80C175 78 200 86 225 82C200 92 175 90 150 80Z'/%3E%3C/g%3E%3C/svg%3E");
+  --sky: linear-gradient(115deg, #2c6fc6 0%, #3987e5 55%, #4b96ee 100%);
+  --page: #ffffff;
+}
+/* Fond blanc décoré de rayures zèbre bleu ciel, très pâles (les cartes blanches s'en détachent). */
+body {
+  background: var(--zebra-blue) 0 0 / 360px 180px, #ffffff !important;
+}
+.page-bg { display: none !important; }
+/* Parties bleues */
+.hero, .offline, .final, .foot, .top.is-scrolled, .top.is-open {
+  background-image: var(--zebra), var(--sky) !important;
+  background-size: 360px 180px, auto !important;
+}
+.top.is-scrolled, .top.is-open { backdrop-filter: none !important; }
+.hero-bgs::after {
+  background:
+    linear-gradient(90deg, rgba(36, 98, 180, 0.94) 0%, rgba(44, 111, 198, 0.85) 45%, rgba(57, 135, 229, 0.45) 78%, rgba(57, 135, 229, 0.3) 100%),
+    linear-gradient(0deg, rgba(57, 135, 229, 0.7) 0%, rgba(57, 135, 229, 0) 30%) !important;
+}
+.hero-kicker, .sector-item b, .hero-pdf, .foot, .foot h2 { color: rgba(255, 255, 255, 0.86) !important; }
+.hero .lead, .ticks { color: #fff !important; }
+.slide-title .accent { color: #fff !important; text-decoration: underline 4px #ff4d52; text-underline-offset: 6px; }
+/* Parties blanches : textes foncés, cartes blanches avec un fin contour, comme les cartes de l'app. */
+main > section:not(.hero):not(.offline):not(.final) {
+  --d-text: #191c1e;
+  --d-muted: #5b6270;
+  --d-card: #ffffff;
+  --d-line: #e4e8ef;
+  --d-accent: #3987e5;
+  color: #191c1e;
+}
+main > section:not(.hero):not(.offline):not(.final) :is(h2, h3, h4, b, strong) { color: #1a2b4c; }
+main > section:not(.hero):not(.offline):not(.final) :is(p, li, dd, small) { color: #4a5263; }
+main > section.section-tint { background: rgba(234, 244, 255, 0.55) !important; }
+/* Cartes encore sombres sur fond blanc : blanches avec un fin contour. */
+:is(.gallery-panels, .install-open, .install-help, .install li:not(.is-yours)) {
+  background: #ffffff !important;
+  box-shadow: 0 0 0 1px #e4e8ef, 0 1px 3px rgba(16, 24, 40, 0.05) !important;
+  color: #191c1e !important;
+}
+.install li.is-yours {
+  background-image: var(--zebra), var(--sky) !important;
+  background-size: 360px 180px, auto !important;
+}
+.install li.is-yours :is(b, h3, p, li, small) { color: #fff !important; }
+.offline :is(h2, h3, p, li, b, small), .final :is(h2, p) { color: #fff !important; }
+/* Bannières de notification : verre « eau glacée » (blanc bleuté translucide, flou derrière) au lieu du bleu nuit. */
+.toast {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(214, 234, 255, 0.66)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.6) !important;
+  box-shadow: 0 18px 40px rgba(20, 60, 120, 0.28) !important;
+}
+.toast-head { color: #5a6f93 !important; }
+.toast-label { color: #33415c !important; }
+.toast-value { color: #12233f !important; }
+.sync-toast {
+  background: rgba(255, 255, 255, 0.86) !important;
+  color: #12233f !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), 0 10px 24px rgba(20, 60, 120, 0.25) !important;
+}
+.receipt-points li { background: #ffffff !important; }

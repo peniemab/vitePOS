@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caisse v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  main { padding-bottom: 170px; }
+  .search { display: flex; gap: 8px; margin-bottom: 12px; }
+  .search label { flex: 1; display: flex; align-items: center; gap: 8px; padding: 0 14px; height: 50px; border-radius: 12px; background: var(--ice); color: var(--muted); }
+  .search input { border: 0; background: none; font: inherit; font-size: 1.05rem; flex: 1; min-width: 0; color: var(--ink); outline: none; }
+  .search svg { width: 22px; height: 22px; flex: none; }
+  .scan { width: 50px; height: 50px; border-radius: 12px; border: 0; background: var(--sky); color: #fff; display: grid; place-items: center; }
+
+  .aisles { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin: 0 -16px 14px; padding-left: 16px; padding-right: 16px; scrollbar-width: none; }
+  .aisles button { flex: none; border: 0; padding: 8px 14px; border-radius: 99px; background: #fff; box-shadow: 0 0 0 1px var(--line); color: var(--text); font-weight: 600; }
+  .aisles button[aria-pressed="true"] { background: var(--ink); color: #fff; box-shadow: none; }
+
+  /* Les articles : grosses tuiles faciles à toucher */
+  .products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .p { position: relative; text-align: left; border: 0; background: #fff; border-radius: 14px; padding: 12px; box-shadow: 0 0 0 1px var(--line); display: grid; grid-template-rows: auto 1fr auto; gap: 8px; min-height: 132px; }
+  .p .thumb { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.1rem; }
+  .p b { color: var(--ink); font-size: 1rem; line-height: 1.2; }
+  .p .price { display: flex; justify-content: space-between; align-items: baseline; }
+  .p .price span { font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.3rem; color: var(--ink); }
+  .p .price small { color: var(--muted); font-size: .8rem; }
+  .p .price small.low { color: #a86b00; font-weight: 700; }
+  .p.in { box-shadow: 0 0 0 2px var(--sky); background: #f6faff; }
+  .p .n { position: absolute; top: 10px; right: 10px; min-width: 28px; height: 28px; border-radius: 99px; background: var(--sky); color: #fff; font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.05rem; display: grid; place-items: center; padding: 0 7px; }
+  .p.in .n { animation: pop .25s ease-out; }
+  @keyframes pop { 50% { transform: scale(1.25); } }
+  @media (prefers-reduced-motion: reduce) { .p.in .n { animation: none; } }
+  .t-a { background: #fff4d6; color: #a86b00; }
+  .t-b { background: #e3f6ee; color: var(--mint-text); }
+  .t-c { background: var(--ice); color: var(--sky-deep); }
+  .t-d { background: #ffe7e5; color: var(--red); }
+
+  /* Barre « Encaisser » du téléphone */
+  .pay-bar { position: fixed; left: 12px; right: 12px; bottom: 74px; z-index: 6; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 16px; background: var(--ink); color: #fff; box-shadow: 0 14px 30px rgba(18, 35, 63, .3); }
+  .pay-bar .sum { flex: 1; line-height: 1.15; }
+  .pay-bar .sum small { color: rgba(255,255,255,.75); font-weight: 600; }
+  .pay-bar .sum b { display: block; font-family: "Barlow Condensed"; font-size: 1.5rem; }
+  .pay-bar button { border: 0; border-radius: 12px; background: var(--sun); color: var(--ink); font-weight: 700; font-size: 1.1rem; padding: 14px 22px; }
+
+  /* Le panier : un vrai ticket thermique, qui s'allonge à chaque article */
+  .ticket { display: none; }
+  @media (min-width: 900px) {
+    main { padding-bottom: 40px; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 28px; align-items: start; }
+    .products { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .aisles { margin: 0 0 16px; padding: 0; flex-wrap: wrap; }
+    .pay-bar { display: none; }
+    .ticket { display: block; position: sticky; top: 24px; filter: drop-shadow(0 18px 30px rgba(20, 60, 120, .16)); }
+  }
+  .paper { background: #fff; padding: 0 20px; }
+  .paper.zigzag-top { padding-top: calc(var(--zig) + 14px); }
+  .ticket .shop { text-align: center; padding-bottom: 12px; border-bottom: 2px dashed var(--line); }
+  .ticket .shop b { font-family: "Barlow Condensed"; font-size: 1.3rem; color: var(--ink); display: block; }
+  .ticket .shop small { color: var(--muted); }
+  .client { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 2px dashed var(--line); }
+  .client .av { width: 34px; height: 34px; border-radius: 50%; background: #e3f6ee; color: var(--mint-text); font-weight: 700; display: grid; place-items: center; }
+  .client b { color: var(--ink); }
+  .client small { display: block; color: var(--muted); }
+  .client button { margin-left: auto; border: 0; background: none; color: var(--sky-deep); font-weight: 700; }
+  .lines { list-style: none; margin: 0; padding: 4px 0; }
+  .lines li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 10px 0; }
+  .lines li + li { border-top: 1px dotted #d6dbe4; }
+  .lines .name { color: var(--ink); font-weight: 600; }
+  .lines .each { color: var(--muted); font-size: .85rem; }
+  .lines .tot { font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.2rem; color: var(--ink); text-align: right; }
+  .step { display: inline-flex; align-items: center; border-radius: 99px; background: var(--ice); }
+  .step button { width: 30px; height: 30px; border: 0; background: none; color: var(--sky-deep); font-weight: 700; font-size: 1.15rem; border-radius: 99px; }
+  .step span { min-width: 22px; text-align: center; font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.1rem; color: var(--ink); }
+  .lines li.new { animation: print .5s ease-out; }
+  @keyframes print { from { opacity: 0; transform: translateY(-8px); background: #fff8e1; } }
+  @media (prefers-reduced-motion: reduce) { .lines li.new { animation: none; } }
+  .discount { display: flex; justify-content: space-between; color: var(--mint-text); font-weight: 600; padding: 10px 0; border-top: 2px dashed var(--line); }
+  .grand { border-top: 2px solid var(--ink); padding: 12px 0 4px; display: flex; justify-content: space-between; align-items: baseline; }
+  .grand span { font-weight: 700; color: var(--ink); }
+  .grand b { font-family: "Barlow Condensed"; font-size: 2.6rem; color: var(--ink); line-height: 1; }
+  .cur { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--ice); border-radius: 10px; padding: 3px; margin: 10px 0 4px; }
+  .cur button { border: 0; background: none; padding: 7px; border-radius: 8px; font-weight: 700; color: var(--muted); }
+  .cur button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(18,35,63,.12); }
+  .conv { text-align: center; color: var(--muted); font-size: .88rem; margin: 6px 0 0; }
+  .ticket .go { display: block; width: 100%; margin: 14px 0 0; border: 0; border-radius: 14px; background: var(--sun); color: var(--ink); font-weight: 700; font-size: 1.2rem; padding: 16px; box-shadow: 0 10px 22px rgba(160, 110, 0, .22); }
+  .ticket .later { display: block; width: 100%; border: 0; background: none; color: var(--sky-deep); font-weight: 700; padding: 12px 0 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side blue">
+    <div class="brand"><img src="logo.svg" alt=""><div><b>Alimentation Mama Ngalula</b><small>Grâce, vendeuse</small></div></div>
+    <a href="accueil.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l-2 0l9-9l9 9l-2 0M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Accueil</a>
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="8" rx="2"/><path d="M6 21h12l-1-10H7z"/></svg>Caisse</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z M12 12l8-4.5 M12 12v9 M12 12L4 7.5"/></svg>Articles</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-3-2-2 2-2-2-2 2-2-2z M9 7h6 M9 11h6"/></svg>Ventes</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16 M7 16V10 M12 16V5 M17 16v-4"/></svg>Rapports</a>
+    <div class="grow"></div>
+    <span class="online"><i></i>Hors ligne : la vente sera envoyée plus tard</span>
+  </aside>
+
+  <div>
+    <header class="top blue phone-only">
+      <img src="logo.svg" alt="">
+      <span class="shop">Caisse</span>
+      <span class="online"><i style="background:#ffc233;box-shadow:0 0 0 3px rgba(255,194,51,.3)"></i>Hors ligne</span>
+    </header>
+
+    <main>
+      <div class="layout">
+        <div>
+          <div class="search">
+            <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input placeholder="Chercher un article ou taper son code" aria-label="Chercher un article"></label>
+            <button class="scan" aria-label="Scanner un code-barres"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 0 1 1-1h2 M17 4h2a1 1 0 0 1 1 1v2 M20 17v2a1 1 0 0 1-1 1h-2 M7 20H5a1 1 0 0 1-1-1v-2 M8 8v8 M12 8v8 M16 8v8"/></svg></button>
+          </div>
+
+          <div class="aisles">
+            <button aria-pressed="true">Tout</button><button>Boissons</button><button>Épicerie</button><button>Hygiène</button><button>Crédit</button><button>Maison</button>
+          </div>
+
+          <div class="products">
+            <button class="p in"><span class="thumb t-a">Ri</span><b>Riz parfumé 1 kg</b><span class="price"><span>2 800</span><small>42 en stock</small></span><span class="n">3</span></button>
+            <button class="p in"><span class="thumb t-b">Hu</span><b>Huile Mama 1 L</b><span class="price"><span>6 500</span><small class="low">4 restants</small></span><span class="n">1</span></button>
+            <button class="p in"><span class="thumb t-d">Co</span><b>Coca-Cola 33 cl</b><span class="price"><span>1 000</span><small>96 en stock</small></span><span class="n">4</span></button>
+            <button class="p"><span class="thumb t-c">Sa</span><b>Savon Monganga</b><span class="price"><span>1 500</span><small>30 en stock</small></span></button>
+            <button class="p in"><span class="thumb t-a">La</span><b>Lait Nido 400 g</b><span class="price"><span>12 000</span><small>11 en stock</small></span><span class="n">1</span></button>
+            <button class="p"><span class="thumb t-c">Ea</span><b>Eau 1,5 L</b><span class="price"><span>1 500</span><small>48 en stock</small></span></button>
+            <button class="p in"><span class="thumb t-b">Su</span><b>Sucre 1 kg</b><span class="price"><span>3 200</span><small class="low">2 restants</small></span><span class="n">2</span></button>
+            <button class="p"><span class="thumb t-d">Fa</span><b>Fanta 33 cl</b><span class="price"><span>1 000</span><small>60 en stock</small></span></button>
+            <button class="p"><span class="thumb t-a">Bo</span><b>Bougies ×6</b><span class="price"><span>2 000</span><small class="low">1 restant</small></span></button>
+            <button class="p"><span class="thumb t-c">Al</span><b>Allumettes</b><span class="price"><span>200</span><small>150 en stock</small></span></button>
+            <button class="p"><span class="thumb t-d">Cr</span><b>Crédit Vodacom</b><span class="price"><span>Montant libre</span><small></small></span></button>
+          </div>
+        </div>
+
+        <aside class="ticket" aria-label="Panier">
+          <div class="paper zigzag-top zigzag-bottom">
+            <div class="shop"><b>Alimentation Mama Ngalula</b><small>Vente en cours, 17:42</small></div>
+            <div class="client"><span class="av">MN</span><div><b>Maman Nsimba</b><small>Doit encore 12 000 FC</small></div><button>Changer</button></div>
+            <ul class="lines">
+              <li><span class="name">Riz parfumé 1 kg</span><span class="tot">8 400</span><span class="each">2 800 FC l'unité</span><span class="step"><button aria-label="Retirer un">−</button><span>3</span><button aria-label="Ajouter un">+</button></span></li>
+              <li><span class="name">Huile Mama 1 L</span><span class="tot">6 500</span><span class="each">6 500 FC l'unité</span><span class="step"><button aria-label="Retirer un">−</button><span>1</span><button aria-label="Ajouter un">+</button></span></li>
+              <li><span class="name">Coca-Cola 33 cl</span><span class="tot">4 000</span><span class="each">1 000 FC l'unité</span><span class="step"><button aria-label="Retirer un">−</button><span>4</span><button aria-label="Ajouter un">+</button></span></li>
+              <li><span class="name">Lait Nido 400 g</span><span class="tot">12 000</span><span class="each">12 000 FC l'unité</span><span class="step"><button aria-label="Retirer un">−</button><span>1</span><button aria-label="Ajouter un">+</button></span></li>
+              <li class="new"><span class="name">Sucre 1 kg</span><span class="tot">6 400</span><span class="each">3 200 FC l'unité</span><span class="step"><button aria-label="Retirer un">−</button><span>2</span><button aria-label="Ajouter un">+</button></span></li>
+            </ul>
+            <div class="discount"><span>Remise fidèle</span><span>−1 200 FC</span></div>
+            <div class="grand"><span>Total, 11 articles</span><b>36 100 FC</b></div>
+            <div class="cur" role="group" aria-label="Le client paie en"><button aria-pressed="true">FC</button><button>Dollars</button><button>Les deux</button></div>
+            <p class="conv">Soit 12,67 $ à 1 $ = 2 850 FC</p>
+            <button class="go">Encaisser 36 100 FC</button>
+            <button class="later">Mettre de côté</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <div class="pay-bar">
+    <div class="sum"><small>11 articles</small><b>36 100 FC</b></div>
+    <button>Voir et encaisser</button>
+  </div>
+
+  <nav class="bottom blue" aria-label="Sections">
+    <a href="accueil.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l-2 0l9-9l9 9l-2 0M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Accueil</a>
+    <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="8" rx="2"/><path d="M6 21h12l-1-10H7z"/></svg>Caisse</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z M12 12l8-4.5 M12 12v9 M12 12L4 7.5"/></svg>Stock</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-3-2-2 2-2-2-2 2-2-2z M9 7h6 M9 11h6"/></svg>Ventes</a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h.01 M12 12h.01 M19 12h.01"/></svg>Plus</a>
+  </nav>
+</div>
+</body>
+</html>

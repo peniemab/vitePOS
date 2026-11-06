@@ -66,4 +66,4 @@ Les objectifs sont une proposition : à valider par le propriétaire du projet.
 | Le commerçant abandonne avant sa première vente | « Premiers pas », aide WhatsApp, démonstration en boutique |
 | Perte de données hors ligne (téléphone perdu avant synchronisation) | Message clair sur l'état de synchronisation ; ventes envoyées dès que le réseau revient |
 | Paiement manuel lent à traiter | Message WhatsApp prérempli ; FlexPay automatique ensuite |
-| Le domaine définitif n'est pas prêt le 9 | L'adresse actuelle (getvitepos.web.app) reste valable et redirigera |
+| Le domaine définitif n'est pas prêt le 9 | Réglé le 6 novembre : site https://viteposrdc.com, app https://app.viteposrdc.com ; getvitepos.web.app reste valable en secours |

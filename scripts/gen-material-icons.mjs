@@ -136,8 +136,10 @@ for (const [group, map] of Object.entries(SITE)) {
   }
   site += `export const ${group} = {\n`;
   for (const [k, file] of Object.entries(map)) site += `  ${k}: ${JSON.stringify(svg(material(file)))},\n`;
+  // Logos des réseaux (Simple Icons) : WhatsApp, Instagram, Facebook.
   if (group === "contactIcons")
-    site += `  whatsapp: ${JSON.stringify(`<svg width="24" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 28 28" fill="currentColor"><path d="${simpleIcon("whatsapp")}"/></svg>`)},\n`;
+    for (const brand of ["whatsapp", "instagram", "facebook"])
+      site += `  ${brand}: ${JSON.stringify(`<svg width="24" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 28 28" fill="currentColor"><path d="${simpleIcon(brand)}"/></svg>`)},\n`;
   site += group === "icons" ? `} as const;\n\nexport type IconName = keyof typeof icons;\n\n` : `};\n\n`;
 }
 writeFileSync("site/src/data/icons.ts", site);

@@ -5,6 +5,7 @@
  * Intérieur : une vente en 3 gestes, les fonctions, le prix. Le volet rabattu fait 97 mm, les autres 100 mm,
  * pour que le pli ferme bien. PDF : imprimer cette page (voir CLAUDE.md, comme la brochure).
  */
+import FollowQr from "../components/FollowQr.astro";
 import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import { APP_HOST, CONTACT, SITE_HOST } from "../data/content";
@@ -59,10 +60,13 @@ const others = t.plans.list.filter((p) => !p.featured);
         </div>
         <h2 class="p-title">{f.backTitle}</h2>
         <p class="back-lead">{f.backLead}</p>
-        <figure class="back-qr">
-          <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="120" height="120" />
-          <figcaption><b translate="no">{APP_HOST}</b></figcaption>
-        </figure>
+        <div class="back-qrs">
+          <figure class="back-qr">
+            <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="120" height="120" />
+            <figcaption><b translate="no">{APP_HOST}</b></figcaption>
+          </figure>
+          <FollowQr lang={lang} class="back-qr" />
+        </div>
         <p class="back-price">{b.priceFrom} <b>{t.plans.list[0].price}</b> {b.pricePer}</p>
         <div class="visit">
           <b>{b.contactTitle}</b>

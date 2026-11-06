@@ -1,0 +1,42 @@
+/* Maquette A : tout le site sur le bleu ciel zébré de l'app (à la place du bleu nuit). */
+:root {
+  --zebra: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cg fill='%23fff' fill-opacity='0.09'%3E%3Cpath d='M0 8C50 0 90 26 140 18S210 2 240 8V22C205 16 175 34 135 32S55 14 0 22Z'/%3E%3Cpath d='M0 52C60 44 110 66 170 58C200 54 220 60 240 52V64C215 70 195 66 165 72C110 80 55 60 0 64Z'/%3E%3Cpath d='M60 36C90 33 120 44 155 41C120 50 90 47 60 36Z'/%3E%3Cpath d='M0 94C40 88 80 104 120 98C160 92 200 108 240 94V108C200 118 160 104 120 112C80 118 40 102 0 108Z'/%3E%3Cpath d='M150 80C175 78 200 86 225 82C200 92 175 90 150 80Z'/%3E%3C/g%3E%3C/svg%3E");
+  --sky: linear-gradient(160deg, #2c6fc6 0%, #3987e5 50%, #4b96ee 100%);
+  --page: #3987e5;
+  --d-muted: rgba(255, 255, 255, 0.86);
+  --d-card: rgba(255, 255, 255, 0.12);
+  --d-line: rgba(255, 255, 255, 0.22);
+}
+body {
+  background-color: #3987e5 !important;
+  background-image: var(--zebra), var(--sky) !important;
+  background-size: 360px 180px, auto !important;
+}
+.glow, .slashes { display: none !important; }
+.top.is-scrolled, .top.is-open { background: rgba(44, 111, 198, 0.9) !important; }
+/* Voile des photos de l'accroche : bleu ciel au lieu de bleu nuit. */
+.hero-bgs::after {
+  background:
+    linear-gradient(90deg, rgba(36, 98, 180, 0.94) 0%, rgba(44, 111, 198, 0.85) 45%, rgba(57, 135, 229, 0.45) 78%, rgba(57, 135, 229, 0.3) 100%),
+    linear-gradient(0deg, #3a86e2 0%, rgba(57, 135, 229, 0.6) 22%, rgba(57, 135, 229, 0) 45%) !important;
+}
+.hero-kicker, .sector-item b, .hero-pdf, .nav a, .foot, .foot h2 { color: rgba(255, 255, 255, 0.86) !important; }
+.hero .lead, .ticks { color: #fff !important; }
+.slide-title .accent { color: #fff !important; text-decoration: underline 4px #ff4d52; text-underline-offset: 6px; }
+/* Bannières de notification : verre « eau glacée » (blanc bleuté translucide, flou derrière) au lieu du bleu nuit. */
+.toast {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(214, 234, 255, 0.66)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.6) !important;
+  box-shadow: 0 18px 40px rgba(20, 60, 120, 0.28) !important;
+}
+.toast-head { color: #5a6f93 !important; }
+.toast-label { color: #33415c !important; }
+.toast-value { color: #12233f !important; }
+.sync-toast {
+  background: rgba(255, 255, 255, 0.86) !important;
+  color: #12233f !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), 0 10px 24px rgba(20, 60, 120, 0.25) !important;
+}

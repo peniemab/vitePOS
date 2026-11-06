@@ -1,0 +1,47 @@
+---
+/**
+ * Page « Suivez vitePOS » : ouverte par le QR code de la brochure. Un gros bouton par réseau (Instagram, Facebook), pour que les gens nous suivent et nous soutiennent.
+ * Les liens sont dans SOCIAL (content.ts) : un lien vide cache son bouton.
+ * Le QR code pointe vers cette page (et non vers les réseaux) : les brochures imprimées restent bonnes si un lien change.
+ */
+import Base from "../layouts/Base.astro";
+import { APP_URL, SOCIAL } from "../data/content";
+import { contactIcons, moreIcons } from "../data/icons";
+import { dicts, type Lang } from "../i18n";
+import "../styles/home.css";
+import "../styles/community.css";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = dicts[lang].community;
+const links = [
+  { id: "instagram", href: SOCIAL.instagram, ...c.instagram },
+  { id: "facebook", href: SOCIAL.facebook, ...c.facebook },
+].filter((l) => l.href);
+---
+
+<Base title={c.title} description={c.description} lang={lang} page="community">
+  <section class="section hub">
+    <div class="wrap hub-wrap">
+      <img class="hub-logo" src="/logo.svg" alt="" width="64" height="70" />
+      <h1>{c.h1}</h1>
+      <p class="hub-lead">{c.lead}</p>
+      <ul class="hub-links">
+        {
+          links.map((l) => (
+            <li>
+              <a class={`hub-link ${l.id}`} href={l.href} rel="noopener">
+                <span class="hub-icon" set:html={contactIcons[l.id as "instagram" | "facebook"]} />
+                <b class="hub-text">{l.label}</b>
+                <span class="hub-arrow" set:html={moreIcons.chevronRight} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="hub-app" href={APP_URL}>{c.app}<span set:html={moreIcons.arrowRight} /></a>
+    </div>
+  </section>
+</Base>

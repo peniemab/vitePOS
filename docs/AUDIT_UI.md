@@ -19,7 +19,7 @@ Relecture du 4 novembre 2026, faite sur le code. Fichiers relus : `site/src/view
 | P2 | `site/public/` | Pas de `robots.txt` ni de `sitemap.xml` : Google indexe moins bien. | Ajouter `@astrojs/sitemap` et un `robots.txt`, après le choix du domaine. |
 | P2 | `site/src/data/content.ts` | Pages Conditions et Confidentialité masquées (éditeur, RCCM, e-mail vides). | Remplir `LEGAL` : les pages se publient seules. |
 | ✅ P3 | `site/src/views/Home.astro:501` | QR code avec `alt=""` alors qu'il porte une information. | `alt` : « QR code pour ouvrir vitePOS ». |
-| P3 | `site/src/i18n/fr.ts` (FAQ « Comment l'installer ? ») | Adresse `getvitepos.web.app` écrite en dur dans le texte. | La tirer de `APP_HOST` pour le changement de domaine. |
+| P3 | `site/src/i18n/fr.ts` (FAQ « Comment l'installer ? ») | Adresse `getvitepos.web.app` écrite en dur dans le texte. | Fait (6 novembre) : l'adresse est passée à `app.viteposrdc.com` partout. |
 
 | ✅ P1 | `site/src/views/Home.astro` | Aucun moyen de contacter l'équipe sur le site. | Section Contact (WhatsApp avec message prérempli, appel, démonstration) + colonne du pied de page + menu. |
 

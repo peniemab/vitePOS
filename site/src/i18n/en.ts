@@ -44,6 +44,7 @@ export const en: Dict = {
     signup: "Create my account",
     contact: "Contact us",
     whatsapp: "WhatsApp",
+    community: "Follow us",
     call: "Call",
     credits: "Photo credits",
     creditsText: "Free-licence photos from Wikimedia Commons, cropped:",
@@ -321,9 +322,9 @@ export const en: Dict = {
       scan: "Or scan with your phone",
       qrAlt: "QR code to open vitePOS",
       devices: [
-        { name: "Android", where: "Chrome", steps: ["Open getvitepos.web.app in Chrome", "Tap the three dots at the top, then “Install app”", "The vitePOS icon appears on your home screen"] },
-        { name: "iPhone and iPad", where: "Safari or Chrome", steps: ["Open getvitepos.web.app in Safari or Chrome", "Tap the Share button", "Choose “Add to Home Screen”"] },
-        { name: "Computer", where: "Chrome or Edge", steps: ["Open getvitepos.web.app", "Click the install icon in the address bar", "vitePOS opens in its own window"] },
+        { name: "Android", where: "Chrome", steps: ["Open app.viteposrdc.com in Chrome", "Tap the three dots at the top, then “Install app”", "The vitePOS icon appears on your home screen"] },
+        { name: "iPhone and iPad", where: "Safari or Chrome", steps: ["Open app.viteposrdc.com in Safari or Chrome", "Tap the Share button", "Choose “Add to Home Screen”"] },
+        { name: "Computer", where: "Chrome or Edge", steps: ["Open app.viteposrdc.com", "Click the install icon in the address bar", "vitePOS opens in its own window"] },
       ],
     },
   },
@@ -390,6 +391,18 @@ export const en: Dict = {
     already: { title: "Already have equipment?", text: "vitePOS also works with most USB or Bluetooth receipt printers and barcode scanners. Send us the brand on WhatsApp and we'll tell you if it works." },
     alreadyMessage: "Hello, I already have equipment. Does it work with vitePOS? Here is the brand: ",
     ask: "Ask a question",
+  },
+
+  community: {
+    title: "Follow vitePOS on Instagram and Facebook",
+    description: "Support vitePOS: follow us on Instagram and Facebook and share vitePOS with people around you.",
+    h1: "Follow vitePOS",
+    lead: "Support us by following and sharing vitePOS with people around you. It gives us the strength to keep going.",
+    instagram: { label: "Instagram" },
+    facebook: { label: "Facebook" },
+    app: "Try the app for free",
+    qrTitle: "Follow us",
+    qrAlt: "QR code to follow vitePOS on Instagram and Facebook",
   },
 
   plans: {
@@ -466,7 +479,7 @@ export const en: Dict = {
     },
     {
       q: "How do I install it?",
-      a: "Nothing to download from a store. Open getvitepos.web.app on your phone. On Android (Chrome): tap « Installer » in the app, or the ⋮ menu then “Install app”. On iPhone (Safari): tap Share, then “Add to Home Screen”. vitePOS then opens from its icon, full screen, even without internet.",
+      a: "Nothing to download from a store. Open app.viteposrdc.com on your phone. On Android (Chrome): tap « Installer » in the app, or the ⋮ menu then “Install app”. On iPhone (Safari): tap Share, then “Add to Home Screen”. vitePOS then opens from its icon, full screen, even without internet.",
     },
     {
       q: "Can I sell in francs, dollars and euros?",

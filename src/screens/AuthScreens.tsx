@@ -16,7 +16,7 @@ import { errorMessage } from "../data/errors";
 import { useSyncState } from "../data/sync";
 
 /** Site de présentation, où se trouvent les conditions d'utilisation et la politique de confidentialité. */
-const SITE_URL = "https://vitepos-rdc.web.app";
+const SITE_URL = "https://viteposrdc.com";
 
 export function AuthCard({ title, sub, children }: { title: string; sub?: ReactNode; children: ReactNode }) {
   return (

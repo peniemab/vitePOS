@@ -34,7 +34,7 @@ export const chapters: Chapter[] = [
     title: "Votre caisse prête en 5 minutes",
     lead: "Pas de logiciel à acheter, pas de store : vitePOS s'ouvre dans le navigateur du téléphone, puis s'installe sur l'écran d'accueil comme une vraie application.",
     steps: [
-      "Ouvrez <b>getvitepos.web.app</b> et touchez le bouton jaune <b>« Créer un compte gratuit »</b> : votre e-mail ou votre compte Google.",
+      "Ouvrez <b>app.viteposrdc.com</b> et touchez le bouton jaune <b>« Créer un compte gratuit »</b> : votre e-mail ou votre compte Google.",
       "Choisissez <b>« Gérer mon activité »</b> : le nom de votre activité, la devise de vos prix et le <b>taux du jour</b> (combien de FC pour 1 $). Des clients paient en euros ? Cochez <b>« J'accepte aussi les euros »</b>.",
       "Touchez <b>« Créer mon activité »</b> : essai gratuit, toutes les fonctions comprises. Sur l'accueil, la liste <b>« Premiers pas »</b> vous guide jusqu'à la première vente.",
       "Sur l'accueil, la carte <b>« Installer vitePOS »</b> vous guide : bouton <b>« Installer »</b> sur Android, ou <b>Partager → « Sur l'écran d'accueil »</b> dans Safari sur iPhone.",

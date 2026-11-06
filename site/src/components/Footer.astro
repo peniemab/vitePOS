@@ -1,7 +1,7 @@
 ---
 import Brand from "./Brand.astro";
 import credits from "../data/photo-credits.json";
-import { CONTACT, LEGAL_READY, LOGIN_URL, SIGNUP_URL, whatsappUrl } from "../data/content";
+import { CONTACT, LEGAL_READY, LOGIN_URL, SIGNUP_URL, SOCIAL, whatsappUrl } from "../data/content";
 import { dicts, PDF, route, type Lang } from "../i18n";
 
 interface Props {
@@ -48,6 +48,9 @@ const year = new Date().getFullYear();
       <a href={whatsappUrl(t.home.contact.whatsapp.message)} rel="noopener">{t.footer.whatsapp}</a>
       <a href={CONTACT.tel} translate="no">{CONTACT.phone}</a>
       {CONTACT.email && <a href={`mailto:${CONTACT.email}`} translate="no">{CONTACT.email}</a>}
+      {SOCIAL.instagram && <a href={SOCIAL.instagram} rel="noopener">Instagram</a>}
+      {SOCIAL.facebook && <a href={SOCIAL.facebook} rel="noopener">Facebook</a>}
+      <a href={route(lang, "community")}>{t.footer.community}</a>
     </nav>
   </div>
   <div class="wrap foot-bottom">

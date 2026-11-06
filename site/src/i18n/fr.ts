@@ -52,6 +52,7 @@ export const fr = {
     signup: "Créer mon compte",
     contact: "Nous contacter",
     whatsapp: "WhatsApp",
+    community: "Nous suivre",
     call: "Appeler",
     credits: "Crédits photos",
     creditsText: "Photos libres de droits de Wikimedia Commons, recadrées :",
@@ -342,9 +343,9 @@ export const fr = {
       scan: "Ou scannez avec votre téléphone",
       qrAlt: "QR code pour ouvrir vitePOS",
       devices: [
-        { name: "Android", where: "Chrome", steps: ["Ouvrez getvitepos.web.app dans Chrome", "Touchez les trois points en haut, puis « Installer l'application »", "L'icône vitePOS apparaît sur l'écran d'accueil"] },
-        { name: "iPhone et iPad", where: "Safari ou Chrome", steps: ["Ouvrez getvitepos.web.app dans Safari ou Chrome", "Touchez le bouton Partager", "Choisissez « Sur l'écran d'accueil »"] },
-        { name: "Ordinateur", where: "Chrome ou Edge", steps: ["Ouvrez getvitepos.web.app", "Cliquez sur l'icône d'installation dans la barre d'adresse", "vitePOS s'ouvre dans sa propre fenêtre"] },
+        { name: "Android", where: "Chrome", steps: ["Ouvrez app.viteposrdc.com dans Chrome", "Touchez les trois points en haut, puis « Installer l'application »", "L'icône vitePOS apparaît sur l'écran d'accueil"] },
+        { name: "iPhone et iPad", where: "Safari ou Chrome", steps: ["Ouvrez app.viteposrdc.com dans Safari ou Chrome", "Touchez le bouton Partager", "Choisissez « Sur l'écran d'accueil »"] },
+        { name: "Ordinateur", where: "Chrome ou Edge", steps: ["Ouvrez app.viteposrdc.com", "Cliquez sur l'icône d'installation dans la barre d'adresse", "vitePOS s'ouvre dans sa propre fenêtre"] },
       ],
     },
   },
@@ -412,6 +413,19 @@ export const fr = {
     already: { title: "Vous avez déjà du matériel ?", text: "vitePOS marche aussi avec la plupart des imprimantes de tickets USB ou Bluetooth et des douchettes. Envoyez-nous la marque sur WhatsApp, on vous dit si ça va." },
     alreadyMessage: "Bonjour, j'ai déjà du matériel. Est-ce qu'il marche avec vitePOS ? Voici la marque : ",
     ask: "Poser une question",
+  },
+
+  /** Page « Communauté » (QR code de la brochure) : WhatsApp, Instagram, Facebook. Liens dans SOCIAL (content.ts). */
+  community: {
+    title: "Suivez vitePOS sur Instagram et Facebook",
+    description: "Soutenez vitePOS : abonnez-vous sur Instagram et Facebook et partagez vitePOS autour de vous.",
+    h1: "Suivez vitePOS",
+    lead: "Soutenez-nous en vous abonnant et en partageant vitePOS autour de vous. Ça nous donne la force de continuer.",
+    instagram: { label: "Instagram" },
+    facebook: { label: "Facebook" },
+    app: "Essayer l'app gratuitement",
+    qrTitle: "Suivez-nous",
+    qrAlt: "QR code pour suivre vitePOS sur Instagram et Facebook",
   },
 
   /** Formules : mêmes prix que PLANS dans src/lib/subscription.ts (app). Pro est mise en avant. */
@@ -491,7 +505,7 @@ export const fr = {
     },
     {
       q: "Comment l'installer ?",
-      a: "Rien à télécharger dans un store. Ouvrez getvitepos.web.app sur votre téléphone. Sur Android (Chrome) : touchez « Installer » dans l'app, ou le menu ⋮ puis « Installer l'application ». Sur iPhone (Safari) : touchez Partager, puis « Sur l'écran d'accueil ». vitePOS s'ouvre ensuite depuis son icône, en plein écran, même sans internet.",
+      a: "Rien à télécharger dans un store. Ouvrez app.viteposrdc.com sur votre téléphone. Sur Android (Chrome) : touchez « Installer » dans l'app, ou le menu ⋮ puis « Installer l'application ». Sur iPhone (Safari) : touchez Partager, puis « Sur l'écran d'accueil ». vitePOS s'ouvre ensuite depuis son icône, en plein écran, même sans internet.",
     },
     {
       q: "Je peux vendre en francs, en dollars et en euros ?",

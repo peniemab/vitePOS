@@ -11,8 +11,8 @@ Qui : **C** = Claude (code, textes, captures) ; **P** = propriétaire du projet 
 
 ## Jeudi 5 novembre : domaine et mentions légales
 
-- [ ] P : acheter `vitepos-rdc.com`.
-- [ ] P : le relier dans Firebase Hosting : `vitepos-rdc.com` → site, `app.vitepos-rdc.com` → app ; ajouter `app.vitepos-rdc.com` aux domaines autorisés de la connexion.
+- [x] P : acheter le domaine : `viteposrdc.com` (5 novembre, name.com).
+- [ ] P : le relier dans Firebase Hosting : `viteposrdc.com` → site, `app.viteposrdc.com` → app ; ajouter `app.viteposrdc.com` aux domaines autorisés de la connexion.
 - [ ] C : changer `APP_URL`, `APP_HOST`, `SITE_HOST`, l'adresse dans la FAQ, le QR code de la brochure, les PDF ; ajouter sitemap et `robots.txt`.
 - [ ] P : donner nom de l'éditeur, RCCM, e-mail de contact → les pages Conditions et Confidentialité se publient.
 

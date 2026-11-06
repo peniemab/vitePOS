@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bleu ciel zébré</title>
+<style>
+  :root { --sky: #3987e5; --sun: #ffc233; --mint: #1fb57a; --ink: #12233f; --ice: #eaf4ff; }
+  body { margin: 0; font-family: "Barlow", "Segoe UI", sans-serif; color: var(--ink); background: #fff; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 4px; }
+  h2 { font-size: 1.4rem; margin: 48px 0 6px; }
+  p { margin: 0 0 16px; color: #4a5263; }
+  .palette { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .sw { border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px #e4e8ef; }
+  .sw i { display: block; height: 96px; }
+  .sw div { padding: 10px 12px; font-size: .88rem; }
+  .sw b { display: block; font-size: 1rem; }
+  .sw code { color: #5b6270; }
+  .tag { display: inline-block; margin-top: 4px; font-size: .75rem; font-weight: 700; color: #fff; background: var(--sky); padding: 2px 8px; border-radius: 99px; }
+  .demo { margin-top: 16px; padding: 28px; border-radius: 16px; color: #fff;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cg fill='%23fff' fill-opacity='0.09'%3E%3Cpath d='M0 8C50 0 90 26 140 18S210 2 240 8V22C205 16 175 34 135 32S55 14 0 22Z'/%3E%3Cpath d='M0 52C60 44 110 66 170 58C200 54 220 60 240 52V64C215 70 195 66 165 72C110 80 55 60 0 64Z'/%3E%3Cpath d='M60 36C90 33 120 44 155 41C120 50 90 47 60 36Z'/%3E%3Cpath d='M0 94C40 88 80 104 120 98C160 92 200 108 240 94V108C200 118 160 104 120 112C80 118 40 102 0 108Z'/%3E%3Cpath d='M150 80C175 78 200 86 225 82C200 92 175 90 150 80Z'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 360px 180px, linear-gradient(115deg, #2c6fc6, #3987e5 55%, #4b96ee);
+    display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .demo .b { padding: 14px 22px; font-weight: 700; }
+  .demo .sun { background: var(--sun); color: var(--ink); }
+  .demo .white { background: #fff; color: #1f63b8; }
+  .demo .pill { background: rgba(255,255,255,.85); color: var(--ink); padding: 8px 12px; border-radius: 10px; font-weight: 600; display: inline-flex; gap: 8px; align-items: center; }
+  .demo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--mint); }
+  .demo .up { color: #c9ffe6; font-weight: 700; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  figure { margin: 0; }
+  figcaption { font-weight: 700; margin: 8px 0 2px; }
+  figcaption small { display: block; font-weight: 400; color: #5b6270; }
+  img { width: 100%; display: block; border-radius: 10px; box-shadow: 0 0 0 1px #e4e8ef; }
+  .tall { max-height: 820px; overflow: auto; border-radius: 10px; box-shadow: 0 0 0 1px #e4e8ef; }
+  .tall img { box-shadow: none; border-radius: 0; }
+  .rec { color: var(--mint); font-weight: 700; }
+  @media (max-width: 800px) { .palette { grid-template-columns: repeat(2, 1fr); } .grid3, .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Bleu ciel zébré : site et app en harmonie</h1>
+  <p>Maquettes faites sur le vrai site (rien n'est encore modifié dans le code).</p>
+
+  <h2>Ta version : site blanc, avec le zèbre bleu ciel en fond</h2>
+  <p>Pages blanches décorées de rayures zèbre bleu ciel très pâles ; l'accroche, le bandeau « sans réseau », l'appel final et le pied de page en bleu ciel zébré ; boutons Soleil ; bannières « eau glacée ». Faire défiler chaque image.</p>
+  <div class="grid2">
+    <figure><div class="tall"><img src="clair-zebre+btn-soleil-ordi.jpg" alt=""></div><figcaption>Ordinateur</figcaption></figure>
+    <figure><div class="tall"><img src="clair-zebre+btn-soleil-tel.jpg" alt=""></div><figcaption>Téléphone</figcaption></figure>
+  </div>
+
+  <h2>1. Palette proposée</h2>
+  <p>Le bleu ciel reste la couleur principale. Deux couleurs l'accompagnent : <b>Soleil</b> pour les boutons d'action, <b>Menthe</b> pour ce qui est positif (en ligne, vente réussie, chiffres en hausse). Le rouge du logo reste seulement dans le logo.</p>
+  <div class="palette">
+    <div class="sw"><i style="background:#3987e5"></i><div><b>Bleu ciel</b><code>#3987E5</code><br><span class="tag">principale</span></div></div>
+    <div class="sw"><i style="background:#ffc233"></i><div><b>Soleil</b><code>#FFC233</code><br><span class="tag" style="background:#c48a00">boutons</span></div></div>
+    <div class="sw"><i style="background:#1fb57a"></i><div><b>Menthe</b><code>#1FB57A</code><br><span class="tag" style="background:#1fb57a">succès</span></div></div>
+    <div class="sw"><i style="background:#eaf4ff"></i><div><b>Eau glacée</b><code>#EAF4FF</code><br>bannières, fonds doux</div></div>
+    <div class="sw"><i style="background:#12233f"></i><div><b>Encre</b><code>#12233F</code><br>textes seulement</div></div>
+    <div class="sw"><i style="background:#ffffff"></i><div><b>Blanc</b><code>#FFFFFF</code><br>pages, cartes</div></div>
+  </div>
+  <div class="demo">
+    <span class="b sun">Commencer gratuitement →</span>
+    <span class="b white">Voir l'app</span>
+    <span class="pill"><span class="dot"></span>En ligne</span>
+    <span class="pill">✔ Vente enregistrée · 21 100 FC</span>
+    <span class="up">▲ +12 % par rapport à hier</span>
+  </div>
+
+  <h2>2. Couleur des boutons</h2>
+  <p>Le rouge actuel est remplacé. Trois choix, sur l'accroche du site (le bouton « Voir l'app » change avec). <span class="rec">Recommandé : Soleil</span>, le plus visible sur le bleu.</p>
+  <div class="grid3">
+    <figure><img src="tout-bleu+btn-soleil-ordi.jpg" alt=""><figcaption>Soleil (recommandé)<small>Jaune chaud, texte encre : saute aux yeux sur le bleu.</small></figcaption></figure>
+    <figure><img src="tout-bleu+btn-blanc-ordi.jpg" alt=""><figcaption>Blanc<small>Très chic et sobre, mais moins d'appel à l'action.</small></figcaption></figure>
+    <figure><img src="tout-bleu+btn-menthe-ordi.jpg" alt=""><figcaption>Menthe<small>Frais, mais se confond avec « succès / en ligne ».</small></figcaption></figure>
+  </div>
+  <div class="grid3" style="margin-top:16px">
+    <figure><img src="tout-bleu+btn-soleil-tel.jpg" alt=""><figcaption>Soleil, téléphone</figcaption></figure>
+    <figure><img src="tout-bleu+btn-blanc-tel.jpg" alt=""><figcaption>Blanc, téléphone</figcaption></figure>
+    <figure><img src="tout-bleu+btn-menthe-tel.jpg" alt=""><figcaption>Menthe, téléphone</figcaption></figure>
+  </div>
+
+  <h2>3. Le site entier (faire défiler chaque image)</h2>
+  <p>Les bannières de notification sont déjà en « eau glacée ». Les boutons y sont encore rouges : ils prendront la couleur choisie plus haut.</p>
+  <div class="grid3">
+    <figure><div class="tall"><img src="tout-bleu-ordi.jpg" alt=""></div><figcaption>A. Tout le site en bleu ciel zébré<small>Partout où il y avait le bleu nuit.</small></figcaption></figure>
+    <figure><div class="tall"><img src="clair-ordi.jpg" alt=""></div><figcaption>B. Comme l'app en mode clair<small>Pages blanches ; accroche, bandeaux et pied de page en bleu ciel zébré.</small></figcaption></figure>
+    <figure><div class="tall"><img src="actuel-ordi.jpg" alt=""></div><figcaption>Aujourd'hui<small>Bleu nuit, pour comparer.</small></figcaption></figure>
+  </div>
+  <div class="grid3" style="margin-top:16px">
+    <figure><div class="tall"><img src="tout-bleu-tel.jpg" alt=""></div><figcaption>A. Téléphone</figcaption></figure>
+    <figure><div class="tall"><img src="clair-tel.jpg" alt=""></div><figcaption>B. Téléphone</figcaption></figure>
+    <figure><div class="tall"><img src="actuel-tel.jpg" alt=""></div><figcaption>Aujourd'hui, téléphone</figcaption></figure>
+  </div>
+</div>
+</body>
+</html>

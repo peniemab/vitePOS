@@ -12,7 +12,7 @@ import { code128Bitmap, escPosRaster, qrBitmap, unpack, type Bitmap, type Packed
 export type PaperWidth = 58 | 80;
 
 /** Adresse du site de vitePOS, dans le petit QR code en bas de chaque ticket. */
-export const VITEPOS_SITE = "https://vitepos-rdc.web.app";
+export const VITEPOS_SITE = "https://viteposrdc.com";
 
 export type ReceiptLine =
   | { kind: "title"; text: string }

@@ -50,6 +50,12 @@ const floaters = Array.from({ length: COUNT }, (_, i) => {
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
+    <!-- Ancienne adresse du site : Firebase ne sait pas rediriger un domaine *.web.app, on envoie donc le visiteur
+         vers la même page sur viteposrdc.com (seul JavaScript du site chargé avant tout le reste). -->
+    <script is:inline>
+      if (/^vitepos-rdc\.(web\.app|firebaseapp\.com)$/.test(location.hostname))
+        location.replace("https://viteposrdc.com" + location.pathname + location.search + location.hash);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
