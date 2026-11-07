@@ -20,7 +20,7 @@ const { lang } = Astro.props;
 const t = dicts[lang];
 const b = t.brochure;
 const f = t.trifold;
-const benefitIcons = [moreIcons.cash, moreIcons.wifiOff, icons.package, icons.users, icons.receipt, icons.chartBar];
+const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users, icons.lock, icons.chartBar];
 const deviceList = [moreIcons.deviceMobile, deviceIcons.tablet, deviceIcons.laptop, moreIcons.printer];
 /** Formule Pro mise en avant, les autres en liste. */
 const pro = t.plans.list.find((p) => p.featured)!;

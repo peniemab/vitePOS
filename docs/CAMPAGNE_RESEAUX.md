@@ -1,4 +1,6 @@
-# Campagne Facebook et Instagram : lancement du 9 novembre 2026
+# Campagne Facebook et Instagram : lancement du 20 novembre 2026
+
+> **Lancement repoussé au vendredi 20 novembre 2026.** Les textes et le calendrier à suivre sont dans `PLAN_CAMPAGNE.md` (bénéfices, teasing de 7 jours) ; ce document garde la préparation des pages, les prix et la publicité payante. Les anciens textes datés du 9 novembre ci-dessous ne sont plus à publier.
 
 Objectif : faire **essayer vitePOS gratuitement** et obtenir des **messages WhatsApp** (questions, démonstrations).
 Cible : patrons de magasins et d'activités à Kinshasa (alimentation, cosmétiques, téléphonie, quincaillerie, pharmacie, dépôts de boissons).
@@ -46,6 +48,8 @@ Dans `design/pubs/out/` (refaits par `python design/pubs/gen.py`) :
 | 3. Lancement (9 nov.) | `03-lancement.png` (post) et `03-lancement-story.png` (story 1080 × 1920) |
 | 4. Avant / après (10 nov.) | carrousel `04-avant.png` puis `04-apres.png` |
 | 5. Même sans réseau (11 nov.) | `05-sans-reseau.png` |
+
+Vidéo « Comment ça marche » (43 s, 1080 × 1920, sans son) : `design/video/out/demo-fr-1080.mp4`, à publier en Reel et en story le jour du lancement, et à épingler en haut du profil.
 
 Pas d'émoji dans les images (ils s'affichent mal) : ils restent dans les textes ci-dessous. Story : rien d'important dans les 250 px du haut ni les 340 px du bas (cachés par Instagram). Lien de la bio : https://viteposrdc.com ; lien de l'app : https://app.viteposrdc.com.
 

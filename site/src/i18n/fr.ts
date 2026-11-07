@@ -66,13 +66,15 @@ export const fr = {
       "vitePOS : la caisse sur votre téléphone. Encaissez en FC, $ ou €, le stock et le bénéfice se calculent pendant que vous vendez, même sans réseau. Gratuit pour commencer.",
     eyebrow: "Caisse · Stock · Ventes",
     h1: ["Vendez plus vite.", "Perdez moins.", "Même sans réseau."],
-    lead: "Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez. Fini les comptes de tête à la fermeture.",
+    lead: "vitePOS note chaque vente sur votre téléphone. Vous voyez ce que vous avez vendu, ce qui reste en stock et ce qui doit être dans la caisse. Même quand vous n'êtes pas au magasin.",
     ctaStart: "Commencer gratuitement",
     ctaBrochure: "Télécharger la brochure",
     ctaSee: "Voir l'app",
+    /** Vidéo de démonstration (en haut de l'accueil) : elle ne se charge que si on appuie sur le bouton. */
+    video: { button: "Voir comment ça marche", length: "43 s", title: "vitePOS en 43 secondes", close: "Fermer la vidéo" },
     ctaStartShort: "Commencer",
     brochureLink: "Brochure (PDF)",
-    ticks: ["Gratuit pour commencer", "Rien à acheter", "Marche sans réseau", "FC, $ et €"],
+    ticks: ["Essai gratuit", "Votre téléphone suffit", "On vient l'installer chez vous", "FC et $ au taux du jour"],
     altHome: "Accueil de vitePOS : ventes du jour et alertes de stock",
     altCaisse: "La caisse de vitePOS avec un panier en cours",
 
@@ -105,9 +107,8 @@ export const fr = {
       ordiStock: { alt: "Le stock sur ordinateur", title: "Le stock sur ordinateur", text: "Tout le catalogue, les prix et les quantités." },
     },
 
-    featuresTitle: "Tout votre business sur un seul écran",
-    featuresLead:
-      "La caisse qui encaisse en quelques secondes, en FC, $ ou €, et compte votre stock pour vous. Simple comme une calculatrice.",
+    featuresTitle: "Ce que vitePOS change dans votre journée",
+    featuresLead: "Moins de calculs, moins d'erreurs, moins de doutes. Et plus de temps pour vendre.",
 
     audiencesTitle: "Pour tous les secteurs d'activité",
     audiencesLead: "vitePOS grandit avec votre business.",
@@ -313,7 +314,7 @@ export const fr = {
     pricing: {
       eyebrow: "Tarifs",
       title: "Payez selon le nombre de téléphones",
-      lead: "Essai gratuit : plus votre formule est grande, plus l'essai est long. Ensuite, payez par mobile money, au mois ou à l'année (2 mois offerts).",
+      lead: "Nos prix sont affichés ici : pas de devis, pas de surprise. Essai gratuit : plus votre formule est grande, plus l'essai est long. Ensuite, payez par mobile money, au mois ou à l'année (2 mois offerts).",
       cta: "Commencer gratuitement",
       more: { title: "Sur mesure", text: "Plus de 10 téléphones ou plusieurs magasins : prix sur devis, 30 jours d'essai." },
       safe: "Sans paiement à la fin de l'essai, rien n'est effacé : vos ventes et votre stock restent consultables.",
@@ -372,14 +373,14 @@ export const fr = {
   ],
 
   features: [
-    { icon: "bolt", title: "Caisse rapide", text: "Touchez ou scannez les articles, encaissez en francs, en dollars, en euros ou en mobile money. L'app calcule la monnaie à rendre." },
-    { icon: "package", title: "Stock toujours juste", text: "Chaque vente fait baisser le stock. Vous êtes prévenu avant la rupture et chaque mouvement est tracé." },
-    { icon: "receipt", title: "Tickets", text: "Imprimez le ticket sur une imprimante thermique ou envoyez-le au client par WhatsApp." },
-    { icon: "users", title: "Employés sous contrôle", text: "Chaque vendeur a son compte. Les vendeurs ne voient ni vos prix d'achat ni vos marges, et une vente ne s'efface pas." },
-    { icon: "chartBar", title: "Rapports clairs", text: "Ventes et dépenses des six derniers mois, meilleurs produits, marge : tout depuis votre téléphone." },
-    { icon: "lock", title: "Fin de journée sans surprise", text: "La clôture compare l'argent du tiroir à ce qui était attendu, en francs et en dollars. Les écarts sautent aux yeux." },
-    { icon: "clipboardCheck", title: "Inventaire facile", text: "Comptez le rayon en scannant, à plusieurs. L'app montre ce qui manque et sa valeur avant de corriger le stock." },
-    { icon: "fileImport", title: "Import depuis Excel", text: "Déjà une liste de produits ? Importez-la en une fois, même avec des milliers d'articles." },
+    { icon: "bolt", title: "Le client n'attend plus", text: "Touchez les articles ou scannez-les. Le client paie en FC, en $ ou en mobile money, vitePOS calcule la monnaie." },
+    { icon: "package", title: "Vous savez quoi racheter", text: "Chaque vente retire l'article du stock. vitePOS vous prévient avant qu'il ne manque." },
+    { icon: "receipt", title: "Un client qui a confiance", text: "Il reçoit un ticket clair, à votre nom, imprimé ou envoyé par WhatsApp. Il sait ce qu'il a payé, et il revient." },
+    { icon: "users", title: "Faites confiance, vérifiez quand vous voulez", text: "Chaque vendeur a son compte. Une vente ne s'efface pas, et vos vendeurs ne voient pas vos prix d'achat." },
+    { icon: "chartBar", title: "Vous savez ce qui vous rapporte", text: "Les produits qui se vendent le plus, ceux qui rapportent le plus, vos dépenses : de quoi décider quoi acheter et à quel prix." },
+    { icon: "lock", title: "La caisse tombe juste, ou vous savez pourquoi", text: "Le soir, vitePOS vous dit ce qui doit être dans le tiroir, en FC et en $. S'il y a un écart, vous le voyez tout de suite." },
+    { icon: "clipboardCheck", title: "L'inventaire en une matinée, plus en un dimanche", text: "Scannez le rayon, à plusieurs. vitePOS montre ce qui manque, et combien ça vaut." },
+    { icon: "fileImport", title: "Vos produits déjà dans la caisse", text: "Vous avez une liste dans Excel ? On l'ajoute en une fois, même avec des milliers d'articles. Sinon, on le fait avec vous." },
   ] as { icon: IconName; title: string; text: string }[],
 
   audiences: [
@@ -588,7 +589,7 @@ export const fr = {
     sticker: ["Essai", "gratuit"],
     lead: "La caisse de votre business, sur le téléphone que vous avez déjà. Vous vendez, vitePOS compte.",
     ctaTitle: "Essayez vitePOS gratuitement",
-    ctaText: "Sans matériel à acheter · prêt en 5 minutes · même sans réseau",
+    ctaText: "Votre téléphone suffit · prêt en 5 minutes · on vient l'installer chez vous",
     priceFrom: "Ensuite, dès",
     pricePer: "par mois",
     qrLabel: "Scannez pour commencer",
@@ -598,11 +599,11 @@ export const fr = {
     after: { label: "Avec vitePOS", text: "Chaque vente est notée, le stock se compte seul, la caisse tombe juste.", alt: "La marchande et sa vendeuse, contentes de leur journée" },
     benefitsTitle: "Ce que vitePOS fait pour vous",
     benefits: [
-      { title: "Plus d'erreur de monnaie", text: "Le client paie en $, €, FC ou mobile money : la monnaie est calculée." },
-      { title: "Jamais bloqué par le réseau", text: "Internet coupe ? Vous vendez quand même ; tout se met à jour au retour." },
-      { title: "Jamais en rupture", text: "Alerte avant la rupture et la péremption. Vente au carton ou à la pièce." },
-      { title: "Plus de vol ni d'oubli", text: "Un compte par vendeur, aucune vente effacée, prix d'achat cachés." },
-      { title: "La caisse tombe juste", text: "Le soir, la clôture compare le tiroir à ce qui était attendu." },
+      { title: "Plus d'erreur de monnaie", text: "Le client paie en $, €, FC ou mobile money : vitePOS calcule la monnaie." },
+      { title: "Des clients qui reviennent", text: "Un ticket clair à votre nom, imprimé ou envoyé par WhatsApp." },
+      { title: "Vous savez quoi racheter", text: "Alerte avant la rupture et la péremption. Vente au carton ou à la pièce." },
+      { title: "Faites confiance, vérifiez", text: "Un compte par vendeur, aucune vente effacée, prix d'achat cachés." },
+      { title: "La caisse tombe juste", text: "Le soir, vous voyez ce qui doit être dans le tiroir, et le moindre écart." },
       { title: "Votre bénéfice, partout", text: "Ventes, dépenses et marge du jour, même loin du magasin." },
     ],
     priceTitle: "Payez selon vos téléphones",

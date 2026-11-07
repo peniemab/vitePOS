@@ -12,3 +12,6 @@ coverage/
 
 # Copies prêtes à publier (refaites depuis design/pubs/out et site/public)
 A_PUBLIER/
+
+# Images brutes du film de démonstration (refaites par node preview/video.mjs)
+design/video/frames/

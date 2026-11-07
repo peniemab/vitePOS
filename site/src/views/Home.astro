@@ -98,10 +98,11 @@ function toToast(text: string) {
             <span class="cta-long">{h.ctaStart}</span><span class="cta-short">{h.ctaStartShort}</span>
             <span class="btn-icon" set:html={moreIcons.arrowRight} />
           </a>
-          <a class="btn btn-lg btn-light" href={`#${ids.gallery}`}>
-            <span class="btn-icon" set:html={moreIcons.deviceMobile} />
-            {h.ctaSee}
-          </a>
+          <button type="button" class="btn btn-lg btn-light video-open" data-video-open>
+            <span class="video-play" set:html={moreIcons.play} />
+            {h.video.button}
+            <small>{h.video.length}</small>
+          </button>
         </div>
         <ul class="ticks">
           {
@@ -201,6 +202,12 @@ function toToast(text: string) {
       </div>
     </div>
   </section>
+
+  <!-- Vidéo de démonstration (design/video) : rien n'est téléchargé tant qu'on n'appuie pas sur « Voir comment ça marche ». -->
+  <dialog class="video-dialog" aria-label={h.video.title} data-video>
+    <button type="button" class="video-close" aria-label={h.video.close} data-video-close set:html={navIcons.close} />
+    <video src="/video/demo-fr.mp4" poster="/video/demo-fr.jpg" width="720" height="1280" controls playsinline preload="none"></video>
+  </dialog>
 
   <!-- Points forts, posés à cheval sur le bas de l'accroche -->
   <section class="wrap strengths" aria-label={h.eyebrow}>
@@ -621,6 +628,25 @@ function toToast(text: string) {
 </Base>
 
 <script>
+  // Vidéo : s'ouvre en grand et démarre ; se met en pause quand on la ferme.
+  const dialog = document.querySelector<HTMLDialogElement>("[data-video]");
+  const video = dialog?.querySelector("video");
+  if (dialog && video) {
+    document.querySelector("[data-video-open]")?.addEventListener("click", () => {
+      dialog.showModal();
+      video.play().catch(() => undefined);
+    });
+    const close = () => {
+      video.pause();
+      dialog.close();
+    };
+    dialog.querySelector("[data-video-close]")?.addEventListener("click", close);
+    dialog.addEventListener("click", (e) => e.target === dialog && close());
+    // Touche Échap ou bouton retour du téléphone.
+    dialog.addEventListener("cancel", () => video.pause());
+    dialog.addEventListener("close", () => video.pause());
+  }
+
   // Installer : met en avant la carte de l'appareil du visiteur.
   const install = document.querySelector<HTMLElement>("[data-install]");
   if (install) {

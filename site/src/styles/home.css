@@ -2226,3 +2226,81 @@
     justify-self: stretch;
   }
 }
+
+/* Vidéo de démonstration : bouton dans l'accroche, puis lecture en grand, au format d'un téléphone. */
+.video-open {
+  gap: 10px;
+  border: 0;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cta-row .video-open small {
+  display: inline;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #5b6b85;
+}
+.video-play {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--sky-deep);
+  color: #fff;
+}
+.video-play svg {
+  width: 20px;
+  height: 20px;
+}
+.video-dialog {
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: #0c1426;
+  width: min(92vw, calc((100dvh - 48px) * 9 / 16));
+  max-width: 480px;
+  max-height: calc(100dvh - 32px);
+  overflow: visible;
+}
+.video-dialog::backdrop {
+  background: rgba(8, 14, 30, 0.82);
+}
+.video-dialog video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 9 / 16;
+  border-radius: 18px;
+}
+.video-close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--title);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+.video-close svg {
+  width: 22px;
+  height: 22px;
+}
+@media (max-width: 600px) {
+  .cta-row .btn {
+    grid-column: 1 / -1;
+  }
+  .video-close {
+    top: 8px;
+    right: 8px;
+  }
+}
