@@ -61,7 +61,7 @@ export const PLANS: Record<Plan, PlanInfo> = {
     trialDays: 21,
     phones: "Jusqu'à 10 téléphones",
     audience: "Une équipe, plusieurs caisses",
-    features: ["Tout de la formule Équipe", "10 comptes", "Installation et formation offertes", "Aide prioritaire sur WhatsApp", "Nouveautés en premier (crédit clients, fournisseurs)"],
+    features: ["Tout de la formule Équipe", "10 comptes", "Installation et formation offertes", "Aide prioritaire sur WhatsApp", "Nouveautés en premier"],
   },
   supermarche: {
     name: "Sur mesure",

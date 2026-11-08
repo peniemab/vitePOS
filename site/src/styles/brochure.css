@@ -74,7 +74,7 @@
 .r-cover {
   position: relative;
   padding: 8mm 9mm 0;
-  height: 116mm;
+  height: 108mm;
   color: #fff;
   background-color: var(--sky);
   background-image: var(--zebra), var(--sky-band);
@@ -139,7 +139,7 @@
 /* Deux téléphones qui débordent du bleu sur le blanc. */
 .r-phones {
   position: relative;
-  height: 100mm;
+  height: 94mm;
   margin-top: -4mm;
 }
 .r-phones .frame-phone {
@@ -231,11 +231,11 @@
   margin-top: auto;
   background: var(--ink-deep);
   color: #fff;
-  padding: 6mm 9mm 5.5mm;
+  padding: 5mm 9mm 4.5mm;
   display: grid;
   grid-template-columns: 1fr auto;
   column-gap: 6mm;
-  row-gap: 4mm;
+  row-gap: 3mm;
   align-items: center;
 }
 .r-cta-title {
@@ -251,12 +251,12 @@
   opacity: 0.88;
 }
 .r-price {
-  margin-top: 2.4mm;
-  font-size: 0.95rem;
+  margin-top: 2mm;
+  font-size: 0.86rem;
 }
 .r-price b {
   font-family: "Google Sans", sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.45rem;
   line-height: 1;
 }
 .r-cta .b-qr-box figcaption {
@@ -268,7 +268,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 2mm;
-  padding-top: 3.5mm;
+  padding-top: 3mm;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
   font-size: 0.9rem;
 }
@@ -303,6 +303,7 @@
   background-size: 300px 150px;
 }
 .v-title {
+  text-wrap: balance;
   font-family: "Google Sans", sans-serif;
   font-size: 1.3rem;
   letter-spacing: -0.02em;
@@ -331,7 +332,6 @@
   box-sizing: border-box;
 }
 .v-panel figcaption {
-  margin-top: 1.5mm;
   font-size: 0.8rem;
   line-height: 1.3;
 }
@@ -350,7 +350,6 @@
 }
 .v-arrow {
   align-self: center;
-  margin-top: -8mm;
   color: var(--sky);
 }
 .v-arrow svg {
@@ -365,7 +364,7 @@
   margin: 1.6mm 0 2.6mm;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.2mm 5mm;
+  gap: 2.2mm 6mm;
 }
 .v-benefits li {
   display: flex;
@@ -374,13 +373,13 @@
 }
 .v-benefits b {
   display: block;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--title);
   line-height: 1.15;
 }
 .v-benefits span:not(.v-icon) {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   color: var(--d-muted);
   line-height: 1.28;
   margin-top: 0.4mm;
@@ -402,8 +401,8 @@
 /* Prix (carte bleue) et étapes. */
 .v-bottom {
   display: grid;
-  grid-template-columns: 60mm 1fr;
-  gap: 6mm;
+  grid-template-columns: 66mm 1fr;
+  gap: 5mm;
   align-items: start;
 }
 .v-price {
@@ -478,13 +477,15 @@
 }
 .v-others li {
   display: grid;
-  grid-template-columns: 17mm 1fr auto;
-  gap: 1.5mm;
+  grid-template-columns: 1fr auto;
+  column-gap: 1.5mm;
   align-items: baseline;
   padding-bottom: 0.8mm;
   border-bottom: 1px solid #e3e8f0;
 }
 .v-others span {
+  grid-column: 1 / -1;
+  grid-row: 2;
   color: var(--d-muted);
 }
 .v-others em {
@@ -654,4 +655,49 @@
     box-shadow: none;
     break-after: page;
   }
+}
+
+/* Une vente en 3 gestes (recto) : numéros, car c'est une suite. */
+.r-how {
+  padding: 0 9mm;
+  margin-top: 2mm;
+}
+.r-how-title {
+  text-wrap: balance;
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.1;
+  color: var(--title);
+  margin-bottom: 2.4mm;
+}
+.r-how .r-strengths {
+  padding: 0;
+  margin-top: 0;
+}
+.r-how .r-icon {
+  border-radius: 50%;
+  font-family: "Google Sans", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Points de la formule Pro (verso). */
+.v-points {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.6mm;
+  display: grid;
+  gap: 0.6mm;
+  font-size: 0.78rem;
+}
+.v-points li {
+  display: flex;
+  align-items: center;
+  gap: 1.4mm;
+}
+.v-points svg {
+  width: 3.6mm;
+  height: 3.6mm;
+  flex: none;
+  color: var(--sun);
 }

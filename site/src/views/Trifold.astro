@@ -2,7 +2,8 @@
 /**
  * Dépliant : une feuille A4 à l'italienne, recto-verso, pliée en trois (pli roulé), dans la langue demandée.
  * Extérieur, de gauche à droite : volet rabattu (avant / avec vitePOS), dos (QR code, contacts), couverture.
- * Intérieur : une vente en 3 gestes, les fonctions, le prix. Le volet rabattu fait 97 mm, les autres 100 mm,
+ * Intérieur : une vente en 3 gestes, ce que vous y gagnez, les tarifs. Textes : ceux de la brochure (`brochure` dans i18n),
+ * le dépliant n'ajoute que des illustrations. Le volet rabattu fait 97 mm, les autres 100 mm,
  * pour que le pli ferme bien. PDF : imprimer cette page (voir CLAUDE.md, comme la brochure).
  */
 import FollowQr from "../components/FollowQr.astro";
@@ -39,7 +40,7 @@ const others = t.plans.list.filter((p) => !p.featured);
     <section class="t-sheet outside">
       <!-- Volet rabattu : le premier qu'on voit en ouvrant la couverture. -->
       <div class="panel flap">
-        <h2 class="p-title">{f.flapTitle}</h2>
+        <h2 class="p-title">{b.storyTitle}</h2>
         <figure class="story before">
           <img src="/bd/bd-1.webp" alt={b.before.alt} width="1072" height="790" />
           <figcaption><b>{b.before.label}</b> {b.before.text}</figcaption>
@@ -49,7 +50,6 @@ const others = t.plans.list.filter((p) => !p.featured);
           <img src="/bd/bd-8.webp" alt={b.after.alt} width="1072" height="790" />
           <figcaption><b>{b.after.label}</b> {b.after.text}</figcaption>
         </figure>
-        <p class="flap-end">{f.flapEnd}</p>
       </div>
 
       <!-- Dos : le QR code en grand et tous les contacts. -->
@@ -58,16 +58,16 @@ const others = t.plans.list.filter((p) => !p.featured);
           <span class="t-logo"><img src="/logo.svg" alt="" width="24" height="26" /></span>
           <span class="t-brand" translate="no">vitePOS</span>
         </div>
-        <h2 class="p-title">{f.backTitle}</h2>
-        <p class="back-lead">{f.backLead}</p>
+        <h2 class="p-title">{b.ctaTitle}</h2>
+        <p class="back-lead">{b.ctaText}</p>
         <div class="back-qrs">
           <figure class="back-qr">
             <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="120" height="120" />
-            <figcaption><b translate="no">{APP_HOST}</b></figcaption>
+            <figcaption><b>{b.qrLabel}</b><span translate="no">{APP_HOST}</span></figcaption>
           </figure>
           <FollowQr lang={lang} class="back-qr" />
         </div>
-        <p class="back-price">{b.priceFrom} <b>{t.plans.list[0].price}</b> {b.pricePer}</p>
+        <p class="back-price">{b.priceLine[0]} <b>{b.priceLine[1]}</b> {b.priceLine[2]}</p>
         <div class="visit">
           <b>{b.contactTitle}</b>
           <p>{b.contactText}</p>
@@ -86,9 +86,9 @@ const others = t.plans.list.filter((p) => !p.featured);
           <span class="t-logo"><img src="/logo.svg" alt="" width="24" height="26" /></span>
           <span class="t-brand" translate="no">vitePOS</span>
         </div>
-        <p class="cover-kicker">{f.coverKicker}</p>
+        <p class="cover-kicker">{b.signature}</p>
         <h1><span>{t.home.h1[0]}</span> <span>{t.home.h1[1]}</span> <span class="accent">{t.home.h1[2]}</span></h1>
-        <p class="cover-lead">{f.coverLead}</p>
+        <p class="cover-lead">{b.lead}</p>
         <!-- Image écrite à la main (et non via Shot) : décodage immédiat, sinon Chrome l'imprime parfois en noir. -->
         <div class="cover-phone">
           <div class="frame-phone">
@@ -96,7 +96,6 @@ const others = t.plans.list.filter((p) => !p.featured);
           </div>
         </div>
         <p class="cover-sticker"><b>{b.sticker[0]}</b><span>{b.sticker[1]}</span></p>
-        <p class="cover-tag">{b.tag}</p>
       </div>
     </section>
 
@@ -104,11 +103,10 @@ const others = t.plans.list.filter((p) => !p.featured);
     <!-- Intérieur : une vente en 3 gestes | fonctions | prix -->
     <section class="t-sheet inside">
       <div class="panel how">
-        <p class="p-kicker">{f.howKicker}</p>
-        <h2 class="p-title">{f.howTitle}</h2>
+        <h2 class="p-title">{b.howTitle}</h2>
         <ol class="how-steps">
           {
-            f.how.map((s) => (
+            b.how.map((s) => (
               <li>
                 <b>{s.title}</b>
                 <span>{s.text}</span>
@@ -123,7 +121,6 @@ const others = t.plans.list.filter((p) => !p.featured);
       </div>
 
       <div class="panel features">
-        <p class="p-kicker">{f.featuresKicker}</p>
         <h2 class="p-title">{b.benefitsTitle}</h2>
         <ul class="feat-list">
           {
@@ -139,7 +136,6 @@ const others = t.plans.list.filter((p) => !p.featured);
           }
         </ul>
         <div class="devices">
-          <b>{f.devicesTitle}</b>
           <ul>
             {f.devices.map((d, i) => <li><span set:html={deviceList[i]} />{d}</li>)}
           </ul>
@@ -147,28 +143,27 @@ const others = t.plans.list.filter((p) => !p.featured);
       </div>
 
       <div class="panel price">
-        <p class="p-kicker">{f.priceKicker}</p>
         <h2 class="p-title">{b.priceTitle}</h2>
         <div class="price-card">
           <p class="price-trial">{t.plans.popular} · {pro.trial}</p>
           <p class="price-plan">{pro.name} <span>{pro.phones}</span></p>
           <p class="price-amount"><b>{pro.price}</b> {t.plans.per}</p>
-          <p class="price-yearly">{pro.yearly} · {pro.note}</p>
+          <p class="price-yearly">{pro.yearly}</p>
           <ul>
-            {pro.features.map((x) => <li><span set:html={moreIcons.check} />{x}</li>)}
+            {b.proPoints.map((x) => <li><span set:html={moreIcons.check} />{x}</li>)}
           </ul>
         </div>
         <div class="others">
           <b>{b.otherPlans}</b>
           <ul>
             {others.map((p) => <li><strong>{p.name}</strong><span>{p.phones} · {p.trial}</span><em>{p.price}</em></li>)}
-            <li><strong>{t.plans.custom.name}</strong><span>{t.plans.custom.phones}</span><em>{t.plans.custom.price}</em></li>
+            <li><strong>{t.plans.custom.name}</strong><span>{t.plans.custom.phones} · {t.plans.custom.trial}</span><em>{t.plans.custom.price}</em></li>
           </ul>
         </div>
         <div class="price-cta">
           <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="64" height="64" />
           <div>
-            <b>{b.ctaTitle}</b>
+            <b>{b.qrLabel}</b>
             <span translate="no">{APP_HOST}</span>
           </div>
         </div>

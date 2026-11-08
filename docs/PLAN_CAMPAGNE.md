@@ -39,7 +39,7 @@ Le patron d'un magasin ne veut pas « une caisse avec gestion de stock ». Il ve
 
 - Teasing : on pose la question, sans donner la réponse. Les gens se reconnaissent, commentent et partagent.
 - Lancement : la réponse arrive, « Avec vitePOS, vous savez où est passé chaque franc ».
-- Signature de la campagne : **« vitePOS. Votre argent, sous vos yeux. »**
+- Signature de la campagne : **« vitePOS. Votre activité, sous vos yeux. »**
 - En lingala, pour toucher Kinshasa : « Mbongo ekei wapi ? » (« Où est passé l'argent ? »). **À faire vérifier par un locuteur avant de l'utiliser.**
 - Mot-clé : `#OuEstPasseLArgent` (sans accents, pour qu'il marche partout) avec `#vitePOS #Kinshasa`.
 

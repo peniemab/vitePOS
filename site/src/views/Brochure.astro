@@ -1,14 +1,15 @@
 ---
 /**
  * Brochure commerciale : une feuille A5 recto-verso, à laisser au comptoir ou à envoyer par WhatsApp, dans la langue demandée.
- * Recto : l'accroche sur bleu zébré, le téléphone, « 30 jours gratuits », les trois points forts, puis l'appel à l'action
- * (prix, WhatsApp, QR code). Verso : l'histoire avant / avec vitePOS (dessins de la BD du site), six avantages, le prix,
- * les trois étapes et les contacts (le QR code est au recto). PDF : imprimer cette page (voir CLAUDE.md, comme le manuel).
+ * Textes : `brochure` dans i18n (les mêmes que le dépliant, validés dans docs/TEXTES_DOCUMENTS.md).
+ * Recto : signature, grand titre, téléphones, « Essai gratuit », une vente en 3 gestes, puis l'appel à l'action
+ * (prix, QR code, WhatsApp). Verso : l'histoire avant / avec vitePOS (texte seul : dessins et pictogrammes sont dans le dépliant), ce que vous y gagnez,
+ * les tarifs et les contacts avec le QR code « Suivez-nous ». PDF : imprimer cette page (voir CLAUDE.md, comme le manuel).
  */
 import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import { APP_HOST, CONTACT, SITE_HOST } from "../data/content";
-import { contactIcons, icons, moreIcons } from "../data/icons";
+import { contactIcons, moreIcons } from "../data/icons";
 import { dicts, PDF, type Lang } from "../i18n";
 import "../styles/brochure.css";
 
@@ -21,8 +22,6 @@ const b = t.brochure;
 /** Formule Pro mise en avant, les autres en liste. */
 const pro = t.plans.list.find((p) => p.featured)!;
 const others = t.plans.list.filter((p) => !p.featured);
-const strengthIcons = [moreIcons.cash, moreIcons.wifiOff, moreIcons.users];
-const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users, icons.lock, icons.chartBar];
 ---
 
 <Base title={b.title} description={b.description} lang={lang} page="brochure">
@@ -38,7 +37,7 @@ const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users,
         <header class="b-top">
           <span class="b-logo"><img src="/logo.svg" alt="" width="26" height="28" /></span>
           <span class="b-brand" translate="no">vitePOS</span>
-          <span class="b-tag">{b.tag}</span>
+          <span class="b-tag">{b.signature}</span>
         </header>
         <div class="r-hero">
           <div class="r-text">
@@ -53,24 +52,27 @@ const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users,
       </div>
 
       <p class="r-sticker"><b>{b.sticker[0]}</b><span>{b.sticker[1]}</span></p>
-      <ul class="r-strengths">
-        {
-          t.strengths.map((s, i) => (
-            <li>
-              <span class="r-icon" set:html={strengthIcons[i]} />
-              <b>{s.title}</b>
-              <span>{s.text}</span>
-            </li>
-          ))
-        }
-      </ul>
+      <div class="r-how">
+        <h2 class="r-how-title">{b.howTitle}</h2>
+        <ol class="r-strengths">
+          {
+            b.how.map((s, i) => (
+              <li>
+                <span class="r-icon">{i + 1}</span>
+                <b>{s.title}</b>
+                <span>{s.text}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
 
       <footer class="r-cta">
         <div class="r-cta-main">
           <p class="r-cta-title">{b.ctaTitle}</p>
           <p class="r-cta-text">{b.ctaText}</p>
           <p class="r-price">
-            {b.priceFrom} <b>{t.plans.list[0].price}</b> {b.pricePer}
+            {b.priceLine[0]} <b>{b.priceLine[1]}</b> {b.priceLine[2]}
           </p>
         </div>
         <div class="r-cta-side">
@@ -81,7 +83,7 @@ const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users,
         </div>
         <p class="r-wa">
           <span class="r-wa-icon" set:html={contactIcons.whatsapp} />
-          <span>{b.askLabel}</span>
+          <span>{b.phoneLabel}</span>
           <b translate="no">{CONTACT.phone}</b>
           <span class="r-url" translate="no">{APP_HOST}</span>
         </p>
@@ -90,15 +92,14 @@ const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users,
 
     <!-- Verso -->
     <section class="sheet verso">
+      <!-- Sur l'A5, l'histoire est en texte seul : les dessins sont dans le dépliant A4. -->
       <h2 class="v-title">{b.storyTitle}</h2>
       <div class="v-story">
         <figure class="v-panel before">
-          <img src="/bd/bd-1.webp" alt={b.before.alt} width="1072" height="790" />
           <figcaption><b>{b.before.label}</b> {b.before.text}</figcaption>
         </figure>
         <span class="v-arrow" aria-hidden="true" set:html={moreIcons.arrowRight} />
         <figure class="v-panel after">
-          <img src="/bd/bd-8.webp" alt={b.after.alt} width="1072" height="790" />
           <figcaption><b>{b.after.label}</b> {b.after.text}</figcaption>
         </figure>
       </div>
@@ -106,9 +107,8 @@ const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users,
       <h2 class="v-title small">{b.benefitsTitle}</h2>
       <ul class="v-benefits">
         {
-          b.benefits.map((x, i) => (
+          b.benefits.map((x) => (
             <li>
-              <span class="v-icon" set:html={benefitIcons[i]} />
               <div>
                 <b>{x.title}</b>
                 <span>{x.text}</span>
@@ -122,16 +122,17 @@ const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users,
         <div class="v-price">
           <p class="v-price-trial">{t.plans.popular}</p>
           <p class="v-plan">{pro.name} <span>{pro.phones}</span></p>
-          <p class="v-amount"><b>{pro.price}</b> {t.plans.per}</p>
-          <p class="v-yearly">{pro.yearly}</p>
-          <p class="v-note">{pro.note}</p>
+          <p class="v-amount"><b>{pro.price}</b> {t.plans.per}, {pro.yearly}</p>
           <p class="v-trial">{pro.trial}</p>
+          <ul class="v-points">
+            {b.proPoints.map((x) => <li><span set:html={moreIcons.check} />{x}</li>)}
+          </ul>
         </div>
         <div class="v-side">
           <p class="v-others-title">{b.otherPlans}</p>
           <ul class="v-others">
-            {others.map((p) => <li><b>{p.name}</b><span>{p.phones}</span><em>{p.price}</em></li>)}
-            <li><b>{t.plans.custom.name}</b><span>{t.plans.custom.phones}</span><em>{t.plans.custom.price}</em></li>
+            {others.map((p) => <li><b>{p.name}</b><span>{p.phones} · {p.trial}</span><em>{p.price}</em></li>)}
+            <li><b>{t.plans.custom.name}</b><span>{t.plans.custom.phones} · {t.plans.custom.trial}</span><em>{t.plans.custom.price}</em></li>
           </ul>
         </div>
       </div>

@@ -70,6 +70,7 @@
   margin-bottom: 1.2mm;
 }
 .p-title {
+  text-wrap: balance;
   font-family: "Google Sans", sans-serif;
   font-size: 1.5rem;
   letter-spacing: -0.02em;
@@ -297,6 +298,10 @@
   font-size: 0.78rem;
   line-height: 1.15;
   color: var(--ink-deep);
+}
+.back-qr figcaption span {
+  display: block;
+  font-size: 0.7rem;
 }
 .back-qr .follow-qr-icons {
   display: flex;

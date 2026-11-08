@@ -52,7 +52,7 @@ C'est le texte le plus important : en 5 secondes, le visiteur doit comprendre ce
 | Texte sous le titre | « Ventes, dépenses, bénéfice : tout est calculé pendant que vous vendez. Fini les comptes de tête à la fermeture. » | **« vitePOS note chaque vente sur votre téléphone. Vous voyez ce que vous avez vendu, ce qui reste en stock et ce qui doit être dans la caisse. Même quand vous n'êtes pas au magasin. »** | Dit concrètement ce que le patron voit, et touche la peur de s'absenter. |
 | Bouton principal | « Commencer gratuitement » | **« Essayer gratuitement »** | « Essayer » fait moins peur que « commencer » : on ne s'engage à rien. |
 | Petites coches | « Gratuit pour commencer · Rien à acheter · Marche sans réseau · FC, $ et € » | **« Essai gratuit · Votre téléphone suffit · On vient l'installer chez vous · FC et $ au taux du jour »** | Chaque coche lève une peur : le prix, le matériel, la difficulté, la monnaie. |
-| Titre de l'onglet du navigateur | « vitePOS · Vendez plus vite. Perdez moins. Même sans réseau. » | **« vitePOS · Votre argent, sous vos yeux »** | Reprend la signature de la campagne. |
+| Titre de l'onglet du navigateur | « vitePOS · Vendez plus vite. Perdez moins. Même sans réseau. » | **« vitePOS · Votre activité, sous vos yeux »** | Reprend la signature de la campagne. |
 
 ### Les trois points forts (sous l'accroche)
 
