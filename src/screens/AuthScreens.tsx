@@ -186,7 +186,7 @@ export function SignupScreen() {
   return (
     <AuthCard
       title="Créer un compte"
-      sub="Après l'inscription, vous pourrez gérer votre activité ou rejoindre celle de votre patron avec son code d'invitation."
+      sub="Après l'inscription, vous pourrez gérer votre activité ou rejoindre celle du propriétaire avec son code d'invitation."
     >
       <OfflineHint />
       <form onSubmit={submit}>

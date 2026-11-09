@@ -29,20 +29,43 @@ export interface Chapter {
 
 export const chapters: Chapter[] = [
   {
+    id: "compte",
+    kicker: "Premiers pas",
+    title: "Créer votre compte",
+    lead: "Un e-mail et un mot de passe, ou votre compte Google : c'est tout. Chaque personne qui utilise vitePOS a son propre compte, vous comme vos vendeurs.",
+    steps: [
+      "Sur votre téléphone, ouvrez <b>app.viteposrdc.com</b> dans le navigateur : Chrome sur Android, Safari sur iPhone.",
+      "Touchez le bouton jaune <b>« Créer un compte gratuit »</b>.",
+      "Avec un e-mail : tapez votre <b>E-mail</b>, un <b>Mot de passe</b> d'au moins 6 caractères, retapez-le dans <b>« Confirmer le mot de passe »</b>, puis touchez <b>« Créer mon compte »</b>.",
+      "Avec Google : touchez <b>« S'inscrire avec Google »</b> et choisissez votre compte. Pas de mot de passe à retenir.",
+      "L'écran <b>« Bienvenue »</b> s'ouvre : votre compte est prêt. Il reste à créer votre activité (page suivante).",
+    ],
+    shot: { name: "man-inscription", alt: "Écran Créer un compte", caption: "Avec Google, pas de mot de passe à retenir." },
+    tip: {
+      title: "Un e-mail que vous lisez",
+      text: "En cas d'oubli, « Mot de passe oublié ? » vous envoie un lien à cette adresse pour choisir un nouveau mot de passe.",
+    },
+    warn: {
+      title: "Un compte par personne",
+      text: "Ne créez pas un seul compte pour toute l'équipe : chaque vendeur crée le sien, puis rejoint votre activité avec votre code (chapitre 03).",
+    },
+  },
+  {
     id: "demarrer",
     kicker: "Premiers pas",
     title: "Votre caisse prête en 5 minutes",
-    lead: "Pas de logiciel à acheter, pas de store : vitePOS s'ouvre dans le navigateur du téléphone, puis s'installe sur l'écran d'accueil comme une vraie application.",
+    lead: "Pas de logiciel à acheter, pas de store : vitePOS s'ouvre dans le navigateur du téléphone, puis s'installe sur l'écran d'accueil comme une vraie application.",
     steps: [
-      "Ouvrez <b>app.viteposrdc.com</b> et touchez le bouton jaune <b>« Créer un compte gratuit »</b> : votre e-mail ou votre compte Google.",
-      "Choisissez <b>« Gérer mon activité »</b> : le nom de votre activité, la devise de vos prix et le <b>taux du jour</b> (combien de FC pour 1 $). Des clients paient en euros ? Cochez <b>« J'accepte aussi les euros »</b>.",
-      "Touchez <b>« Créer mon activité »</b> : essai gratuit, toutes les fonctions comprises. Sur l'accueil, la liste <b>« Premiers pas »</b> vous guide jusqu'à la première vente.",
-      "Sur l'accueil, la carte <b>« Installer vitePOS »</b> vous guide : bouton <b>« Installer »</b> sur Android, ou <b>Partager → « Sur l'écran d'accueil »</b> dans Safari sur iPhone.",
+      "Sur l'écran <b>« Bienvenue »</b>, gardez <b>« Gérer mon activité »</b>. (« Rejoindre » sert à vos employés.)",
+      "Tapez le <b>Nom de votre activité</b> (il sera imprimé sur vos tickets) et <b>Votre nom</b>.",
+      "Choisissez la <b>Devise des prix</b> (Francs, Dollars ou Euros) et le <b>Taux du jour</b> : combien de FC pour 1 $. Des clients paient en euros ? Cochez <b>« J'accepte aussi les euros »</b>.",
+      "L'essai démarre sur la formule Pro, la plus complète ; <b>« Changer »</b> pour une autre. Touchez <b>« Créer mon activité »</b> : sur l'accueil, la liste <b>« Premiers pas »</b> vous guide jusqu'à la première vente.",
+      "Installez l'app : la carte <b>« Installer vitePOS »</b> de l'accueil vous guide (bouton <b>« Installer »</b> sur Android, <b>Partager → « Sur l'écran d'accueil »</b> dans Safari sur iPhone).",
     ],
-    shot: { name: "man-installer", alt: "Accueil de vitePOS avec la carte Installer vitePOS", caption: "La carte d'installation disparaît une fois l'app installée." },
+    shot: { name: "man-bienvenue", alt: "Écran Bienvenue : créer son activité", caption: "Le taux se change ensuite chaque jour dans Paramètres." },
     tip: {
-      title: "Internet, seulement au début",
-      text: "Il faut du réseau pour créer votre compte. Ensuite, la caisse marche même quand le réseau coupe.",
+      title: "Internet pour commencer",
+      text: "Il faut du réseau pour créer votre compte, votre activité et inviter votre équipe.",
     },
   },
   {
@@ -55,10 +78,11 @@ export const chapters: Chapter[] = [
       "Votre employé crée son compte sur son téléphone, choisit <b>« Rejoindre »</b> et entre ce code.",
       "Sa demande apparaît dans <b>« Demandes à valider »</b> : touchez <b>« Valider »</b> (ou « Refuser »).",
       "Il arrive dans <b>« Membres »</b> comme vendeur : changez son rôle en <b>Gérant</b> si besoin.",
+      "Un employé s'en va ? Dans <b>« Membres »</b>, touchez <b>« Désactiver »</b> : il ne peut plus rien ouvrir, et ses ventes restent dans l'historique.",
     ],
     shot: { name: "man-equipe", alt: "Écran Équipe avec le code d'invitation", caption: "Le code d'invitation se copie et s'envoie par WhatsApp." },
     table: [
-      ["Rôle", "Vend", "Voit les rapports", "Change les prix", "Ferme la caisse", "Gère le stock"],
+      ["Rôle", "Vend", "Voit les rapports", "Change les prix", "Clôture la journée", "Gère le stock"],
       ["Propriétaire", "Oui", "Oui", "Oui", "Oui", "Oui"],
       ["Gérant", "Oui", "Oui", "Oui", "Oui", "Oui"],
       ["Vendeur", "Oui", "Non", "Non", "Non", "Non"],
@@ -71,7 +95,7 @@ export const chapters: Chapter[] = [
   {
     id: "taux",
     kicker: "Francs, dollars, euros",
-    title: "Le taux du jour, fixé par le patron",
+    title: "Le taux du jour, c'est vous qui le fixez",
     lead: "Vos prix restent dans votre devise. Le client paie en francs, en dollars ou en euros : vitePOS convertit au taux du jour et calcule la monnaie à rendre.",
     steps: [
       "Allez dans <b>Plus → Paramètres</b> : le <b>Taux du jour</b> est le premier bloc.",
@@ -81,13 +105,13 @@ export const chapters: Chapter[] = [
       "Le nouveau taux s'affiche aussitôt sur l'accueil et à la caisse de tous vos vendeurs.",
     ],
     shot: { name: "man-parametres", alt: "Paramètres : taux du jour du dollar et de l'euro", caption: "Seul le propriétaire peut changer le taux ; les vendeurs le voient." },
-    tip: { title: "Le mode sombre", text: "Dans Paramètres → Apparence : « Clair », « Sombre » ou « Automatique » (comme le téléphone). Le sombre repose les yeux le soir." },
+    tip: { title: "Chaque matin", text: "Mettez le taux à jour avant la première vente : un taux d'hier, c'est de l'argent perdu à chaque paiement en dollars." },
   },
   {
     id: "stock",
     kicker: "Le stock",
     title: "Chaque article a sa fiche",
-    lead: "Un code article pour s'y retrouver, le code-barres du fabricant pour aller vite, et les paquets ou cartons pour vendre en gros. Votre liste Excel s'importe d'un coup : Stock → « … » → « Importer depuis Excel ».",
+    lead: "Vous remplissez la fiche une fois : prix, stock, code-barres, paquets. Ensuite, vitePOS s'en sert à chaque vente.",
     steps: [
       "Dans <b>Stock</b>, touchez <b>« Ajouter »</b>. Choisissez la catégorie : le <b>code article</b> est proposé tout seul (LAI-001, LAI-002… pour les laits).",
       "Scannez le <b>code-barres</b> de l'article avec le bouton caméra du champ, ou tapez-le.",
@@ -98,15 +122,50 @@ export const chapters: Chapter[] = [
     ],
     shot: { name: "man-fiche", alt: "Fiche du Coca-Cola avec un paquet de 24", caption: "Le paquet de 24 a son prix et son code-barres. Le stock reste compté en bouteilles." },
     tip: {
-      title: "Toutes les bouteilles ont le même code",
-      text: "Le code-barres désigne le produit, pas la bouteille : un seul scan suffit pour le retrouver. Le paquet, lui, porte un autre code.",
+      title: "Beaucoup d'articles ?",
+      text: "Ne les tapez pas un par un : importez votre liste Excel d'un coup (chapitre 06).",
+    },
+  },
+  {
+    id: "import",
+    kicker: "Gagner du temps",
+    title: "Importer votre liste Excel",
+    lead: "Vos articles sont déjà dans un fichier Excel ? Importez-les d'un coup au lieu de les taper. Le plus simple : depuis un ordinateur, avec le même compte.",
+    steps: [
+      "Dans <b>Stock</b>, touchez <b>« … » → « Importer depuis Excel »</b>, puis <b>« Télécharger le modèle »</b>.",
+      "Ouvrez le modèle dans Excel et remplissez une ligne par article. Seuls le <b>nom</b> et le <b>prix de vente</b> sont obligatoires ; ajoutez si vous voulez la catégorie, le prix d'achat, le stock, le seuil d'alerte et le code-barres.",
+      "Dans Excel, faites <b>Fichier → Enregistrer sous</b> et choisissez le format <b>CSV</b>.",
+      "Dans vitePOS, touchez <b>« Choisir un fichier CSV »</b> : l'app montre combien d'articles seront créés ou mis à jour. Vérifiez, puis touchez <b>« Importer … produits »</b>.",
+    ],
+    shot: { name: "man-import", alt: "Écran Importer des produits", caption: "« Essayer avec l'exemple » montre le résultat sans rien enregistrer." },
+    tip: {
+      title: "Pas de doublon",
+      text: "Un article qui existe déjà (même code-barres, ou même nom et catégorie) est mis à jour, pas créé deux fois. Si la colonne stock est remplie, elle remplace l'ancien stock et l'écart est noté.",
+    },
+  },
+  {
+    id: "articles",
+    kicker: "Le stock au quotidien",
+    title: "Changer un prix, ranger, retrouver",
+    lead: "Un prix qui monte, un article qu'on ne vend plus, une liste à envoyer au comptable : tout se fait depuis Stock.",
+    steps: [
+      "<b>Changer un prix</b> : touchez l'article, modifiez le prix de vente, puis <b>« Enregistrer »</b>. Le nouveau prix s'applique à la vente suivante, sur toutes les caisses.",
+      "Les filtres du haut : <b>Alertes</b> (stock bas), <b>Péremption</b> (lots qui périment dans les 30 jours) et <b>Archivés</b>. Les pastilles de rayon trient par catégorie.",
+      "Un article que vous ne vendez plus ? Ouvrez-le et touchez <b>« Archiver »</b> : il disparaît du stock et de la caisse, son historique est gardé. <b>« Restaurer »</b>, depuis le filtre Archivés, le fait revenir.",
+      "Cochez <b>« Favori »</b> pour vos meilleures ventes : elles s'affichent en premier à la caisse.",
+      "Pour envoyer votre liste au comptable ou la retravailler : <b>« … » → « Exporter pour Excel »</b>.",
+    ],
+    shot: { name: "man-articles", alt: "Stock avec le menu Importer et Exporter", caption: "Le menu « … » : importer ou exporter votre liste." },
+    tip: {
+      title: "Le bon seuil d'alerte",
+      text: "Réglez « Alerte stock bas à partir de » sur ce que vous vendez en 3 ou 4 jours : vous avez le temps de racheter avant la rupture.",
     },
   },
   {
     id: "reception",
     kicker: "Arrivage",
-    title: "Recevoir la marchandise en trois gestes",
-    lead: "Le fournisseur livre 3 paquets de Coca ? Inutile de compter 72 bouteilles.",
+    title: "Rentrer la marchandise en quelques secondes",
+    lead: "Le fournisseur livre des cartons ? Scannez le carton : vitePOS ajoute les unités au stock.",
     steps: [
       "Dans <b>Stock</b>, scannez le code-barres <b>du paquet</b>.",
       "La fenêtre <b>Mouvement</b> s'ouvre sur <b>« Réappro »</b>, comptée en <b>« Paquet de 24 »</b>.",
@@ -130,8 +189,8 @@ export const chapters: Chapter[] = [
   {
     id: "accueil",
     kicker: "En un coup d'œil",
-    title: "L'accueil, votre ticket du jour",
-    lead: "En ouvrant l'app, la recette du jour s'affiche comme un ticket de caisse bleu : ce que vous avez vendu, et si c'est mieux ou moins bien qu'hier.",
+    title: "Votre journée sur un seul écran",
+    lead: "Dès que vous ouvrez l'app : combien vous avez vendu aujourd'hui, et si c'est mieux qu'hier à la même heure.",
     steps: [
       "<b>« Recette du jour »</b> : le total des ventes depuis ce matin, en grand. Un vendeur voit <b>« Vos ventes du jour »</b> : seulement les siennes.",
       "Juste dessous, la comparaison <b>« … % de plus qu'hier à la même heure »</b> : à 11 h, on compare avec hier à 11 h, pas avec toute la journée d'hier.",
@@ -139,14 +198,14 @@ export const chapters: Chapter[] = [
       "<b>« Quand vous vendez »</b> : une barre par heure, l'heure en cours en bleu. La phrase dessous donne l'heure où vous vendez le plus.",
       "Plus bas, <b>« À surveiller »</b> (articles à commander, lots bientôt périmés) et les <b>« Dernières ventes »</b> avec l'heure, le client et le montant.",
     ],
-    shot: { name: "man-accueil", alt: "Accueil : la recette du jour en ticket bleu zébré", caption: "Le bouton jaune « Nouvelle vente » ouvre la caisse." },
+    shot: { name: "man-accueil", alt: "Accueil : la recette du jour", caption: "Le bouton jaune « Nouvelle vente » ouvre la caisse." },
     tip: { title: "Où mettre plus de monde ?", text: "« Quand vous vendez » montre vos heures fortes : c'est le moment d'avoir deux personnes au comptoir." },
   },
   {
     id: "vendre",
     kicker: "La vente",
     title: "Encaisser en quelques secondes",
-    lead: "Toucher l'article ou le scanner, encaisser dans la devise du client, donner le ticket. Même sans réseau.",
+    lead: "Toucher l'article ou le scanner, encaisser dans la devise du client, donner le ticket.",
     steps: [
       "Dans <b>Caisse</b>, touchez l'article ou scannez-le : avec la caméra (bouton à droite de la recherche) ou avec une douchette. Une pastille bleue montre combien il y en a déjà dans le panier ; un stock bas s'affiche en orange (« 4 restants »).",
       "Un article vendu aussi en paquet ? L'app demande <b>« À l'unité »</b> ou <b>« Paquet de 24 »</b>. Scanner le paquet vend directement le paquet.",
@@ -163,12 +222,11 @@ export const chapters: Chapter[] = [
     lead: "Chaque vente a son ticket et son numéro. Le client le reçoit sur papier ou sur son téléphone.",
     steps: [
       "Après <b>« Valider la vente »</b>, le ticket s'affiche : <b>« Imprimer »</b> sur une imprimante de tickets, ou <b>« Partager (WhatsApp, SMS…) »</b>.",
-      "La pastille <b>« Envoyé »</b> indique que la vente est bien arrivée en ligne ; <b>« En attente d'envoi »</b> qu'elle partira au retour du réseau.",
       "Une erreur ? Le gérant ou le propriétaire touche <b>« Annuler la vente »</b> le jour même, avec un motif : les articles reviennent en stock.",
     ],
     shot: { name: "tel-ticket", alt: "Ticket de vente", caption: "« Nouvelle vente » ramène à la caisse." },
     warn: {
-      title: "Une vente ne s'efface jamais",
+      title: "Personne ne peut effacer une vente",
       text: "Une vente annulée reste visible, marquée « annulée », avec qui l'a annulée et pourquoi. Personne ne peut faire disparaître une vente.",
     },
   },
@@ -190,10 +248,10 @@ export const chapters: Chapter[] = [
     id: "clients",
     kicker: "Vos habitués",
     title: "Connaître vos clients fidèles",
-    lead: "Le restaurant du coin, l'hôtel, la maman qui passe tous les jours : notez-les une fois, vous retrouvez tout ce qu'ils ont acheté.",
+    lead: "Vos clients réguliers, particuliers ou entreprises : notez-les une fois, vous retrouvez tout ce qu'ils ont acheté.",
     steps: [
       "Dans <b>Plus → Clients</b>, touchez <b>« Ajouter »</b> : le nom, le téléphone et des notes (habitudes, adresse de livraison…).",
-      "Ou directement à la caisse : dans le panier, <b>« Ajouter un client (fidélité, crédit) »</b>, puis <b>« + Nouveau client »</b>.",
+      "Ou directement à la caisse : dans le panier, <b>« Ajouter un client »</b>, puis <b>« + Nouveau client »</b>.",
       "La liste montre pour chacun le total dépensé et le nombre d'achats. Cherchez par nom ou par numéro.",
       "Touchez un client : l'onglet <b>« Achats »</b> liste ses tickets, et <b>« Appeler »</b> lance l'appel.",
     ],
@@ -207,7 +265,7 @@ export const chapters: Chapter[] = [
     steps: [
       "Dans <b>Plus → Dépenses</b>, touchez <b>« Nouvelle dépense »</b>.",
       "Saisissez le <b>montant</b> et sa devise, la <b>catégorie</b> et, si vous voulez, un détail.",
-      "Laissez <b>« Payée avec l'argent de la caisse »</b> coché si l'argent sort du tiroir. Décochez-le si le patron a payé de sa poche.",
+      "Laissez <b>« Payée avec l'argent de la caisse »</b> coché si l'argent sort du tiroir. Décochez-le si vous avez payé de votre poche.",
       "Touchez <b>« Enregistrer »</b>.",
     ],
     shot: { name: "man-depense", alt: "Nouvelle dépense", caption: "Le ticket du haut sépare l'argent pris dans la caisse et celui payé hors caisse." },
@@ -216,7 +274,7 @@ export const chapters: Chapter[] = [
   {
     id: "fermer",
     kicker: "Le soir",
-    title: "Fermer la journée sans surprise",
+    title: "Clôturer la journée sans surprise",
     lead: "vitePOS sait ce qui devrait être dans le tiroir. Vous comptez, il compare : les écarts sautent aux yeux.",
     steps: [
       "Dans <b>Plus → Journée de caisse</b>, regardez <b>« = Attendu »</b> : fond de caisse + espèces encaissées − dépenses payées en caisse.",
@@ -226,7 +284,11 @@ export const chapters: Chapter[] = [
       "Le récapitulatif montre <b>Attendu</b>, <b>Compté</b> et <b>Écart</b>, et plus bas les ventes <b>« Par vendeur »</b>.",
     ],
     shot: { name: "man-cloture", alt: "Clôture de la journée de caisse", caption: "La clôture est faite par le gérant ou le propriétaire." },
-    tip: { title: "Le mobile money à part", text: "Les paiements mobile money ne sont pas dans le tiroir : leur total s'affiche séparément pour le comparer aux SMS reçus." },
+    tip: { title: "Le mobile money à part", text: "Les paiements mobile money ne sont pas dans le tiroir : leur total s'affiche séparément pour le comparer aux SMS reçus." },
+    warn: {
+      title: "Il manque de l'argent ?",
+      text: "Vérifiez dans l'ordre : une dépense pas notée, une vente pas encaissée, une monnaie mal rendue. Il y a trop d'argent ? Souvent une vente encaissée mais pas validée dans l'app.",
+    },
   },
   {
     id: "ventes",
@@ -237,10 +299,9 @@ export const chapters: Chapter[] = [
       "Dans <b>Ventes</b>, les flèches en haut changent de jour. Le ticket bleu donne le <b>chiffre d'affaires</b>, le nombre de ventes, les <b>Espèces</b> (une ligne par devise) et le <b>Mobile money</b>.",
       "Chaque ligne commence par l'<b>heure</b>, puis le client (ou « Sans client »), le vendeur et le numéro du ticket.",
       "Une vente annulée porte l'étiquette rouge <b>« Annulée »</b> et ne compte pas dans le total.",
-      "Touchez une vente pour revoir son ticket, le réimprimer ou le renvoyer.",
       "Vous vendez des téléphones ? <b>« Retrouver un appareil »</b>, en haut, cherche un IMEI : la vente, le client et la fin de garantie.",
     ],
-    shot: { name: "man-ventes", alt: "Ventes du jour avec le ticket bleu et la liste par heure", caption: "Un nuage orange signale une vente pas encore envoyée en ligne." },
+    shot: { name: "man-ventes", alt: "Ventes du jour avec le ticket bleu et la liste par heure", caption: "Touchez une vente pour revoir, réimprimer ou renvoyer son ticket." },
   },
   {
     id: "inventaire",
@@ -256,7 +317,7 @@ export const chapters: Chapter[] = [
   },
   {
     id: "suivre",
-    kicker: "Le patron",
+    kicker: "Vos chiffres",
     title: "Les rapports, même à distance",
     lead: "Sur votre téléphone, où que vous soyez : ce qui s'est vendu, ce que vous avez gagné, ce qui se vend le mieux.",
     steps: [
@@ -270,18 +331,39 @@ export const chapters: Chapter[] = [
     tip: { title: "Un bénéfice juste", text: "Le bénéfice estimé n'est exact que si chaque article a son prix d'achat dans sa fiche. Sinon, le rapport indique sur quelle part des ventes il est calculé." },
   },
   {
-    id: "hors-ligne",
-    kicker: "Sans réseau",
-    title: "Le réseau coupe ? Vous continuez",
-    lead: "Ventes, stock, dépenses : tout s'enregistre sur le téléphone, puis part en ligne tout seul au retour du réseau.",
+    id: "abonnement",
+    kicker: "Votre formule",
+    title: "Payer et renouveler l'abonnement",
+    lead: "L'essai est gratuit, avec toutes les fonctions. Ensuite, vous payez par mobile money, au mois ou à l'année (2 mois offerts).",
     steps: [
-      "Touchez votre <b>pastille</b> (vos initiales, en haut à droite) : <b>« En ligne, tout est envoyé »</b>, <b>« Hors ligne »</b> ou <b>« Envoi en cours »</b> avec le nombre de saisies en attente.",
-      "Deux caisses hors ligne en même temps ? Leurs ventes s'additionnent sans s'écraser.",
-      "Il faut seulement du réseau pour créer un compte, rejoindre une activité et gérer l'équipe.",
+      "Allez dans <b>Plus → Mon abonnement</b> (propriétaire seulement) : votre formule et la date de fin de l'essai ou de l'abonnement.",
+      "Sous <b>« Je paie pour »</b>, choisissez <b>1 mois</b>, <b>3 mois</b>, <b>6 mois</b> ou <b>1 an</b> : le montant s'affiche.",
+      "Touchez <b>« Payer via WhatsApp »</b> : le message est déjà prêt. Nous vous répondons avec le numéro mobile money où envoyer le paiement.",
+      "Envoyez-nous la <b>référence</b> reçue par SMS : l'abonnement est prolongé dès que le paiement est vérifié, et s'affiche sous <b>« Paiements reçus »</b>.",
+      "Pendant l'essai, vous pouvez encore <b>changer de formule</b>, en bas de l'écran.",
+    ],
+    shot: { name: "man-abonnement", alt: "Écran Mon abonnement", caption: "Le bouton jaune ouvre WhatsApp avec le message prêt." },
+    tip: { title: "Payez en avance", text: "Vous ne perdez aucun jour : les mois payés s'ajoutent après la date de fin." },
+    warn: {
+      title: "Et si je ne paie pas ?",
+      text: "7 jours avant la fin, un bandeau vous prévient. Après la fin, vous gardez 7 jours pour payer. Ensuite, l'app passe en lecture seule : plus de ventes, mais toutes vos données restent consultables. Rien n'est effacé, et tout repart dès le paiement.",
+    },
+  },
+  {
+    id: "depannage",
+    kicker: "Un souci ?",
+    title: "Les réponses aux questions fréquentes",
+    lead: "Les questions qu'on nous pose le plus, avec la solution.",
+    steps: [
+      "<b>L'imprimante n'imprime pas.</b> Vérifiez qu'elle est allumée, avec du papier, et que le Bluetooth du téléphone est activé. Puis Paramètres → <b>« Imprimer un ticket de test »</b>.",
+      "<b>Le code-barres ne passe pas.</b> Essuyez l'étiquette, éclairez-la, ou tapez le code dans la recherche de la caisse.",
+      "<b>J'ai oublié mon mot de passe.</b> Sur l'écran de connexion, touchez <b>« Mot de passe oublié ? »</b> : vous recevez un e-mail pour en choisir un nouveau.",
+      "<b>Je ne vois pas les ventes de mon vendeur.</b> Elles arrivent dès que son téléphone a du réseau. Sa pastille (ses initiales, en haut à droite) indique s'il reste des ventes à envoyer.",
+      "<b>Le réseau a coupé.</b> Continuez à vendre : tout est gardé sur le téléphone et part tout seul au retour du réseau. Deux caisses en même temps s'additionnent sans s'écraser.",
     ],
     warn: {
-      title: "Ne vous déconnectez pas avec des ventes en attente",
-      text: "Tant que des saisies ne sont pas envoyées, restez connecté : l'app vous prévient si vous essayez de vous déconnecter.",
+      title: "Une vente « En attente d'envoi » ?",
+      text: "Elle est bien enregistrée et partira au retour du réseau. Ne vous déconnectez pas tant qu'il reste des ventes en attente : l'app vous prévient.",
     },
   },
 ];

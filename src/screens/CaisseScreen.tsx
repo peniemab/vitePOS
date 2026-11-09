@@ -912,7 +912,7 @@ function ClientPicker() {
         variant="filled"
         className="client-field"
         leftSection={<IconUserPlus size={18} />}
-        placeholder="Ajouter un client (fidélité, crédit)"
+        placeholder="Ajouter un client"
         searchable
         nothingFoundMessage="Aucun client"
         data={[

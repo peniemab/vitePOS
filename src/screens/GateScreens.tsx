@@ -83,7 +83,7 @@ export function NoProfileScreen({ error, offline }: { error?: string; offline: b
   );
 }
 
-/** Premier passage : créer sa boutique ou rejoindre celle de son patron. */
+/** Premier passage : créer sa boutique ou rejoindre celle du propriétaire. */
 export function OnboardingScreen({ user, profile }: { user: User; profile: Profile }) {
   const [mode, setMode] = useState<"create" | "join">("create");
   return (
@@ -235,7 +235,7 @@ function JoinForm({ user, profile }: { user: User; profile: Profile }) {
       <Stack>
         <TextInput
           label="Code d'invitation"
-          description="6 caractères, donnés par votre patron"
+          description="6 caractères, donnés par le propriétaire"
           required
           autoCapitalize="characters"
           autoComplete="off"

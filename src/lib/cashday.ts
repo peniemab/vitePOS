@@ -23,7 +23,7 @@ export interface Expense {
   currency: Currency;
   category: ExpenseCategory;
   description: string;
-  /** Payée avec l'argent de la caisse (sinon : par le patron, hors caisse). */
+  /** Payée avec l'argent de la caisse (sinon : par le propriétaire, hors caisse). */
   fromTill: boolean;
   status: "validee" | "annulee";
   memberName: string;

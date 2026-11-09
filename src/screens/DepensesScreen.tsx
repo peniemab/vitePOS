@@ -227,7 +227,7 @@ function ExpenseModal({
           <TextInput label="Détail (facultatif)" maxLength={200} value={description} onChange={(e) => setDescription(e.currentTarget.value)} />
           <Switch
             label="Payée avec l'argent de la caisse"
-            description="Décochez si le patron a payé de sa poche : la caisse n'est pas touchée."
+            description="Décochez si vous avez payé de votre poche : la caisse n'est pas touchée."
             checked={fromTill}
             onChange={(e) => setFromTill(e.currentTarget.checked)}
           />

@@ -52,7 +52,12 @@ const SHOTS = [
   ["ordi-stock", "ordi", "/stock"],
 
   // Manuel de l'utilisateur (site/src/pages/manuel.astro)
+  ["man-inscription", "tel", "/inscription?deconnecte"],
+  ["man-bienvenue", "tel", "/?nouveau-compte"],
   ["man-installer", "tel", "/?installer=1"],
+  ["man-articles", "tel", "/stock", `document.querySelector("[aria-label='Plus d\\\\'actions']")?.click(); await wait(700);`],
+  ["man-import", "tel", "/stock/import"],
+  ["man-abonnement", "tel", "/abonnement"],
   ["man-parametres", "tel", "/parametres"],
   ["man-equipe", "tel", "/equipe"],
   ["man-fiche", "tel", "/stock", `await tap(/^Coca-Cola 33 cl/, 900); await reveal(/^Emballages/);`],
