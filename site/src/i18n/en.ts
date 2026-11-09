@@ -574,6 +574,7 @@ export const en: Dict = {
     ctaTitle: "Try vitePOS for free",
     ctaText: "Your phone is enough · ready in 5 minutes · we set it up for you",
     qrLabel: "Scan to get started",
+    siteCta: "Find out more on our website",
     priceLine: ["Then less than", "$1.25", "a week ($5 a month)"],
     contactTitle: "We come to you",
     contactText: "We come to you to set everything up, add your products and train your sellers.",

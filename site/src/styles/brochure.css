@@ -140,7 +140,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 92mm;
+  height: 76mm;
 }
 .c-phones .frame-phone {
   max-width: none;
@@ -148,25 +148,25 @@
 }
 .c-phones .back {
   position: absolute;
-  width: 40mm;
-  right: 46mm;
-  top: 12mm;
+  width: 36mm;
+  right: 43mm;
+  top: 11mm;
   transform: rotate(-7deg);
 }
 .c-phones .front {
   position: absolute;
-  width: 44mm;
+  width: 40mm;
   right: 8mm;
-  top: 6mm;
+  top: 5mm;
   transform: rotate(5deg);
 }
 /* Pastille soleil « Essai gratuit ». */
 .c-sticker {
   position: absolute;
   left: 9mm;
-  bottom: 14mm;
-  width: 27mm;
-  height: 27mm;
+  bottom: 10mm;
+  width: 26mm;
+  height: 26mm;
   border-radius: 50%;
   display: grid;
   place-content: center;
@@ -186,12 +186,44 @@
   font-size: 1.2rem;
   font-weight: 700;
 }
-.c-url {
-  margin-top: 3mm;
-  text-align: center;
+.c-foot {
+  margin-top: 4mm;
+  padding: 0 2mm;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5mm;
+}
+.c-qr {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+.c-qr img {
+  display: block;
+  width: 21mm;
+  height: 21mm;
+}
+.c-qr b,
+.c-site b {
+  display: block;
   font-family: "Google Sans", sans-serif;
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
+  line-height: 1.1;
+  color: var(--title);
+}
+.c-qr span,
+.c-site span {
+  display: block;
+  margin-top: 0.6mm;
+  font-size: 0.86rem;
+  color: var(--d-muted);
+}
+.c-site {
+  text-align: right;
+  white-space: nowrap;
+}
+.c-site b {
   color: var(--sky-deep);
 }
 

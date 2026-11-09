@@ -53,7 +53,17 @@ const others = t.plans.list.filter((p) => !p.featured);
         </div>
         <p class="c-sticker"><b>{b.sticker[0]}</b><span>{b.sticker[1]}</span></p>
       </div>
-      <p class="c-url" translate="no">{APP_HOST}</p>
+      <!-- Bas de couverture : on peut commencer sans ouvrir le livret, ou aller voir le site. -->
+      <div class="c-foot">
+        <figure class="c-qr">
+          <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="80" height="80" />
+          <figcaption><b>{b.qrLabel}</b><span translate="no">{APP_HOST}</span></figcaption>
+        </figure>
+        <p class="c-site">
+          <span>{b.siteCta}</span>
+          <b translate="no">{SITE_HOST}</b>
+        </p>
+      </div>
     </section>
 
     <!-- Page 2 : avant / avec vitePOS, puis une vente en 3 gestes -->

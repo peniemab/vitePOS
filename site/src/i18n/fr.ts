@@ -600,6 +600,7 @@ export const fr = {
     ctaTitle: "Essayez vitePOS gratuitement",
     ctaText: "Votre téléphone suffit · prêt en 5 minutes · on vient l'installer chez vous",
     qrLabel: "Scannez pour commencer",
+    siteCta: "Tout découvrir sur notre site",
     /** « Ensuite, moins de 1,25 $ par semaine (5 $ par mois) » : le montant du milieu est mis en grand. */
     priceLine: ["Ensuite, moins de", "1,25 $", "par semaine (5 $ par mois)"],
     contactTitle: "On vient chez vous",
