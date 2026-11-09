@@ -6,6 +6,7 @@ import Photo from "../components/Photo.astro";
 import ComicPanel from "../components/ComicPanel.astro";
 import { APP_URL, CONTACT, SIGNUP_URL, whatsappUrl } from "../data/content";
 import { alertIcon, contactIcons, deviceIcons, icons, moreIcons, navIcons } from "../data/icons";
+import { qrImage } from "../data/qr";
 import { dicts, PDF, route, type Lang } from "../i18n";
 import "../styles/home.css";
 import { existsSync } from "node:fs";
@@ -544,7 +545,7 @@ function toToast(text: string) {
         </ul>
         <div class="install-open">
           <a class="btn btn-lg" href={APP_URL}>{h.install.open} <span class="btn-icon" set:html={moreIcons.arrowRight} /></a>
-          <img src="/qr-app.svg" alt={h.install.qrAlt} width="132" height="132" loading="lazy" />
+          <img src={qrImage(lang, "site")} alt={h.install.qrAlt} width="132" height="132" loading="lazy" />
           <small>{h.install.scan}</small>
         </div>
       </div>

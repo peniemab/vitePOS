@@ -52,3 +52,12 @@ export const SOCIAL = {
   instagram: "https://www.instagram.com/viteposrdc",
   facebook: "https://www.facebook.com/people/Vitepos-RDC/61596177243160/",
 };
+
+/**
+ * Mesure d'audience du site, sans cookies : Cloudflare Web Analytics (nombre de visites, pages vues, provenance, pays).
+ * Le jeton se trouve dans le tableau de bord Cloudflare (Web Analytics → le site → « Manage site »). Vide = aucune mesure chargée.
+ * Google Search Console se vérifie par un enregistrement TXT chez name.com (rien à mettre ici).
+ */
+export const ANALYTICS = {
+  cloudflareToken: "6b4a5d4af1de4b47aa9be225d1fbc61c",
+};

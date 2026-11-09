@@ -11,6 +11,7 @@ import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import { APP_HOST, CONTACT, SITE_HOST } from "../data/content";
 import { contactIcons, deviceIcons, icons, moreIcons } from "../data/icons";
+import { qrImage } from "../data/qr";
 import { dicts, PDF, type Lang } from "../i18n";
 import "../styles/trifold.css";
 
@@ -62,10 +63,10 @@ const others = t.plans.list.filter((p) => !p.featured);
         <p class="back-lead">{b.ctaText}</p>
         <div class="back-qrs">
           <figure class="back-qr">
-            <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="120" height="120" />
+            <img src={qrImage(lang, "trifold")} alt={`QR code : ${APP_HOST}`} width="120" height="120" />
             <figcaption><b>{b.qrLabel}</b><span translate="no">{APP_HOST}</span></figcaption>
           </figure>
-          <FollowQr lang={lang} class="back-qr" />
+          <FollowQr lang={lang} support="trifold" class="back-qr" />
         </div>
         <p class="back-price">{b.priceLine[0]} <b>{b.priceLine[1]}</b> {b.priceLine[2]}</p>
         <div class="visit">
@@ -161,7 +162,7 @@ const others = t.plans.list.filter((p) => !p.featured);
           </ul>
         </div>
         <div class="price-cta">
-          <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="64" height="64" />
+          <img src={qrImage(lang, "trifold")} alt={`QR code : ${APP_HOST}`} width="64" height="64" />
           <div>
             <b>{b.qrLabel}</b>
             <span translate="no">{APP_HOST}</span>

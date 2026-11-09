@@ -1,0 +1,59 @@
+---
+/**
+ * Page d'arrivée d'un QR code imprimé (/q/<code>) : la visite est comptée par la mesure d'audience,
+ * puis le visiteur part aussitôt vers l'app ou la page Suivez-nous. Pas indexée par Google.
+ */
+import Analytics from "../../components/Analytics.astro";
+import { QR_CODES, qrDestination, type QrCode } from "../../data/qr";
+
+export function getStaticPaths() {
+  return QR_CODES.map((q) => ({ params: { code: q.code }, props: { q } }));
+}
+interface Props {
+  q: QrCode;
+}
+const { q } = Astro.props;
+const to = qrDestination(q);
+const fr = q.lang === "fr";
+---
+
+<!doctype html>
+<html lang={q.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>vitePOS</title>
+    <meta http-equiv="refresh" content={`3;url=${to}`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <Analytics />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-content: center;
+        gap: 16px;
+        text-align: center;
+        font-family: system-ui, sans-serif;
+        background: #3987e5;
+        color: #fff;
+      }
+      a {
+        color: #ffc233;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="/logo.svg" alt="" width="56" height="60" style="margin:auto;background:#fff;border-radius:14px;padding:10px" />
+    <p>{fr ? "Ouverture de vitePOS…" : "Opening vitePOS…"}</p>
+    <a href={to}>{fr ? "Continuer" : "Continue"}</a>
+    <!-- Court délai : le temps que la mesure d'audience enregistre la visite. -->
+    <script is:inline define:vars={{ to }}>
+      const go = () => setTimeout(() => location.replace(to), 700);
+      if (document.readyState === "complete") go();
+      else addEventListener("load", go);
+    </script>
+  </body>
+</html>

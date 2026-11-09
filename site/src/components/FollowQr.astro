@@ -1,18 +1,21 @@
 ---
 /** QR code « Suivez-nous » des documents imprimés : il ouvre la page Suivez vitePOS (Instagram, Facebook). */
 import { contactIcons } from "../data/icons";
+import { qrImage, type QrSupport } from "../data/qr";
 import { dicts, type Lang } from "../i18n";
 
 interface Props {
   lang: Lang;
+  /** Support imprimé où se trouve le QR code (chacun a son propre code, pour la mesure d'audience). */
+  support: QrSupport;
   class?: string;
 }
-const { lang, class: cls } = Astro.props;
+const { lang, support, class: cls } = Astro.props;
 const c = dicts[lang].community;
 ---
 
 <figure class:list={["follow-qr", cls]}>
-  <img src={lang === "fr" ? "/qr-communaute.svg" : "/qr-community-en.svg"} alt={c.qrAlt} width="120" height="120" />
+  <img src={qrImage(lang, support, "community")} alt={c.qrAlt} width="120" height="120" />
   <figcaption>
     <b>{c.qrTitle}</b>
     <span class="follow-qr-icons"><span set:html={contactIcons.instagram} /><span set:html={contactIcons.facebook} /></span>

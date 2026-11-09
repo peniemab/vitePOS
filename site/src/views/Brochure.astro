@@ -13,6 +13,7 @@ import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import { APP_HOST, CONTACT, SITE_HOST } from "../data/content";
 import { contactIcons, deviceIcons, icons, moreIcons } from "../data/icons";
+import { qrImage } from "../data/qr";
 import { dicts, PDF, type Lang } from "../i18n";
 import "../styles/brochure.css";
 
@@ -56,7 +57,7 @@ const others = t.plans.list.filter((p) => !p.featured);
       <!-- Bas de couverture : on peut commencer sans ouvrir le livret, ou aller voir le site. -->
       <div class="c-foot">
         <figure class="c-qr">
-          <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="80" height="80" />
+          <img src={qrImage(lang, "brochure")} alt={`QR code : ${APP_HOST}`} width="80" height="80" />
           <figcaption><b>{b.qrLabel}</b><span translate="no">{APP_HOST}</span></figcaption>
         </figure>
         <p class="c-site">
@@ -151,10 +152,10 @@ const others = t.plans.list.filter((p) => !p.featured);
         <p class="k-price">{b.priceLine[0]} <b>{b.priceLine[1]}</b> {b.priceLine[2]}</p>
         <div class="k-qrs">
           <figure class="k-qr">
-            <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="96" height="96" />
+            <img src={qrImage(lang, "brochure")} alt={`QR code : ${APP_HOST}`} width="96" height="96" />
             <figcaption><b>{b.qrLabel}</b><span translate="no">{APP_HOST}</span></figcaption>
           </figure>
-          <FollowQr lang={lang} class="k-qr" />
+          <FollowQr lang={lang} support="brochure" class="k-qr" />
         </div>
         <div class="k-visit">
           <b>{b.contactTitle}</b>

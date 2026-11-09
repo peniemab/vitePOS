@@ -132,7 +132,7 @@ export const privacy: LegalDoc = {
     {
       title: "4. Ce que nous ne faisons pas",
       paras: [
-        "Pas de publicité, pas de revente ni de location de vos données, pas de pistage. Le site de présentation {site} n'utilise ni cookies ni outil de statistiques.",
+        "Pas de publicité, pas de revente ni de location de vos données, pas de pistage. Le site de présentation {site} n'utilise pas de cookies. Il compte ses visites avec Cloudflare Web Analytics, un outil sans cookies qui ne suit pas les visiteurs d'un site à l'autre : nombre de visites, pages vues, site d'où vient le visiteur, pays.",
       ],
     },
     {

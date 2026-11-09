@@ -7,6 +7,7 @@ import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import FollowQr from "../components/FollowQr.astro";
 import { APP_HOST, APP_URL } from "../data/content";
+import { qrImage } from "../data/qr";
 import { dicts, PDF, type Lang } from "../i18n";
 import "../styles/manuel.css";
 
@@ -153,10 +154,10 @@ const isNo = (cell: string) => cell === "Non" || cell === "No";
         <a class="btn btn-light mag-noprint" href={APP_URL}>{m.backCta}</a>
         <div class="mag-qrs">
           <figure class="follow-qr">
-            <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="120" height="120" />
+            <img src={qrImage(lang, "manual")} alt={`QR code : ${APP_HOST}`} width="120" height="120" />
             <figcaption><b translate="no">{APP_HOST}</b></figcaption>
           </figure>
-          <FollowQr lang={lang} />
+          <FollowQr lang={lang} support="manual" />
         </div>
       </div>
     </footer>

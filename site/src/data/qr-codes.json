@@ -1,0 +1,19 @@
+{
+  "_": "Un QR code par support imprimé : il ouvre viteposrdc.com/q/<code>, compté par la mesure d'audience, qui envoie aussitôt vers la cible. Images : public/qr/<code>.svg, faites par scripts/gen-qr.mjs. Ne jamais changer un code déjà imprimé.",
+  "codes": [
+    { "code": "brochure-commencer", "lang": "fr", "target": "app" },
+    { "code": "brochure-suivre", "lang": "fr", "target": "community" },
+    { "code": "depliant-commencer", "lang": "fr", "target": "app" },
+    { "code": "depliant-suivre", "lang": "fr", "target": "community" },
+    { "code": "manuel-commencer", "lang": "fr", "target": "app" },
+    { "code": "manuel-suivre", "lang": "fr", "target": "community" },
+    { "code": "site-commencer", "lang": "fr", "target": "app" },
+    { "code": "brochure-en-start", "lang": "en", "target": "app" },
+    { "code": "brochure-en-follow", "lang": "en", "target": "community" },
+    { "code": "leaflet-en-start", "lang": "en", "target": "app" },
+    { "code": "leaflet-en-follow", "lang": "en", "target": "community" },
+    { "code": "manual-en-start", "lang": "en", "target": "app" },
+    { "code": "manual-en-follow", "lang": "en", "target": "community" },
+    { "code": "site-en-start", "lang": "en", "target": "app" }
+  ]
+}

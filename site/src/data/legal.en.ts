@@ -95,7 +95,7 @@ export const privacy: LegalDoc = {
       ],
     },
     { title: "3. Why", paras: ["Only to run the service: record sales and stock, sync devices, show reports, manage the team and subscription, and help you when you contact us."] },
-    { title: "4. What we do not do", paras: ["No advertising, no selling or renting of your data, no tracking. The website {site} uses no cookies and no analytics."] },
+    { title: "4. What we do not do", paras: ["No advertising, no selling or renting of your data, no tracking. The website {site} uses no cookies. It counts its visits with Cloudflare Web Analytics, a cookie-free tool that does not follow visitors from site to site: number of visits, pages viewed, referring site, country."] },
     {
       title: "5. Where the data is",
       paras: [

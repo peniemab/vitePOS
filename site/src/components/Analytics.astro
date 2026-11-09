@@ -1,0 +1,7 @@
+---
+/** Mesure d'audience sans cookies (Cloudflare Web Analytics). Rien n'est chargé tant que le jeton est vide (voir ANALYTICS dans content.ts). */
+import { ANALYTICS } from "../data/content";
+const beacon = ANALYTICS.cloudflareToken ? JSON.stringify({ token: ANALYTICS.cloudflareToken }) : "";
+---
+
+{beacon && <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={beacon}></script>}
