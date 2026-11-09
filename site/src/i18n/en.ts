@@ -562,7 +562,7 @@ export const en: Dict = {
     benefitsTitle: "What you gain",
     benefits: [
       { title: "No more change mistakes", text: "Customers pay in FC, $ or €: vitePOS works out the change, at the daily rate you set." },
-      { title: "A business people trust", text: "Every customer gets a receipt with your name, logo and contact details, printed or sent by WhatsApp." },
+      { title: "Customers know what they pay", text: "Item by item, with the total and the change. The prices are yours: sellers can't change them." },
       { title: "You know what to restock", text: "vitePOS warns you when a product is running low, and 30 days before a batch expires." },
       { title: "Trust, and check", text: "Each seller has their own account: you know who sold what. A cancelled sale stays visible, with its reason." },
       { title: "The evening till, no maths", text: "vitePOS tells you what should be in the drawer. You count, and any gap stands out." },

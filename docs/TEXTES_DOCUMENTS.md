@@ -36,7 +36,7 @@ Dans la brochure, ce bloc remplace les trois « points forts » du recto (ils r�
 | --- | --- | --- |
 | D0 | Titre du bloc | Ce que vous y gagnez |
 | D1 | Plus d'erreur de monnaie | Le client paie en FC, en $ ou en € : vitePOS calcule la monnaie à rendre, au taux du jour que vous fixez. |
-| D2 | Un business qui inspire confiance | Chaque client reçoit un ticket à votre nom, avec votre logo et vos coordonnées, imprimé ou envoyé par WhatsApp. |
+| D2 | Le client sait ce qu'il paie | Article par article, avec le total et la monnaie. Les prix sont les vôtres, le vendeur ne peut pas les changer. (Changé le 9 novembre 2026 : avant, « Un business qui inspire confiance ».) |
 | D3 | Vous savez quoi racheter | vitePOS vous prévient quand un produit va manquer, et 30 jours avant qu'un lot ne périme. |
 | D4 | Faites confiance, vérifiez | Chaque vendeur a son compte : vous savez qui a vendu quoi. Une vente annulée reste visible, avec son motif. |
 | D5 | La caisse du soir, sans calcul | vitePOS vous dit ce qui doit être dans le tiroir. Vous comptez, et le moindre écart saute aux yeux. |

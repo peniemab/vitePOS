@@ -587,7 +587,7 @@ export const fr = {
     benefitsTitle: "Ce que vous y gagnez",
     benefits: [
       { title: "Plus d'erreur de monnaie", text: "Le client paie en FC, en $ ou en € : vitePOS calcule la monnaie à rendre, au taux du jour que vous fixez." },
-      { title: "Un business qui inspire confiance", text: "Chaque client reçoit un ticket à votre nom, avec votre logo et vos coordonnées, imprimé ou envoyé par WhatsApp." },
+      { title: "Le client sait ce qu'il paie", text: "Article par article, avec le total et la monnaie. Les prix sont les vôtres, le vendeur ne peut pas les changer." },
       { title: "Vous savez quoi racheter", text: "vitePOS vous prévient quand un produit va manquer, et 30 jours avant qu'un lot ne périme." },
       { title: "Faites confiance, vérifiez", text: "Chaque vendeur a son compte : vous savez qui a vendu quoi. Une vente annulée reste visible, avec son motif." },
       { title: "La caisse du soir, sans calcul", text: "vitePOS vous dit ce qui doit être dans le tiroir. Vous comptez, et le moindre écart saute aux yeux." },
