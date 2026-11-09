@@ -61,11 +61,11 @@ export const fr = {
   home: {
     /** Ancres des sections (dans l'adresse : /#fonctions). */
     ids: { gallery: "apercu", features: "fonctions", devices: "appareils", audiences: "pour-qui", offline: "hors-ligne", pricing: "tarifs", faq: "questions", contact: "contact" },
-    title: "vitePOS · Vendez plus vite. Perdez moins. Même sans réseau.",
+    title: "vitePOS · Vendez plus vite. Perdez moins. Dormez tranquille.",
     description:
-      "vitePOS : la caisse sur votre téléphone. Encaissez en FC, $ ou €, le stock et le bénéfice se calculent pendant que vous vendez, même sans réseau. Gratuit pour commencer.",
+      "vitePOS : la caisse sur votre téléphone. Encaissez en FC, $ ou €, le stock et le bénéfice se calculent pendant que vous vendez. Gratuit pour commencer.",
     eyebrow: "Caisse · Stock · Ventes",
-    h1: ["Vendez plus vite.", "Perdez moins.", "Même sans réseau."],
+    h1: ["Vendez plus vite.", "Perdez moins.", "Dormez tranquille."],
     lead: "vitePOS note chaque vente sur votre téléphone. Vous voyez ce que vous avez vendu, ce qui reste en stock et ce qui doit être dans la caisse. Même quand vous n'êtes pas au magasin.",
     ctaStart: "Commencer gratuitement",
     ctaBrochure: "Télécharger la brochure",
@@ -563,12 +563,13 @@ export const fr = {
     devices: ["Téléphone", "Tablette", "Ordinateur", "Imprimante de tickets"],
   },
 
-  /** Brochure A5 et dépliant A4 : un seul texte, validé dans docs/TEXTES_DOCUMENTS.md (lettres A à G). */
+  /** Brochure (livret de 4 pages A5) et dépliant A4 : un seul texte, validé dans docs/TEXTES_DOCUMENTS.md (lettres A à G). */
   brochure: {
     title: "Brochure vitePOS",
     description: "La brochure de vitePOS, à imprimer ou à partager : la caisse de votre business, sur le téléphone que vous avez déjà.",
     download: "Télécharger la brochure (PDF)",
-    screenNote: "Une feuille A5 recto-verso, à imprimer ou à envoyer par WhatsApp.",
+    printDownload: "Version à imprimer (2 pages par face, A4)",
+    screenNote: "4 pages à envoyer par WhatsApp. Pour l'imprimer : la version à imprimer, en taille réelle, sur A4, recto-verso (retourner sur le bord court), puis plier la feuille en deux.",
     altHome: "Accueil de vitePOS",
     altCaisse: "La caisse de vitePOS",
     signature: "Votre activité, sous vos yeux",

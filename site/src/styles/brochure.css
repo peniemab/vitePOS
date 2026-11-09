@@ -1,5 +1,8 @@
-/* Brochure A5 recto-verso (148 × 210 mm), couleurs de l'app : bleu ciel zébré, soleil pour l'action, encre pour les titres.
-   À l'écran : deux feuilles posées sur un fond bleu pâle ; à l'impression : deux pages pleines, sans marge. */
+/* Brochure : livret de 4 pages A5 (148 × 210 mm), couleurs de l'app : bleu ciel zébré, soleil pour l'action, encre pour les titres.
+   À l'écran : les 4 pages l'une sous l'autre sur fond bleu pâle ; à l'impression : 4 pages A5.
+   La version A4 (2 pages par face) est faite à partir de ce PDF par scripts/impose-booklet.py.
+   Les imprimantes de bureau laissent un bord blanc d'environ 4 mm : rien d'important à moins de 9 mm du bord,
+   et les aplats de couleur sont posés en retrait, avec des coins arrondis, pour que ce bord blanc paraisse voulu. */
 
 .sheets {
   background: var(--ice);
@@ -13,6 +16,7 @@
 .sheet {
   width: 148mm;
   height: 210mm;
+  padding: 10mm 10mm 9mm;
   background: #fff;
   box-shadow: 0 10px 40px rgba(26, 43, 76, 0.18);
   overflow: hidden;
@@ -36,50 +40,49 @@
   }
 }
 
-/* Bouton de téléchargement, au-dessus des feuilles (pas imprimé). */
+/* Boutons de téléchargement, au-dessus des pages (pas imprimés). */
 .b-download {
   text-align: center;
   padding: 28px 16px 0;
   background: var(--ice);
 }
+.b-print-link {
+  display: inline-block;
+  margin-left: 16px;
+  font-weight: 700;
+  color: var(--sky-deep);
+}
 .b-download p {
-  margin: 10px 0 0;
+  margin: 10px auto 0;
+  max-width: 62ch;
   color: var(--muted);
 }
 
-/* Bloc QR code commun aux deux faces. */
-.b-qr-box {
-  display: grid;
-  justify-items: center;
-  gap: 1.2mm;
-}
-.b-qr {
-  display: block;
-  background: #fff;
-  padding: 1.6mm;
-}
-.b-qr-box figcaption {
-  font-size: 0.68rem;
+/* Titre de page, commun aux pages 2 à 4. */
+.b-title {
+  text-wrap: balance;
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   font-weight: 700;
-  text-align: center;
-  max-width: 26mm;
-  line-height: 1.15;
+  color: var(--title);
 }
 
-/* ================= Recto ================= */
-.recto {
-  background: #fff;
+/* ================= Page 1 : couverture ================= */
+.p-cover {
+  padding: 7mm 7mm 6mm;
 }
-/* Haut de page bleu ciel zébré, qui finit en biais. */
-.r-cover {
+.c-block {
   position: relative;
-  padding: 8mm 9mm 0;
-  height: 108mm;
+  flex: 1;
+  border-radius: 5mm;
+  padding: 8mm 8mm 0;
   color: #fff;
   background-color: var(--sky);
   background-image: var(--zebra), var(--sky-band);
   background-size: 300px 150px, auto;
-  clip-path: polygon(0 0, 100% 0, 100% 84%, 0 100%);
+  overflow: hidden;
 }
 .b-top {
   display: flex;
@@ -89,84 +92,81 @@
 .b-logo {
   display: grid;
   place-items: center;
-  width: 9mm;
-  height: 9mm;
+  width: 10mm;
+  height: 10mm;
   background: #fff;
-  border-radius: 2mm;
+  border-radius: 2.2mm;
 }
 .b-logo img {
-  width: 6mm;
+  width: 6.6mm;
   height: auto;
 }
 .b-brand {
   font-family: "Google Sans", sans-serif;
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1;
 }
-.b-tag {
-  margin-left: auto;
-  font-size: 0.72rem;
+.c-kicker {
+  margin-top: 9mm;
+  font-size: 0.95rem;
   font-weight: 700;
   opacity: 0.92;
 }
-.r-hero {
-  display: grid;
-  grid-template-columns: 1fr 50mm;
-  gap: 2mm;
-  margin-top: 7mm;
-}
-.recto h1 {
+.p-cover h1 {
+  margin-top: 2mm;
   font-family: "Google Sans", sans-serif;
-  font-size: 2.05rem;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+  font-size: 2.9rem;
+  letter-spacing: -0.025em;
+  line-height: 0.98;
   font-weight: 700;
   color: #fff;
 }
-.recto h1 span {
+.p-cover h1 span {
   display: block;
 }
-.recto h1 .accent {
+.p-cover h1 .accent {
   color: var(--sun);
 }
-.r-lead {
+.c-lead {
   margin-top: 4mm;
-  font-size: 1rem;
+  font-size: 1.12rem;
   line-height: 1.35;
-  max-width: 60mm;
+  max-width: 82mm;
 }
-/* Deux téléphones qui débordent du bleu sur le blanc. */
-.r-phones {
-  position: relative;
-  height: 94mm;
-  margin-top: -4mm;
+/* Deux téléphones qui sortent par le bas du bloc bleu. */
+.c-phones {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 92mm;
 }
-.r-phones .frame-phone {
+.c-phones .frame-phone {
   max-width: none;
   box-shadow: 0 16px 34px rgba(10, 30, 70, 0.35);
 }
-.r-phones .back {
+.c-phones .back {
   position: absolute;
-  width: 34mm;
-  right: 17mm;
-  top: 4mm;
-  transform: rotate(-6deg);
+  width: 40mm;
+  right: 46mm;
+  top: 12mm;
+  transform: rotate(-7deg);
 }
-.r-phones .front {
+.c-phones .front {
   position: absolute;
-  width: 38mm;
-  right: -1mm;
-  top: 18mm;
+  width: 44mm;
+  right: 8mm;
+  top: 6mm;
   transform: rotate(5deg);
 }
-/* Pastille soleil « 30 jours gratuits ». */
-.r-sticker {
+/* Pastille soleil « Essai gratuit ». */
+.c-sticker {
   position: absolute;
-  right: 46mm;
-  top: 86mm;
-  width: 25mm;
-  height: 25mm;
+  left: 9mm;
+  bottom: 14mm;
+  width: 27mm;
+  height: 27mm;
   border-radius: 50%;
   display: grid;
   place-content: center;
@@ -179,456 +179,428 @@
   line-height: 0.95;
   z-index: 2;
 }
-.r-sticker b {
-  font-size: 1.55rem;
+.c-sticker b {
+  font-size: 1.65rem;
 }
-.r-sticker span {
-  font-size: 1.15rem;
+.c-sticker span {
+  font-size: 1.2rem;
   font-weight: 700;
 }
-
-/* Trois points forts, sous le bleu. */
-.r-strengths {
-  list-style: none;
-  padding: 0 9mm;
-  margin-top: 2mm;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6mm;
-}
-.r-strengths li {
-  display: grid;
-  align-content: start;
-  gap: 0.6mm;
-}
-.r-strengths b {
+.c-url {
+  margin-top: 3mm;
+  text-align: center;
   font-family: "Google Sans", sans-serif;
+  font-weight: 700;
   font-size: 1.05rem;
-  line-height: 1.05;
-  color: var(--title);
+  color: var(--sky-deep);
 }
-.r-strengths li > span:last-child {
-  font-size: 0.82rem;
-  color: var(--d-muted);
-  line-height: 1.25;
+
+/* ================= Page 2 : avant / avec, une vente en 3 gestes ================= */
+.s-story {
+  margin-top: 6mm;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2.5mm;
+  align-items: start;
 }
-.r-icon {
+.s-panel img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 2.5mm;
+  border: 0.4mm solid var(--ink-deep);
+}
+.s-panel figcaption {
+  margin-top: 2.5mm;
+  font-size: 0.98rem;
+  line-height: 1.32;
+}
+.s-panel figcaption b {
+  display: inline-block;
+  padding: 0.2mm 1.6mm;
+  margin-right: 0.8mm;
+  color: #fff;
+  border-radius: 1mm;
+}
+.s-panel.before figcaption b {
+  background: var(--brick);
+}
+.s-panel.after figcaption b {
+  background: var(--mint-text);
+}
+.s-arrow {
+  margin-top: 18mm;
+  color: var(--sky-deep);
+}
+.s-arrow svg {
+  width: 5mm;
+  height: 5mm;
+}
+.s-how {
+  margin-top: auto;
+  padding: 7mm 6mm;
+  border-radius: 4mm;
+  background-color: var(--ice);
+  display: grid;
+  grid-template-columns: 1fr 34mm;
+  gap: 5mm;
+  align-items: center;
+}
+.s-steps {
+  list-style: none;
+  padding: 0;
+  margin-top: 5mm;
+  display: grid;
+  gap: 4.5mm;
+}
+.s-steps li {
+  display: grid;
+  grid-template-columns: 8mm 1fr;
+  gap: 2.6mm;
+  align-items: start;
+}
+.s-num {
   display: grid;
   place-items: center;
   width: 8mm;
   height: 8mm;
-  margin-bottom: 1mm;
+  border-radius: 50%;
+  background: var(--icon-bg);
+  color: #fff;
+  font-family: "Google Sans", sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.s-steps b {
+  display: block;
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.12rem;
+  line-height: 1.1;
+  color: var(--title);
+}
+.s-steps li span:not(.s-num) {
+  display: block;
+  margin-top: 0.6mm;
+  font-size: 0.86rem;
+  color: var(--d-muted);
+  line-height: 1.3;
+}
+.s-phone .frame-phone {
+  max-width: none;
+  box-shadow: 0 12px 26px rgba(10, 30, 70, 0.25);
+  transform: rotate(3deg);
+}
+
+/* ================= Page 3 : ce que vous y gagnez ================= */
+.g-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 7mm;
+  display: grid;
+  gap: 6.5mm;
+}
+.g-list li {
+  display: grid;
+  grid-template-columns: 11mm 1fr;
+  gap: 3.5mm;
+  align-items: start;
+}
+.g-icon {
+  display: grid;
+  place-items: center;
+  width: 11mm;
+  height: 11mm;
+  border-radius: 3mm;
   background: var(--icon-bg);
   color: #fff;
 }
-.r-icon svg {
-  width: 4.8mm;
-  height: 4.8mm;
-}
-
-/* Appel à l'action : bandeau encre en bas de page. */
-.r-cta {
-  margin-top: auto;
-  background: var(--ink-deep);
-  color: #fff;
-  padding: 5mm 9mm 4.5mm;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: 6mm;
-  row-gap: 3mm;
-  align-items: center;
-}
-.r-cta-title {
-  font-family: "Google Sans", sans-serif;
-  font-size: 1.45rem;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--sun);
-}
-.r-cta-text {
-  margin-top: 1.6mm;
-  font-size: 0.82rem;
-  opacity: 0.88;
-}
-.r-price {
-  margin-top: 2mm;
-  font-size: 0.86rem;
-}
-.r-price b {
-  font-family: "Google Sans", sans-serif;
-  font-size: 1.45rem;
-  line-height: 1;
-}
-.r-cta .b-qr-box figcaption {
-  color: #fff;
-}
-.r-wa {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 2mm;
-  padding-top: 3mm;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  font-size: 0.9rem;
-}
-.r-wa-icon {
-  display: grid;
-  place-items: center;
-  width: 7mm;
-  height: 7mm;
-  border-radius: 50%;
-  background: #128c4a;
-}
-.r-wa-icon svg {
-  width: 4.4mm;
-  height: 4.4mm;
-}
-.r-wa b {
-  font-family: "Google Sans", sans-serif;
-  font-size: 1.45rem;
-  line-height: 1;
-}
-.r-url {
-  margin-left: auto;
-  font-weight: 700;
-  color: var(--sun);
-}
-
-/* ================= Verso ================= */
-.verso {
-  padding: 8mm 9mm 0;
-  background-color: #fff;
-  background-image: var(--zebra-pale);
-  background-size: 300px 150px;
-}
-.v-title {
-  text-wrap: balance;
-  font-family: "Google Sans", sans-serif;
-  font-size: 1.3rem;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  font-weight: 700;
-  color: var(--title);
-}
-.v-title.small {
-  font-size: 1.3rem;
-}
-
-/* Avant / Avec vitePOS : deux cases de la BD, reliées par une flèche. */
-.v-story {
-  display: grid;
-  grid-template-columns: 1fr 6mm 1fr;
-  align-items: start;
-  gap: 1.5mm;
-  margin: 2mm 0 2.2mm;
-}
-.v-panel img {
-  display: block;
-  width: 100%;
-  height: 16mm;
-  object-fit: cover;
-  border: 0.6mm solid var(--ink-deep);
-  box-sizing: border-box;
-}
-.v-panel figcaption {
-  font-size: 0.8rem;
-  line-height: 1.3;
-}
-.v-panel figcaption b {
-  display: inline-block;
-  margin-right: 1mm;
-  padding: 0.3mm 1.6mm;
-  color: #fff;
-  font-size: 0.8rem;
-}
-.v-panel.before figcaption b {
-  background: var(--brick);
-}
-.v-panel.after figcaption b {
-  background: var(--mint-text);
-}
-.v-arrow {
-  align-self: center;
-  color: var(--sky);
-}
-.v-arrow svg {
+.g-icon svg {
   width: 6mm;
   height: 6mm;
 }
-
-/* Six avantages, en deux colonnes. */
-.v-benefits {
-  list-style: none;
-  padding: 0;
-  margin: 1.6mm 0 2.6mm;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.2mm 6mm;
-}
-.v-benefits li {
-  display: flex;
-  gap: 2.4mm;
-  align-items: flex-start;
-}
-.v-benefits b {
+.g-list b {
   display: block;
-  font-size: 0.9rem;
-  color: var(--title);
-  line-height: 1.15;
-}
-.v-benefits span:not(.v-icon) {
-  display: block;
-  font-size: 0.76rem;
-  color: var(--d-muted);
-  line-height: 1.28;
-  margin-top: 0.4mm;
-}
-.v-icon {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 7.5mm;
-  height: 7.5mm;
-  background: var(--ice);
-  color: var(--sky-deep);
-}
-.v-icon svg {
-  width: 4.6mm;
-  height: 4.6mm;
-}
-
-/* Prix (carte bleue) et étapes. */
-.v-bottom {
-  display: grid;
-  grid-template-columns: 66mm 1fr;
-  gap: 5mm;
-  align-items: start;
-}
-.v-price {
-  padding: 3.5mm 4.5mm 4mm;
-  color: #fff;
-  background-color: var(--sky);
-  background-image: var(--zebra), var(--sky-band);
-  background-size: 240px 120px, auto;
-}
-.v-price-trial {
-  display: inline-block;
-  padding: 0.6mm 2mm;
-  background: var(--sun);
-  color: var(--ink-deep);
-  font-weight: 700;
-  font-size: 0.8rem;
-}
-.v-plan {
-  margin-top: 1.6mm;
   font-family: "Google Sans", sans-serif;
   font-size: 1.3rem;
-  font-weight: 700;
+  line-height: 1.1;
+  color: var(--title);
 }
-.v-amount {
-  font-size: 0.95rem;
-}
-.v-amount b {
-  font-family: "Google Sans", sans-serif;
-  font-size: 2rem;
-  line-height: 1;
-  margin-right: 1mm;
-}
-.v-yearly,
-.v-note {
-  font-size: 0.8rem;
-  opacity: 0.92;
-}
-.v-note {
+.g-list li span:not(.g-icon) {
+  display: block;
   margin-top: 1mm;
-  font-weight: 700;
-}
-.v-trial {
-  margin-top: 1.4mm;
-  font-weight: 700;
-  color: var(--sun);
-  font-size: 0.86rem;
-}
-.v-pay {
-  font-size: 0.74rem;
+  font-size: 1.02rem;
+  line-height: 1.35;
   color: var(--d-muted);
 }
-.v-plan span {
-  font-family: "Google Sans", sans-serif;
-  font-size: 0.78rem;
-  font-weight: 600;
-  margin-left: 1mm;
-  opacity: 0.92;
-}
-/* Les autres formules : nom, téléphones, prix sur une ligne. */
-.v-others-title {
+/* Les appareils compatibles, en bas de page. */
+.g-devices {
+  list-style: none;
+  margin-top: auto;
+  padding: 4mm 3mm;
+  border-radius: 4mm;
+  background: var(--ice);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+  font-size: 0.82rem;
   font-weight: 700;
-  font-size: 0.86rem;
   color: var(--title);
 }
-.v-others {
-  list-style: none;
-  padding: 0;
-  margin: 1mm 0 3mm;
-  display: grid;
-  gap: 0.8mm;
-  font-size: 0.78rem;
-}
-.v-others li {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: 1.5mm;
-  align-items: baseline;
-  padding-bottom: 0.8mm;
-  border-bottom: 1px solid #e3e8f0;
-}
-.v-others span {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  color: var(--d-muted);
-}
-.v-others em {
-  font-style: normal;
-  font-weight: 700;
-  color: var(--ink-deep);
-}
-.v-steps {
-  list-style: none;
-  counter-reset: s;
-  padding: 0;
-  margin-top: 1.6mm;
-  display: grid;
-  gap: 1.4mm;
-}
-.v-steps li {
-  counter-increment: s;
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  column-gap: 1mm;
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--title);
-}
-.v-steps li::before {
-  content: counter(s);
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 5.2mm;
-  height: 5.2mm;
-  margin-right: 1mm;
-  border-radius: 50%;
-  background: var(--sky);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
-  transform: translateY(1mm);
-}
-.v-steps b {
-  color: var(--sky-deep);
-}
-.v-safe {
-  display: flex;
-  align-items: center;
-  gap: 1.6mm;
-  margin-top: 2.6mm;
-  font-size: 0.8rem;
-  color: var(--d-muted);
-}
-.v-safe svg {
-  width: 4mm;
-  height: 4mm;
-  color: var(--mint-text);
-}
-
-/* Contacts : bandeau encre en bas de page. */
-.v-contact {
-  display: flex;
-  align-items: center;
-  gap: 5mm;
-  margin: auto -9mm 0;
-  padding: 3.5mm 9mm;
-  background: var(--ink-deep);
-  color: #fff;
-}
-.v-contact-title {
-  font-family: "Google Sans", sans-serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--sun);
-}
-.v-contact-text > p:not(.v-contact-title) {
-  margin-top: 1.2mm;
-  font-size: 0.8rem;
-  opacity: 0.9;
-}
-.v-contact dl {
-  margin-top: 1.8mm;
-  display: grid;
-  grid-template-columns: auto auto;
-  justify-content: start;
-  gap: 0.6mm 6mm;
-}
-.v-contact dt,
-.v-contact dd {
-  white-space: nowrap;
-}
-.v-contact dt {
-  display: flex;
-  align-items: center;
-  gap: 1.4mm;
-  font-size: 0.74rem;
-  opacity: 0.85;
-}
-.v-contact dt svg {
-  width: 4mm;
-  height: 4mm;
-}
-.v-contact dd {
-  margin-top: 0.4mm;
-  font-weight: 700;
-  font-size: 0.98rem;
-}
-/* QR code « Rejoignez la communauté » à droite du bandeau. */
-.v-community {
-  flex: none;
-  margin: 0;
+.g-devices li {
   display: grid;
   justify-items: center;
   gap: 1.4mm;
-  text-align: center;
-}
-.v-community img {
-  width: 21mm;
-  height: 21mm;
-  padding: 1.5mm;
-  background: #fff;
-  border-radius: 2mm;
-}
-.v-community b {
-  display: block;
-  font-size: 0.72rem;
   line-height: 1.15;
-  max-width: 28mm;
 }
-.v-community-icons {
+.g-devices svg {
+  width: 7mm;
+  height: 7mm;
+  color: var(--sky-deep);
+}
+
+/* ================= Page 4 (dos) : tarifs, essai, contacts ================= */
+.k-plans {
+  margin-top: 4mm;
+  display: grid;
+  grid-template-columns: 64mm 1fr;
+  gap: 6mm;
+  align-items: start;
+}
+.k-pro {
+  padding: 4.5mm 5mm;
+  border-radius: 4mm;
+  color: #fff;
+  background-color: var(--sky);
+  background-image: var(--zebra), var(--sky-band);
+  background-size: 300px 150px, auto;
+}
+.k-badge {
+  display: inline-block;
+  padding: 0.5mm 2mm;
+  border-radius: 1mm;
+  background: var(--sun);
+  color: var(--ink-deep);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+.k-plan {
+  margin-top: 2mm;
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.k-plan span {
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+.k-amount {
+  margin-top: 1mm;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.k-amount b {
+  font-family: "Google Sans", sans-serif;
+  font-size: 2.5rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.k-yearly {
+  font-size: 0.82rem;
+  opacity: 0.9;
+}
+.k-points {
+  list-style: none;
+  padding: 0;
+  margin-top: 3mm;
+  display: grid;
+  gap: 1.2mm;
+  font-size: 0.9rem;
+}
+.k-points li {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 1.4mm;
+}
+.k-points svg {
+  width: 3.8mm;
+  height: 3.8mm;
+  flex: none;
+  color: var(--sun);
+}
+.k-others-title {
+  font-family: "Google Sans", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--title);
+}
+.k-others ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.5mm;
+}
+.k-others li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 2.6mm 0;
+  border-bottom: 0.25mm solid var(--d-line);
+}
+.k-others b {
+  font-size: 1.1rem;
+  color: var(--title);
+}
+.k-others em {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--title);
+  white-space: nowrap;
+}
+.k-others span {
+  grid-column: 1 / -1;
+  font-size: 0.86rem;
+  color: var(--d-muted);
+  line-height: 1.25;
+}
+
+/* Bandeau encre : essayez gratuitement, QR codes, contacts. */
+.k-cta {
+  margin-top: auto;
+  font-size: 1.06em;
+  padding: 5.5mm 6mm 5mm;
+  border-radius: 4mm;
+  background: var(--ink-deep);
+  color: #fff;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 5mm;
+}
+.k-cta-title {
+  grid-column: 1 / -1;
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--sun);
+}
+.k-cta-text {
+  grid-column: 1 / -1;
+  margin-top: 1.2mm;
+  font-size: 0.9rem;
+  opacity: 0.92;
+}
+.k-price {
+  grid-column: 1 / -1;
+  margin-top: 1.2mm;
+  font-size: 0.9rem;
+}
+.k-price b {
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.35rem;
+  color: var(--sun);
+}
+.k-qrs {
+  grid-column: 2;
+  grid-row: 4 / span 3;
+  margin-top: 3.5mm;
+  display: grid;
+  gap: 2.5mm;
+  align-content: start;
+}
+.k-qr {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 23mm 1fr;
+  gap: 2mm;
+  align-items: center;
+  width: 48mm;
+}
+.k-qr img {
+  display: block;
+  width: 23mm;
+  height: 23mm;
+  padding: 1.4mm;
+  background: #fff;
+  border-radius: 1.5mm;
+}
+.k-qr figcaption {
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+.k-qr figcaption b {
+  display: block;
+  color: var(--sun);
+}
+.k-qr figcaption span {
+  display: block;
+  font-size: 0.64rem;
+  opacity: 0.9;
+}
+.k-qr .follow-qr-icons {
+  display: flex;
   gap: 1.6mm;
   margin-top: 0.8mm;
 }
-.v-community-icons svg {
-  width: 3.6mm;
-  height: 3.6mm;
+.k-qr .follow-qr-icons svg {
+  width: 3.8mm;
+  height: 3.8mm;
 }
-.v-contact .b-qr-box figcaption {
-  color: #fff;
+.k-visit {
+  grid-column: 1;
+  margin-top: 3.5mm;
+}
+.k-visit b {
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.05rem;
+  color: var(--sun);
+}
+.k-visit p {
+  margin-top: 0.6mm;
+  font-size: 0.82rem;
+  opacity: 0.9;
+}
+.k-contacts {
+  grid-column: 1;
+  list-style: none;
+  padding: 0;
+  margin-top: 2.5mm;
+  display: grid;
+  gap: 1.6mm;
+}
+.k-contacts li {
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.k-contacts li > span {
+  display: grid;
+  place-items: center;
+  width: 6.5mm;
+  height: 6.5mm;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  flex: none;
+}
+.k-contacts li > span.wa {
+  background: var(--mint);
+}
+.k-contacts svg {
+  width: 3.8mm;
+  height: 3.8mm;
+}
+.k-contacts small {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  line-height: 1.1;
+}
+.k-contacts b {
+  font-size: 0.98rem;
+  line-height: 1.15;
 }
 
-/* ---------- Impression : deux pages A5 pleines ---------- */
+/* ---------- Impression : 4 pages A5 ---------- */
 @page {
   size: A5;
   margin: 0;
@@ -644,6 +616,10 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  html,
+  body {
+    background: #fff !important;
+  }
   .sheets {
     background: none;
     padding: 0;
@@ -655,49 +631,4 @@
     box-shadow: none;
     break-after: page;
   }
-}
-
-/* Une vente en 3 gestes (recto) : numéros, car c'est une suite. */
-.r-how {
-  padding: 0 9mm;
-  margin-top: 2mm;
-}
-.r-how-title {
-  text-wrap: balance;
-  font-family: "Google Sans", sans-serif;
-  font-size: 1.15rem;
-  line-height: 1.1;
-  color: var(--title);
-  margin-bottom: 2.4mm;
-}
-.r-how .r-strengths {
-  padding: 0;
-  margin-top: 0;
-}
-.r-how .r-icon {
-  border-radius: 50%;
-  font-family: "Google Sans", sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-/* Points de la formule Pro (verso). */
-.v-points {
-  list-style: none;
-  padding: 0;
-  margin-top: 1.6mm;
-  display: grid;
-  gap: 0.6mm;
-  font-size: 0.78rem;
-}
-.v-points li {
-  display: flex;
-  align-items: center;
-  gap: 1.4mm;
-}
-.v-points svg {
-  width: 3.6mm;
-  height: 3.6mm;
-  flex: none;
-  color: var(--sun);
 }

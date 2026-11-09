@@ -52,11 +52,11 @@ export const en: Dict = {
 
   home: {
     ids: { gallery: "preview", features: "features", devices: "devices", audiences: "who-its-for", offline: "offline", pricing: "pricing", faq: "faq", contact: "contact" },
-    title: "vitePOS · Sell faster. Lose less. Even offline.",
+    title: "vitePOS · Sell faster. Lose less. Sleep easy.",
     description:
-      "vitePOS: the till on your phone. Take payment in FC, $ or €, while stock and profit are worked out as you sell, even without network. Free to start.",
+      "vitePOS: the till on your phone. Take payment in FC, $ or €, while stock and profit are worked out as you sell. Free to start.",
     eyebrow: "Till · Stock · Sales",
-    h1: ["Sell faster.", "Lose less.", "Even offline."],
+    h1: ["Sell faster.", "Lose less.", "Sleep easy."],
     lead: "vitePOS records every sale on your phone. You see what you sold, what is left in stock and what should be in the till. Even when you are not at the store.",
     ctaStart: "Start for free",
     ctaBrochure: "Download the brochure",
@@ -543,7 +543,8 @@ export const en: Dict = {
     title: "vitePOS brochure",
     description: "The vitePOS brochure, to print or share: the till for your business, on the phone you already have.",
     download: "Download the brochure (PDF)",
-    screenNote: "One double-sided A5 sheet, to print or send by WhatsApp.",
+    printDownload: "Print version (2 pages per side, A4)",
+    screenNote: "4 pages to send by WhatsApp. To print it: use the print version, at actual size, on A4, double-sided (flip on short edge), then fold the sheet in half.",
     altHome: "vitePOS home screen",
     altCaisse: "The vitePOS till",
     signature: "Your business, in plain view",

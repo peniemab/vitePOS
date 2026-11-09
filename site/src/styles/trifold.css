@@ -697,3 +697,16 @@
     break-after: page;
   }
 }
+
+/* Bords extérieurs de la feuille : 11 mm de marge, car les imprimantes de bureau n'impriment pas jusqu'au bord. */
+.outside .flap,
+.inside .how {
+  padding-left: 11mm;
+}
+.outside .cover,
+.inside .price {
+  padding-right: 11mm;
+}
+.outside .cover .cover-phone {
+  right: 11mm;
+}

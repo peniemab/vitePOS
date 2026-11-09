@@ -16,9 +16,9 @@ const ROUTES: Record<Lang, Record<PageKey, string>> = {
 };
 
 /** Fichiers PDF, un par langue. */
-export const PDF: Record<Lang, { manual: string; brochure: string; trifold: string }> = {
-  fr: { manual: "/manuel-vitepos.pdf", brochure: "/brochure-vitepos.pdf", trifold: "/depliant-vitepos.pdf" },
-  en: { manual: "/vitepos-manual-en.pdf", brochure: "/vitepos-brochure-en.pdf", trifold: "/vitepos-leaflet-en.pdf" },
+export const PDF: Record<Lang, { manual: string; brochure: string; booklet: string; trifold: string }> = {
+  fr: { manual: "/manuel-vitepos.pdf", brochure: "/brochure-vitepos.pdf", booklet: "/brochure-vitepos-a-imprimer.pdf", trifold: "/depliant-vitepos.pdf" },
+  en: { manual: "/vitepos-manual-en.pdf", brochure: "/vitepos-brochure-en.pdf", booklet: "/vitepos-brochure-en-print.pdf", trifold: "/vitepos-leaflet-en.pdf" },
 };
 
 export function route(lang: Lang, page: PageKey): string {

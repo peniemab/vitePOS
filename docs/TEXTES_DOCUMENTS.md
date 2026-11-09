@@ -1,4 +1,4 @@
-# Texte unique des documents imprimés (brochure A5 et dépliant A4)
+# Texte unique des documents imprimés (brochure en livret de 4 pages A5 et dépliant A4)
 
 Validé le 8 novembre 2026 et appliqué à la brochure et au dépliant (FR et EN ; textes dans `brochure` de `site/src/i18n/`). Un seul texte pour tous les formats : la brochure A5 et le dépliant A4 disent exactement la même chose. Le dépliant a plus de place : il ajoute des **illustrations** (dessins avant / après, écrans de l'app, pictogrammes des appareils), jamais d'autres textes. Les versions anglaises seront traduites de ce texte une fois validé.
 
@@ -73,6 +73,6 @@ Dans la brochure, ce bloc remplace les trois « points forts » du recto (ils r�
 
 ## Ce qui est seulement dans le dépliant A4
 
-Uniquement des illustrations, sans texte nouveau : les dessins avant / après, les écrans de l'app sur téléphone, les pictogrammes des avantages et des appareils (téléphone, tablette, ordinateur, imprimante de tickets, avec leur nom). Sur l'A5, faute de place, l'histoire et les avantages sont en texte seul.
+Uniquement des illustrations, sans texte nouveau : les dessins avant / après, les écrans de l'app sur téléphone, les pictogrammes des avantages et des appareils (téléphone, tablette, ordinateur, imprimante de tickets, avec leur nom). Depuis le 9 novembre 2026, la brochure est un livret de 4 pages A5 : elle reprend aussi ces illustrations.
 
 La ligne des villes (G4) reste celle du site, sur le dépliant seulement, en attendant ta décision.

@@ -1,15 +1,18 @@
 ---
 /**
- * Brochure commerciale : une feuille A5 recto-verso, à laisser au comptoir ou à envoyer par WhatsApp, dans la langue demandée.
+ * Brochure commerciale : un livret de 4 pages A5, dans la langue demandée.
+ * À l'écran et dans le PDF « brochure » : les 4 pages dans l'ordre de lecture (à envoyer par WhatsApp).
+ * Pour l'imprimante : `scripts/impose-booklet.py` place ces pages 2 par face sur une feuille A4 recto-verso
+ * (recto : page 4 | page 1, verso : page 2 | page 3) ; pliée en deux, la feuille donne le livret.
+ * 1 couverture · 2 avant / avec vitePOS et une vente en 3 gestes · 3 ce que vous y gagnez · 4 tarifs, essai et contacts.
  * Textes : `brochure` dans i18n (les mêmes que le dépliant, validés dans docs/TEXTES_DOCUMENTS.md).
- * Recto : signature, grand titre, téléphones, « Essai gratuit », une vente en 3 gestes, puis l'appel à l'action
- * (prix, QR code, WhatsApp). Verso : l'histoire avant / avec vitePOS (texte seul : dessins et pictogrammes sont dans le dépliant), ce que vous y gagnez,
- * les tarifs et les contacts avec le QR code « Suivez-nous ». PDF : imprimer cette page (voir CLAUDE.md, comme le manuel).
+ * Tout le contenu reste à 9 mm des bords : les imprimantes de bureau n'impriment pas jusqu'au bord de la feuille.
  */
+import FollowQr from "../components/FollowQr.astro";
 import Base from "../layouts/Base.astro";
 import Shot from "../components/Shot.astro";
 import { APP_HOST, CONTACT, SITE_HOST } from "../data/content";
-import { contactIcons, moreIcons } from "../data/icons";
+import { contactIcons, deviceIcons, icons, moreIcons } from "../data/icons";
 import { dicts, PDF, type Lang } from "../i18n";
 import "../styles/brochure.css";
 
@@ -19,6 +22,8 @@ interface Props {
 const { lang } = Astro.props;
 const t = dicts[lang];
 const b = t.brochure;
+const benefitIcons = [moreIcons.cash, icons.receipt, icons.package, icons.users, icons.lock, icons.chartBar];
+const deviceList = [moreIcons.deviceMobile, deviceIcons.tablet, deviceIcons.laptop, moreIcons.printer];
 /** Formule Pro mise en avant, les autres en liste. */
 const pro = t.plans.list.find((p) => p.featured)!;
 const others = t.plans.list.filter((p) => !p.featured);
@@ -27,88 +32,74 @@ const others = t.plans.list.filter((p) => !p.featured);
 <Base title={b.title} description={b.description} lang={lang} page="brochure">
   <div class="b-download b-noprint">
     <a class="btn" href={PDF[lang].brochure} download>{b.download}</a>
+    <a class="b-print-link" href={PDF[lang].booklet} download>{b.printDownload}</a>
     <p>{b.screenNote}</p>
   </div>
 
   <div class="sheets">
-    <!-- Recto -->
-    <section class="sheet recto">
-      <div class="r-cover">
+    <!-- Page 1 : couverture -->
+    <section class="sheet p-cover">
+      <div class="c-block">
         <header class="b-top">
           <span class="b-logo"><img src="/logo.svg" alt="" width="26" height="28" /></span>
           <span class="b-brand" translate="no">vitePOS</span>
-          <span class="b-tag">{b.signature}</span>
         </header>
-        <div class="r-hero">
-          <div class="r-text">
-            <h1><span>{t.home.h1[0]}</span> <span>{t.home.h1[1]}</span> <span class="accent">{t.home.h1[2]}</span></h1>
-            <p class="r-lead">{b.lead}</p>
-          </div>
-          <div class="r-phones">
-            <div class="back"><Shot name="tel-accueil" device="tel" alt={b.altHome} eager /></div>
-            <div class="front"><Shot name="tel-caisse" device="tel" alt={b.altCaisse} eager /></div>
-          </div>
+        <p class="c-kicker">{b.signature}</p>
+        <h1><span>{t.home.h1[0]}</span> <span>{t.home.h1[1]}</span> <span class="accent">{t.home.h1[2]}</span></h1>
+        <p class="c-lead">{b.lead}</p>
+        <div class="c-phones">
+          <div class="back"><Shot name="tel-accueil" device="tel" alt={b.altHome} eager /></div>
+          <div class="front"><Shot name="tel-caisse" device="tel" alt={b.altCaisse} eager /></div>
         </div>
+        <p class="c-sticker"><b>{b.sticker[0]}</b><span>{b.sticker[1]}</span></p>
       </div>
-
-      <p class="r-sticker"><b>{b.sticker[0]}</b><span>{b.sticker[1]}</span></p>
-      <div class="r-how">
-        <h2 class="r-how-title">{b.howTitle}</h2>
-        <ol class="r-strengths">
-          {
-            b.how.map((s, i) => (
-              <li>
-                <span class="r-icon">{i + 1}</span>
-                <b>{s.title}</b>
-                <span>{s.text}</span>
-              </li>
-            ))
-          }
-        </ol>
-      </div>
-
-      <footer class="r-cta">
-        <div class="r-cta-main">
-          <p class="r-cta-title">{b.ctaTitle}</p>
-          <p class="r-cta-text">{b.ctaText}</p>
-          <p class="r-price">
-            {b.priceLine[0]} <b>{b.priceLine[1]}</b> {b.priceLine[2]}
-          </p>
-        </div>
-        <div class="r-cta-side">
-          <figure class="b-qr-box">
-            <img class="b-qr" src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="78" height="78" />
-            <figcaption>{b.qrLabel}</figcaption>
-          </figure>
-        </div>
-        <p class="r-wa">
-          <span class="r-wa-icon" set:html={contactIcons.whatsapp} />
-          <span>{b.phoneLabel}</span>
-          <b translate="no">{CONTACT.phone}</b>
-          <span class="r-url" translate="no">{APP_HOST}</span>
-        </p>
-      </footer>
+      <p class="c-url" translate="no">{APP_HOST}</p>
     </section>
 
-    <!-- Verso -->
-    <section class="sheet verso">
-      <!-- Sur l'A5, l'histoire est en texte seul : les dessins sont dans le dépliant A4. -->
-      <h2 class="v-title">{b.storyTitle}</h2>
-      <div class="v-story">
-        <figure class="v-panel before">
+    <!-- Page 2 : avant / avec vitePOS, puis une vente en 3 gestes -->
+    <section class="sheet p-story">
+      <h2 class="b-title">{b.storyTitle}</h2>
+      <div class="s-story">
+        <figure class="s-panel before">
+          <img src="/bd/bd-1.webp" alt={b.before.alt} width="1072" height="790" loading="eager" decoding="sync" />
           <figcaption><b>{b.before.label}</b> {b.before.text}</figcaption>
         </figure>
-        <span class="v-arrow" aria-hidden="true" set:html={moreIcons.arrowRight} />
-        <figure class="v-panel after">
+        <span class="s-arrow" aria-hidden="true" set:html={moreIcons.arrowRight} />
+        <figure class="s-panel after">
+          <img src="/bd/bd-8.webp" alt={b.after.alt} width="1072" height="790" loading="eager" decoding="sync" />
           <figcaption><b>{b.after.label}</b> {b.after.text}</figcaption>
         </figure>
       </div>
 
-      <h2 class="v-title small">{b.benefitsTitle}</h2>
-      <ul class="v-benefits">
+      <div class="s-how">
+        <div>
+          <h2 class="b-title">{b.howTitle}</h2>
+          <ol class="s-steps">
+            {
+              b.how.map((s, i) => (
+                <li>
+                  <span class="s-num">{i + 1}</span>
+                  <div>
+                    <b>{s.title}</b>
+                    <span>{s.text}</span>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+        <div class="s-phone"><Shot name="tel-ticket" device="tel" alt={t.home.shots.telTicket.alt} eager /></div>
+      </div>
+    </section>
+
+    <!-- Page 3 : ce que vous y gagnez -->
+    <section class="sheet p-benefits">
+      <h2 class="b-title">{b.benefitsTitle}</h2>
+      <ul class="g-list">
         {
-          b.benefits.map((x) => (
+          b.benefits.map((x, i) => (
             <li>
+              <span class="g-icon" set:html={benefitIcons[i]} />
               <div>
                 <b>{x.title}</b>
                 <span>{x.text}</span>
@@ -117,44 +108,53 @@ const others = t.plans.list.filter((p) => !p.featured);
           ))
         }
       </ul>
+      <ul class="g-devices">
+        {t.trifold.devices.map((d, i) => <li><span set:html={deviceList[i]} />{d}</li>)}
+      </ul>
+    </section>
 
-      <div class="v-bottom">
-        <div class="v-price">
-          <p class="v-price-trial">{t.plans.popular}</p>
-          <p class="v-plan">{pro.name} <span>{pro.phones}</span></p>
-          <p class="v-amount"><b>{pro.price}</b> {t.plans.per}, {pro.yearly}</p>
-          <p class="v-trial">{pro.trial}</p>
-          <ul class="v-points">
+    <!-- Page 4 (dos) : tarifs, essai gratuit et contacts -->
+    <section class="sheet p-back">
+      <h2 class="b-title">{b.priceTitle}</h2>
+      <div class="k-plans">
+        <div class="k-pro">
+          <p class="k-badge">{t.plans.popular} · {pro.trial}</p>
+          <p class="k-plan">{pro.name} <span>{pro.phones}</span></p>
+          <p class="k-amount"><b>{pro.price}</b> {t.plans.per}</p>
+          <p class="k-yearly">{pro.yearly}</p>
+          <ul class="k-points">
             {b.proPoints.map((x) => <li><span set:html={moreIcons.check} />{x}</li>)}
           </ul>
         </div>
-        <div class="v-side">
-          <p class="v-others-title">{b.otherPlans}</p>
-          <ul class="v-others">
-            {others.map((p) => <li><b>{p.name}</b><span>{p.phones} · {p.trial}</span><em>{p.price}</em></li>)}
-            <li><b>{t.plans.custom.name}</b><span>{t.plans.custom.phones} · {t.plans.custom.trial}</span><em>{t.plans.custom.price}</em></li>
+        <div class="k-others">
+          <p class="k-others-title">{b.otherPlans}</p>
+          <ul>
+            {others.map((p) => <li><b>{p.name}</b><em>{p.price}</em><span>{p.phones} · {p.trial}</span></li>)}
+            <li><b>{t.plans.custom.name}</b><em>{t.plans.custom.price}</em><span>{t.plans.custom.phones} · {t.plans.custom.trial}</span></li>
           </ul>
         </div>
       </div>
 
-      <footer class="v-contact">
-        <div class="v-contact-text">
-          <p class="v-contact-title">{b.contactTitle}</p>
-          <p>{b.contactText}</p>
-          <dl>
-            <div><dt><span set:html={contactIcons.whatsapp} />{b.phoneLabel}</dt><dd translate="no">{CONTACT.phone}</dd></div>
-            {CONTACT.email && <div><dt><span set:html={contactIcons.mail} />{b.emailLabel}</dt><dd translate="no">{CONTACT.email}</dd></div>}
-            <div><dt><span set:html={moreIcons.store} />{b.siteLabel}</dt><dd translate="no">{SITE_HOST}</dd></div>
-          </dl>
+      <footer class="k-cta">
+        <p class="k-cta-title">{b.ctaTitle}</p>
+        <p class="k-cta-text">{b.ctaText}</p>
+        <p class="k-price">{b.priceLine[0]} <b>{b.priceLine[1]}</b> {b.priceLine[2]}</p>
+        <div class="k-qrs">
+          <figure class="k-qr">
+            <img src="/qr-app.svg" alt={`QR code : ${APP_HOST}`} width="96" height="96" />
+            <figcaption><b>{b.qrLabel}</b><span translate="no">{APP_HOST}</span></figcaption>
+          </figure>
+          <FollowQr lang={lang} class="k-qr" />
         </div>
-        <!-- « Suivez-nous » : le QR code ouvre /communaute (Instagram, Facebook), pas directement les réseaux. -->
-        <figure class="v-community">
-          <img src={lang === "fr" ? "/qr-communaute.svg" : "/qr-community-en.svg"} alt={t.community.qrAlt} width="96" height="96" />
-          <figcaption>
-            <b>{t.community.qrTitle}</b>
-            <span class="v-community-icons"><span set:html={contactIcons.instagram} /><span set:html={contactIcons.facebook} /></span>
-          </figcaption>
-        </figure>
+        <div class="k-visit">
+          <b>{b.contactTitle}</b>
+          <p>{b.contactText}</p>
+        </div>
+        <ul class="k-contacts">
+          <li><span class="wa" set:html={contactIcons.whatsapp} /><div><small>{b.phoneLabel}</small><b translate="no">{CONTACT.phone}</b></div></li>
+          {CONTACT.email && <li><span set:html={contactIcons.mail} /><div><small>{b.emailLabel}</small><b translate="no">{CONTACT.email}</b></div></li>}
+          <li><span set:html={moreIcons.store} /><div><small>{b.siteLabel}</small><b translate="no">{SITE_HOST}</b></div></li>
+        </ul>
       </footer>
     </section>
   </div>
