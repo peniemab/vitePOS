@@ -330,17 +330,15 @@ export const chapters: Chapter[] = [
     id: "help",
     kicker: "A problem?",
     title: "Answers to common questions",
-    lead: "The questions we're asked most, with the solution.",
+    lead: "On every screen, the « i » button explains what to do. And here are the questions we're asked most, with the solution.",
     steps: [
+      "<b>I don't remember how to do it.</b> Tap the <b>« i »</b> at the top of the screen (on a computer: <b>« Aide pour cet écran »</b>, help for this screen): the steps appear.",
       "<b>The printer won't print.</b> Check it's switched on, has paper, and that the phone's Bluetooth is on. Then Settings → <b>« Imprimer un ticket de test »</b> (print a test receipt).",
       "<b>The barcode won't scan.</b> Wipe the label, light it up, or type the code into the till's search.",
       "<b>I forgot my password.</b> On the sign-in screen, tap <b>« Mot de passe oublié ? »</b> (forgot password): you get an email to choose a new one.",
       "<b>I can't see my seller's sales.</b> They arrive as soon as their phone has a connection. Their badge (their initials, top right) shows if any sales are still waiting to be sent.",
-      "<b>The network went down.</b> Keep selling: everything is kept on the phone and goes online by itself when the network is back. Two tills at the same time add up without overwriting each other.",
+      "<b>The network went down.</b> Keep selling: everything is kept on the phone and goes online by itself when the network is back. A sale « En attente d'envoi » (waiting to be sent) is safely recorded: don't sign out before it has gone.",
     ],
-    warn: {
-      title: "A sale « En attente d'envoi » (waiting to be sent)?",
-      text: "It's safely recorded and will go online when the network is back. Don't sign out while sales are still waiting: the app warns you.",
-    },
+    shot: { name: "man-aide", alt: "Help for the Till screen, opened with the i button", caption: "The first time on a screen, the help opens by itself." },
   },
 ];

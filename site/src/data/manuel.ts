@@ -353,17 +353,15 @@ export const chapters: Chapter[] = [
     id: "depannage",
     kicker: "Un souci ?",
     title: "Les réponses aux questions fréquentes",
-    lead: "Les questions qu'on nous pose le plus, avec la solution.",
+    lead: "Sur chaque écran, le bouton « i » explique quoi faire. Et voici les questions qu'on nous pose le plus, avec la solution.",
     steps: [
+      "<b>Je ne sais plus comment faire.</b> Touchez le <b>« i »</b> en haut de l'écran (sur ordinateur : <b>« Aide pour cet écran »</b>) : les étapes s'affichent.",
       "<b>L'imprimante n'imprime pas.</b> Vérifiez qu'elle est allumée, avec du papier, et que le Bluetooth du téléphone est activé. Puis Paramètres → <b>« Imprimer un ticket de test »</b>.",
       "<b>Le code-barres ne passe pas.</b> Essuyez l'étiquette, éclairez-la, ou tapez le code dans la recherche de la caisse.",
       "<b>J'ai oublié mon mot de passe.</b> Sur l'écran de connexion, touchez <b>« Mot de passe oublié ? »</b> : vous recevez un e-mail pour en choisir un nouveau.",
       "<b>Je ne vois pas les ventes de mon vendeur.</b> Elles arrivent dès que son téléphone a du réseau. Sa pastille (ses initiales, en haut à droite) indique s'il reste des ventes à envoyer.",
-      "<b>Le réseau a coupé.</b> Continuez à vendre : tout est gardé sur le téléphone et part tout seul au retour du réseau. Deux caisses en même temps s'additionnent sans s'écraser.",
+      "<b>Le réseau a coupé.</b> Continuez à vendre : tout est gardé sur le téléphone et part tout seul au retour du réseau. Une vente « En attente d'envoi » est bien enregistrée : ne vous déconnectez pas avant qu'elle soit partie.",
     ],
-    warn: {
-      title: "Une vente « En attente d'envoi » ?",
-      text: "Elle est bien enregistrée et partira au retour du réseau. Ne vous déconnectez pas tant qu'il reste des ventes en attente : l'app vous prévient.",
-    },
+    shot: { name: "man-aide", alt: "Aide de l'écran Caisse, ouverte avec le bouton i", caption: "La première fois sur un écran, l'aide s'ouvre toute seule." },
   },
 ];

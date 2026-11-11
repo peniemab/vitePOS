@@ -72,6 +72,7 @@ const SHOTS = [
   ["man-cloture", "tel", "/journee", `await reveal(/^Clôture$/);`],
   ["man-inventaire", "tel", "/inventaire"],
   ["man-rapports", "tel", "/rapports"],
+  ["man-aide", "tel", "/caisse", `document.querySelector(".help-button")?.click(); await wait(1500);`],
 ];
 
 const ONLY = process.argv[2] || "";
