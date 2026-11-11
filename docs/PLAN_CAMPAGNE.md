@@ -1,6 +1,6 @@
 # Plan de la campagne digitale de lancement de vitePOS
 
-Document de travail (7 novembre 2026). **Lancement : vendredi 20 novembre 2026, teasing à partir du vendredi 13.** Il complète `CAMPAGNE_RESEAUX.md` (préparation des pages, prix, publicité payante) et le remplace pour les textes : **on vend des bénéfices, pas des fonctionnalités**.
+Document de travail (7 novembre 2026, revu le 9 novembre). **vitePOS a été annoncé le lundi 9 novembre** (carrousel boosté du 9 au 12) : plus de teasing ni de lancement le 20 novembre. Il complète `CAMPAGNE_RESEAUX.md` (préparation des pages, prix, publicité payante) et le remplace pour les textes : **on vend des bénéfices, pas des fonctionnalités**.
 
 ---
 
@@ -37,267 +37,90 @@ Le patron d'un magasin ne veut pas « une caisse avec gestion de stock ». Il ve
 
 **La question que tout patron se pose chaque soir : « Où est passé l'argent ? »**
 
-- Teasing : on pose la question, sans donner la réponse. Les gens se reconnaissent, commentent et partagent.
-- Lancement : la réponse arrive, « Avec vitePOS, vous savez où est passé chaque franc ».
+- La question est posée dans le carrousel du 9 novembre, et la réponse arrive dans la même publication : « vitePOS est là ».
+- Les publications suivantes le prouvent, un bénéfice à la fois : « Avec vitePOS, vous savez où est passé chaque franc ».
 - Signature de la campagne : **« vitePOS. Votre activité, sous vos yeux. »**
 - En lingala, pour toucher Kinshasa : « Mbongo ekei wapi ? » (« Où est passé l'argent ? »). **À faire vérifier par un locuteur avant de l'utiliser.**
 - Mot-clé : `#OuEstPasseLArgent` (sans accents, pour qu'il marche partout) avec `#vitePOS #Kinshasa`.
 
 ---
 
-## 3. Les cinq phases d'une campagne de lancement
+## 3. Ce qui a changé le 9 novembre
 
-| Phase | Durée | But | Ce qu'on mesure |
-| --- | --- | --- | --- |
-| 0. Préparation | avant tout | Pages prêtes, bio, lien, WhatsApp Business, site, vidéo, brochures | Tout est en place |
-| 1. Teasing « le problème » | 3 jours | Faire dire « c'est exactement moi » | Commentaires, partages, réponses aux sondages |
-| 2. Teasing « la promesse » | 3 jours | Faire attendre : « quelque chose arrive » | Nouveaux abonnés, rappels activés |
-| 3. Lancement (le jour J) | 1 jour, très fort | Faire essayer gratuitement | Inscriptions, messages WhatsApp |
-| 4. Après le lancement | 2 à 3 semaines | Rassurer, prouver, convaincre ceux qui hésitent | Inscriptions, démonstrations, premiers abonnés payants |
+On ne fait plus de teasing ni de lancement le 20 novembre. **vitePOS a été annoncé dès le lundi 9 novembre**, avec le carrousel « Où est passé l'argent ? » (5 images, le problème puis « Bien gérer son activité, ce n'est pas un luxe. vitePOS est là. », essai gratuit). Il est **boosté (publicité payante) pendant 4 jours, du lundi 9 au jeudi 12 novembre**.
 
-**Pendant tout le teasing, on montre le logo vitePOS mais pas l'app.** La page s'appelle déjà « vitePOS RDC » : le mystère ne porte pas sur le nom, il porte sur **la solution**.
+Conséquence : les gens qui découvrent la page par la publicité vont regarder les publications suivantes pour comprendre ce qu'est vitePOS. Chaque publication de la semaine **répond à une image du carrousel** et montre enfin l'app, avec un seul bénéfice à la fois.
+
+**La routine de chaque jour pendant la publicité (9 au 12 novembre)** :
+- Répondre à **chaque commentaire et chaque message dans l'heure** (réponse prête dans `textes.txt` du carrousel). Une question sans réponse, c'est un client perdu qu'on a payé pour attirer.
+- Proposer à ceux qui sont intéressés de passer sur WhatsApp, et de venir leur installer vitePOS.
+- Noter les questions qui reviennent : elles deviennent les publications de la semaine suivante.
 
 ---
 
-## 4. Phase 0 : la préparation (à finir avant le premier teaser)
+## 4. La préparation qui reste
 
-- [ ] Photo de profil (logo) et couverture identiques sur Facebook et Instagram.
-- [ ] Bio Instagram, orientée bénéfice : « Vous savez où est passé chaque franc 💰 Votre caisse sur votre téléphone. Bientôt à Kinshasa 👇 » ; au lancement, remplacer « Bientôt à Kinshasa » par « Essai gratuit ».
-- [ ] Lien : https://viteposrdc.com
+- [x] Le carrousel publié et boosté (9 novembre).
+- [ ] Bio Instagram : « Vous savez où est passé chaque franc 💰 Votre caisse sur votre téléphone. Essai gratuit 👇 » et le lien **https://app.viteposrdc.com** (le texte du carrousel dit « lien dans la bio »).
 - [ ] WhatsApp Business : message d'accueil et message d'absence (voir `CAMPAGNE_RESEAUX.md`).
-- [ ] Une **liste de diffusion WhatsApp** de tous vos contacts patrons de magasins : ils recevront chaque teaser en statut et en message.
-- [ ] La vidéo « Comment ça marche » prête pour le jour J (`A_PUBLIER/1-reseaux-sociaux/video-comment-ca-marche`).
-- [ ] Brochures et dépliants imprimés, à distribuer dans les marchés **pendant** le teasing (le QR code « Suivez-nous » fait venir les abonnés).
-- [ ] Décider du budget de publicité payante (voir `CAMPAGNE_RESEAUX.md`) : c'est le teasing qu'il faut pousser, pas seulement le lancement.
+- [ ] Une **liste de diffusion WhatsApp** de vos contacts qui tiennent un magasin : chaque visuel en statut et en message.
+- [ ] Brochures et dépliants imprimés, à distribuer dans les marchés **dès cette semaine** (QR codes « commencer » et « suivre »).
 
 ---
 
-## 5. Le teasing, jour par jour (7 jours)
+## 5. Le programme, jour par jour
 
-Chaque jour : **1 publication** (Facebook et Instagram), **2 à 3 stories** interactives, et **le même visuel en statut WhatsApp**. Heure : entre 18 h et 20 h (après la fermeture), sauf mention contraire.
+Chaque jour : **1 publication** (Facebook et Instagram) entre 18 h et 20 h, **1 à 2 stories**, et **le même visuel en statut WhatsApp**. Format : 4:5 (1080 × 1350) pour la publication, 9:16 pour la story.
 
-### Phase 1 : le problème (J-7, J-6, J-5)
+### Semaine 1 : vitePOS est là (pendant la publicité)
 
-On ne parle pas de l'app. On décrit la vie du patron, mieux qu'il ne le ferait lui-même.
+| Jour | Sujet | Répond à | Visuel | Bénéfice, en une phrase |
+| --- | --- | --- | --- | --- |
+| Lun. 9 ✅ | Carrousel « Où est passé l'argent ? » | — | `11-carrousel-1` à `5` | Bien gérer son activité, ce n'est pas un luxe. |
+| Mar. 10 | **« Le soir, c'est déjà compté »** | l'image 3 (recompter le cahier) | dessin `bd-8` + l'écran « Clôturer la journée » | Vous savez ce qui doit être dans la caisse, au franc près, et vous rentrez plus tôt. |
+| Mer. 11 | **« Même absent, vous savez »** | l'image 1 (pas au magasin) | dessin `bd-7` + l'écran d'accueil (ventes du jour) | Chaque vendeur a son compte, rien ne s'efface : vous voyez tout depuis votre téléphone. |
+| Jeu. 12 | **La vidéo « Comment ça marche »** en Reel, épinglée en haut du profil | l'image 4 (plus besoin de recompter) | `video-comment-ca-marche` (43 s) | Une vente en 3 gestes : c'est simple, voyez vous-même. |
+| Ven. 13 | **« Combien ça coûte ? »** | l'image 5 (pas un luxe) | prix + « on vient l'installer » | Moins de 1,25 $ par semaine, sur le téléphone que vous avez déjà. Essai gratuit. |
+| Sam. 14 | **« Le client sait ce qu'il paie »** | — | l'écran du ticket | Article par article, le total et la monnaie ; les prix sont les vôtres. |
+| Dim. 15 | Pas de publication | — | story : réponses aux questions de la semaine | — |
 
-#### J-7 (ven. 13 nov.) · « Où est passé l'argent ? »
+**Après la publicité (vendredi 13)** : regarder ce qu'elle a rapporté (messages, inscriptions, abonnés). Si les gens ont écrit, booster **la vidéo** (la meilleure preuve) avec le même budget ; sinon, revoir l'image avant de payer à nouveau.
 
-- **Texte sur le visuel** : « Ce soir encore, les comptes ne tombent pas juste. » En dessous, en petit : « Où est passé l'argent ? »
-- **Visuel** : le dessin du cahier (`bd-1`), ambiance soir, logo discret.
-- **Facebook** :
-  > Il est 20 h. Le magasin est fermé. Vous recomptez le cahier, les billets, les ventes de la journée…
-  > Et il manque encore quelque chose. 😔
-  >
-  > Pas beaucoup. Juste assez pour vous gâcher la soirée.
-  > Et demain, ça recommence.
-  >
-  > Vous aussi, ça vous arrive ? Dites-le en commentaire 👇
-  > #OuEstPasseLArgent #Kinshasa
-- **Instagram** :
-  > 20 h. Le magasin est fermé.
-  > Vous recomptez… et il manque encore de l'argent. 😔
-  > Ça vous arrive aussi ? 👇
-  >
-  > #OuEstPasseLArgent #Kinshasa #Business #Entrepreneur
-- **Stories** : sondage « Le soir, votre caisse tombe juste ? Toujours / Pas souvent » ; boîte à questions « Quel est votre plus gros souci au magasin ? » (les réponses nous donnent les mots des prochains textes).
+### Semaine 2 : convaincre ceux qui hésitent
 
-#### J-6 (sam. 14 nov.) · « Les petites pertes »
+| Jour | Sujet | Visuel | Bénéfice |
+| --- | --- | --- | --- |
+| Lun. 16 | **« C'est fini, revenez demain »** | dessin `bd-2` + l'écran du stock | Vous savez quoi racheter avant qu'il ne soit trop tard : plus de vente perdue. |
+| Mar. 17 | **« Je ne suis pas fort en informatique »** (une peur) | photo réelle d'une installation chez un client, ou de l'équipe | On vient chez vous tout installer, et une vente se fait en 3 gestes. |
+| Mer. 18 | **« Payé en dollars, rendu en francs »** | l'écran d'encaissement | La monnaie est calculée au taux du jour : plus d'erreur au comptoir. |
+| Jeu. 19 | **La première preuve** | un vrai client, avec son accord (photo, une phrase à lui) | — |
+| Ven. 20 | **« Et si je perds mon téléphone ? »** (une peur) | texte seul | Vos ventes ne sont pas perdues : vous vous reconnectez sur un autre téléphone. |
+| Sam. 21 | Rappel de l'essai gratuit | le carrousel ou la vidéo en story | — |
 
-- **Texte sur le visuel** : « 2 000 FC par-ci, 5 000 FC par-là… À la fin du mois, ça fait combien ? »
-- **Visuel** : des billets de FC qui s'envolent d'un tiroir-caisse, fond bleu de la marque.
-- **Facebook** :
-  > Une erreur de monnaie. Un article vendu mais jamais noté. Un produit périmé au fond du rayon.
-  >
-  > Chaque perte est petite. Mais additionnez-les sur un mois… 🤔
-  > C'est peut-être le loyer. Le salaire d'un vendeur. Ou les études d'un enfant.
-  >
-  > Votre argent mérite mieux qu'un cahier.
-  > #OuEstPasseLArgent
-- **Instagram** :
-  > 2 000 FC par-ci, 5 000 FC par-là… 💸
-  > À la fin du mois, ça fait combien ?
-  > Votre argent mérite mieux qu'un cahier.
-  >
-  > #OuEstPasseLArgent #Kinshasa #Business
-- **Stories** : quiz « Combien perdez-vous en petites erreurs chaque mois, à votre avis ? Moins de 50 $ / 50 à 200 $ / Je ne sais pas ». Le « je ne sais pas » est le vrai sujet : on le reprend le lendemain.
-
-#### J-5 (dim. 15 nov.) · « Le jour où vous n'êtes pas là »
-
-- **Texte sur le visuel** : « Vous ne pouvez pas être au magasin tous les jours. Votre argent, lui, doit être en sécurité. »
-- **Visuel** : un magasin, le comptoir vu de dos, la place du patron vide.
-- **Facebook** :
-  > Un deuil, un voyage, un enfant malade, un rendez-vous à la banque…
-  > Ce jour-là, qui surveille la caisse ?
-  >
-  > Vous avez confiance en vos vendeurs. Mais le soir, sans savoir ce qui s'est vendu, le doute s'installe. Et le doute abîme la confiance.
-  >
-  > Et si vous pouviez tout savoir, même à distance ? 👀
-  > Bientôt.
-- **Instagram** :
-  > Le jour où vous n'êtes pas au magasin… qui surveille la caisse ? 👀
-  > Bientôt, vous saurez tout. Même à distance.
-  >
-  > #OuEstPasseLArgent #Kinshasa #Business #Patron
-- **Stories** : sondage « Vous laissez votre magasin à quelqu'un parfois ? Oui / Jamais » ; repartager les meilleurs commentaires des jours précédents (avec leur accord).
-
-### Phase 2 : la promesse (J-4, J-3, J-2, J-1)
-
-On annonce qu'une solution arrive. On donne des indices, **jamais la liste des fonctionnalités**. Le compte à rebours commence.
-
-#### J-4 (lun. 16 nov.) · « Et si chaque franc avait sa place ? »
-
-- **Texte sur le visuel** : « Et si, ce soir, vous saviez où est passé chaque franc ? » En bas : « Vendredi 20 novembre. »
-- **Visuel** : le logo vitePOS au centre, grand, avec la date.
-- **Facebook** :
-  > Imaginez.
-  > Le magasin ferme. Vous ouvrez votre téléphone.
-  > Tout est là : ce que vous avez vendu, ce que vous avez dépensé, ce qui doit être dans la caisse. Au franc près.
-  >
-  > Vous rentrez chez vous l'esprit tranquille. 😌
-  >
-  > Ce n'est pas un rêve. Ça arrive à Kinshasa le vendredi 20 novembre.
-  > Abonnez-vous à la page pour être le premier à le découvrir. 🔔
-- **Instagram** :
-  > Et si, ce soir, vous saviez où est passé chaque franc ? 😌
-  > Vendredi 20 novembre. Kinshasa.
-  > Activez les notifications 🔔
-  >
-  > #vitePOS #Kinshasa #Business #Bientot
-- **Stories** : autocollant **compte à rebours** « Lancement de vitePOS » (les gens appuient sur « Me le rappeler » : c'est la mesure de l'attente).
-
-#### J-3 (mar. 17 nov.) · « C'est fini, revenez demain »
-
-- **Texte sur le visuel** : « Le client voulait acheter. Vous n'en aviez plus. »
-- **Visuel** : une étagère avec une place vide, et un client qui repart.
-- **Facebook** :
-  > « Vous n'avez plus de lait Nido ? »
-  > « C'est fini, revenez demain. »
-  >
-  > Le client ne revient pas demain. Il va chez le voisin. Et parfois, il ne revient plus jamais. 😔
-  >
-  > Et si vous saviez, avant qu'il ne soit trop tard, ce qu'il faut racheter ?
-  > Dans 3 jours. 🔔
-- **Instagram** :
-  > « C'est fini, revenez demain. »
-  > Le client, lui, va chez le voisin. 😔
-  > Dans 3 jours, ça change.
-  >
-  > #vitePOS #Kinshasa #Business
-- **Stories** : sondage « Ça vous arrive de manquer d'un produit que les clients demandent ? Souvent / Parfois / Jamais » ; compte à rebours repartagé.
-
-#### J-2 (mer. 18 nov.) · « C'est déjà dans votre poche »
-
-- **Texte sur le visuel** : « La solution est déjà dans votre poche. » En bas : « Rien à acheter. »
-- **Visuel** : une main qui sort un téléphone de la poche, écran caché (flou ou noir avec le logo).
-- **Facebook** :
-  > Pas besoin d'acheter une grosse machine.
-  > Pas besoin d'être fort en informatique.
-  >
-  > Ce dont vous avez besoin pour reprendre le contrôle de votre argent est déjà dans votre poche. 📱
-  >
-  > Après-demain, on vous montre tout.
-- **Instagram** :
-  > La solution est déjà dans votre poche 📱
-  > Rien à acheter. Rien de compliqué.
-  > Après-demain.
-  >
-  > #vitePOS #Kinshasa #Business
-- **Stories** : quiz « Selon vous, qu'est-ce qui arrive ? » (3 réponses amusantes) ; inviter à partager la publication à un ami qui tient un magasin.
-
-#### J-1 (jeu. 19 nov.) · « Demain »
-
-- **Texte sur le visuel** : « Demain, vous saurez où est passé l'argent. » (visuel existant `02-demain.png` à refaire avec ce texte)
-- **Facebook** :
-  > Demain, on vous montre comment ne plus jamais vous demander où est passé l'argent. 💰
-  >
-  > Partagez cette publication à un ami, un parent, un voisin qui tient un magasin. Il vous remerciera. 🙏
-  >
-  > Rendez-vous demain.
-- **Instagram** :
-  > Demain, vous saurez où est passé l'argent 💰
-  > Partagez à quelqu'un qui tient un magasin 🙏
-  >
-  > #vitePOS #Kinshasa #Business #Lancement
-- **Stories** : compte à rebours ; vidéo face caméra de 15 secondes du fondateur : « Demain, je vous présente ce sur quoi on travaille depuis des mois. » (le visage d'une vraie personne crée la confiance, aucun visuel ne le remplace).
+**Ensuite** : une publication par jour, en alternant un bénéfice, une peur levée (avec les vraies questions reçues) et une preuve (un client par semaine). Aucun faux témoignage.
 
 ---
 
-## 6. Le jour du lancement (J) : vendredi 20 novembre 2026
+## 6. Les textes de chaque jour
 
-C'est le jour le plus fort : **3 publications et des stories toute la journée**.
-
-| Heure | Publication |
-| --- | --- |
-| 8 h | **La révélation** : visuel `03-lancement` refait avec le bénéfice, et le texte ci-dessous. |
-| 12 h 30 | **La vidéo « Comment ça marche »** en Reel (43 s), puis épinglée en haut du profil. |
-| 19 h | **L'appel à essayer** : « Ce soir, faites votre premier compte avec vitePOS. Essai gratuit. » |
-
-**Texte de la révélation (Facebook)** :
-> 🎉 La réponse est arrivée : **vitePOS**.
->
-> Où est passé l'argent ? Vous ne vous poserez plus la question.
->
-> 💰 Le soir, vous savez exactement ce qui doit être dans la caisse. Au franc près.
-> 😌 Vous pouvez vous absenter : vous voyez tout depuis votre téléphone.
-> 🏠 Vous rentrez plus tôt : les comptes sont déjà faits.
-> 📦 Vous ne dites plus « c'est fini » à un client.
->
-> Et tout ça, sur le téléphone que vous avez déjà.
->
-> 🎁 Essayez gratuitement dès aujourd'hui 👉 https://viteposrdc.com
-> 💬 On vient chez vous tout installer : WhatsApp +243 839 892 822
->
-> #vitePOS #OuEstPasseLArgent #Kinshasa
-
-**Texte de la révélation (Instagram)** :
-> La réponse est arrivée : vitePOS 🎉
-> Le soir, vous savez où est passé chaque franc 💰
-> Vous rentrez plus tôt. Vous dormez tranquille. 😌
->
-> 🎁 Essai gratuit, lien dans la bio 👆
->
-> #vitePOS #OuEstPasseLArgent #Kinshasa #RDC #Business #Entrepreneur
+Ils sont écrits au fur et à mesure, la veille, dans `A_PUBLIER/1-reseaux-sociaux/<n°>_<jour>_<sujet>/textes.txt`, avec le visuel. Toujours la formule **Douleur → Promesse → Preuve → Action**, et une seule action : « Essai gratuit : app.viteposrdc.com » (Facebook) ou « lien dans la bio » (Instagram), ou « Écrivez-nous sur WhatsApp ».
 
 ---
 
-## 7. Après le lancement (2 à 3 semaines)
+## 7. Les supports, en même temps que les réseaux
 
-Un sujet par jour, toujours un bénéfice, et chaque semaine une preuve réelle.
-
-| Jour | Bénéfice | Idée |
-| --- | --- | --- |
-| J+1 | Vous rentrez plus tôt | Le bilan du soir en une image |
-| J+2 | Plus d'erreur de monnaie | Payé en $, rendu en FC, au franc près |
-| J+3 | Vous vous absentez tranquille | Un compte par vendeur, rien ne s'efface |
-| J+4 | Vous ne perdez plus de vente | L'alerte avant la rupture |
-| J+5 | Ça ne coûte presque rien | Prix et essai gratuit (texte de `CAMPAGNE_RESEAUX.md`, n° 8) |
-| J+6 | On vous accompagne | « On vient chez vous », photo réelle de l'équipe |
-| J+7 | La preuve | Premier vrai client, avec son accord (photo, phrase à lui) |
-| Ensuite | Répondre aux peurs | « Et si je perds mon téléphone ? », « Et si je ne sais pas lire les chiffres sur l'écran ? », « Et si j'arrête ? » : une réponse simple par publication |
-
----
-
-## 8. Les supports, en même temps que les réseaux
-
-- **WhatsApp** : chaque visuel en statut, le même jour ; le jour J, message personnel à chaque contact de la liste de diffusion, avec la vidéo.
-- **Terrain** : distribuer brochures et dépliants dans les marchés et les rues marchandes **pendant le teasing**. Le QR code « Suivez-nous » transforme chaque brochure en abonné.
+- **WhatsApp** : chaque visuel en statut, le même jour ; le jeudi 12, message personnel à chaque contact de la liste de diffusion, avec la vidéo.
+- **Terrain** : distribuer brochures et dépliants dans les marchés et les rues marchandes **dès cette semaine**. Le QR code « Suivez-nous » transforme chaque brochure en abonné.
 - **Bouche à oreille** : chaque publication finit, une fois sur deux, par « Partagez à quelqu'un qui tient un magasin ».
 
 ---
 
-## 9. Ce qu'on mesure chaque soir
+## 8. Ce qu'on mesure chaque soir
 
 | Phase | Le chiffre qui compte |
 | --- | --- |
-| Teasing | Commentaires + partages + réponses aux sondages ; nouveaux abonnés ; rappels « Me le rappeler » du compte à rebours |
-| Lancement | Inscriptions (écran Administration) ; messages WhatsApp reçus |
+| Pendant la publicité | Messages WhatsApp et commentaires ; nouveaux abonnés ; inscriptions |
+| Chaque semaine | Inscriptions (écran Administration) ; messages WhatsApp reçus |
 | Après | Démonstrations faites ; essais qui deviennent abonnements payants |
 
 Les « j'aime » ne comptent pas : un « j'aime » ne paie pas le loyer.
-
----
-
-## 10. Les visuels à refaire
-
-Le style des affiches (`design/pubs/gen.py`) est gardé. Seuls les textes changent, pour suivre ce plan :
-J-7, J-6, J-5, J-4, J-3, J-2, J-1 (`02-demain`), J (`03-lancement` et sa story).

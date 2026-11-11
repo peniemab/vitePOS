@@ -44,7 +44,13 @@ h1{{font-weight:700;letter-spacing:-.025em;line-height:1.02;margin:0}}
 BRAND = f'<div class="brand"><img src="{PUB}/logo.svg">vitePOS</div>'
 
 
+# Sans argument : tous les visuels. Avec des noms (python design/pubs/gen.py 10-probleme 10-probleme-story) : seulement ceux-là.
+ONLY = set(__import__("sys").argv[1:])
+
+
 def page(name, w, h, body, extra=""):
+    if ONLY and name not in ONLY:
+        return
     doc = f"""<!doctype html><html><head><meta charset="utf-8"><style>:root{{--w:{w}px;--h:{h}px}}{CSS}{extra}</style></head>
 <body><div class="z"></div>{body}</body></html>"""
     p = HTML / f"{name}.html"
@@ -148,4 +154,95 @@ page("05-sans-reseau", W, H, f"""
 <div class="phone" style="right:-30px;top:230px;width:420px;height:880px;transform:rotate(5deg)"><img src="{PUB}/captures/tel-caisse.webp">
   <span style="position:absolute;left:50%;top:-26px;transform:translateX(-50%);background:#12233f;color:#fff;border:4px solid #fff;font-size:28px;font-weight:700;padding:10px 24px;border-radius:999px;white-space:nowrap">● Hors ligne</span></div>
 <div class="foot"><span>Pas de vente perdue</span><span style="font-size:30px">viteposrdc.com</span></div>
+""")
+
+
+# 10. Lundi 9 novembre : on ouvre la campagne avec « le problème » (docs/PLAN_CAMPAGNE.md, phase 1). On ne montre pas l'app.
+page("10-probleme", W, H, f"""
+{BRAND}
+<div class="drawing" style="top:180px"><img src="{PUB}/bd/bd-1.webp"></div>
+<div style="position:absolute;left:72px;right:72px;top:830px">
+  <h1 style="font-size:66px">Ce soir encore,<br><span class="sun">les comptes ne tombent<br>pas juste.</span></h1>
+  <p style="font-size:40px;margin:28px 0 0;font-weight:700">Où est passé l'argent ?</p>
+</div>
+<div class="foot"><span class="chip" style="font-size:32px;padding:12px 28px">Le 20 novembre, on vous montre</span><span style="font-size:28px;opacity:.9">#OuEstPasseLArgent</span></div>
+""")
+
+# 10 bis. Story (1080 x 1920) : rien d'important dans les 250 px du haut ni les 300 px du bas (zones d'Instagram).
+# L'espace libre sous « Et chez vous ? » accueille l'autocollant « Sondage » ajouté dans Instagram.
+page("10-probleme-story", 1080, 1920, f"""
+<div class="brand" style="top:270px">{BRAND[len('<div class="brand">'):-len('</div>')]}</div>
+<div class="drawing" style="top:380px;height:640px"><img src="{PUB}/bd/bd-1.webp"></div>
+<div style="position:absolute;left:72px;right:72px;top:1080px">
+  <h1 style="font-size:70px">Ce soir encore,<br><span class="sun">les comptes ne tombent<br>pas juste.</span></h1>
+  <p style="font-size:42px;margin:26px 0 0;font-weight:700">Et chez vous ?</p>
+</div>
+<div style="position:absolute;left:72px;top:1530px"><span class="chip" style="font-size:34px;padding:14px 30px">vitePOS est là pour régler ça</span></div>
+""")
+
+
+# 11. Carrousel d'ouverture (lundi 9 novembre) : 5 images à faire glisser, le problème sans montrer l'app,
+# puis l'appel à s'abonner à la page. Le texte de chaque image est court : on doit le lire en 2 secondes.
+import json as _json, re as _re
+_ICONS = (ROOT / "site" / "src" / "data" / "icons.ts").read_text(encoding="utf-8")
+
+
+def _icon(name):
+    m = _re.search(name + r': (".*?[^\\]")', _ICONS)
+    return _json.loads(m.group(1))
+
+
+IG, FB = _icon("instagram"), _icon("facebook")
+CAR = """
+.num{position:absolute;right:72px;top:78px;font-size:30px;font-weight:700;opacity:.8}
+.swipe{position:absolute;right:72px;bottom:66px;font-size:32px;font-weight:700;display:flex;align-items:center;gap:12px}
+.swipe b{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#ffc233;color:#12233f;font-size:38px}
+.txt{position:absolute;left:72px;right:72px}
+.txt h1{font-size:64px;text-wrap:balance}
+.txt p{font-size:40px;margin:26px 0 0;font-weight:700}
+.social{display:flex;gap:18px;justify-content:center;margin-top:48px}
+.social span{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.16);border-radius:999px;padding:16px 32px;font-size:36px;font-weight:700}
+.social svg{width:40px;height:40px}
+"""
+
+
+def slide(n, body):
+    swipe = '<div class="swipe">Glissez <b>→</b></div>' if n < 5 else ""
+    brand = BRAND if n < 5 else ""
+    page(f"11-carrousel-{n}", W, H, f'{brand}<div class="num">{n} / 5</div>{body}{swipe}', CAR)
+
+
+slide(1, f"""
+<div class="drawing" style="top:180px"><img src="{PUB}/bd/bd-7.webp" style="object-position:center 30%"></div>
+<div class="txt" style="top:830px"><h1>Vous n'êtes pas au magasin…<br><span class="sun">et vous ne savez pas<br>ce qui s'y passe.</span></h1></div>
+""")
+slide(2, """
+<div class="txt" style="top:400px">
+  <h1 style="font-size:90px;line-height:1.06"><span style="white-space:nowrap">Combien avez-vous</span><br>gagné cette semaine&nbsp;?</h1>
+  <h1 style="font-size:96px;line-height:1.04;margin-top:50px" class="sun">Pas vendu&nbsp;:<br>gagné.</h1>
+  <p style="font-size:46px;margin-top:70px;opacity:.95;font-weight:500">Si vous hésitez,<br>vous n'êtes pas seul.</p>
+</div>
+""")
+# Textes validés (docs/TEXTES_DOCUMENTS.md) : « Avant », « Le soir, plus besoin de recompter », « Dormez tranquille »,
+# « Votre activité, sous vos yeux », et le message du propriétaire : bien gérer n'est pas un luxe.
+slide(3, f"""
+<div class="drawing" style="top:180px"><img src="{PUB}/bd/bd-1.webp"></div>
+<div class="txt" style="top:830px"><h1>Le soir, vous recomptez le cahier, les billets et le stock.</h1>
+<p class="sun" style="font-size:46px">Et il manque toujours quelque chose,<br>sans savoir où.</p></div>
+""")
+slide(4, f"""
+<div class="drawing" style="top:180px"><img src="{PUB}/bd/bd-6.webp" style="object-position:center 35%"></div>
+<div class="txt" style="top:830px"><h1>Et si, le soir, vous n'aviez<br>plus besoin de recompter&nbsp;?</h1>
+<p class="sun" style="font-size:64px;margin-top:34px">Dormez tranquille.</p></div>
+""")
+slide(5, f"""
+<div style="position:absolute;left:0;right:0;top:190px;text-align:center">
+  <h1 style="font-size:80px;margin:0 60px;line-height:1.06">Bien gérer son activité,<br>ce n'est pas un luxe.</h1>
+  <img src="{PUB}/logo.svg" style="width:150px;height:150px;background:#fff;border-radius:36px;padding:19px;margin-top:70px;box-shadow:0 24px 50px rgba(10,30,70,.35)">
+  <h1 style="font-size:104px;margin:34px 60px 0;line-height:1" class="sun">vitePOS est là.</h1>
+  <p style="font-size:48px;margin:26px 60px 0;font-weight:700">Pour régler ça, sur votre téléphone.</p>
+  <div class="social" style="margin-top:56px"><span>{IG}@viteposrdc</span><span>{FB}Vitepos RDC</span></div>
+  <p style="font-size:36px;margin:22px 0 0;font-weight:500;opacity:.95">Abonnez-vous pour tout découvrir.</p>
+</div>
+<div class="foot" style="justify-content:center"><span class="chip" style="font-size:36px;padding:16px 36px">Essai gratuit · app.viteposrdc.com</span></div>
 """)
