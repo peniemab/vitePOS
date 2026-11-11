@@ -35,6 +35,7 @@ import { needsAttention } from "../lib/subscription";
 import { needsRestock } from "../lib/products";
 import { useCatalog } from "../data/products";
 import { SubscriptionBanner } from "./SubscriptionBanner";
+import { HelpIconButton, HelpSheet, HelpSideItem, useScreenHelp, type ScreenHelp } from "./HelpButton";
 import { useSections } from "./sections";
 
 /** Barre du bas (téléphone). */
@@ -100,6 +101,7 @@ export function Layout() {
   const { online, pending } = useSyncState();
   // Sur la caisse, le menu se réduit aux icônes pour laisser la place aux articles et au panier.
   const mini = useLocation().pathname.startsWith("/caisse");
+  const help = useScreenHelp();
 
   return (
     <AppShell
@@ -114,6 +116,7 @@ export function Layout() {
             <img src="/favicon.svg" alt="" width={32} height={32} style={{ flexShrink: 0, borderRadius: 8 }} />
             <div className="brand">{title}</div>
           </Group>
+          <HelpIconButton screen={help} />
           {/* L'état de l'envoi ouvre aussi le menu du compte. */}
           <AccountMenu position="bottom-end">
             <UnstyledButton className="status-chip" aria-label={`Mon compte (${connectionLabel(online, pending)})`}>
@@ -125,7 +128,7 @@ export function Layout() {
       </AppShell.Header>
 
       <AppShell.Navbar className="side-nav" data-mini={mini || undefined} withBorder={false}>
-        <SideNav mini={mini} />
+        <SideNav mini={mini} help={help} />
       </AppShell.Navbar>
 
       <AppShell.Main>
@@ -151,12 +154,13 @@ export function Layout() {
           ))}
         </nav>
       </AppShell.Footer>
+      <HelpSheet screen={help} />
     </AppShell>
   );
 }
 
 /** Menu de gauche (ordinateur) : rubriques par groupe, état de l'envoi et compte en bas. */
-function SideNav({ mini }: { mini: boolean }) {
+function SideNav({ mini, help }: { mini: boolean; help: ScreenHelp }) {
   const { boutique, member } = useReady();
   const { online, pending } = useSyncState();
   const { products } = useCatalog();
@@ -209,6 +213,7 @@ function SideNav({ mini }: { mini: boolean }) {
         ))}
       </nav>
       <div className="side-foot">
+        <HelpSideItem screen={help} mini={mini} />
         {mini ? (
           <Tooltip label={sync} position="right" withArrow>
             <span className={dot} aria-label={sync} />

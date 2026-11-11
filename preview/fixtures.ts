@@ -33,6 +33,9 @@ if (typeof window !== "undefined" && !(globalThis as { __apercuDate?: boolean })
   // Pas d'invitation à installer l'app sur les captures, sauf avec ?installer.
   if (!new URLSearchParams(window.location.search).has("installer")) localStorage.setItem("vitepos.install.dismissed", String(Date.now()));
   else localStorage.removeItem("vitepos.install.dismissed");
+  // L'aide de chaque écran ne s'ouvre pas toute seule sur les captures et la vidéo, sauf avec ?aide.
+  if (!new URLSearchParams(window.location.search).has("aide")) localStorage.setItem("vitepos.aide.auto-off", "1");
+  else (localStorage.removeItem("vitepos.aide.auto-off"), localStorage.removeItem("vitepos.aide.vue"));
   // Boutique de démonstration déjà installée : pas de « Premiers pas » sur les captures, sauf avec ?premiers-pas.
   if (!new URLSearchParams(window.location.search).has("premiers-pas")) localStorage.setItem("vitepos.printer.mode", "browser");
   else localStorage.removeItem("vitepos.printer.mode");

@@ -37,7 +37,7 @@ const APP = {
   CreditCard: "credit_card", DeviceFloppy: "save", DeviceMobile: "mobile", DeviceMobileDollar: "mobile_hand",
   DeviceMobileDown: "mobile_arrow_down", DeviceMobileSearch: "mobile_loupe", Discount: "percent", Dots: "more_horiz",
   DotsVertical: "more_vert", Download: "download", Droplet: "water_drop", Egg: "egg", FileUpload: "upload_file",
-  Grain: "grain", Home: "home", LayoutDashboard: "dashboard", Lock: "lock", Logout: "logout", Minus: "remove",
+  Grain: "grain", Home: "home", Info: "info", Lightbulb: "lightbulb", LayoutDashboard: "dashboard", Lock: "lock", Logout: "logout", Minus: "remove",
   Moon: "dark_mode", Package: "inventory_2", Phone: "call", PhotoUp: "add_photo_alternate", Plus: "add",
   Printer: "print", Receipt: "receipt_long", ReceiptOff: "receipt_long_off", Scan: "barcode_scanner",
   Search: "search", Settings: "settings", Share: "share", Share2: "ios_share", ShieldCheck: "verified_user",

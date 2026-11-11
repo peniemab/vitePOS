@@ -263,6 +263,25 @@ body {
   padding: 0;
   background: none;
 }
+/* « Aide pour cet écran » (bouton « i »), au-dessus de l'état de l'envoi */
+.side-help {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+.side-help:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.side-nav[data-mini] .side-help {
+  padding: 8px;
+  border-radius: 99px;
+}
 
 /* Barre du bas (téléphone) : le bleu de l'app zébré, icônes blanches, onglet ouvert dans une pastille claire. */
 .bottom-bar {
@@ -859,6 +878,16 @@ body {
   .app-main {
     padding: 24px 28px 40px;
   }
+}
+/* Fenêtre d'aide de l'écran : le conseil dans un encadré doux */
+.help-tip {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--mantine-color-default-hover);
+}
+.help-button {
+  flex-shrink: 0;
+  color: var(--mantine-primary-color-filled) !important;
 }
 /* Barre du haut (téléphone) : état de l'envoi, qui ouvre aussi le menu du compte */
 .status-chip {
