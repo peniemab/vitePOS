@@ -23,6 +23,7 @@ import { errorMessage } from "../data/errors";
 import { useSyncState } from "../data/sync";
 import { CURRENCIES, CURRENCY_LIST, type Currency } from "../lib/fx";
 import { PLAN_ORDER, planPriceLabel, PLANS, type Plan } from "../lib/subscription";
+import { displayLogin } from "../lib/login";
 
 export function LoadingScreen({ text = "Chargement…" }: { text?: string }) {
   return (
@@ -87,7 +88,7 @@ export function NoProfileScreen({ error, offline }: { error?: string; offline: b
 export function OnboardingScreen({ user, profile }: { user: User; profile: Profile }) {
   const [mode, setMode] = useState<"create" | "join">("create");
   return (
-    <AuthCard title="Bienvenue" sub={<>Connecté avec <b>{profile.email}</b>.</>}>
+    <AuthCard title="Bienvenue" sub={<>Connecté avec <b>{displayLogin(profile.email)}</b>.</>}>
       <OnlineRequired />
       <SegmentedControl
         fullWidth

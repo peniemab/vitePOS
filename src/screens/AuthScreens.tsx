@@ -1,4 +1,4 @@
-/** Connexion, inscription (e-mail ou Google) et mot de passe oublié. */
+/** Connexion, inscription (téléphone, e-mail ou Google) et mot de passe oublié. */
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router";
 import { Alert, Anchor, Box, Button, Divider, Group, Paper, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
@@ -14,6 +14,8 @@ import {
 import { getFirebaseAuth } from "../data/firebase";
 import { errorMessage } from "../data/errors";
 import { useSyncState } from "../data/sync";
+import { HELP_URL } from "../components/Help";
+import { loginEmail } from "../lib/login";
 
 /** Site de présentation, où se trouvent les conditions d'utilisation et la politique de confidentialité. */
 const SITE_URL = "https://viteposrdc.com";
@@ -113,9 +115,11 @@ export function LoginScreen() {
   async function submit(e: FormEvent) {
     e.preventDefault();
     setError(undefined);
+    const id = loginEmail(email);
+    if ("error" in id) return setError(id.error);
     setBusy(true);
     try {
-      await signInWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
+      await signInWithEmailAndPassword(getFirebaseAuth(), id.email, password);
     } catch (err) {
       setError(errorMessage(err));
       setBusy(false);
@@ -127,7 +131,15 @@ export function LoginScreen() {
       <OfflineHint />
       <form onSubmit={submit}>
         <Stack>
-          <TextInput label="E-mail" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.currentTarget.value)} />
+          <TextInput
+            label="Téléphone ou e-mail"
+            placeholder="0812 345 678"
+            autoComplete="username"
+            autoCapitalize="none"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.currentTarget.value)}
+          />
           <PasswordInput
             label="Mot de passe"
             autoComplete="current-password"
@@ -172,11 +184,13 @@ export function SignupScreen() {
   async function submit(e: FormEvent) {
     e.preventDefault();
     setError(undefined);
+    const id = loginEmail(email);
+    if ("error" in id) return setError(id.error);
     if (password !== confirm) return setError("Les deux mots de passe ne sont pas identiques.");
     setBusy(true);
     try {
       // La fiche agent est créée automatiquement dès que la session s'ouvre (voir session.tsx).
-      await createUserWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
+      await createUserWithEmailAndPassword(getFirebaseAuth(), id.email, password);
     } catch (err) {
       setError(errorMessage(err));
       setBusy(false);
@@ -191,10 +205,19 @@ export function SignupScreen() {
       <OfflineHint />
       <form onSubmit={submit}>
         <Stack>
-          <TextInput label="E-mail" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.currentTarget.value)} />
+          <TextInput
+            label="Numéro de téléphone"
+            description="Ou votre e-mail, si vous préférez."
+            placeholder="0812 345 678"
+            autoComplete="username"
+            autoCapitalize="none"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.currentTarget.value)}
+          />
           <PasswordInput
             label="Mot de passe"
-            description="6 caractères minimum"
+            description="6 caractères minimum. Notez-le bien : il n'y a pas de code par SMS."
             autoComplete="new-password"
             required
             minLength={6}
@@ -241,12 +264,18 @@ export function ForgotPasswordScreen() {
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
+  const [phone, setPhone] = useState(false);
+
   async function submit(e: FormEvent) {
     e.preventDefault();
     setError(undefined);
+    const id = loginEmail(email);
+    if ("error" in id) return setError(id.error);
+    // Un compte par téléphone n'a pas d'e-mail : le support remet le mot de passe à zéro.
+    if (id.phone) return setPhone(true);
     setBusy(true);
     try {
-      await sendPasswordResetEmail(getFirebaseAuth(), email.trim());
+      await sendPasswordResetEmail(getFirebaseAuth(), id.email);
       setSent(true);
     } catch (err) {
       setError(errorMessage(err));
@@ -257,7 +286,17 @@ export function ForgotPasswordScreen() {
   return (
     <AuthCard title="Mot de passe oublié">
       <OfflineHint />
-      {sent ? (
+      {phone ? (
+        <Stack>
+          <Alert color="sky">
+            Votre compte utilise votre numéro de téléphone : aucun e-mail ne peut vous être envoyé. Écrivez-nous sur
+            WhatsApp depuis ce numéro, nous remettons votre mot de passe à zéro.
+          </Alert>
+          <Button component="a" href={HELP_URL} target="_blank" rel="noopener" color="green">
+            Écrire sur WhatsApp
+          </Button>
+        </Stack>
+      ) : sent ? (
         <Alert color="sky">
           Si un compte existe pour <b>{email}</b>, un e-mail vient d'être envoyé avec un lien pour choisir un nouveau
           mot de passe. Pensez à regarder dans les courriers indésirables.
@@ -265,10 +304,17 @@ export function ForgotPasswordScreen() {
       ) : (
         <form onSubmit={submit}>
           <Stack>
-            <TextInput label="E-mail du compte" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.currentTarget.value)} />
+            <TextInput
+              label="Téléphone ou e-mail du compte"
+              autoComplete="username"
+              autoCapitalize="none"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+            />
             {error && <Text c="red" size="sm">{error}</Text>}
             <Button type="submit" fullWidth loading={busy}>
-              Recevoir le lien par e-mail
+              Continuer
             </Button>
           </Stack>
         </form>

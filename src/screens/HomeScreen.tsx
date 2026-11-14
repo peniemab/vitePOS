@@ -34,6 +34,7 @@ import {
 } from "../lib/reports";
 import { CURRENCIES, formatMoney, type Currency } from "../lib/fx";
 import { PAYMENT_LABELS, type Sale } from "../lib/sales";
+import { displayLogin } from "../lib/login";
 
 type Range = "7" | "30" | "mois";
 
@@ -56,7 +57,7 @@ export function HomeScreen() {
   const today = dayKey(Date.now());
   const expiring = expiringLots((products ?? []).filter((p) => !p.archived), lots ?? [], today);
   const expired = expiring.filter((l) => l.daysLeft < 0).length;
-  const firstName = member.name.split(" ")[0] || member.email;
+  const firstName = member.name.split(" ")[0] || displayLogin(member.email);
   const yesterday = shiftDay(today, -1);
   const [sales, setSales] = useState<Sale[]>();
   const [range, setRange] = useState<Range>("7");

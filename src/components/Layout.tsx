@@ -37,6 +37,7 @@ import { useCatalog } from "../data/products";
 import { SubscriptionBanner } from "./SubscriptionBanner";
 import { HelpIconButton, HelpSheet, HelpSideItem, useScreenHelp, type ScreenHelp } from "./HelpButton";
 import { useSections } from "./sections";
+import { displayLogin } from "../lib/login";
 
 /** Barre du bas (téléphone). */
 export const TABS = [
@@ -229,7 +230,7 @@ function SideNav({ mini, help }: { mini: boolean; help: ScreenHelp }) {
             <AccountAvatar />
             {!mini && (
               <div style={{ minWidth: 0 }}>
-                <b>{member.name || member.email}</b>
+                <b>{member.name || displayLogin(member.email)}</b>
                 <small>Paramètres</small>
               </div>
             )}
@@ -244,7 +245,7 @@ function AccountAvatar() {
   const { member } = useReady();
   return (
     <Avatar color="brick" variant="filled" radius="xl">
-      {initials(member.name, member.email)}
+      {initials(member.name, displayLogin(member.email))}
     </Avatar>
   );
 }
@@ -259,10 +260,10 @@ function AccountMenu({ position, children }: { position: MenuProps["position"]; 
       <Menu.Dropdown>
         <div style={{ padding: "8px 12px" }}>
           <Text fw={700} truncate>
-            {member.name || member.email}
+            {member.name || displayLogin(member.email)}
           </Text>
           <Text size="xs" c="dimmed" truncate>
-            {member.email}
+            {displayLogin(member.email)}
           </Text>
           <Text size="xs" c="dimmed">
             {ROLE_LABELS[member.role]}

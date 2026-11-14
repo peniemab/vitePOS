@@ -459,7 +459,7 @@ export const en: Dict = {
   cities: "In Kinshasa, Lubumbashi, Kolwezi, Matadi and across the DRC.",
 
   steps: [
-    { title: "Create your account", text: "With your e-mail or Google account, from your phone's browser." },
+    { title: "Create your account", text: "With your phone number or Google account, from your phone's browser." },
     { title: "Add your products", text: "One by one, by scanning, or all at once from an Excel file." },
     { title: "Sell", text: "Invite your sellers with a code and follow everything from your phone." },
   ],

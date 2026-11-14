@@ -11,6 +11,7 @@ import { ThemeSwitch } from "../components/ThemeSwitch";
 import { PrinterCard } from "../components/PrinterCard";
 import { ReceiptCard } from "../components/ReceiptCard";
 import { CURRENCIES, CURRENCY_LIST, type Currency } from "../lib/fx";
+import { displayLogin } from "../lib/login";
 
 function onError(e: unknown) {
   notifications.show({ color: "red", title: "Enregistrement refusé", message: errorMessage(e), autoClose: false });
@@ -167,7 +168,7 @@ export function SettingsScreen() {
             </Button>
           </Group>
           <Text size="sm" c="dimmed" mt="xs">
-            {member.email}
+            {displayLogin(member.email)}
           </Text>
         </Paper>
 

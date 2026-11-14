@@ -28,6 +28,7 @@ import {
   type SubscriptionState,
 } from "../lib/subscription";
 import { PaymentHistory, STATE_LABELS, SubscriptionMessage } from "./AbonnementScreen";
+import { displayLogin } from "../lib/login";
 
 const longDate = (ms: number) => new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(ms);
 const shortDate = (ms: number) =>
@@ -188,7 +189,7 @@ function PaymentForm({ boutique, onDone }: { boutique: Boutique; onDone: () => v
           Propriétaire
         </Text>
         <Text fw={600}>{owner ? owner.name || "Nom inconnu" : "…"}</Text>
-        {owner?.email && <Text size="sm">{owner.email}</Text>}
+        {owner?.email && <Text size="sm">{displayLogin(owner.email)}</Text>}
       </div>
       <Paper p="sm" bg="var(--mantine-color-default-hover)">
         <Group gap="xs" mb={4}>

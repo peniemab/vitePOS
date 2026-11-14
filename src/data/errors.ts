@@ -3,17 +3,17 @@ export function errorMessage(e: unknown): string {
   const code = typeof e === "object" && e && "code" in e ? String((e as { code: unknown }).code) : "";
   switch (code) {
     case "auth/invalid-email":
-      return "L'adresse e-mail n'est pas valide.";
+      return "Ce numéro ou cette adresse e-mail n'est pas valide.";
     case "auth/missing-password":
       return "Entrez votre mot de passe.";
     case "auth/weak-password":
       return "Le mot de passe doit contenir au moins 6 caractères.";
     case "auth/email-already-in-use":
-      return "Un compte existe déjà avec cette adresse e-mail. Utilisez « Se connecter ».";
+      return "Un compte existe déjà avec ce numéro ou cet e-mail. Utilisez « Se connecter ».";
     case "auth/invalid-credential":
     case "auth/wrong-password":
     case "auth/user-not-found":
-      return "E-mail ou mot de passe incorrect.";
+      return "Numéro, e-mail ou mot de passe incorrect.";
     case "auth/too-many-requests":
       return "Trop d'essais. Patientez quelques minutes puis réessayez.";
     case "auth/network-request-failed":

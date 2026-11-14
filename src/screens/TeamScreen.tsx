@@ -12,6 +12,7 @@ import { PageTitle } from "../components/ui";
 import { categoryColor, initials } from "../lib/products";
 import { canManageTeam, ROLE_LABELS, STATUS_LABELS, type Role } from "../lib/roles";
 import { canAddMember, PLANS } from "../lib/subscription";
+import { displayLogin } from "../lib/login";
 
 function save(p: Promise<void>) {
   p.catch((e) => notifications.show({ color: "red", title: "Modification refusée", message: errorMessage(e) }));
@@ -153,13 +154,13 @@ export function TeamScreen() {
 function MemberLabel({ member }: { member: Member }) {
   return (
     <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
-      <span className="thumb" style={{ "--c": categoryColor(member.name || member.email) } as CSSProperties} aria-hidden>
-        {initials(member.name || member.email)}
+      <span className="thumb" style={{ "--c": categoryColor(member.name || displayLogin(member.email)) } as CSSProperties} aria-hidden>
+        {initials(member.name || displayLogin(member.email))}
       </span>
       <div style={{ minWidth: 0 }}>
         <Group gap={6}>
           <Text fw={600} truncate>
-            {member.name || member.email}
+            {member.name || displayLogin(member.email)}
           </Text>
           {member.status !== "active" && (
             <Badge size="xs" color={member.status === "pending" ? "orange" : "gray"} variant="light">
@@ -168,7 +169,7 @@ function MemberLabel({ member }: { member: Member }) {
           )}
         </Group>
         <Text size="xs" c="dimmed" truncate>
-          {member.email}
+          {displayLogin(member.email)}
         </Text>
       </div>
     </Group>

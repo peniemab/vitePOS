@@ -44,6 +44,7 @@ import {
   type ProductInput,
   type StockMovementType,
 } from "../lib/products";
+import { displayLogin } from "../lib/login";
 
 export interface StockMovement {
   id: string;
@@ -392,5 +393,5 @@ export function importProducts(actor: Actor, plan: ImportPlan, canEditStock: boo
 /** Raccourci pour les écrans : l'auteur des écritures à partir de la session. */
 export function useActor(): Actor {
   const { boutique, member } = useReady();
-  return { boutiqueId: boutique.id, uid: member.uid, memberName: member.name || member.email };
+  return { boutiqueId: boutique.id, uid: member.uid, memberName: member.name || displayLogin(member.email) };
 }

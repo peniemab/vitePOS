@@ -486,7 +486,7 @@ export const fr = {
   cities: "À Kinshasa, Lubumbashi, Kolwezi, Matadi et partout en RDC.",
 
   steps: [
-    { title: "Créez votre compte", text: "Avec votre e-mail ou votre compte Google, depuis le navigateur de votre téléphone." },
+    { title: "Créez votre compte", text: "Avec votre numéro de téléphone ou votre compte Google, depuis le navigateur de votre téléphone." },
     { title: "Ajoutez vos produits", text: "Un par un, en scannant, ou d'un coup depuis un fichier Excel." },
     { title: "Vendez", text: "Invitez vos vendeurs avec un code et suivez tout depuis votre téléphone." },
   ],

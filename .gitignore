@@ -15,3 +15,6 @@ A_PUBLIER/
 
 # Images brutes du film de démonstration (refaites par node preview/video.mjs)
 design/video/frames/
+
+# Clés privées (compte de service Firebase pour scripts/reset-password.mjs)
+.secrets/
