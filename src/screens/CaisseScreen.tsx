@@ -723,6 +723,12 @@ function CartPanel({
             <Button size="lg" className="sun-btn pay-btn" leftSection={<IconCash size={22} />} onClick={onPay}>
               Encaisser <span className="n" style={{ marginLeft: 6 }}>{formatMoney(totalIn, payIn)}</span>
             </Button>
+            {/* Pressing et magasin ensemble : les articles se paient tout de suite, les services peuvent attendre le retrait. */}
+            {!canDeposit(cart.lines) && cart.lines.some((l) => l.service) && (
+              <Text size="xs" c="dimmed" ta="center">
+                Le client laisse des affaires ? Encaissez d'abord les articles, puis faites le dépôt des services.
+              </Text>
+            )}
             {canDeposit(cart.lines) && (
               <Button size="md" variant="default" leftSection={<IconDeposit size={20} />} onClick={onDeposit}>
                 Dépôt : le client revient chercher

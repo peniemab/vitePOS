@@ -1,0 +1,131 @@
+---
+/**
+ * Manuel d'un métier (pressing…), au format A5 : 8 pages, une tâche par page.
+ * 1 couverture · 2 à 7 une tâche (étapes, capture, astuce) · 8 questions fréquentes et aide.
+ * Mise en page des pages A5 partagée avec la brochure (brochure.css) ; le reste dans trade.css.
+ * PDF : Chrome sans interface sur cette page (voir CLAUDE.md), 8 pages, à imprimer en livret.
+ * Tout le contenu reste à 9 mm des bords : les imprimantes de bureau n'impriment pas jusqu'au bord.
+ */
+import FollowQr from "../components/FollowQr.astro";
+import Base from "../layouts/Base.astro";
+import Shot from "../components/Shot.astro";
+import { APP_HOST, CONTACT, SITE_HOST } from "../data/content";
+import { contactIcons, moreIcons } from "../data/icons";
+import { qrImage, type QrSupport } from "../data/qr";
+import { route, type Lang, type PageKey } from "../i18n";
+import type { TradeGuide } from "../data/metiers/pressing";
+import "../styles/brochure.css";
+import "../styles/trade.css";
+
+interface Props {
+  lang: Lang;
+  guide: TradeGuide;
+  page: PageKey & QrSupport;
+}
+const { lang, guide: g, page } = Astro.props;
+---
+
+<Base title={g.title} description={g.description} lang={lang} page={page}>
+  <div class="b-download b-noprint">
+    <a class="btn" href={g.pdf} download>{g.download}</a>
+    <a class="b-print-link" href={g.printPdf} download>{g.printLabel}</a>
+    <p>{g.screenNote}</p>
+  </div>
+
+  <div class="sheets">
+    <!-- Page 1 : couverture -->
+    <section class="sheet p-cover t-cover">
+      <div class="c-block">
+        <header class="b-top">
+          <span class="b-logo"><img src="/logo.svg" alt="" width="26" height="28" /></span>
+          <span class="b-brand" translate="no">vitePOS</span>
+        </header>
+        <p class="c-kicker">{g.cover.trade}</p>
+        <h1>{g.cover.title}</h1>
+        <p class="c-lead">{g.cover.lead}</p>
+        <ul class="t-points">
+          {g.cover.points.map((p) => <li><span set:html={moreIcons.check} />{p}</li>)}
+        </ul>
+        <div class="c-phones">
+          <div class="back"><Shot name="pr-liste" device="tel" alt={g.cover.altBack} eager /></div>
+          <div class="front"><Shot name="pr-ticket" device="tel" alt={g.cover.altFront} eager /></div>
+        </div>
+      </div>
+      <div class="c-foot">
+        <figure class="c-qr">
+          <img src={qrImage(lang, page)} alt={`QR code : ${APP_HOST}`} width="80" height="80" />
+          <figcaption><b>{g.cover.qrLabel}</b><span translate="no">{APP_HOST}</span></figcaption>
+        </figure>
+        <p class="c-site">
+          <span>{g.help.siteLabel}</span>
+          <b translate="no">{SITE_HOST}{route(lang, "manual")}</b>
+        </p>
+      </div>
+    </section>
+
+    <!-- Pages 2 à 7 : une tâche par page -->
+    {
+      g.pages.map((p, i) => (
+        <section class="sheet t-page">
+          <header class="t-head">
+            <span class="t-num">{String(i + 1).padStart(2, "0")}</span>
+            <div>
+              <p class="t-kicker">{p.kicker}</p>
+              <h2 class="b-title">{p.title}</h2>
+            </div>
+          </header>
+          <p class="t-lead">{p.lead}</p>
+          <div class="t-body">
+            <ol class="t-steps">
+              {p.steps.map((s, k) => (
+                <li>
+                  <span class="t-step">{k + 1}</span>
+                  <span set:html={s} />
+                </li>
+              ))}
+            </ol>
+            <figure class="t-shot">
+              <Shot name={p.shot.name} device="tel" alt={p.shot.alt} eager />
+              <figcaption>{p.shot.caption}</figcaption>
+            </figure>
+          </div>
+          {p.tip && (
+            <aside class="t-tip">
+              <b>{p.tip.title}</b>
+              <span>{p.tip.text}</span>
+            </aside>
+          )}
+          <p class="t-folio">
+            <span translate="no">vitePOS</span> · {g.cover.trade} · {i + 2}
+          </p>
+        </section>
+      ))
+    }
+
+    <!-- Page 8 : questions fréquentes et aide -->
+    <section class="sheet t-page t-back">
+      <h2 class="b-title">{g.faqTitle}</h2>
+      <dl class="t-faq">
+        {
+          g.faq.map((f) => (
+            <div>
+              <dt>{f.q}</dt>
+              <dd>{f.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <footer class="t-help">
+        <p class="t-help-title">{g.help.title}</p>
+        <p class="t-help-text">{g.help.text}</p>
+        <div class="t-help-row">
+          <ul class="k-contacts">
+            <li><span class="wa" set:html={contactIcons.whatsapp} /><div><small>{g.help.phoneLabel}</small><b translate="no">{CONTACT.phone}</b></div></li>
+            <li><span set:html={moreIcons.store} /><div><small>{g.help.siteLabel}</small><b translate="no">{SITE_HOST}</b></div></li>
+          </ul>
+          <FollowQr lang={lang} support={page} class="k-qr" />
+        </div>
+      </footer>
+    </section>
+  </div>
+</Base>

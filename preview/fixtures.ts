@@ -121,7 +121,7 @@ export function seed(): [string, Data][] {
   out.push([
     B,
     {
-      name: "Alimentation Mama Ngalula",
+      name: typeof window !== "undefined" && new URLSearchParams(window.location.search).has("pressing") ? "Pressing Élégance" : "Alimentation Mama Ngalula",
       currency: "CDF",
       inviteCode: "K7M2QX",
       ownerUid: "proprio",
@@ -400,7 +400,20 @@ export function seed(): [string, Data][] {
 }
 
 /** Scène demandée dans l'adresse (?panier=1) : panier déjà rempli pour la capture de la caisse. */
-if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("panier")) {
+if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("panier") === "pressing") {
+  // Panier d'un pressing (avec ?pressing) : des services, client déjà choisi.
+  localStorage.setItem(
+    "vitepos.cart.b1",
+    JSON.stringify({
+      lines: [
+        { productId: "s1", name: "Chemise lavée-repassée", unit: "u", unitPrice: 2000, quantity: 4, service: true },
+        { productId: "s3", name: "Costume nettoyage à sec", unit: "u", unitPrice: 8000, quantity: 1, service: true },
+      ],
+      discountPercent: 0,
+      client: { id: "c5", name: "Mme Lukusa" },
+    }),
+  );
+} else if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("panier")) {
   localStorage.setItem(
     "vitepos.cart.b1",
     JSON.stringify({

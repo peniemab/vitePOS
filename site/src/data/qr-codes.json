@@ -8,12 +8,16 @@
     { "code": "manuel-commencer", "lang": "fr", "target": "app" },
     { "code": "manuel-suivre", "lang": "fr", "target": "community" },
     { "code": "site-commencer", "lang": "fr", "target": "app" },
+    { "code": "pressing-commencer", "lang": "fr", "target": "app" },
+    { "code": "pressing-suivre", "lang": "fr", "target": "community" },
     { "code": "brochure-en-start", "lang": "en", "target": "app" },
     { "code": "brochure-en-follow", "lang": "en", "target": "community" },
     { "code": "leaflet-en-start", "lang": "en", "target": "app" },
     { "code": "leaflet-en-follow", "lang": "en", "target": "community" },
     { "code": "manual-en-start", "lang": "en", "target": "app" },
     { "code": "manual-en-follow", "lang": "en", "target": "community" },
-    { "code": "site-en-start", "lang": "en", "target": "app" }
+    { "code": "site-en-start", "lang": "en", "target": "app" },
+    { "code": "dry-cleaning-en-start", "lang": "en", "target": "app" },
+    { "code": "dry-cleaning-en-follow", "lang": "en", "target": "community" }
   ]
 }

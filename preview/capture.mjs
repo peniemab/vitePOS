@@ -73,6 +73,17 @@ const SHOTS = [
   ["man-inventaire", "tel", "/inventaire"],
   ["man-rapports", "tel", "/rapports"],
   ["man-aide", "tel", "/caisse", `document.querySelector(".help-button")?.click(); await wait(1500);`],
+
+  // Manuel A5 du pressing (site/src/views/TradeManual.astro), avec la scène ?pressing
+  ["pr-liste", "tel", "/depots?pressing"],
+  ["pr-service", "tel", "/stock?pressing", `await tap(/Chemise lavée-repassée/, 1200); document.querySelector("[role=dialog] .mantine-Modal-body")?.scrollBy(0, 260); await wait(400);`],
+  ["pr-panier", "tel", "/caisse?pressing&panier=pressing", `document.querySelector(".cart-bar .open")?.click(); await wait(1200);`],
+  ["pr-depot", "tel", "/caisse?pressing&panier=pressing", `document.querySelector(".cart-bar .open")?.click(); await wait(1000); await tap(/^Dépôt : le client/, 1200);
+    const ta = document.querySelector("[role=dialog] textarea"); Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value").set.call(ta, "4 chemises blanches, 1 costume gris (bouton manquant)"); ta.dispatchEvent(new Event("input", { bubbles: true }));
+    await type("[role=dialog] input[inputmode=decimal]", "5000", 600); document.activeElement?.blur(); await wait(300);`],
+  ["pr-ticket", "tel", "/depots/dp7KQ2M4?pressing"],
+  ["pr-pret", "tel", "/depots/dpB6N8W2?pressing", `await reveal(/^Étape$/); scrollBy(0, -80); await wait(300);`],
+  ["pr-retrait", "tel", "/depots/dp7KQ2M4?pressing", `await tap(/^Retrait : encaisser/, 1400); document.querySelectorAll(".pay-bill")[1]?.click(); await wait(600);`],
 ];
 
 const ONLY = process.argv[2] || "";
@@ -83,7 +94,7 @@ async function main() {
   mkdirSync(OUT, { recursive: true });
   mkdirSync(SITE, { recursive: true });
   const profile = join(tmpdir(), `vitepos-capture-${Date.now()}`);
-  const chrome = spawn(CHROME, ["--headless=new", "--hide-scrollbars", "--no-first-run", `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`, "about:blank"], {
+  const chrome = spawn(CHROME, ["--headless=new", "--hide-scrollbars", "--no-first-run", "--lang=fr-FR", `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`, "about:blank"], {
     stdio: "ignore",
   });
   try {

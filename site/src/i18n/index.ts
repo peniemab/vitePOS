@@ -6,13 +6,13 @@ import { fr, type Dict } from "./fr";
 import { en } from "./en";
 
 export type Lang = "fr" | "en";
-export type PageKey = "home" | "manual" | "brochure" | "trifold" | "terms" | "privacy" | "equipment" | "community";
+export type PageKey = "home" | "manual" | "brochure" | "trifold" | "terms" | "privacy" | "equipment" | "community" | "pressing";
 
 export const dicts: Record<Lang, Dict> = { fr, en };
 
 const ROUTES: Record<Lang, Record<PageKey, string>> = {
-  fr: { home: "/", manual: "/manuel", brochure: "/brochure", trifold: "/depliant", terms: "/conditions", privacy: "/confidentialite", equipment: "/materiel", community: "/communaute" },
-  en: { home: "/en/", manual: "/en/manual", brochure: "/en/brochure", trifold: "/en/leaflet", terms: "/en/terms", privacy: "/en/privacy", equipment: "/en/equipment", community: "/en/community" },
+  fr: { home: "/", manual: "/manuel", brochure: "/brochure", trifold: "/depliant", terms: "/conditions", privacy: "/confidentialite", equipment: "/materiel", community: "/communaute", pressing: "/manuel/pressing" },
+  en: { home: "/en/", manual: "/en/manual", brochure: "/en/brochure", trifold: "/en/leaflet", terms: "/en/terms", privacy: "/en/privacy", equipment: "/en/equipment", community: "/en/community", pressing: "/en/manual/dry-cleaning" },
 };
 
 /** Fichiers PDF, un par langue. */

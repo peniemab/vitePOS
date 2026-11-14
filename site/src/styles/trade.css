@@ -1,0 +1,217 @@
+/* Manuel d'un métier (pressing…) : 8 pages A5. Feuilles, couverture et contacts repris de brochure.css.
+   Une tâche par page : grand numéro, titre, phrase d'intro, étapes à gauche et capture à droite, astuce en bas. */
+
+/* ---------- Couverture ---------- */
+.t-cover h1 {
+  margin-top: 2mm;
+  font-size: 2.25rem;
+  line-height: 1.02;
+  max-width: 112mm;
+  text-wrap: balance;
+}
+.t-cover .c-lead {
+  margin-top: 3mm;
+  font-size: 1rem;
+  max-width: 120mm;
+}
+.t-points {
+  list-style: none;
+  padding: 0;
+  margin: 3.5mm 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4mm 4mm;
+  max-width: 116mm;
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+.t-points li {
+  display: flex;
+  align-items: center;
+  gap: 1.6mm;
+}
+.t-points svg {
+  width: 4.2mm;
+  height: 4.2mm;
+  flex: none;
+  color: var(--sun);
+  fill: currentColor;
+}
+.t-cover .c-phones {
+  height: 70mm;
+}
+.t-cover .c-phones .back {
+  right: 52mm;
+  top: 12mm;
+}
+.t-cover .c-phones .front {
+  right: 12mm;
+}
+
+/* ---------- Pages d'une tâche ---------- */
+.t-page {
+  padding: 11mm 11mm 9mm;
+}
+.t-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 3.5mm;
+  padding-bottom: 3mm;
+  border-bottom: 0.5mm solid var(--title);
+}
+/* Grand numéro au trait, comme dans le manuel complet. */
+.t-num {
+  font-family: "Google Sans", sans-serif;
+  font-size: 3.6rem;
+  font-weight: 700;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 0.35mm var(--sky);
+  letter-spacing: -0.04em;
+}
+.t-kicker {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--sky-deep);
+  margin-bottom: 1mm;
+}
+.t-head .b-title {
+  font-size: 1.45rem;
+}
+.t-lead {
+  margin-top: 3.5mm;
+  font-size: 1.08rem;
+  line-height: 1.4;
+  color: var(--title);
+}
+.t-body {
+  margin-top: 4.5mm;
+  display: grid;
+  grid-template-columns: 1fr 44mm;
+  gap: 5mm;
+  align-items: start;
+}
+.t-steps {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 2.6mm;
+}
+.t-steps li {
+  display: grid;
+  grid-template-columns: 5.6mm 1fr;
+  gap: 2.2mm;
+  font-size: 1rem;
+  line-height: 1.38;
+}
+.t-steps b {
+  color: var(--title);
+}
+.t-step {
+  display: grid;
+  place-items: center;
+  width: 5.6mm;
+  height: 5.6mm;
+  border-radius: 50%;
+  background: var(--sky);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.t-shot .frame-phone {
+  max-width: none;
+  box-shadow: 0 10px 22px rgba(15, 28, 54, 0.22);
+}
+.t-shot figcaption {
+  margin-top: 2.2mm;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  font-style: italic;
+  color: var(--muted);
+  text-align: center;
+}
+.t-tip {
+  margin-top: auto;
+  padding: 3mm 4mm;
+  border-left: 1mm solid var(--sky);
+  border-radius: 0 2mm 2mm 0;
+  background: var(--ice);
+  font-size: 0.94rem;
+  line-height: 1.38;
+}
+.t-tip b {
+  display: block;
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.02rem;
+  color: var(--title);
+  margin-bottom: 0.6mm;
+}
+.t-folio {
+  margin-top: 3mm;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: right;
+}
+/* Sans astuce, le numéro de page reste en bas. */
+.t-body + .t-folio {
+  margin-top: auto;
+}
+
+/* ---------- Dernière page : questions et aide ---------- */
+.t-back .b-title {
+  padding-bottom: 3mm;
+  border-bottom: 0.5mm solid var(--title);
+}
+.t-faq {
+  margin-top: 4mm;
+  display: grid;
+  gap: 3.4mm;
+}
+.t-faq dt {
+  font-family: "Google Sans", sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  color: var(--title);
+}
+.t-faq dd {
+  margin-top: 0.8mm;
+  font-size: 0.96rem;
+  line-height: 1.38;
+}
+.t-help {
+  margin-top: auto;
+  padding: 5mm 6mm;
+  border-radius: 4mm;
+  background: var(--ink-deep);
+  color: #fff;
+}
+.t-help-title {
+  font-family: "Google Sans", sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--sun);
+}
+.t-help-text {
+  margin-top: 1.2mm;
+  font-size: 0.92rem;
+  opacity: 0.92;
+}
+.t-help-row {
+  margin-top: 3mm;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4mm;
+}
+.t-help .k-contacts {
+  margin-top: 0;
+}
+
+/* ---------- Impression : 8 pages A5 ---------- */
+@media print {
+  .page-bg {
+    display: none !important;
+  }
+}

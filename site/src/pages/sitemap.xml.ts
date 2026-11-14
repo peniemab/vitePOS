@@ -3,7 +3,7 @@ import type { APIRoute } from "astro";
 import { LEGAL_READY } from "../data/content";
 import { route, type Lang, type PageKey } from "../i18n";
 
-const PAGES: PageKey[] = ["home", "manual", "brochure", "trifold", "equipment", "community", ...(LEGAL_READY ? (["terms", "privacy"] as PageKey[]) : [])];
+const PAGES: PageKey[] = ["home", "manual", "brochure", "trifold", "equipment", "community", "pressing", ...(LEGAL_READY ? (["terms", "privacy"] as PageKey[]) : [])];
 const LANGS: Lang[] = ["fr", "en"];
 
 export const GET: APIRoute = ({ site }) => {

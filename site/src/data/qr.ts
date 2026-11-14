@@ -7,7 +7,7 @@ import type { Lang } from "../i18n";
 import { APP_URL } from "./content";
 import data from "./qr-codes.json";
 
-export type QrSupport = "brochure" | "trifold" | "manual" | "site";
+export type QrSupport = "brochure" | "trifold" | "manual" | "site" | "pressing";
 export type QrTarget = "app" | "community";
 export interface QrCode {
   code: string;
@@ -24,12 +24,14 @@ const CODES: Record<Lang, Record<QrSupport, Record<QrTarget, string>>> = {
     trifold: { app: "depliant-commencer", community: "depliant-suivre" },
     manual: { app: "manuel-commencer", community: "manuel-suivre" },
     site: { app: "site-commencer", community: "brochure-suivre" },
+    pressing: { app: "pressing-commencer", community: "pressing-suivre" },
   },
   en: {
     brochure: { app: "brochure-en-start", community: "brochure-en-follow" },
     trifold: { app: "leaflet-en-start", community: "leaflet-en-follow" },
     manual: { app: "manual-en-start", community: "manual-en-follow" },
     site: { app: "site-en-start", community: "brochure-en-follow" },
+    pressing: { app: "dry-cleaning-en-start", community: "dry-cleaning-en-follow" },
   },
 };
 
