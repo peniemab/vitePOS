@@ -40,6 +40,11 @@ export interface Product {
   serialTracked: boolean;
   /** Garantie donnée au client, en mois à partir du jour de la vente (0 : aucune). */
   warrantyMonths: number;
+  /**
+   * Service sans stock (« Chemise lavée-repassée », « Coupe homme ») : se vend toujours,
+   * ne retire rien du stock, et n'a ni alerte, ni emballage, ni péremption, ni IMEI.
+   */
+  isService: boolean;
   favorite: boolean;
   archived: boolean;
   updatedAtMs: number;
@@ -52,7 +57,7 @@ export interface Product {
 export type ProductInput = Pick<
   Product,
   "sku" | "name" | "category" | "sellPrice" | "unit" | "alertThreshold" | "barcode" | "favorite"
-> & { packs?: Pack[]; tracksExpiry?: boolean; serialTracked?: boolean; warrantyMonths?: number };
+> & { packs?: Pack[]; tracksExpiry?: boolean; serialTracked?: boolean; warrantyMonths?: number; isService?: boolean };
 
 export type StockMovementType = "reappro" | "casse" | "don" | "correction" | "vente" | "annulation" | "inventaire";
 
@@ -88,6 +93,7 @@ export const SUGGESTED_CATEGORIES = [
   "Cosmétiques",
   "Pharmacie",
   "Quincaillerie",
+  "Services",
   "Librairie",
   "Jouets",
   DEFAULT_CATEGORY,
@@ -116,13 +122,21 @@ export function signedDelta(type: ManualMovementType, quantity: number, unit: Un
 
 export type StockLevel = "empty" | "low" | "ok";
 
-export function stockLevel(p: Pick<Product, "stock" | "alertThreshold">): StockLevel {
+type StockFields = Pick<Product, "stock" | "alertThreshold"> & { isService?: boolean };
+
+export function stockLevel(p: StockFields): StockLevel {
+  if (p.isService) return "ok";
   if (p.stock <= 0) return "empty";
   if (p.stock <= p.alertThreshold) return "low";
   return "ok";
 }
 
-export function needsRestock(p: Pick<Product, "stock" | "alertThreshold" | "archived">): boolean {
+/** Un article à vendre : un service se vend toujours, un produit seulement s'il en reste. */
+export function canSell(p: Pick<Product, "stock"> & { isService?: boolean }): boolean {
+  return p.isService === true || p.stock > 0;
+}
+
+export function needsRestock(p: StockFields & Pick<Product, "archived">): boolean {
   return !p.archived && stockLevel(p) !== "ok";
 }
 
@@ -297,10 +311,10 @@ export function sortByName<T extends Pick<Product, "name">>(products: T[]): T[] 
 }
 
 /** Ordre de la caisse : favoris d'abord, ruptures à la fin, puis par nom. */
-export function sortForCheckout<T extends Pick<Product, "name" | "favorite" | "stock">>(products: T[]): T[] {
+export function sortForCheckout<T extends Pick<Product, "name" | "favorite" | "stock"> & { isService?: boolean }>(products: T[]): T[] {
   return [...products].sort((a, b) => {
     if (a.favorite !== b.favorite) return a.favorite ? -1 : 1;
-    if (a.stock <= 0 !== b.stock <= 0) return a.stock <= 0 ? 1 : -1;
+    if (canSell(a) !== canSell(b)) return canSell(a) ? -1 : 1;
     return a.name.localeCompare(b.name, "fr");
   });
 }
@@ -324,6 +338,12 @@ export function validateProduct(input: ProductInput): { value: ProductInput } | 
     if ("error" in checked) return checked;
     packs = checked.value;
   }
+  const isService = input.isService === true;
+  if (isService) {
+    // Un service n'a pas de stock : ni emballage, ni péremption, ni IMEI.
+    if ((packs ?? input.packs ?? []).length) return { error: "Un service ne se vend pas en paquet : retirez ses paquets ou cartons." };
+    if (input.tracksExpiry || input.serialTracked) return { error: "Un service n'a ni date de péremption ni IMEI." };
+  }
   const serialTracked = input.serialTracked === true;
   if (serialTracked && unit !== "u") return { error: "Le suivi par IMEI ne marche que pour les articles vendus à la pièce." };
   if (serialTracked && (packs ?? input.packs ?? []).length)
@@ -344,6 +364,7 @@ export function validateProduct(input: ProductInput): { value: ProductInput } | 
       ...(packs ? { packs } : {}),
       ...(input.tracksExpiry !== undefined ? { tracksExpiry: input.tracksExpiry === true } : {}),
       ...(input.serialTracked !== undefined ? { serialTracked, warrantyMonths: serialTracked ? warrantyMonths : 0 } : {}),
+      ...(input.isService !== undefined ? { isService } : {}),
     },
   };
 }

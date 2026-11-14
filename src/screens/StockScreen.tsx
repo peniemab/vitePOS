@@ -288,7 +288,7 @@ function ProductRow({ product: p, currency, onOpen }: { product: Product; curren
         </Text>
         {level === "ok" ? (
           <Text size="sm" c="dimmed" className="n">
-            {formatQty(p.stock, p.unit)} en stock
+            {p.isService ? "Service, sans stock" : `${formatQty(p.stock, p.unit)} en stock`}
           </Text>
         ) : (
           <Badge

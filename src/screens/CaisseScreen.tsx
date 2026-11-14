@@ -1,5 +1,5 @@
 /** Caisse : choisir les articles (tuiles, recherche, scan), panier, remise et encaissement. */
-import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties, type FormEvent } from "react";
+import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link, useNavigate } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";
 import {
@@ -21,10 +21,8 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import {
-  IconArrowBackUp,
   IconCash,
-  IconCheck,
-  IconDeviceMobileDollar,
+  IconDeposit,
   IconDiscount,
   IconMinus,
   IconPlus,
@@ -50,9 +48,13 @@ import { findSerial, useSerialsInStock, type Serial } from "../data/serials";
 import { formatDayShort, normalizeSerial } from "../lib/serials";
 import { formatQty } from "../components/ProductModal";
 import { Money } from "../components/ui";
-import { computePayment, lineKey, lineTotal, stockByProduct, suggestedBills, type PaymentMethod } from "../lib/cart";
+import { PaymentSheet } from "../components/PaymentSheet";
+import { DepositModal } from "../components/DepositModal";
+import { canDeposit } from "../lib/deposits";
+import { inCartByProduct, lineKey, lineTotal, stockByProduct } from "../lib/cart";
 import { convert, CURRENCIES, formatMoney, hasRate, type Currency } from "../lib/fx";
 import {
+  canSell,
   categoryColor,
   collectCategories,
   findScan,
@@ -73,6 +75,7 @@ export function CaisseScreen() {
   const cart = useCart();
   const [cartOpen, setCartOpen] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
   const { boutique, subscription } = useReady();
   const [payCurrency, setPayCurrency] = useState<Currency>(boutique.currency);
 
@@ -97,7 +100,11 @@ export function CaisseScreen() {
     setCartOpen(false);
     setPayOpen(true);
   };
-  const panel = <CartPanel onPay={openPayment} payCurrency={payCurrency} onPayCurrency={setPayCurrency} onClose={wide ? undefined : () => setCartOpen(false)} />;
+  const openDeposit = () => {
+    setCartOpen(false);
+    setDepositOpen(true);
+  };
+  const panel = <CartPanel onPay={openPayment} onDeposit={openDeposit} payCurrency={payCurrency} onPayCurrency={setPayCurrency} onClose={wide ? undefined : () => setCartOpen(false)} />;
 
   return (
     <>
@@ -136,6 +143,7 @@ export function CaisseScreen() {
         </>
       )}
       <PaymentModal opened={payOpen} onClose={() => setPayOpen(false)} initialCurrency={payCurrency} />
+      <DepositModal opened={depositOpen} onClose={() => setDepositOpen(false)} initialCurrency={payCurrency} />
     </>
   );
 }
@@ -157,7 +165,7 @@ function ProductPicker({ wide }: { wide: boolean }) {
   const [choosingSerial, setChoosingSerial] = useState<Product | null>(null);
   const serials = useSerialsInStock(boutique.id);
   const inCart = useMemo(() => new Set(cart.lines.map((l) => l.serial).filter(Boolean)), [cart.lines]);
-  const wanted = useMemo(() => stockByProduct(cart.lines), [cart.lines]);
+  const wanted = useMemo(() => inCartByProduct(cart.lines), [cart.lines]);
 
   const active = useMemo(() => (products ?? []).filter((p) => !p.archived), [products]);
   const categories = useMemo(() => collectCategories(active), [active]);
@@ -170,7 +178,7 @@ function ProductPicker({ wide }: { wide: boolean }) {
 
   /** `pack` : `undefined` = demander si le produit a des emballages, `null` = à l'unité. */
   function pick(p: Product, pack?: Pack | null) {
-    if (p.stock <= 0) return setMessage({ text: `Rupture de stock : ${p.name}`, ok: false });
+    if (!canSell(p)) return setMessage({ text: `Rupture de stock : ${p.name}`, ok: false });
     if (p.serialTracked) return setChoosingSerial(p);
     if (pack === undefined && p.packs.length) return setChoosing(p);
     if (pack) {
@@ -354,7 +362,7 @@ function ProductTile({ product: p, currency, inCart, onPick }: { product: Produc
           )}
         </span>
         <span className="stock" data-low={level !== "ok" || undefined}>
-          {level === "empty" ? "Rupture" : level === "low" ? `${formatQty(p.stock, p.unit)} restant${p.stock > 1 ? "s" : ""}` : `${formatQty(p.stock, p.unit)} en stock`}
+          {p.isService ? "Service" : level === "empty" ? "Rupture" : level === "low" ? `${formatQty(p.stock, p.unit)} restant${p.stock > 1 ? "s" : ""}` : `${formatQty(p.stock, p.unit)} en stock`}
         </span>
       </span>
       {p.packs.length > 0 && (
@@ -520,11 +528,13 @@ function WeighModal({ product, onClose, onConfirm }: { product: Product | null; 
 
 function CartPanel({
   onPay,
+  onDeposit,
   onClose,
   payCurrency,
   onPayCurrency,
 }: {
   onPay: () => void;
+  onDeposit: () => void;
   onClose?: () => void;
   payCurrency: Currency;
   onPayCurrency: (c: Currency) => void;
@@ -713,6 +723,11 @@ function CartPanel({
             <Button size="lg" className="sun-btn pay-btn" leftSection={<IconCash size={22} />} onClick={onPay}>
               Encaisser <span className="n" style={{ marginLeft: 6 }}>{formatMoney(totalIn, payIn)}</span>
             </Button>
+            {canDeposit(cart.lines) && (
+              <Button size="md" variant="default" leftSection={<IconDeposit size={20} />} onClick={onDeposit}>
+                Dépôt : le client revient chercher
+              </Button>
+            )}
           </div>
         </>
       )}
@@ -727,161 +742,20 @@ function PaymentModal({ opened, onClose, initialCurrency }: { opened: boolean; o
   const actor = useActor();
   const cart = useCart();
   const navigate = useNavigate();
-  const narrow = useMediaQuery("(max-width: 36em)");
-  const [method, setMethod] = useState<PaymentMethod>("especes");
-  const [payCurrency, setPayCurrency] = useState<Currency>(boutique.currency);
-  const [received, setReceived] = useState<number | string>("");
-
-  useEffect(() => {
-    if (opened) {
-      setMethod("especes");
-      setPayCurrency(initialCurrency);
-      setReceived("");
-    }
-  }, [opened, initialCurrency]);
-
-  const total = cart.totals.total;
-  const rates = ratesOf(boutique);
-  const currencies = currenciesOf(boutique);
-  const input = { method, payCurrency, received: Number(received) || 0 };
-  const result = computePayment(total, boutique.currency, rates, input);
-  const others = currencies.filter((c) => c !== boutique.currency && hasRate(rates, c) && hasRate(rates, boutique.currency));
-
-  function submit(e: FormEvent) {
-    e.preventDefault();
-    if ("error" in result || !result.ok || !cart.lines.length) return;
-    const id = createSale(actor, boutique.currency, cart.lines, cart.discountPercent, input, result, cart.client ?? undefined);
-    cart.clear();
-    onClose();
-    navigate(`/ticket/${id}`, { state: { justSold: true } });
-  }
-
-  const due = "error" in result ? 0 : result.due;
-  const sym = CURRENCIES[payCurrency].symbol;
-  const given = Number(received) || 0;
-  const methods: { value: PaymentMethod; label: string; icon: typeof IconCash }[] = [
-    { value: "especes", label: "Espèces", icon: IconCash },
-    { value: "mobile_money", label: "Mobile money", icon: IconDeviceMobileDollar },
-  ];
-
   return (
-    <Modal
+    <PaymentSheet
       opened={opened}
       onClose={onClose}
-      title={narrow ? undefined : "Encaissement"}
-      withCloseButton={!narrow}
-      size="md"
-      classNames={narrow ? { inner: "pay-sheet-inner", content: "pay-sheet" } : undefined}
-      transitionProps={narrow ? { transition: "slide-up" } : undefined}
-    >
-      <form onSubmit={submit}>
-        <Stack gap="md">
-          {narrow && <span className="grab" aria-hidden />}
-          <div className="pay-due">
-            <small>À payer</small>
-            <b className="n">{formatMoney(total, boutique.currency)}</b>
-            {others.length > 0 && (
-              <em className="n">soit {others.map((c) => formatMoney(convert(total, boutique.currency, c, rates), c)).join(" ou ")} au taux du jour</em>
-            )}
-          </div>
-
-          <div className="pay-methods" role="radiogroup" aria-label="Moyen de paiement">
-            {methods.map((m) => (
-              <UnstyledButton
-                key={m.value}
-                className="pay-method"
-                role="radio"
-                aria-checked={method === m.value}
-                data-on={method === m.value || undefined}
-                onClick={() => {
-                  setMethod(m.value);
-                  setReceived("");
-                }}
-              >
-                <m.icon size={22} />
-                {m.label}
-              </UnstyledButton>
-            ))}
-          </div>
-          {currencies.length > 1 && (
-            <SegmentedControl
-              fullWidth
-              value={payCurrency}
-              onChange={(v) => {
-                setPayCurrency(v as Currency);
-                setReceived("");
-              }}
-              data={currencies.map((c, i) => ({ value: c, label: `${i === 0 ? "Payé " : ""}en ${CURRENCIES[c].symbol}` }))}
-            />
-          )}
-
-          {"error" in result ? (
-            <Text c="red">{result.error}</Text>
-          ) : method === "especes" ? (
-            <>
-              {payCurrency !== boutique.currency && (
-                <Text ta="center" fw={600}>
-                  Le client doit <span className="n">{formatMoney(due, payCurrency)}</span>
-                </Text>
-              )}
-              <NumberInput
-                label="Le client donne"
-                size="xl"
-                autoFocus={!narrow}
-                min={0}
-                thousandSeparator=" "
-                decimalSeparator=","
-                decimalScale={CURRENCIES[payCurrency].decimals}
-                hideControls
-                inputMode="decimal"
-                rightSection={<Text c="dimmed" fw={600} pr="sm">{sym}</Text>}
-                rightSectionWidth={56}
-                classNames={{ input: "n recv-input" }}
-                styles={{ label: { fontSize: 14, fontWeight: 700, color: "var(--mantine-color-dimmed)", marginBottom: 4 } }}
-                value={received}
-                onChange={setReceived}
-              />
-              <div className="pay-bills">
-                {[...new Set([due, ...suggestedBills(due, payCurrency)])].slice(0, 4).map((b) => (
-                  <UnstyledButton key={b} className="pay-bill n" data-on={given === b || undefined} onClick={() => setReceived(b)}>
-                    {formatMoney(b, payCurrency).replace(/\s*\S+$/, "")}
-                  </UnstyledButton>
-                ))}
-              </div>
-              {result.missing > 0 && given > 0 ? (
-                <div className="pay-change" data-missing>
-                  <span>Il manque</span>
-                  <b className="n">{formatMoney(result.missing, payCurrency)}</b>
-                </div>
-              ) : (
-                <div className="pay-change">
-                  <Group gap={6} wrap="nowrap">
-                    <IconArrowBackUp size={18} />
-                    Monnaie à rendre
-                  </Group>
-                  <b className="n">{formatMoney(given > 0 ? result.change : 0, payCurrency)}</b>
-                </div>
-              )}
-            </>
-          ) : (
-            <Text ta="center" c="dimmed">
-              Vérifiez la réception du paiement de <b className="n">{formatMoney(due, payCurrency)}</b> sur le téléphone
-              avant de valider.
-            </Text>
-          )}
-
-          <Button
-            type="submit"
-            size="xl"
-            className="sun-btn pay-btn"
-            leftSection={<IconCheck size={22} />}
-            disabled={"error" in result || !result.ok || (method === "especes" && !(given > 0))}
-          >
-            Valider la vente
-          </Button>
-        </Stack>
-      </form>
-    </Modal>
+      total={cart.totals.total}
+      initialCurrency={initialCurrency}
+      onPaid={(input, result) => {
+        if (!cart.lines.length) return;
+        const id = createSale(actor, boutique.currency, cart.lines, cart.discountPercent, input, result, cart.client ?? undefined);
+        cart.clear();
+        onClose();
+        navigate(`/ticket/${id}`, { state: { justSold: true } });
+      }}
+    />
   );
 }
 

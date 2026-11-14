@@ -80,6 +80,8 @@ function matches(id: string, data: DocumentData, c: Constraint): boolean {
       return v >= w;
     case "<=":
       return v <= w;
+    case "in":
+      return Array.isArray(c.value) && (c.value as unknown[]).includes(v);
     case "array-contains":
       return Array.isArray(data[c.field]) && (data[c.field] as unknown[]).includes(c.value);
     default:
@@ -132,16 +134,19 @@ export const getDoc = getDocFromServer;
 const INC = Symbol("increment");
 export const serverTimestamp = () => Timestamp.now();
 export const increment = (n: number) => ({ [INC]: n });
+const DEL = Symbol("deleteField");
+export const deleteField = () => ({ [DEL]: true });
 
 const isPlain = (v: unknown): v is DocumentData =>
-  !!v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype && !(INC in v);
+  !!v && typeof v === "object" && Object.getPrototypeOf(v) === Object.prototype && !(INC in v) && !(DEL in v);
 
 /** Comme Firestore : `increment()` s'ajoute à l'ancienne valeur, et en fusion les sous-objets se fusionnent aussi. */
 function mergeFields(prev: DocumentData, patch: DocumentData, merge: boolean): DocumentData {
   const next: DocumentData = { ...prev };
   for (const [k, v] of Object.entries(patch)) {
     const inc = v && typeof v === "object" && INC in v ? (v as Record<symbol, number>)[INC] : undefined;
-    if (inc !== undefined) next[k] = ((prev[k] as number) ?? 0) + inc;
+    if (v && typeof v === "object" && DEL in v) delete next[k];
+    else if (inc !== undefined) next[k] = ((prev[k] as number) ?? 0) + inc;
     else if (merge && isPlain(v)) next[k] = mergeFields(isPlain(prev[k]) ? prev[k] : {}, v, true);
     else next[k] = v;
   }

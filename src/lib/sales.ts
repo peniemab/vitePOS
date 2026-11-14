@@ -2,6 +2,7 @@
 import type { Currency, Rates } from "./fx";
 import type { PaymentMethod } from "./cart";
 import type { Unit } from "./products";
+import type { DepositStep } from "./deposits";
 
 export interface SaleLine {
   productId: string;
@@ -17,6 +18,8 @@ export interface SaleLine {
   /** Appareil vendu (IMEI ou numéro de série) et fin de sa garantie « AAAA-MM-JJ » (vide : aucune). */
   serial?: string;
   warrantyUntil?: string;
+  /** Service sans stock : la vente et son annulation ne touchent pas au stock. */
+  service?: boolean;
 }
 
 export interface SalePayment {
@@ -51,6 +54,9 @@ export interface Sale {
   inStats: boolean;
   /** Comptée dans les résumés par jour (ventes créées depuis leur ajout). */
   inDayStats: boolean;
+  /** Dépôt payé par cette vente (pressing…) et l'étape du paiement ; vide pour une vente ordinaire. */
+  depositId?: string;
+  depositStep?: DepositStep | "";
   status: SaleStatus;
   cancelReason: string;
   cancelledByName: string;

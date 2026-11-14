@@ -19,6 +19,8 @@ export interface CartLine {
   serial?: string;
   /** Garantie de l'appareil, en mois. */
   warrantyMonths?: number;
+  /** Service sans stock (pressing, coiffure…) : la ligne ne retire rien du stock. */
+  service?: boolean;
 }
 
 /** Une même bouteille peut être dans le panier à l'unité et en paquet : deux lignes distinctes. */
@@ -33,7 +35,14 @@ export function stockUnits(l: Pick<CartLine, "quantity" | "packUnits" | "unit">)
 }
 
 /** Stock à retirer par produit pour tout le panier (unités et emballages additionnés). */
-export function stockByProduct(lines: Pick<CartLine, "productId" | "quantity" | "packUnits" | "unit">[]): Map<string, number> {
+export function stockByProduct(lines: Pick<CartLine, "productId" | "quantity" | "packUnits" | "unit" | "service">[]): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const l of lines) if (!l.service) out.set(l.productId, roundQuantity((out.get(l.productId) ?? 0) + stockUnits(l), l.unit));
+  return out;
+}
+
+/** Quantité de chaque article dans le panier, services compris (pastille des tuiles de la caisse). */
+export function inCartByProduct(lines: Pick<CartLine, "productId" | "quantity" | "packUnits" | "unit">[]): Map<string, number> {
   const out = new Map<string, number>();
   for (const l of lines) out.set(l.productId, roundQuantity((out.get(l.productId) ?? 0) + stockUnits(l), l.unit));
   return out;

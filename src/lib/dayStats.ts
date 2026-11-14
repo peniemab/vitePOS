@@ -4,6 +4,7 @@
  * Les montants suivent les mêmes règles que `buildReport` : remise globale répartie sur les lignes au prorata,
  * quantités à l'unité (un paquet de 24 compte pour 24).
  */
+import { ACOMPTE_ID } from "./deposits";
 import { stockUnits } from "./cart";
 import type { Sale } from "./sales";
 
@@ -44,8 +45,9 @@ export function saleShare(s: Pick<Sale, "uid" | "dayKey" | "lines" | "subtotal" 
   d.members[s.uid] = { r: s.total, c: 1 };
   const ratio = s.subtotal > 0 ? s.total / s.subtotal : 0;
   for (const l of s.lines) {
-    const p = d.products[l.productId] ?? { n: l.name, q: 0, r: 0 };
-    p.q += stockUnits(l);
+    // Avances de dépôts : un seul article, sans le numéro du dépôt ; la reprise au retrait (ligne négative) l'annule.
+    const p = d.products[l.productId] ?? { n: l.productId === ACOMPTE_ID ? "Avances sur dépôts" : l.name, q: 0, r: 0 };
+    p.q += l.lineTotal < 0 ? -stockUnits(l) : stockUnits(l);
     p.r += l.lineTotal * ratio;
     d.products[l.productId] = p;
   }

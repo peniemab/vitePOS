@@ -334,6 +334,47 @@ export function seed(): [string, Data][] {
   out.push([`${B}/dayStats/start`, { day: statsFrom }]);
 
 
+  // Avec ?pressing : des services sans stock et quelques dépôts (en cours, en retard, prêt, retiré).
+  if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("pressing")) {
+    const services: [string, string, number][] = [
+      ["s1", "Chemise lavée-repassée", 2000],
+      ["s2", "Pantalon lavé-repassé", 2500],
+      ["s3", "Costume nettoyage à sec", 8000],
+      ["s4", "Robe de soirée", 10000],
+      ["s5", "Drap ou couverture", 5000],
+    ];
+    services.forEach(([id, name, sellPrice], i) =>
+      out.push([`${B}/products/${id}`, { sku: `SER-00${i + 1}`, name, category: "Services", sellPrice, unit: "u", stock: 0, alertThreshold: 0, isService: true, packs: [], favorite: i < 3, archived: false, updatedAt: ts(now - DAY) }]),
+    );
+    const dk = (d: number) => dayKeyOf(new Date(today.getFullYear(), today.getMonth(), today.getDate() + d));
+    const line = (id: string, q: number) => {
+      const [, name, price] = services.find(([x]) => x === id)!;
+      return { productId: id, name, unit: "u", unitPrice: price, quantity: q, lineTotal: price * q };
+    };
+    const deps: [string, number, number, ReturnType<typeof line>[], string, number, number, string][] = [
+      // id, client, déposé il y a (jours), lignes, notes, payé, retrait dans (jours), statut
+      ["dp7KQ2M4", 0, 0, [line("s1", 3), line("s3", 1)], "3 chemises blanches, 1 costume noir taché au col", 5000, 3, "recu"],
+      ["dp9XR3T7", 1, 4, [line("s4", 1)], "Robe rouge, perles à recoudre", 0, -1, "recu"],
+      ["dpB6N8W2", 2, 2, [line("s2", 2), line("s1", 2)], "", 9000, 0, "pret"],
+      ["dpH4C5Y9", 3, 6, [line("s5", 2)], "Draps bleus", 10000, -3, "retire"],
+    ];
+    for (const [id, ci, ago, lines, notes, paid, due, status] of deps) {
+      const [name, phone] = CLIENTS[ci]!;
+      const total = lines.reduce((t, l) => t + l.lineTotal, 0);
+      const at = now - ago * DAY - 2 * 3600_000;
+      out.push([
+        `${B}/deposits/${id}`,
+        {
+          clientId: `c${ci + 1}`, clientName: name, clientPhone: phone, lines, notes, subtotal: total, discount: 0, total, currency: "CDF",
+          paid, lastSaleId: "", dueDay: dk(due), status, uid: "u-mama", memberName: "Mama Ngalula", dayKey: dayKeyOf(new Date(at)),
+          createdAt: ts(at), clientAtMs: at, updatedAt: ts(at),
+          ...(status === "pret" ? { readyAt: ts(now - 3600_000) } : {}),
+          ...(status === "retire" ? { pickedUpAt: ts(now - DAY), pickedUpByName: "Mama Ngalula" } : {}),
+        },
+      ]);
+    }
+  }
+
   // Abonnement : deux paiements reçus par mobile money.
   out.push([`${B}/subscriptionPayments/p1`, { plan: "pro", months: 1, amountUsd: 20.99, method: "mobile_money", reference: "MP261007.1432.A51", paidUntilBefore: null, paidUntil: ts(now + 20 * DAY), createdBy: "equipe", createdAt: ts(now - 11 * DAY) }]);
   out.push([`${B}/subscriptionPayments/p2`, { plan: "pro", months: 1, amountUsd: 20.99, method: "mobile_money", reference: "MP261016.0915.C27", paidUntilBefore: ts(now + 20 * DAY), paidUntil: ts(now + 50 * DAY), createdBy: "equipe", createdAt: ts(now - 1 * DAY) }]);

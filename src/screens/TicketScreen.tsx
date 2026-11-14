@@ -103,7 +103,9 @@ export function TicketScreen() {
             <span>
               {sale.payment.method === "especes" && sale.payment.change > 0
                 ? "N'oubliez pas de rendre la monnaie."
-                : "Le stock a été mis à jour."}
+                : sale.lines.every((l) => l.service)
+                  ? "Tout est enregistré."
+                  : "Le stock a été mis à jour."}
             </span>
           </div>
         </div>

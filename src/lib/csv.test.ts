@@ -99,6 +99,7 @@ describe("export", () => {
       tracksExpiry: false,
       serialTracked: false,
       warrantyMonths: 0,
+      isService: false,
       favorite: true,
       archived: false,
       updatedAtMs: 0,

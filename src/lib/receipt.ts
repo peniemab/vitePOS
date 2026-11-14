@@ -97,6 +97,11 @@ export function receiptLines(shop: ReceiptShop, sale: Sale): ReceiptLine[] {
   out.push({ kind: "rule" });
 
   for (const l of sale.lines) {
+    // Ligne déduite (avance d'un dépôt, remise reprise au retrait) : juste le montant, en négatif.
+    if (l.lineTotal < 0) {
+      out.push({ kind: "text", text: l.name }, { kind: "pair", left: "", right: formatMoney(l.lineTotal, c) });
+      continue;
+    }
     out.push({ kind: "text", text: l.name });
     if (l.packName) out.push({ kind: "text", text: `  ${packLabel({ name: l.packName, units: l.packUnits ?? 1 }, l.unit)}` });
     out.push({ kind: "pair", left: `  ${qty(l.quantity, l.packName ? "u" : l.unit)} × ${formatMoney(l.unitPrice, c)}`, right: formatMoney(l.lineTotal, c) });

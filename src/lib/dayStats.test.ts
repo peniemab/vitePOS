@@ -80,3 +80,18 @@ describe("résumés par jour", () => {
     expect([d.revenue, d.count, d.products.riz, d.members]).toEqual([5, 0, { n: "Riz", q: 1, r: 0 }, {}]);
   });
 });
+
+describe("dépôts dans les résumés", () => {
+  it("l'avance et sa reprise au retrait s'annulent dans les articles, l'argent reste compté", () => {
+    const acompte = { productId: "acompte-depot", name: "Acompte · Dépôt N° AB12-CD", unit: "u" as const, unitPrice: 5000, quantity: 1, lineTotal: 5000, service: true };
+    const chemise = { productId: "s1", name: "Chemise", unit: "u" as const, unitPrice: 2000, quantity: 6, lineTotal: 12000, service: true };
+    const reprise = { ...acompte, name: "Acompte déjà payé", unitPrice: -5000, lineTotal: -5000 };
+    const days = daysFromSales([
+      sale({ lines: [acompte], subtotal: 5000, total: 5000 }),
+      sale({ lines: [chemise, reprise], subtotal: 7000, total: 7000 }),
+    ]);
+    const report = reportFromDays(days, periodOf("jour", "2026-10-12"), "CDF");
+    expect(report.revenue).toBe(12000);
+    expect(report.topProducts.map((p) => p.name)).toEqual(["Chemise"]);
+  });
+});

@@ -99,6 +99,7 @@ function toProduct(id: string, d: DocumentData): Product {
     tracksExpiry: d.tracksExpiry === true,
     serialTracked: d.serialTracked === true,
     warrantyMonths: num(d.warrantyMonths),
+    isService: d.isService === true,
     favorite: d.favorite === true,
     archived: d.archived === true,
     updatedAtMs: ms(d.updatedAt),

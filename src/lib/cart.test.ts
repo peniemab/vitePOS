@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   addToCart,
+  inCartByProduct,
   computePayment,
   computeTotals,
   dayKey,
@@ -146,5 +147,18 @@ describe("appareils suivis par IMEI", () => {
     expect(lineKey(lines[0])).toBe("tel#352099001761481");
     expect(setQuantity(lines, "tel#SN0099", 5).find((l) => l.serial === "SN0099")?.quantity).toBe(1);
     expect(setQuantity(lines, "tel#SN0099", 0)).toHaveLength(1);
+  });
+});
+
+describe("lignes de service", () => {
+  const lines = [
+    { productId: "chemise", quantity: 3, unit: "u" as const, service: true },
+    { productId: "savon", quantity: 2, unit: "u" as const },
+  ];
+  it("ne retirent rien du stock", () => {
+    expect([...stockByProduct(lines)]).toEqual([["savon", 2]]);
+  });
+  it("comptent quand même dans le panier", () => {
+    expect(inCartByProduct(lines).get("chemise")).toBe(3);
   });
 });

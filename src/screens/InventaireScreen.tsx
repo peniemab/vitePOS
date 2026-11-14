@@ -109,7 +109,8 @@ function Counting({ inventory }: { inventory: Inventory }) {
 
   useEffect(() => watchCountLines(boutique.id, inventory.id, setLines, () => setLines(new Map())), [boutique.id, inventory.id]);
 
-  const active = useMemo(() => (products ?? []).filter((p) => !p.archived), [products]);
+  // Les services n'ont pas de stock : rien à compter.
+  const active = useMemo(() => (products ?? []).filter((p) => !p.archived && !p.isService), [products]);
   const categories = useMemo(() => collectCategories(active), [active]);
   const counted = lines?.size ?? 0;
   const list = useMemo(() => {

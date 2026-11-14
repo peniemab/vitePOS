@@ -5,6 +5,7 @@ import {
   IconChartBar,
   IconClipboardCheck,
   IconCreditCard,
+  IconDeposit,
   IconLayoutDashboard,
   IconPackage,
   IconReceipt,
@@ -17,6 +18,8 @@ import {
 } from "./icons";
 import { useReady } from "../data/session";
 import { useIsAdmin } from "../data/admin";
+import { useCatalog } from "../data/products";
+import { hasServices } from "../data/deposits";
 import { canManageTeam } from "../lib/roles";
 
 export interface Section {
@@ -35,6 +38,8 @@ export interface SectionGroup {
 export function useSections(): SectionGroup[] {
   const { member, permissions } = useReady();
   const isAdmin = useIsAdmin();
+  // Dépôts : seulement pour les métiers qui vendent des services (pressing, couture, réparation…).
+  const { products } = useCatalog();
   const groups: { title: string; items: (Section & { show?: boolean })[] }[] = [
     { title: "", items: [{ to: "/", label: "Accueil", icon: IconLayoutDashboard, end: true }] },
     {
@@ -42,6 +47,7 @@ export function useSections(): SectionGroup[] {
       items: [
         { to: "/caisse", label: "Caisse", icon: IconCashRegister },
         { to: "/ventes", label: "Ventes", icon: IconReceipt },
+        { to: "/depots", label: "Dépôts", icon: IconDeposit, show: hasServices(products) },
         { to: "/clients", label: "Clients", icon: IconUsers },
       ],
     },

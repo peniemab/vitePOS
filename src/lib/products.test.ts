@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  canSell,
   categoryColor,
   CATEGORY_COLORS,
   collectCategories,
@@ -237,5 +238,34 @@ describe("vignettes dessinées", () => {
     expect(productIcon("Huile Mama 1 L")).toBeNull();
     expect(productIcon("Dentifrice Signal")).toBeNull();
     expect(productIcon("Bidon", "Boissons")).toBe("bottle");
+  });
+});
+
+describe("services sans stock", () => {
+  it("se vendent toujours, sans alerte ni rupture", () => {
+    const svc = { stock: 0, alertThreshold: 5, archived: false, isService: true };
+    expect(canSell(svc)).toBe(true);
+    expect(stockLevel(svc)).toBe("ok");
+    expect(needsRestock(svc)).toBe(false);
+    expect(canSell({ stock: 0 })).toBe(false);
+    expect(canSell({ stock: 2 })).toBe(true);
+  });
+
+  it("restent à leur place à la caisse, avant les ruptures", () => {
+    const sorted = sortForCheckout([
+      { name: "Lait", favorite: false, stock: 0 },
+      { name: "Chemise", favorite: false, stock: 0, isService: true },
+    ]);
+    expect(sorted.map((p) => p.name)).toEqual(["Chemise", "Lait"]);
+  });
+
+  it("refusent paquets, péremption et IMEI", () => {
+    expect(validateProduct({ ...base, isService: true })).toMatchObject({ value: { isService: true } });
+    expect(validateProduct({ ...base, isService: true, tracksExpiry: true })).toHaveProperty("error");
+    expect(validateProduct({ ...base, isService: true, serialTracked: true })).toHaveProperty("error");
+    expect(
+      validateProduct({ ...base, isService: true, packs: [{ id: "p", name: "Paquet", barcode: "", units: 6, price: 100 }] }),
+    ).toHaveProperty("error");
+    expect(validateProduct(base)).not.toMatchObject({ value: { isService: true } });
   });
 });

@@ -225,7 +225,7 @@ export interface ImportPlan {
   updates: ImportUpdate[];
 }
 
-type Existing = Pick<Product, "id" | "sku" | "name" | "category" | "barcode" | "stock" | "archived">;
+type Existing = Pick<Product, "id" | "sku" | "name" | "category" | "barcode" | "stock" | "archived"> & { isService?: boolean };
 
 const nameKey = (name: string, category: string) => `${fold(name)}|${fold(category)}`;
 
@@ -264,7 +264,8 @@ export function planImport(rows: ImportRow[], existing: Existing[]): ImportPlan 
       favorite: row.favorite,
     };
     if (prev) {
-      const stockDelta = row.stock == null ? 0 : roundQuantity(row.stock - prev.stock, row.unit);
+      // Un service n'a pas de stock : la colonne stock du fichier est ignorée pour lui.
+      const stockDelta = row.stock == null || prev.isService ? 0 : roundQuantity(row.stock - prev.stock, row.unit);
       plan.updates.push({ id: prev.id, input: { ...input, barcode: row.barcode || prev.barcode }, stockDelta, buyPrice: row.buyPrice });
     } else {
       plan.creates.push({ input, stock: row.stock ?? 0, buyPrice: row.buyPrice });

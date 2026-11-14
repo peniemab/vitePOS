@@ -144,6 +144,8 @@ function ProductForm({
   const cam = useCameraScan(setBarcode);
   const [packs, setPacks] = useState<PackDraft[]>(product?.packs ?? []);
   const [favorite, setFavorite] = useState(product?.favorite ?? false);
+  // Service (pressing, coiffure, réparation…) : se vend sans stock, donc ni paquet, ni péremption, ni IMEI.
+  const [isService, setIsService] = useState(product?.isService ?? false);
   const [tracksExpiry, setTracksExpiry] = useState(product?.tracksExpiry ?? false);
   const [serialTracked, setSerialTracked] = useState(product?.serialTracked ?? false);
   const [warrantyMonths, setWarrantyMonths] = useState<number | string>(product?.warrantyMonths ?? 12);
@@ -179,10 +181,11 @@ function ProductForm({
       alertThreshold: asNumber(alertThreshold),
       barcode,
       favorite,
-      packs: packs.map((k) => ({ id: k.id, name: k.name, barcode: k.barcode, units: asNumber(k.units), price: asNumber(k.price) })),
-      tracksExpiry,
-      serialTracked,
+      packs: isService ? [] : packs.map((k) => ({ id: k.id, name: k.name, barcode: k.barcode, units: asNumber(k.units), price: asNumber(k.price) })),
+      tracksExpiry: isService ? false : tracksExpiry,
+      serialTracked: isService ? false : serialTracked,
       warrantyMonths: asNumber(warrantyMonths),
+      isService,
     });
     if ("error" in checked) return setError(checked.error);
     if (barcodeTaken) return setError(`Ce code-barres est déjà utilisé par « ${barcodeTaken.name} ».`);
@@ -195,8 +198,9 @@ function ProductForm({
     const cost = buyPrice === "" ? undefined : asNumber(buyPrice);
     const newCost = canEdit && cost != null && cost !== initialCost ? cost : undefined;
     // Un produit suivi par IMEI : le stock ne bouge qu'avec ses appareils (arrivage, vente, casse).
-    const qty = serialTracked ? (product?.stock ?? 0) : roundQuantity(asNumber(stock), checked.value.unit);
-    if (!product && tracksExpiry && canStock && qty > 0 && !expiry) return setError("Indiquez la date de péremption du stock de départ.");
+    // Un service n'a pas de stock : on ne touche jamais au compteur (0 à la création).
+    const qty = isService || serialTracked ? (product?.stock ?? 0) : roundQuantity(asNumber(stock), checked.value.unit);
+    if (!product && !isService && tracksExpiry && canStock && qty > 0 && !expiry) return setError("Indiquez la date de péremption du stock de départ.");
     try {
       if (product) {
         updateProduct(actor, product, checked.value, {
@@ -309,6 +313,13 @@ function ProductForm({
             />
           )}
         </SimpleGrid>
+        <Switch
+          label="C'est un service (pas de stock)"
+          description="Lavage, repassage, coupe, réparation… : se vend toujours, sans compter de stock."
+          disabled={readOnly}
+          checked={isService}
+          onChange={(e) => setIsService(e.currentTarget.checked)}
+        />
         <div>
           <Text size="sm" fw={500} mb={4}>
             Vendu à
@@ -321,89 +332,93 @@ function ProductForm({
             data={(Object.keys(UNITS) as Unit[]).map((u) => ({ value: u, label: UNITS[u] }))}
           />
         </div>
-        {!serialTracked && (
+        {!isService && !serialTracked && (
           <PacksEditor packs={packs} onChange={setPacks} unit={unit} currency={boutique.currency} readOnly={readOnly} takenBy={packTakenBy} />
         )}
-        <Stack gap="xs">
-          <Switch
-            label="Suivre les dates de péremption"
-            description="Une date à chaque arrivage ; alerte 30 jours avant (pharmacie, alimentation…)."
-            disabled={readOnly}
-            checked={tracksExpiry}
-            onChange={(e) => setTracksExpiry(e.currentTarget.checked)}
-          />
-          <Switch
-            label="Numéro de série / IMEI"
-            description={
-              unit !== "u" || packs.length
-                ? "Pour les articles vendus à la pièce, sans paquet ni carton."
-                : "Un numéro par appareil, noté à l'arrivage et obligatoire à la vente (téléphones…)."
-            }
-            disabled={readOnly || unit !== "u" || packs.length > 0}
-            checked={serialTracked}
-            onChange={(e) => setSerialTracked(e.currentTarget.checked)}
-          />
-          {serialTracked && (
-            <NumberInput
-              label="Garantie (mois)"
-              description="Imprimée sur le ticket : « Garantie jusqu'au … ». 0 : pas de garantie."
-              readOnly={readOnly}
-              min={0}
-              max={60}
-              allowDecimal={false}
-              hideControls
-              inputMode="numeric"
-              w={200}
-              value={warrantyMonths}
-              onChange={setWarrantyMonths}
-            />
-          )}
-        </Stack>
-        {product && tracksExpiry && <LotsInStock product={product} lots={lots} />}
-        <SimpleGrid cols={{ base: 1, xs: 2 }}>
-          <NumberInput
-            label={product ? "Stock réel" : "Stock de départ"}
-            description={
-              serialTracked
-                ? product
-                  ? "Le stock suit les IMEI : ajoutez des appareils avec « Mouvement »."
-                  : "Après l'enregistrement, ajoutez les appareils et leurs IMEI avec « Mouvement »."
-                : !canStock
-                  ? "Seuls les gérants peuvent modifier le stock"
-                  : product
-                    ? "Si vous le changez, l'écart est noté comme correction"
-                    : undefined
-            }
-            readOnly={!canStock || serialTracked}
-            decimalSeparator=","
-            decimalScale={unit === "u" ? 0 : 3}
-            hideControls
-            inputMode="decimal"
-            value={stock}
-            onChange={setStock}
-          />
-          <NumberInput
-            label="Alerte stock bas à partir de"
-            readOnly={readOnly}
-            min={0}
-            decimalSeparator=","
-            decimalScale={unit === "u" ? 0 : 3}
-            hideControls
-            inputMode="decimal"
-            value={alertThreshold}
-            onChange={setAlertThreshold}
-          />
-        </SimpleGrid>
-        {!product && tracksExpiry && canStock && asNumber(stock) > 0 && (
-          <DateInput
-            label="Péremption du stock de départ"
-            required
-            valueFormat="DD/MM/YYYY"
-            placeholder="jj/mm/aaaa"
-            value={expiry}
-            onChange={setExpiry}
-            w={220}
-          />
+        {!isService && (
+          <>
+            <Stack gap="xs">
+              <Switch
+                label="Suivre les dates de péremption"
+                description="Une date à chaque arrivage ; alerte 30 jours avant (pharmacie, alimentation…)."
+                disabled={readOnly}
+                checked={tracksExpiry}
+                onChange={(e) => setTracksExpiry(e.currentTarget.checked)}
+              />
+              <Switch
+                label="Numéro de série / IMEI"
+                description={
+                  unit !== "u" || packs.length
+                    ? "Pour les articles vendus à la pièce, sans paquet ni carton."
+                    : "Un numéro par appareil, noté à l'arrivage et obligatoire à la vente (téléphones…)."
+                }
+                disabled={readOnly || unit !== "u" || packs.length > 0}
+                checked={serialTracked}
+                onChange={(e) => setSerialTracked(e.currentTarget.checked)}
+              />
+              {serialTracked && (
+                <NumberInput
+                  label="Garantie (mois)"
+                  description="Imprimée sur le ticket : « Garantie jusqu'au … ». 0 : pas de garantie."
+                  readOnly={readOnly}
+                  min={0}
+                  max={60}
+                  allowDecimal={false}
+                  hideControls
+                  inputMode="numeric"
+                  w={200}
+                  value={warrantyMonths}
+                  onChange={setWarrantyMonths}
+                />
+              )}
+            </Stack>
+            {product && tracksExpiry && <LotsInStock product={product} lots={lots} />}
+            <SimpleGrid cols={{ base: 1, xs: 2 }}>
+              <NumberInput
+                label={product ? "Stock réel" : "Stock de départ"}
+                description={
+                  serialTracked
+                    ? product
+                      ? "Le stock suit les IMEI : ajoutez des appareils avec « Mouvement »."
+                      : "Après l'enregistrement, ajoutez les appareils et leurs IMEI avec « Mouvement »."
+                    : !canStock
+                      ? "Seuls les gérants peuvent modifier le stock"
+                      : product
+                        ? "Si vous le changez, l'écart est noté comme correction"
+                        : undefined
+                }
+                readOnly={!canStock || serialTracked}
+                decimalSeparator=","
+                decimalScale={unit === "u" ? 0 : 3}
+                hideControls
+                inputMode="decimal"
+                value={stock}
+                onChange={setStock}
+              />
+              <NumberInput
+                label="Alerte stock bas à partir de"
+                readOnly={readOnly}
+                min={0}
+                decimalSeparator=","
+                decimalScale={unit === "u" ? 0 : 3}
+                hideControls
+                inputMode="decimal"
+                value={alertThreshold}
+                onChange={setAlertThreshold}
+              />
+            </SimpleGrid>
+            {!product && tracksExpiry && canStock && asNumber(stock) > 0 && (
+              <DateInput
+                label="Péremption du stock de départ"
+                required
+                valueFormat="DD/MM/YYYY"
+                placeholder="jj/mm/aaaa"
+                value={expiry}
+                onChange={setExpiry}
+                w={220}
+              />
+            )}
+          </>
         )}
         <Switch label="Favori (affiché en premier à la caisse)" disabled={readOnly} checked={favorite} onChange={(e) => setFavorite(e.currentTarget.checked)} />
 
@@ -425,7 +440,7 @@ function ProductForm({
                 {product.archived ? "Restaurer" : "Archiver"}
               </Button>
             )}
-            {product && canStock && !product.archived && (
+            {product && canStock && !product.archived && !product.isService && (
               <Button variant="default" leftSection={<IconArrowsExchange size={18} />} onClick={() => setMoveOpen(true)}>
                 Mouvement
               </Button>

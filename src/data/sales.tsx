@@ -6,7 +6,7 @@
  * sur chaque produit. L'annulation fait l'inverse avec un mouvement « annulation ».
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { collection, doc, increment, limit, onSnapshot, orderBy, query, serverTimestamp, where, writeBatch, type DocumentData } from "firebase/firestore";
+import { collection, doc, increment, limit, onSnapshot, orderBy, query, serverTimestamp, where, writeBatch, type DocumentData, type WriteBatch } from "firebase/firestore";
 import { notifications } from "@mantine/notifications";
 import { getDb } from "./firebase";
 import { countSale } from "./monthStats";
@@ -22,6 +22,8 @@ import { addToCart, clampPercent, computeTotals, dayKey, lineTotal, setQuantity,
 import { isCurrency, type Currency } from "../lib/fx";
 import { isUnit, type Pack, type Product } from "../lib/products";
 import type { Sale, SaleLine, SalePayment } from "../lib/sales";
+import type { DepositStep } from "../lib/deposits";
+import { unpayDeposit } from "./deposits";
 
 const salesCol = (b: string) => collection(getDb(), "boutiques", b, "sales");
 const productsCol = (b: string) => collection(getDb(), "boutiques", b, "products");
@@ -52,6 +54,7 @@ function toSale(id: string, d: DocumentData, synced: boolean): Sale {
       lineTotal: num(l.lineTotal),
       ...(l.packId ? { packId: String(l.packId), packName: String(l.packName ?? ""), packUnits: num(l.packUnits) || 1 } : {}),
       ...(l.serial ? { serial: String(l.serial), warrantyUntil: String(l.warrantyUntil ?? "") } : {}),
+      ...(l.service === true ? { service: true } : {}),
     })),
     subtotal: num(d.subtotal),
     discountPercent: num(d.discountPercent),
@@ -75,6 +78,8 @@ function toSale(id: string, d: DocumentData, synced: boolean): Sale {
     clientName: String(d.clientName ?? ""),
     inStats: d.inStats === true,
     inDayStats: d.inDayStats === true,
+    depositId: String(d.depositId ?? ""),
+    depositStep: d.depositStep === "total" || d.depositStep === "acompte" || d.depositStep === "retrait" ? d.depositStep : "",
     status: d.status === "annulee" ? "annulee" : "validee",
     cancelReason: String(d.cancelReason ?? ""),
     cancelledByName: String(d.cancelledByName ?? ""),
@@ -145,8 +150,27 @@ export function createSale(
   result: PaymentResult,
   client?: { id: string; name: string },
 ): string {
-  const db = getDb();
-  const batch = writeBatch(db);
+  const batch = writeBatch(getDb());
+  const id = writeSale(batch, actor, currency, cart, discountPercent, input, result, client);
+  track(batch.commit(), onWriteError);
+  return id;
+}
+
+/**
+ * Ajoute une vente à une écriture groupée (vente, mouvement de stock, compteurs, client).
+ * `deposit` : la vente paie un dépôt (acompte, tout payé au dépôt, ou solde au retrait).
+ */
+export function writeSale(
+  batch: WriteBatch,
+  actor: Actor,
+  currency: Currency,
+  cart: CartLine[],
+  discountPercent: number,
+  input: PaymentInput,
+  result: PaymentResult,
+  client?: { id: string; name: string },
+  deposit?: { id: string; step: DepositStep },
+): string {
   const now = Date.now();
   const saleRef = doc(salesCol(actor.boutiqueId));
   const movementRef = doc(movementsCol(actor.boutiqueId));
@@ -161,6 +185,7 @@ export function createSale(
     lineTotal: lineTotal(l, currency),
     ...(l.packId ? { packId: l.packId, packName: l.packName ?? "", packUnits: l.packUnits ?? 1 } : {}),
     ...(l.serial ? { serial: l.serial, warrantyUntil: warrantyUntil(dayKey(now), l.warrantyMonths ?? 0) } : {}),
+    ...(l.service ? { service: true } : {}),
   }));
   // Stock retiré à l'unité, un seul total par produit (bouteilles et paquets additionnés).
   const out = stockByProduct(lines);
@@ -173,7 +198,9 @@ export function createSale(
     change: result.change,
   };
 
-  batch.set(movementRef, {
+  // Une vente de services seulement ne touche pas au stock : pas de mouvement (movementId vide).
+  const touchesStock = out.size > 0;
+  if (touchesStock) batch.set(movementRef, {
     type: "vente",
     productIds: [...out.keys()],
     deltas: Object.fromEntries([...out].map(([id, q]) => [id, -q])),
@@ -200,7 +227,8 @@ export function createSale(
     inStats: true,
     inDayStats: true,
     status: "validee",
-    movementId: movementRef.id,
+    movementId: touchesStock ? movementRef.id : "",
+    ...(deposit ? { depositId: deposit.id, depositStep: deposit.step } : {}),
     dayKey: dayKey(now),
     createdAt: serverTimestamp(),
     clientAtMs: now,
@@ -218,14 +246,14 @@ export function createSale(
   for (const l of lines) if (l.serial) markSold(batch, actor, l.serial, saleRef.id, dayKey(now), l.warrantyUntil ?? "");
   if (client) {
     batch.update(doc(clientsCol(actor.boutiqueId), client.id), {
-      purchaseCount: increment(1),
+      // Un dépôt payé en deux fois (acompte puis solde) compte pour un seul achat.
+      purchaseCount: increment(deposit?.step === "acompte" ? 0 : 1),
       totalSpent: increment(totals.total),
       lastPurchaseAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       updatedBy: actor.uid,
     });
   }
-  track(batch.commit(), onWriteError);
   return saleRef.id;
 }
 
@@ -234,7 +262,8 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
   const batch = writeBatch(getDb());
   const movementRef = doc(movementsCol(actor.boutiqueId));
   const back = stockByProduct(sale.lines);
-  batch.set(movementRef, {
+  const touchesStock = back.size > 0;
+  if (touchesStock) batch.set(movementRef, {
     type: "annulation",
     productIds: [...back.keys()],
     deltas: Object.fromEntries(back),
@@ -252,7 +281,7 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
     cancelledBy: actor.uid,
     cancelledByName: actor.memberName,
     cancelledAt: serverTimestamp(),
-    cancelMovementId: movementRef.id,
+    cancelMovementId: touchesStock ? movementRef.id : "",
   });
   for (const [productId, q] of back) {
     batch.update(doc(productsCol(actor.boutiqueId), productId), {
@@ -266,9 +295,11 @@ export function cancelSale(actor: Actor, sale: Sale, reason: string): void {
   if (sale.inStats) countSale(batch, actor.boutiqueId, monthOf(sale.dayKey), sale.currency, sale.total, -1);
   if (sale.inDayStats) countSaleDay(batch, actor.boutiqueId, sale, -1);
   for (const l of sale.lines) if (l.serial) markReturned(batch, actor, l.serial);
+  // Vente d'un dépôt : l'argent sort du « déjà payé » ; le solde du retrait annulé remet le dépôt « prêt ».
+  if (sale.depositId) unpayDeposit(batch, actor, sale);
   if (sale.clientId) {
     batch.update(doc(clientsCol(actor.boutiqueId), sale.clientId), {
-      purchaseCount: increment(-1),
+      purchaseCount: increment(sale.depositStep === "acompte" ? 0 : -1),
       totalSpent: increment(-sale.total),
       updatedAt: serverTimestamp(),
       updatedBy: actor.uid,
@@ -340,7 +371,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       ? { productId: p.id, name: p.name, unit: p.unit, unitPrice: pack.price, packId: pack.id, packName: pack.name, packUnits: pack.units }
       : serial
         ? { productId: p.id, name: p.name, unit: p.unit, unitPrice: p.sellPrice, serial, warrantyMonths: p.warrantyMonths }
-        : { productId: p.id, name: p.name, unit: p.unit, unitPrice: p.sellPrice };
+        : { productId: p.id, name: p.name, unit: p.unit, unitPrice: p.sellPrice, ...(p.isService ? { service: true } : {}) };
     setState((s) => ({ ...s, lines: addToCart(s.lines, line, qty) }));
   }, []);
   const setQty = useCallback((key: string, qty: number) => {

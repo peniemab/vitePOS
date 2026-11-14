@@ -21,6 +21,8 @@ const TeamScreen = lazy(() => import("./screens/TeamScreen").then((m) => ({ defa
 const CaisseScreen = lazy(() => import("./screens/CaisseScreen").then((m) => ({ default: m.CaisseScreen })));
 const TicketScreen = lazy(() => import("./screens/TicketScreen").then((m) => ({ default: m.TicketScreen })));
 const VentesScreen = lazy(() => import("./screens/VentesScreen").then((m) => ({ default: m.VentesScreen })));
+const DepotsScreen = lazy(() => import("./screens/DepotsScreen").then((m) => ({ default: m.DepotsScreen })));
+const DepotScreen = lazy(() => import("./screens/DepotsScreen").then((m) => ({ default: m.DepotScreen })));
 const ClientsScreen = lazy(() => import("./screens/ClientsScreen").then((m) => ({ default: m.ClientsScreen })));
 const DepensesScreen = lazy(() => import("./screens/DepensesScreen").then((m) => ({ default: m.DepensesScreen })));
 const JourneeScreen = lazy(() => import("./screens/JourneeScreen").then((m) => ({ default: m.JourneeScreen })));
@@ -63,6 +65,8 @@ function Gate() {
             <Route path="stock" element={<StockScreen />} />
             <Route path="stock/import" element={<ImportScreen />} />
             <Route path="ventes" element={<VentesScreen />} />
+            <Route path="depots" element={<DepotsScreen />} />
+            <Route path="depots/:id" element={<DepotScreen />} />
             <Route path="plus" element={<PlusScreen />} />
             <Route path="clients" element={<ClientsScreen />} />
             <Route path="depenses" element={<DepensesScreen />} />
